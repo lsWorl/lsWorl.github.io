@@ -412,9 +412,9 @@
 <h5 id="网状型网络"><a href="#网状型网络" class="headerlink" title="网状型网络"></a>网状型网络</h5><p>​            优点<br>​                可靠性高<br>​            缺点<br>​                控制复杂、线路成本高</p>
 <hr>
 <h3 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h3><h4 id="速率"><a href="#速率" class="headerlink" title="速率"></a>速率</h4><h5 id="比特"><a href="#比特" class="headerlink" title="比特"></a>比特</h5><p>是计算机中的数据量单位</p>
-<p>​<br>$$<br>8bit &#x3D; 1Byte\<br>            1KB &#x3D; 2^{10}B\<br>            1MB &#x3D; K×KB &#x3D; 2^{20}B\<br>            1GB &#x3D; K×MB &#x3D; 2^{30}B\<br>            1TB &#x3D; K×GB &#x3D; 2^{40}B\<br>            厂家中的1GB为10^9<br>$$</p>
+<p>​<br>$$<br>8bit &#x3D; 1Byte\\<br>            1KB &#x3D; 2^{10}B\\<br>            1MB &#x3D; K×KB &#x3D; 2^{20}B\\<br>            1GB &#x3D; K×MB &#x3D; 2^{30}B\\<br>            1TB &#x3D; K×GB &#x3D; 2^{40}B\\<br>            厂家中的1GB为10^9<br>$$</p>
 <h5 id="速率-1"><a href="#速率-1" class="headerlink" title="速率"></a>速率</h5><p>是连接在计算机网络上的主机在数字信道上传送比特的速率，也成为比特率或数据率</p>
-<p>​<br>$$<br>            1bit&#x2F;s\<br>            1kb&#x2F;s &#x3D; 10^3 b&#x2F;s\<br>            1Mb&#x2F;s &#x3D; k×kb&#x2F;s &#x3D; 10^6 b&#x2F;s\<br>            1Gb&#x2F;s &#x3D; k×Mb&#x2F;s &#x3D; 10^9 b&#x2F;s\<br>            1Tb&#x2F;s &#x3D; k×Gb&#x2F;s &#x3D; 10^{12} b&#x2F;s\<br>$$<br>​    带宽<br>​        模拟信号系统中的意义<br>​            信号所包含的各种不同频率成分所占据的频率范围<br>​<br>$$<br>                kHz\<br>                MHz\<br>                GHz\<br>$$</p>
+<p>​<br>$$<br>1bit&#x2F;s\\<br>            1kb&#x2F;s &#x3D; 10^3 b&#x2F;s\\<br>            1Mb&#x2F;s &#x3D; k×kb&#x2F;s &#x3D; 10^6 b&#x2F;s\<br>            1Gb&#x2F;s &#x3D; k×Mb&#x2F;s &#x3D; 10^9 b&#x2F;s\\<br>            1Tb&#x2F;s &#x3D; k×Gb&#x2F;s &#x3D; 10^{12} b&#x2F;s\\<br>$$<br>​    带宽<br>​        模拟信号系统中的意义<br>​            信号所包含的各种不同频率成分所占据的频率范围<br>​<br>$$<br>kHz\\<br>                MHz\\<br>                GHz\\<br>$$</p>
 <p>​        计算机网络中的意义<br>​            表示网络的通信线路所能传送数据的能力<br>​                kb&#x2F;s<br>​                Mb&#x2F;s<br>​                Gb&#x2F;s<br>​    吞吐量<br>​        表示在单位时间内通过某个网络（或信道、接口）的数据量<br>​        吞吐量受网络的带宽或额定速率的限制<br>​    时延<br>​        发送时延<br>​            分组长度（b）&#x2F;发送速率（b&#x2F;s）<br>​        传播时延<br>​            信道长度（m）&#x2F;电磁波传播速率（m&#x2F;s）<br>​                自由空间<br>​                    3<em>10^8 m&#x2F;s<br>​                铜线<br>​                    2.3</em>10^8 m&#x2F;s<br>​                光纤<br>​                    2.0<em>10^8 m&#x2F;s<br>​        处理时延<br>​    时延带宽积<br>​        传播时延</em>带宽<br>​    往返时间RTT<br>​        源主机收到目的主机的确认需要的时间<br>​    利用率<br>​        信道利用率<br>​        网络利用率<br>​        网络当前的时延 &#x3D; 网络空闲时的时延 &#x2F; (1 - 利用率)<br>​    丢包率<br>​    厂家中的1GB为10^9</p>
 
                 
@@ -922,6 +922,13 @@
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
