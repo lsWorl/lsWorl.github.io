@@ -4,8 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="因特网概述, LsWorld">
-    <meta name="description" content="包含性能指标，三种交换方式的概述，计算机网络体系结构等内容。">
+    <meta name="keywords" content="Vuex, LsWorld">
+    <meta name="description" content="Vuex工作原理
+
+Vuex三个重要工作区域Actions​    在Vue Components调用dispatch()要至少传两个传输，第一个参数为object对象，为在Actions中想要调用的函数名称，第二个参数为想要传递的数据。逻">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +21,7 @@
 
     
 
-    <title>因特网概述 | LsWorld</title>
+    <title>Vuex | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -287,12 +289,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">因特网概述</h1>
+                    <h1 class="description center-align post-title">Vuex</h1>
                 </div>
             </div>
         </div>
@@ -314,8 +316,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
-                                <span class="chip bg-color">计算机网络</span>
+                            <a href="/tags/Vue/">
+                                <span class="chip bg-color">Vue</span>
+                            </a>
+                        
+                            <a href="/tags/Vuex/">
+                                <span class="chip bg-color">Vuex</span>
                             </a>
                         
                     </div>
@@ -326,8 +332,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="post-category">
-                                计算机网络
+                            <a href="/categories/Vue/" class="post-category">
+                                Vue
                             </a>
                         
                     </div>
@@ -339,7 +345,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-04-11
+                    2022-04-12
                 </div>
                 
 
@@ -353,7 +359,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.8k
+                    495
                 </div>
                 
 
@@ -370,81 +376,19 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>[TOC]</p>
-<h3 id="1-1因特网概述："><a href="#1-1因特网概述：" class="headerlink" title="1.1因特网概述："></a>1.1因特网概述：</h3><h4 id="因特网发展的三个阶段："><a href="#因特网发展的三个阶段：" class="headerlink" title="因特网发展的三个阶段："></a>因特网发展的三个阶段：</h4><p>1969年：从单个网络ARPANET向互联网发展</p>
-<p>1985年：逐步建成三级结构的因特网</p>
-<p>1993年：逐步形成了多层次ISP（internet service provider）结构的因特网</p>
-<h5 id="国内三大提供商（第43次统计报告）总共出口宽带数"><a href="#国内三大提供商（第43次统计报告）总共出口宽带数" class="headerlink" title="国内三大提供商（第43次统计报告）总共出口宽带数"></a>国内三大提供商（第43次统计报告）总共出口宽带数</h5><p>中国电信国际出口宽带数：4537680（Mbps）</p>
-<p>中国联通国际出口宽带数：2234738(Mbps)</p>
-<p>中国移动国际出口宽带数：1997000(Mbps)</p>
-<h4 id="因特网的组成"><a href="#因特网的组成" class="headerlink" title="因特网的组成"></a>因特网的组成</h4><h5 id="边缘部分"><a href="#边缘部分" class="headerlink" title="边缘部分"></a>边缘部分</h5><p>由所有连接在因特网上的主机组成（包括但不仅限于下几个）</p>
-<ol>
-<li>电脑</li>
-<li>手机</li>
-<li>平板</li>
-<li>笔记本</li>
-</ol>
-<h5 id="核心部分"><a href="#核心部分" class="headerlink" title="核心部分"></a>核心部分</h5><p>由大量网络和连接这些网络的路由器组成，为边缘部分提供服务（包括但不仅限于下几个）<br>    1.路由器<br>    2.大量网络</p>
-<hr>
-<h3 id="1-2三种交换方式"><a href="#1-2三种交换方式" class="headerlink" title="1.2三种交换方式"></a>1.2三种交换方式</h3><h4 id="电路交换（Circuit-Switching）"><a href="#电路交换（Circuit-Switching）" class="headerlink" title="电路交换（Circuit Switching）"></a>电路交换（Circuit Switching）</h4><h5 id="三个步骤"><a href="#三个步骤" class="headerlink" title="三个步骤"></a>三个步骤</h5><p>​        建立连接（分配通信资源）<br>​        通信（一直占用通信资源）<br>​        释放连接（归还通信资源）</p>
-<h5 id="比特流直达终点"><a href="#比特流直达终点" class="headerlink" title="比特流直达终点"></a>比特流直达终点</h5><h5 id="电路交换的优点："><a href="#电路交换的优点：" class="headerlink" title="电路交换的优点："></a>电路交换的优点：</h5><p>​        通信时延小<br>​        有序传输<br>​        没有冲突<br>​        适用范围广<br>​        实时性强<br>​        控制简单</p>
-<h5 id="电路交换的缺点："><a href="#电路交换的缺点：" class="headerlink" title="电路交换的缺点："></a>电路交换的缺点：</h5><p>​        建立连接时间长<br>​        线路独占，使用效率低<br>​        灵活性差<br>​        难以规格化</p>
-<h4 id="分组交换（Packet-Switch）"><a href="#分组交换（Packet-Switch）" class="headerlink" title="分组交换（Packet Switch）"></a>分组交换（Packet Switch）</h4><h5 id="发送方"><a href="#发送方" class="headerlink" title="发送方"></a>发送方</h5><p>​        构造分组<br>​        发送分组</p>
-<h5 id="路由器"><a href="#路由器" class="headerlink" title="路由器"></a>路由器</h5><p>​        缓存分组<br>​        转发分组</p>
-<h5 id="接收方"><a href="#接收方" class="headerlink" title="接收方"></a>接收方</h5><p>​        接受分组<br>​        还原报文</p>
-<h5 id="报文前加上首部（简称包）"><a href="#报文前加上首部（简称包）" class="headerlink" title="报文前加上首部（简称包）"></a>报文前加上首部（简称包）</h5><p>​        整个报文存储转发</p>
-<h5 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h5><p>​        无需建立连接<br>​        线路利用率高<br>​        简化了存储管理<br>​        加速传输<br>​        减少出错概率和重发数据量</p>
-<h5 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h5><p>​        引起了转发时延<br>​        需要传输额外的信息量<br>​        对于数据报服务，存在失序、丢失或重复分组的问题；对于虚电路服务，存在呼叫建立、数据传输和虚电路释放三个过程</p>
-<h4 id="报文交换（Message-Switching）"><a href="#报文交换（Message-Switching）" class="headerlink" title="报文交换（Message Switching）"></a>报文交换（Message Switching）</h4><h5 id="报文进行分组并前加上首部"><a href="#报文进行分组并前加上首部" class="headerlink" title="报文进行分组并前加上首部"></a>报文进行分组并前加上首部</h5><p>​        分组存储转发</p>
-<h5 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h5><p>​        无需建立连接<br>​        动态分配线路<br>​        提高线路可靠性<br>​        提高线路利用率<br>​        提供多目标服务</p>
-<h5 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h5><p>​        引起了转发时延<br>​        需要较大存储缓存空间<br>​        需要传输额外的信息量</p>
-<hr>
-<h3 id="1-3计算机网络的分类"><a href="#1-3计算机网络的分类" class="headerlink" title="1.3计算机网络的分类"></a>1.3计算机网络的分类</h3><h4 id="按交换技术分类"><a href="#按交换技术分类" class="headerlink" title="按交换技术分类"></a>按交换技术分类</h4><p>​        电路交换网络<br>​        报文交换网络<br>​        分组交换网络</p>
-<h4 id="按使用者分类"><a href="#按使用者分类" class="headerlink" title="按使用者分类"></a>按使用者分类</h4><p>​        公用网<br>​        专用网</p>
-<h4 id="按传输介质分类"><a href="#按传输介质分类" class="headerlink" title="按传输介质分类"></a>按传输介质分类</h4><p>​        有线网络<br>​        无线网络</p>
-<h4 id="按覆盖范围分类"><a href="#按覆盖范围分类" class="headerlink" title="按覆盖范围分类"></a>按覆盖范围分类</h4><h5 id="广域网WAN"><a href="#广域网WAN" class="headerlink" title="广域网WAN"></a>广域网WAN</h5><p>​            覆盖范围几十公里到几千公里</p>
-<h5 id="城域网MAN"><a href="#城域网MAN" class="headerlink" title="城域网MAN"></a>城域网MAN</h5><p>​            覆盖范围5至50公里</p>
-<h5 id="局域网LAN"><a href="#局域网LAN" class="headerlink" title="局域网LAN"></a>局域网LAN</h5><p>​            在较小的范围内（如实验室、教学楼）</p>
-<h5 id="个域网PAN"><a href="#个域网PAN" class="headerlink" title="个域网PAN"></a>个域网PAN</h5><p>​            覆盖范围大约为10米</p>
-<h4 id="按拓扑结构分类"><a href="#按拓扑结构分类" class="headerlink" title="按拓扑结构分类"></a>按拓扑结构分类</h4><h5 id="总线型网络"><a href="#总线型网络" class="headerlink" title="总线型网络"></a>总线型网络</h5><h6 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h6><p>​                建网容易<br>​                增减结点方便<br>​                节省线路</p>
-<h6 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h6><p>​                重负载时通信效率不高<br>​                总线任意一处出现故障，则全网瘫痪</p>
-<h5 id="星型网络"><a href="#星型网络" class="headerlink" title="星型网络"></a>星型网络</h5><h6 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h6><p>​                便于网络的集中控制和管理</p>
-<h6 id="缺点-3"><a href="#缺点-3" class="headerlink" title="缺点"></a>缺点</h6><p>​                成本高，中央设备对故障敏感</p>
-<h5 id="环型网络"><a href="#环型网络" class="headerlink" title="环型网络"></a>环型网络</h5><p>​            环中信号是单向传输</p>
-<h5 id="网状型网络"><a href="#网状型网络" class="headerlink" title="网状型网络"></a>网状型网络</h5><h6 id="优点-4"><a href="#优点-4" class="headerlink" title="优点"></a>优点</h6><p>​                可靠性高</p>
-<h6 id="缺点-4"><a href="#缺点-4" class="headerlink" title="缺点"></a>缺点</h6><p>​                控制复杂、线路成本高</p>
-<hr>
-<h3 id="1-4性能指标"><a href="#1-4性能指标" class="headerlink" title="1.4性能指标"></a>1.4性能指标</h3><h4 id="速率"><a href="#速率" class="headerlink" title="速率"></a>速率</h4><h5 id="比特"><a href="#比特" class="headerlink" title="比特"></a>比特</h5><p>是计算机中的数据量单位</p>
-<p>​<br>$$<br>8bit &#x3D; 1Byte\\<br>            1KB &#x3D; 2^{10}B\\<br>            1MB &#x3D; K×KB &#x3D; 2^{20}B\\<br>            1GB &#x3D; K×MB &#x3D; 2^{30}B\\<br>            1TB &#x3D; K×GB &#x3D; 2^{40}B\\<br>            厂家中的1GB为10^9<br>$$</p>
-<h5 id="速率-1"><a href="#速率-1" class="headerlink" title="速率"></a>速率</h5><p>是连接在计算机网络上的主机在数字信道上传送比特的速率，也成为比特率或数据率</p>
-<p>​<br>$$ {速率}<br>1bit&#x2F;s\\<br>            1kb&#x2F;s &#x3D; 10^3 b&#x2F;s\\<br>            1Mb&#x2F;s &#x3D; k×kb&#x2F;s &#x3D; 10^6 b&#x2F;s\<br>            1Gb&#x2F;s &#x3D; k×Mb&#x2F;s &#x3D; 10^9 b&#x2F;s\\<br>            1Tb&#x2F;s &#x3D; k×Gb&#x2F;s &#x3D; 10^{12} b&#x2F;s\\<br>$$</p>
-<h4 id="带宽"><a href="#带宽" class="headerlink" title="带宽"></a>带宽</h4><h5 id="模拟信号系统中的意义"><a href="#模拟信号系统中的意义" class="headerlink" title="模拟信号系统中的意义"></a>模拟信号系统中的意义</h5><p>​            信号所包含的各种不同频率成分所占据的频率范围<br>​<br>$$<br>kHz\\<br>                MHz\\<br>                GHz\\<br>$$</p>
-<h5 id="计算机网络中的意义"><a href="#计算机网络中的意义" class="headerlink" title="计算机网络中的意义"></a>计算机网络中的意义</h5><p>​            表示网络的通信线路所能传送数据的能力<br>$$<br>kb&#x2F;s<br>                Mb&#x2F;s<br>                Gb&#x2F;s<br>$$</p>
-<h4 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h4><p>​        表示在单位时间内通过某个网络（或信道、接口）的数据量<br>​        吞吐量受网络的带宽或额定速率的限制</p>
-<h4 id="时延"><a href="#时延" class="headerlink" title="时延"></a>时延</h4><h5 id="发送时延"><a href="#发送时延" class="headerlink" title="发送时延"></a>发送时延</h5><p>​            分组长度（b）&#x2F;发送速率（b&#x2F;s）</p>
-<h5 id="传播时延"><a href="#传播时延" class="headerlink" title="传播时延"></a>传播时延</h5><p>​<br>$$<br>        信道长度（m）&#x2F;电磁波传播速率（m&#x2F;s）\\<br>                自由空间:<br>                    3×10^8 m&#x2F;s\\<br>                铜线:<br>                    2.3×10^8 m&#x2F;s\\<br>                光纤:<br>                    2.0×10^8 m&#x2F;s\\<br>$$</p>
-<h5 id="处理时延"><a href="#处理时延" class="headerlink" title="处理时延"></a>处理时延</h5><h4 id="时延带宽积"><a href="#时延带宽积" class="headerlink" title="时延带宽积"></a>时延带宽积</h4><p>​<br>$$<br>    传播时延×带宽<br>$$</p>
-<h4 id="往返时间RTT"><a href="#往返时间RTT" class="headerlink" title="往返时间RTT"></a>往返时间RTT</h4><p>​        源主机收到目的主机的确认需要的时间</p>
-<h4 id="利用率"><a href="#利用率" class="headerlink" title="利用率"></a>利用率</h4><p>​<br>$$<br>                        信道利用率\\<br>                        网络利用率\\<br>        网络当前的时延 &#x3D; 网络空闲时的时延 &#x2F; (1 - 利用率)\\<br>$$</p>
-<h4 id="丢包率"><a href="#丢包率" class="headerlink" title="丢包率"></a>丢包率</h4><hr>
-<h3 id="1-5计算机网络体系结构"><a href="#1-5计算机网络体系结构" class="headerlink" title="1.5计算机网络体系结构"></a>1.5计算机网络体系结构</h3><h4 id="常见的计算机网络体系结构"><a href="#常见的计算机网络体系结构" class="headerlink" title="常见的计算机网络体系结构"></a>常见的计算机网络体系结构</h4><h5 id="OSI体系结构"><a href="#OSI体系结构" class="headerlink" title="OSI体系结构"></a>OSI体系结构</h5><p>​            应用层<br>​            表示层<br>​            会话层<br>​            运输层<br>​            网络层<br>​            数据链路层<br>​            物理层</p>
-<h5 id="TCP-x2F-IP体系结构"><a href="#TCP-x2F-IP体系结构" class="headerlink" title="TCP&#x2F;IP体系结构"></a>TCP&#x2F;IP体系结构</h5><h6 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h6><p>​                HTTP协议<br>​                SMTP协议<br>​                DNS协议<br>​                RTP协议<br>​                等等</p>
-<h6 id="运输层"><a href="#运输层" class="headerlink" title="运输层"></a>运输层</h6><p>​                TCP协议<br>​                UDP协议</p>
-<h6 id="网际层"><a href="#网际层" class="headerlink" title="网际层"></a>网际层</h6><p>​                IP协议<br>​            网络接口层</p>
-<h5 id="原理体系结构"><a href="#原理体系结构" class="headerlink" title="原理体系结构"></a>原理体系结构</h5><p>​            应用层<br>​            运输层<br>​            网络层<br>​            数据链路层<br>​            物理层</p>
-<h4 id="计算机网络体系结构分层的必要性"><a href="#计算机网络体系结构分层的必要性" class="headerlink" title="计算机网络体系结构分层的必要性"></a>计算机网络体系结构分层的必要性</h4><h5 id="应用层-1"><a href="#应用层-1" class="headerlink" title="应用层"></a>应用层</h5><p>​            通过应用进程间的交互来完成特定的网络应用</p>
-<h5 id="运输层-1"><a href="#运输层-1" class="headerlink" title="运输层"></a>运输层</h5><p>​            如何解决进程之间基于网络的通信问题<br>​            出现传输错误时，如何处理</p>
-<h5 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h5><p>​            如何标识各网络以及网络中的各主机<br>​            路由器如何转发分组，如何进行路由选择</p>
-<h5 id="数据链路层"><a href="#数据链路层" class="headerlink" title="数据链路层"></a>数据链路层</h5><p>​            如何标识网络中的各主机<br>​            如何从信号所表示的一串比特流中区分出地址和数据<br>​            如何协调各主机争用总线</p>
-<h5 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h5><p>​            使用怎样的信号表示比特0和1</p>
-<h4 id="计算机网络体系结构分层思想举例"><a href="#计算机网络体系结构分层思想举例" class="headerlink" title="计算机网络体系结构分层思想举例"></a>计算机网络体系结构分层思想举例</h4><h5 id="发送端"><a href="#发送端" class="headerlink" title="发送端"></a>发送端</h5><p>​            应用层<br>​                HTTP报文<br>​            运输层<br>​                HTTP TCP报文段<br>​            网络层<br>​                HTTP TCP IP数据报<br>​            数据链路层<br>​                ETH HTTP TCP IP ETH帧<br>​            物理层<br>​                比特流</p>
-<h5 id="路由器-1"><a href="#路由器-1" class="headerlink" title="路由器"></a>路由器</h5><p>​            网络层<br>​                HTTP TCP IP数据报<br>​            数据链路层<br>​                ETH HTTP TCP IP ETH帧<br>​            物理层<br>​                比特流</p>
-<h5 id="接收端"><a href="#接收端" class="headerlink" title="接收端"></a>接收端</h5><p>​            发送端同理，发送端自顶向下，接收端逐步解析</p>
-<h4 id="计算机网络体系结构结构的专用术语"><a href="#计算机网络体系结构结构的专用术语" class="headerlink" title="计算机网络体系结构结构的专用术语"></a>计算机网络体系结构结构的专用术语</h4><h5 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h5><p>​            任何可发送或接受信息的硬件或软件进程</p>
-<h5 id="协议（水平）"><a href="#协议（水平）" class="headerlink" title="协议（水平）"></a>协议（水平）</h5><p>​            语法<br>​                定义所交换信息的格式<br>​            语义<br>​                定义收发双方要完成的操作<br>​            同步<br>​                定义收发双方的时序关系</p>
-<h5 id="服务（垂直）"><a href="#服务（垂直）" class="headerlink" title="服务（垂直）"></a>服务（垂直）</h5><p>​            下面的协议对上面的实体时透明的</p>
-<h5 id="协议数据单元PDU"><a href="#协议数据单元PDU" class="headerlink" title="协议数据单元PDU"></a>协议数据单元PDU</h5><p>​            对等层次之间传送的数据包</p>
-<h5 id="服务数据单元SDU"><a href="#服务数据单元SDU" class="headerlink" title="服务数据单元SDU"></a>服务数据单元SDU</h5><p>​            同一系统内，层与层之间交换的数据包</p>
+                <h3 id="Vuex工作原理"><a href="#Vuex工作原理" class="headerlink" title="Vuex工作原理"></a>Vuex工作原理</h3><img src="/2022/04/12/vuex/vuex.png" class="">
+
+<h4 id="Vuex三个重要工作区域"><a href="#Vuex三个重要工作区域" class="headerlink" title="Vuex三个重要工作区域"></a>Vuex三个重要工作区域</h4><h5 id="Actions"><a href="#Actions" class="headerlink" title="Actions"></a>Actions</h5><p>​    在<code>Vue Components</code>调用<code>dispatch()</code>要至少传两个传输，第一个参数为<code>object</code>对象，为在Actions中想要调用的函数名称，第二个参数为想要传递的数据。逻辑运算由Actions来进行，可以减少代码的冗余和增加复用性。在Actions可以调用后端接口或发ajax请求等操作，可以处理业务逻辑。在Actions获得的第一个参数为<code>context</code>可以在<code>context</code>调用<code>commit</code>等方法</p>
+<h5 id="Mutations（方法名一般为大写，方便与Actions区分）"><a href="#Mutations（方法名一般为大写，方便与Actions区分）" class="headerlink" title="Mutations（方法名一般为大写，方便与Actions区分）"></a>Mutations（方法名一般为大写，方便与Actions区分）</h5><p>​    在<code>Vue Components</code>或<code>Actinos</code>中调用<code>commit()</code>要至少传两个传输，第一个参数为<code>object</code>对象，为在Mutations中想要调用的函数名称，第二个参数为想要传递的数据。此时Mutations所要调用的第一个值为整个<code>state</code>，第二个则为传递过来的数据，在Mutations中调用state里的参数会自动进行调用<code>Mutate</code>函数将State数据进行变换</p>
+<h5 id="State"><a href="#State" class="headerlink" title="State"></a>State</h5><p>​    state主要存放数据，State中数据改变Vuex会主动调用<code>Render</code>对组件重新进行渲染</p>
+<h4 id="Vuex工作环境-Vue2版本"><a href="#Vuex工作环境-Vue2版本" class="headerlink" title="Vuex工作环境(Vue2版本)"></a>Vuex工作环境(Vue2版本)</h4><p>目前使用<code>npm i vuex</code>安装的是Vue3版本的Vuex</p>
+<p>使用<code>npm i vuex@3</code>才能安装Vue2版本的Vuex</p>
+<p>安装完成后在根目录创建<code>store</code>文件夹，并创建<code>index.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//该文件用于创建Vuex最为核心的store</span></span><br><span class="line"><span class="comment">//引入Vue</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="comment">//引入Vuex</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Vuex</span> <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line"><span class="comment">//使用Vuex</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">use</span>(<span class="title class_">Vuex</span>)</span><br><span class="line"><span class="comment">//准备actions  用于相应组件中的动作</span></span><br><span class="line"><span class="keyword">const</span> actions = &#123;&#125;</span><br><span class="line"><span class="comment">//准备mutations  用于操作数据</span></span><br><span class="line"><span class="keyword">const</span> mutations = &#123;&#125;</span><br><span class="line"><span class="comment">//准备state 用于存储数据</span></span><br><span class="line"><span class="keyword">const</span> state = &#123;&#125;</span><br><span class="line"><span class="comment">//创建store</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> <span class="title class_">Vuex</span>.<span class="title class_">Store</span>(&#123;</span><br><span class="line">    actions,</span><br><span class="line">    mutations,</span><br><span class="line">    state</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">//暴露store</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> store</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：import语句会优先执行，Vue.use(Vuex)在main.js中使用会报错</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在vue-cli根目录的main.js中引入Vuex，这样可以全局使用vuex</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Vuex</span> <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//引入store</span></span><br><span class="line"><span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">&#x27;./store&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">    <span class="attr">el</span>:<span class="string">&#x27;#app&#x27;</span>,</span><br><span class="line">    <span class="attr">render</span>: <span class="function"><span class="params">h</span> =&gt;</span> <span class="title function_">h</span>(app),</span><br><span class="line">    store</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
 
                 
             </div>
@@ -471,7 +415,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/04/11/yin-te-wang-gai-shu/">http://example.com/2022/04/11/yin-te-wang-gai-shu/</a>
+                    <a href="http://example.com/2022/04/12/vuex/">http://example.com/2022/04/12/vuex/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -509,8 +453,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
-                                    <span class="chip bg-color">计算机网络</span>
+                                <a href="/tags/Vue/">
+                                    <span class="chip bg-color">Vue</span>
+                                </a>
+                            
+                                <a href="/tags/Vuex/">
+                                    <span class="chip bg-color">Vuex</span>
                                 </a>
                             
                         </div>
@@ -824,9 +772,64 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2022/04/12/vuex/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="Vuex">
+                        
+                        <span class="card-title">Vuex</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-04-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Vue/" class="post-category">
+                                    Vue
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Vue/">
+                        <span class="chip bg-color">Vue</span>
+                    </a>
+                    
+                    <a href="/tags/Vuex/">
+                        <span class="chip bg-color">Vuex</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2022/04/12/wu-li-ceng/">
                     <div class="card-image">
@@ -844,9 +847,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-04-12
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-04-12
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -868,55 +871,6 @@
                     
                     <a href="/tags/%E7%89%A9%E7%90%86%E5%B1%82/">
                         <span class="chip bg-color">物理层</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2022/04/11/hexo-da-jian-yu-ying-yong-zhu-ti/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="Hexo搭建与应用主题">
-                        
-                        <span class="card-title">Hexo搭建与应用主题</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-04-11
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-category">
-                                    环境搭建
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/hexo/">
-                        <span class="chip bg-color">hexo</span>
                     </a>
                     
                 </div>
@@ -953,13 +907,6 @@
 
 </main>
 
-
-<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<script>
-    MathJax.Hub.Config({
-        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
-    });
-</script>
 
 
 
