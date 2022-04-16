@@ -361,14 +361,14 @@ Vue的一个插件库，专门来实现SPA应用
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-04-14
+                    2022-04-16
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    275
+                    2.6k
                 </div>
                 
 
@@ -393,7 +393,7 @@ Vue的一个插件库，专门来实现SPA应用
 <h5 id="路由就是一组key-value的对应关系"><a href="#路由就是一组key-value的对应关系" class="headerlink" title="路由就是一组key-value的对应关系"></a>路由就是一组key-value的对应关系</h5><p><code>key</code>为路径，<code>value</code>肯使<code>function</code>或<code>component</code></p>
 <p><code>route</code>规则: <code>/example</code> &#x3D;&gt; 例子组件</p>
 <h4 id="基本路由"><a href="#基本路由" class="headerlink" title="基本路由"></a>基本路由</h4><p>先创建两个组件</p>
-<pre class="language-vue" data-language="vue"><code class="language-vue">&#x2F;&#x2F;组件1
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--组件1--&gt;
 &lt;template&gt;
 	&lt;h2&gt;
         我是About内容
@@ -406,7 +406,7 @@ Vue的一个插件库，专门来实现SPA应用
   &#125;
 &lt;&#x2F;script&gt;</code></pre>
 
-<pre class="language-vue" data-language="vue"><code class="language-vue">&#x2F;&#x2F;组件2
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--组件2--&gt;
 &lt;template&gt;
 	&lt;h2&gt;
         我是Home内容
@@ -455,7 +455,344 @@ Vue的一个插件库，专门来实现SPA应用
 <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 </code></pre>
 
-<p>在<code>App</code>入口文件中</p>
+<p>在<code>App</code>入口文件中新建样式引用组件</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+	&lt;!--原始html中用a标签实现页面的跳转--&gt;
+	&lt;!-- &lt;a href&#x3D;&quot;.&#x2F;about.html&quot;&gt;About&lt;&#x2F;a&gt; --&gt;
+	&lt;!-- &lt;a href&#x3D;&quot;.&#x2F;home.html&quot;&gt;Home&lt;&#x2F;a&gt; --&gt;
+	&lt;!--原始html中用a标签实现页面的跳转 active-class是激活时候的样式--&gt;
+	&lt;router-link to&#x3D;&quot;&#x2F;about&quot; active-class&#x3D;&quot;&quot;&gt;About&lt;&#x2F;router-link&gt;
+	&lt;router-link to&#x3D;&quot;&#x2F;home&quot;&gt;Home&lt;&#x2F;router-link&gt;
+	&lt;!--router-view--&gt;
+	&lt;router-view&gt;&lt;&#x2F;router-view&gt;
+&lt;&#x2F;template&gt;</code></pre>
+
+<p>路由的基本功能就能实现了。</p>
+<h4 id="多级路由"><a href="#多级路由" class="headerlink" title="多级路由"></a>多级路由</h4><p>以上方页面为基准，修改<code>index.js</code>路由文件和新建两个子级路由。</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--Message页面--&gt;
+&lt;template&gt;
+	&lt;div&gt;
+        &lt;ul&gt;
+            &lt;li&gt;消息&lt;&#x2F;li&gt;
+    	&lt;&#x2F;ul&gt;
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+	export default&#123;
+        name:&#39;Message&#39;
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+
+
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--News页面--&gt;
+&lt;template&gt;
+	&lt;div&gt;
+        &lt;ul&gt;
+            &lt;li&gt;新闻&lt;&#x2F;li&gt;
+    	&lt;&#x2F;ul&gt;
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+	export default&#123;
+        name:&#39;News&#39;
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//router的index.js文件</span>
+<span class="token keyword">import</span> VueRouter <span class="token keyword">from</span> <span class="token string">'vue-router'</span>
+<span class="token comment">//引入组件</span>
+<span class="token keyword">import</span> About <span class="token keyword">from</span> <span class="token string">'../components/About'</span>
+<span class="token keyword">import</span> Home <span class="token keyword">from</span> <span class="token string">'../components/Home'</span>
+<span class="token keyword">import</span> News <span class="token keyword">from</span> <span class="token string">'../components/News'</span>
+<span class="token keyword">import</span> Message <span class="token keyword">from</span> <span class="token string">'../components/Message'</span>
+<span class="token comment">//创建一个路由器</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">new</span> <span class="token class-name">VueRouter</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">routers</span><span class="token operator">:</span><span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'/about'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">component</span><span class="token operator">:</span>About
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'/home'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">component</span><span class="token operator">:</span>Home<span class="token punctuation">,</span>
+            <span class="token literal-property property">children</span><span class="token operator">:</span><span class="token punctuation">[</span> <span class="token comment">//子路由</span>
+                <span class="token punctuation">&#123;</span>
+                    <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'news'</span><span class="token punctuation">,</span><span class="token comment">//子路由就不需要再加'/'</span>
+                    <span class="token literal-property property">component</span><span class="token operator">:</span>News
+                <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+                <span class="token punctuation">&#123;</span>
+                    <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'message'</span><span class="token punctuation">,</span><span class="token comment">//子路由就不需要再加'/'</span>
+                    <span class="token literal-property property">component</span><span class="token operator">:</span>Message
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">]</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>再将需要调用的home页面中的<code>a</code>标签进行修改为<code>router-link</code>。并用<code>router-view</code>进行子路由的显示。</p>
+<p><strong><code>router-link</code>中的<code>to</code>路径要为“&#x2F;一级路由&#x2F;二级路由&#x2F;….”</strong></p>
+<h4 id="路由传参"><a href="#路由传参" class="headerlink" title="路由传参"></a>路由传参</h4><h5 id="以query进行传参"><a href="#以query进行传参" class="headerlink" title="以query进行传参"></a>以<code>query</code>进行传参</h5><p>把上方的写死的数据存在<code>data</code>中来进行传参。</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--Message页面--&gt;
+&lt;template&gt;
+	&lt;div&gt;
+        &lt;ul&gt;
+            &lt;li v-for&#x3D;&quot;m in massageList&quot; :key&#x3D;&quot;m.id&quot;&gt;
+               &lt;!--传参以&#39;?&#39;进行分割,to的字符串写法--&gt;
+               &lt;!-- &lt;router-link :to&#x3D;&#96;&#x2F;home&#x2F;message&#x2F;detail?id&#x3D;&#123;m.id&#125;&amp;title&#x3D;			                 &#123;m.title&#125;&#96;&gt;&#123;&#123;m.title&#125;&#125;&lt;&#x2F;router-link&gt; --&gt; 
+                &lt;!--传参以&#39;?&#39;进行分割,to的对象写法--&gt;
+               &lt;router-link :to&#x3D;&quot;&#123;
+                  path:&#39;&#x2F;home&#x2F;message&#x2F;detail&#39;,
+                  query:&#123;
+                    id:m.id,
+                    title:m.title
+                  &#125;
+                &#125;&quot;&gt;
+                   &#123;&#123;m.title&#125;&#125;
+    		   &lt;&#x2F;router-link&gt;
+    		&lt;&#x2F;li&gt;
+    	&lt;&#x2F;ul&gt;
+        &lt;!--展示detail页面--&gt;
+        &lt;router-view&gt;&lt;&#x2F;router-view&gt;
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+	export default&#123;
+        name:&#39;Message&#39;,
+        data () &#123;
+            return &#123;
+                massageList:[
+                    &#123;id:&#39;001&#39;,title:&#39;消息1&#39;&#125;,
+                    &#123;id:&#39;002&#39;,title:&#39;消息2&#39;&#125;,
+                    &#123;id:&#39;003&#39;,title:&#39;消息3&#39;&#125;
+                ]
+            &#125;
+        &#125;
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--用来接收传递过来数据的Detail页面--&gt;
+&lt;template&gt;
+	&lt;ul&gt;
+        &lt;li&gt;消息编号：&#123;&#123;$route.query.id&#125;&#125;&lt;&#x2F;li&gt;
+        &lt;li&gt;消息标题：&#123;&#123;$route.query.id&#125;&#125;&lt;&#x2F;li&gt;
+    &lt;&#x2F;ul&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+  export default&#123;
+      name:&#39;Detail&#39;
+  &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+<p>再对路由配置信息页面进行修改</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//router的index.js文件</span>
+<span class="token keyword">import</span> VueRouter <span class="token keyword">from</span> <span class="token string">'vue-router'</span>
+<span class="token comment">//引入组件</span>
+<span class="token keyword">import</span> About <span class="token keyword">from</span> <span class="token string">'../components/About'</span>
+<span class="token keyword">import</span> Home <span class="token keyword">from</span> <span class="token string">'../components/Home'</span>
+<span class="token keyword">import</span> News <span class="token keyword">from</span> <span class="token string">'../components/News'</span>
+<span class="token keyword">import</span> Message <span class="token keyword">from</span> <span class="token string">'../components/Message'</span>
+<span class="token keyword">import</span> Detail <span class="token keyword">from</span> <span class="token string">'../components/Detail'</span>
+<span class="token comment">//创建一个路由器</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">new</span> <span class="token class-name">VueRouter</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">routers</span><span class="token operator">:</span><span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'/about'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">component</span><span class="token operator">:</span>About
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'/home'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">component</span><span class="token operator">:</span>Home<span class="token punctuation">,</span>
+            <span class="token literal-property property">children</span><span class="token operator">:</span><span class="token punctuation">[</span> <span class="token comment">//子路由</span>
+                <span class="token punctuation">&#123;</span>
+                    <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'news'</span><span class="token punctuation">,</span><span class="token comment">//子路由就不需要再加'/'</span>
+                    <span class="token literal-property property">component</span><span class="token operator">:</span>News
+                <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+                <span class="token punctuation">&#123;</span>
+                    <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'message'</span><span class="token punctuation">,</span><span class="token comment">//子路由就不需要再加'/'</span>
+                    <span class="token literal-property property">component</span><span class="token operator">:</span>Message<span class="token punctuation">,</span>
+                    <span class="token literal-property property">children</span><span class="token operator">:</span><span class="token punctuation">[</span>
+                        <span class="token punctuation">&#123;</span>
+                    		<span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'detail'</span><span class="token punctuation">,</span>
+                    		<span class="token literal-property property">component</span><span class="token operator">:</span>Detail
+                		<span class="token punctuation">&#125;</span>
+                    <span class="token punctuation">]</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">]</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h5 id="以params进行传参"><a href="#以params进行传参" class="headerlink" title="以params进行传参"></a>以<code>params</code>进行传参</h5><pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--传参格式 &#39;路由&#x2F;参数&#x2F;参数&#x2F;...&#39;--&gt;
+&lt;router-link :to&#x3D;&quot;&#x2F;detail&#x2F;66&#x2F;消息&quot;&gt;&lt;&#x2F;router-link&gt;</code></pre>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//路由的index.js</span>
+<span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'detail/:id/:title'</span></code></pre>
+
+<p>在页面使用对象方法传参配置时候不能使用<code>path</code>作为路径跳转必须舒勇<code>name</code>形式。剩下部分与<code>query</code>基本相同。</p>
+<h4 id="路由的props配置"><a href="#路由的props配置" class="headerlink" title="路由的props配置"></a>路由的<code>props</code>配置</h4><p>传参的时候以<code>query</code>方式进行传参</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//路由的index.js</span>
+<span class="token literal-property property">component</span><span class="token operator">:</span>Detail<span class="token punctuation">,</span>
+<span class="token comment">//props第一种写法，值为对象，该对象中的所有key-value都会以props的形式传给Detail组件</span>
+<span class="token comment">//用的比较少，传递的为死数据</span>
+<span class="token literal-property property">props</span><span class="token operator">:</span><span class="token punctuation">&#123;</span><span class="token literal-property property">a</span><span class="token operator">:</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token literal-property property">b</span><span class="token operator">:</span><span class="token string">'helloWorld'</span><span class="token punctuation">&#125;</span>
+<span class="token comment">//props第二种写法，值为布尔值，若布尔值为真，就会把该路由组件收到的所有params参数，以props的形式传给Detail组件</span>
+<span class="token literal-property property">props</span><span class="token operator">:</span><span class="token boolean">true</span>
+<span class="token comment">//props第三种写法，值为函数</span>
+<span class="token function">props</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">&#123;</span><span class="token literal-property property">query</span><span class="token operator">:</span><span class="token punctuation">&#123;</span>id<span class="token punctuation">,</span>title<span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span></span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//直接用解构来获取$router中query参数</span>
+    <span class="token keyword">return</span><span class="token punctuation">&#123;</span><span class="token literal-property property">id</span><span class="token operator">:</span><span class="token string">'id'</span><span class="token punctuation">,</span><span class="token literal-property property">title</span><span class="token operator">:</span><span class="token string">'title'</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在<code>Detail</code>组件中接收</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+	&lt;ul&gt;
+        &lt;!--&lt;li&gt;&#123;&#123;a&#125;&#125;&lt;&#x2F;li&gt;--&gt;
+        &lt;!--&lt;li&gt;&#123;&#123;b&#125;&#125;&lt;&#x2F;li&gt;--&gt;
+    &lt;&#x2F;ul&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+    export default&#123;
+        name:&#39;Detail&#39;,
+        &#x2F;&#x2F;id和title由上方Message组件传递
+        &#x2F;&#x2F;第一种方式接收
+        props:[&#39;a&#39;,&#39;b&#39;],
+        &#x2F;&#x2F;第二种方式接收
+        computed:&#123;
+            id()&#123;
+                return this.$route.query.id
+            &#125;,
+            title()&#123;
+                return this.$route.query.title
+            &#125;
+        &#125;
+        &#x2F;&#x2F;第三种方式接收
+        props:[&#39;id&#39;,&#39;title&#39;]
+        ...&#x2F;&#x2F;方便演示就不显示其他数据了
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+
+
+<h4 id="浏览器历史记录"><a href="#浏览器历史记录" class="headerlink" title="浏览器历史记录"></a>浏览器历史记录</h4><p>​    浏览器的结构为栈形式。</p>
+<p>​    浏览器默认保存历史记录的方式为<code>push</code>，即压栈。</p>
+<p>​    <code>router-link</code>默认开启的为<code>push</code>模式，可以在<code>router-link</code>中添加<code>replace</code>改变浏览器的保存历史记录模式。（只对使用的连接起作用）</p>
+<h4 id="编程式路由导航"><a href="#编程式路由导航" class="headerlink" title="编程式路由导航"></a>编程式路由导航</h4><p><code>routuer-link</code>在页面中默认转换为<code>a</code>标签，要想让按钮等能触发点击的事件进行页面跳转，就得使用编程式路由导航。</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!--前面写的Message页面，其他就不再重复写了--&gt;
+&lt;template&gt;
+	&lt;button @click&#x3D;&quot;pushShow&quot;&gt;
+        跳转到Home页面
+    &lt;&#x2F;button&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+	export default &#123;
+        name:&#39;Message&#39;,
+        methods: &#123;
+            pushShow()&#123;
+                &#x2F;&#x2F;push为默认的方式，可更换为replace 
+                this.$router.push(&#123;
+                    path:&#39;&#x2F;home&#39;,
+                    query:&#123;
+                        id:this.$store.query.id,
+                        title:this.$store.query.title
+                    &#125;
+                &#125;)
+            &#125;
+        &#125;
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+
+
+<h4 id="两个新生命钩子"><a href="#两个新生命钩子" class="headerlink" title="两个新生命钩子"></a>两个新生命钩子</h4><p>当路由被缓存并在挂载前设定了<code>setInterval</code>等方法。因为组件被路由缓存了并不会触发销毁流程但页面又没有进行显示，此时会浪费浏览器资源就需要用新的生命钩子来对方法进行清除。</p>
+<h5 id="activated-激活"><a href="#activated-激活" class="headerlink" title="activated(激活)"></a>activated(激活)</h5><p>当路由被激活时该钩子被调用</p>
+<h5 id="deactivated-失活"><a href="#deactivated-失活" class="headerlink" title="deactivated(失活)"></a>deactivated(失活)</h5><p>当路由失活时候该钩子被调用</p>
+<h4 id="路由守卫"><a href="#路由守卫" class="headerlink" title="路由守卫"></a>路由守卫</h4><p>路由守卫用来设置权限</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//router的index.js文件</span>
+<span class="token keyword">import</span> VueRouter <span class="token keyword">from</span> <span class="token string">'vue-router'</span>
+<span class="token comment">//引入组件</span>
+<span class="token keyword">import</span> About <span class="token keyword">from</span> <span class="token string">'../components/About'</span>
+<span class="token operator">...</span>
+<span class="token comment">//创建一个路由器</span>
+<span class="token keyword">const</span> router <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VueRouter</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">routers</span><span class="token operator">:</span><span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">path</span><span class="token operator">:</span><span class="token string">'/about'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">component</span><span class="token operator">:</span>About<span class="token punctuation">,</span>
+            <span class="token comment">//用meta来判断是否需要权限校验，meta可以创建路由独有的信息</span>
+            <span class="token literal-property property">meta</span><span class="token operator">:</span><span class="token punctuation">&#123;</span><span class="token literal-property property">isAuth</span><span class="token operator">:</span><span class="token boolean">true</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token comment">//独享路由守卫  与全局路由守卫功能相同</span>
+            <span class="token function">beforeEnter</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">to<span class="token punctuation">,</span>from<span class="token punctuation">,</span>next</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+            
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token operator">...</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token comment">//全局前置路由守卫  初始化的时候被调用、每次路由切换之前调用</span>
+router<span class="token punctuation">.</span><span class="token function">beforeEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">to<span class="token punctuation">,</span>from<span class="token punctuation">,</span>next</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//to表示要跳转到的路由页面，from表示从哪个路由开始跳转的</span>
+    <span class="token comment">//next表示可以放行，可以跳转路由页面</span>
+    <span class="token comment">//可以通过逻辑判断来让用户是否可以跳转到目标页面</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>to<span class="token punctuation">.</span>meta<span class="token punctuation">.</span>isAuth<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token comment">//全局后置路由守卫  初始化的时候被调用、每次路由切换之后被调用</span>
+router<span class="token punctuation">.</span><span class="token function">afterEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">to<span class="token punctuation">,</span><span class="token keyword">from</span></span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//to表示要跳转到的路由页面，from表示从哪个路由开始跳转的</span>
+    <span class="token comment">//next表示可以放行，可以跳转路由页面</span>
+    <span class="token comment">//能进入后置守卫表示能成功进入页面</span>
+    <span class="token comment">//可以实现点击后页面标题的切换等功能</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> router</code></pre>
+
+<p>组件内路由守卫</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+	...
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+	export default&#123;
+        ...,
+        &#x2F;&#x2F;通过路由规则，进入该组件时被调用
+        beforeRouteEnter(to,from,next)&#123;
+            &#x2F;&#x2F;写的逻辑判断由组件独有
+            next()
+        &#125;,
+        &#x2F;&#x2F;通过路由规则，离开该组件时被调用
+        beforeRouteLeave(to,from,next)&#123;
+            next()
+        &#125;
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+
+
+
+<h4 id="history模式与hash模式"><a href="#history模式与hash模式" class="headerlink" title="history模式与hash模式"></a><code>history</code>模式与<code>hash</code>模式</h4><p>使用路由时地址栏会新增<code>#</code>，称为<code>hash</code>，不会随着http请求发给服务器。默认开启的<code>hash</code>模式。</p>
+<p>改变路由模式：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//在路由配置中修改</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">new</span> <span class="token class-name">VueRouter</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//改为history模式，history没有#显示</span>
+    <span class="token literal-property property">mode</span><span class="token operator">:</span><span class="token string">'history'</span><span class="token punctuation">,</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p><code>history</code>模式的兼容比<code>hash</code>模式差</p>
+<h4 id="路由的几个注意事项"><a href="#路由的几个注意事项" class="headerlink" title="路由的几个注意事项"></a>路由的几个注意事项</h4><p>1.未被路由调用的页面会被销毁而不是隐藏</p>
+<p>2.使用路由的页面会增加路由规则，<code>$route</code>和<code>$router</code>。<code>$route</code>存放自己的路由信息，每个页面均不相同，<code>$router</code>相同</p>
+<p>3.路由组件通常存放在<code>pages</code>文件夹</p>
+<p>4.可以通过<code>keep-alive</code>对路由组件进行缓存不会进行销毁，<code>keep-alive</code>放在一级路由中</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+	&lt;!--include来记录要缓存的组件(里面填组件名)，其他的则不缓存。不写则都缓存--&gt;
+	&lt;!--缓存多个写法： :include&#x3D;&quot;[&#39;第一个组件名&#39;,&#39;第二个组件名&#39;]&quot;--&gt;
+	&lt;keep-alive include&#x3D;&quot;&quot;&gt;
+    	&lt;router-view&gt;&lt;&#x2F;router-view&gt;
+    &lt;&#x2F;keep-alive&gt;
+&lt;&#x2F;template&gt;</code></pre>
+
 
                 
             </div>
@@ -839,18 +1176,17 @@ Vue的一个插件库，专门来实现SPA应用
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/04/14/vueroute/">
+                <a href="/2022/04/15/yun-shu-ceng/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="VueRouter">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="计算机网络_运输层">
                         
-                        <span class="card-title">VueRouter</span>
+                        <span class="card-title">计算机网络_运输层</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -860,31 +1196,30 @@ Vue的一个插件库，专门来实现SPA应用
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-04-14
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-04-15
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Vue/" class="post-category">
-                                    Vue
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="post-category">
+                                    计算机网络
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Vue/">
-                        <span class="chip bg-color">Vue</span>
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+                        <span class="chip bg-color">计算机网络</span>
                     </a>
                     
-                    <a href="/tags/VueRouter/">
-                        <span class="chip bg-color">VueRouter</span>
+                    <a href="/tags/%E8%BF%90%E8%BE%93%E5%B1%82/">
+                        <span class="chip bg-color">运输层</span>
                     </a>
                     
                 </div>
