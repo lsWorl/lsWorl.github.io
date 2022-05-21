@@ -359,14 +359,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-05-15
+                    2022-05-21
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.8k
+                    2.9k
                 </div>
                 
 
@@ -834,6 +834,21 @@ export default &#123;
         <span class="token keyword">return</span> Reflect<span class="token punctuation">.</span><span class="token function">deleteProperty</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span>prop<span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="单文件组件"><a href="#单文件组件" class="headerlink" title="单文件组件"></a>单文件组件</h4><p>在vue3中可以在组件的<code>&lt;script&gt;&lt;/script&gt;</code>标签中加入<code>setup</code>，使整个变为<code>setup</code>函数。</p>
+<p>效果与<code>&lt;script&gt;setup()&#123;&#125;&lt;/script&gt;</code>相同，可以使整个代码更加的简洁。</p>
+<p>在单文件组件中使用的变量、函数声明，以及import引入的内容都能在模板中直接引用</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;script setup&gt;
+    const msg &#x3D; ref(&#39;Hello&#39;)&#x2F;&#x2F;使用ref包裹会自动return,可以直接在模块中调用
+    function log() &#123;
+  		console.log(msg)
+	&#125;
+&lt;&#x2F;script&gt;
+&lt;template&gt;
+	&lt;div @click&#x3D;&quot;log&quot;&gt;&#123;&#123; msg &#125;&#125;&lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;</code></pre>
 
 
                 
