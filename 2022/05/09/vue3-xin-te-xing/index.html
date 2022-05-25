@@ -366,7 +366,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.9k
+                    3k
                 </div>
                 
 
@@ -837,7 +837,7 @@ export default &#123;
 
 
 
-<h4 id="单文件组件"><a href="#单文件组件" class="headerlink" title="单文件组件"></a>单文件组件</h4><p>在vue3中可以在组件的<code>&lt;script&gt;&lt;/script&gt;</code>标签中加入<code>setup</code>，使整个变为<code>setup</code>函数。</p>
+<h4 id="单文件组件"><a href="#单文件组件" class="headerlink" title="单文件组件"></a>单文件组件</h4><h5 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h5><p>在vue3中可以在组件的<code>&lt;script&gt;&lt;/script&gt;</code>标签中加入<code>setup</code>，使整个变为<code>setup</code>函数。</p>
 <p>效果与<code>&lt;script&gt;setup()&#123;&#125;&lt;/script&gt;</code>相同，可以使整个代码更加的简洁。</p>
 <p>在单文件组件中使用的变量、函数声明，以及import引入的内容都能在模板中直接引用</p>
 <pre class="language-vue" data-language="vue"><code class="language-vue">&lt;script setup&gt;
@@ -849,6 +849,16 @@ export default &#123;
 &lt;template&gt;
 	&lt;div @click&#x3D;&quot;log&quot;&gt;&#123;&#123; msg &#125;&#125;&lt;&#x2F;div&gt;
 &lt;&#x2F;template&gt;</code></pre>
+
+
+
+<h5 id="组件数据传递"><a href="#组件数据传递" class="headerlink" title="组件数据传递"></a>组件数据传递</h5><p>在原先的vue2.x中使用<code>props</code>来接收从父组件从来的数据，而在vue3.x中推荐组件式API，因此使用<code>defineProps</code>来代替了<code>props</code>。（这里使用TypeScript展示）</p>
+<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;script setup&gt;
+    const props &#x3D; defineProps(&#123;
+  		foo: String
+        bar?: number&#x2F;&#x2F;? 表示可选参数
+	&#125;)
+&lt;&#x2F;script&gt;</code></pre>
 
 
                 
