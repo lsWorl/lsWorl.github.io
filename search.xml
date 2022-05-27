@@ -4,6 +4,58 @@
   
     
     <entry>
+      <title>解决matery主题副标题无法显示的问题</title>
+      <link href="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/"/>
+      <url>/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/</url>
+      
+        <content type="html"><![CDATA[<p>今天部署博客发现在本地运行的时候也会出现页面迟迟无法出现的问题，结果打开控制台面板一看发现<code>type.js</code>没有使用上。</p><img src="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/bug.png" class="" title="bug"><p>查看源代码发现<code>https://cdn.jsdelivr.net/npm/typed.js@2.0.11</code>挂了，而matery主题默认使用<code>jsdelivr</code>来引入一些js代码。</p><img src="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/bug2.png" class=""><p>现在在控制台中发现了错误，那解决办法就很简单了，在matery主题的源代码中将cdn换成国内加速就可以完美解决副标题不显示的问题了。</p><img src="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/bug3.png" class=""><p>经过一路筛查后发现在主题文件的<code>\layout\_partial\bg-cover-content.ejs</code>中发现了代码。接下来把他替换成<code>https://cdn.bootcss.com/typed.js/2.0.5/typed.js</code>，就可以完美解决问题了</p><img src="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/bug4.png" class=""><img src="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/bug5.png" class=""><p>重新启动后发现报错没了，副标题也一如既往的显示了。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> hexo </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> hexo </tag>
+            
+            <tag> 错误排查 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>使用Vercel来部署静态页面并解决跨域问题</title>
+      <link href="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/"/>
+      <url>/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/</url>
+      
+        <content type="html"><![CDATA[<h3 id="Vercel的基本介绍"><a href="#Vercel的基本介绍" class="headerlink" title="Vercel的基本介绍"></a>Vercel的基本介绍</h3><p>要是用过<code>hexo</code>来搭建的博客的话，在<code>hexo</code>的官方文档中就有介绍过如何将博客的静态页面搭建到Vercel平台中。但Vercel不仅能搭建静态的页面，也可以将自己github账号中的项目所作的页面进行一个展示，可以省去自己使用服务器搭建的费用。这里只对Vercel基础搭建做一个介绍，想了解更多可以查看官方文档<a href="https://vercel.com/docs">Introduction to Vercel – Vercel Docs</a></p><h4 id="注册Vercel"><a href="#注册Vercel" class="headerlink" title="注册Vercel"></a>注册Vercel</h4><p>进入到<a href="https://vercel.com/">Vercel</a>登录页面，这里直接连接你的github账号。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/page3.png" class=""><p>因为我早已经连接过了，其他的步骤就无法演示了。根据提示一步步下去到最后出现下面这个页面就成功了。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/page4.png" class=""><h3 id="搭建使用vue3-vite所建立的的项目"><a href="#搭建使用vue3-vite所建立的的项目" class="headerlink" title="搭建使用vue3+vite所建立的的项目"></a>搭建使用vue3+vite所建立的的项目</h3><p>在<code>node.js</code>环境下使用<code>npm init vite@latest</code>来创建一个vite项目</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/cmd1.png" class=""><p>这里接下来会有让你选择项目名与框架。如上图可知我目前创建的项目名是<code>vite-project</code>使用的框架为vue，并且使用ts语法。</p><p>在项目的根目录中使用<code>npm install</code>命令导入了vite所需要的包。接下来就是启动项目看看项目页面如何。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/page.png" class=""><p>vite默认开启了端口号3000。看页面展示无误，接下来就该实现如何将该网页部署到Vercel平台中。</p><p>（使用Vercel前需要拥有自己的github账号才行，这里就默认已经都有了github账号）。</p><p>使用<code>npm i -g vercel </code>在全局安装vercel脚手架。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/cmd2.png" class=""><p>因为我先前安装过了，这里文字显示的就是我更新了包。（接下来的操作我会在vscode的集成终端中进行，这样可以更加直观）</p><p>在vscode集成终端中使用<code>vercel</code>对vite项目进行部署</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/cmd3.png" class=""><p>输入后会先让你确认是要部署当前项目，输入y或者按回车即可进行下一步。</p><p>第二步则是需要绑定你自己的github账号，因为我先前已经绑定过了就会出现我github的用户名，没有绑定过根据提示一步步进行就好了，绑定过了按回车进行下一步。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/cmd4.png" class=""><p>然后到<code>Link to existing project</code>位置，问你是否要连接已存在的项目，输入n或回车则是不连接，有的话可以和自己github的项目进行绑定。</p><p>第四步则会设置你在vercel平台中你的项目名是什么，这里我是默认与我当前项目名同名。</p><p>第五步是提示你需要重写你项目这些目前的配置吗？我默认为n，因为当前的vite配置项并没有做任何修改，默认即可。</p><p>然后就进入到了部署阶段。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/cmd5.png" class=""><p>出现<code>production</code>就说明项目已经成功部署到vercel平台中，可以复制<code>Production</code>的连接来看你项目的页面。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/page2.png" class=""><p>vercel中也会出现页面的相关信息。</p><h4 id="解决vercel搭建项目的跨域问题"><a href="#解决vercel搭建项目的跨域问题" class="headerlink" title="解决vercel搭建项目的跨域问题"></a>解决vercel搭建项目的跨域问题</h4><h5 id="首先在项目文件中解决跨域问题"><a href="#首先在项目文件中解决跨域问题" class="headerlink" title="首先在项目文件中解决跨域问题"></a>首先在项目文件中解决跨域问题</h5><p>根据上方搭建vite项目完成后，目前没有发任何请求所以没出现跨域等问题，接下来我就尝试在项目中发一个ajax请求。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require1.png" class=""><p>这里我使用<code>axios</code>发送了一个网络请求，没有配置代理的情况下会违背同源策略产生跨域问题。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require2.png" class=""><p>这里要是在本地处理可以使用vite配置项中的<code>proxy</code>代理来解决跨域问题</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require3.png" class=""><p>在这里我配置了代理，只要有发送<code>api</code>请求并且目标为<code>https://c.m.163.com</code>的时候就会启动代理。</p><p>同时原先请求中的<code>https://c.m.163.com</code>可以删除了。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require4.png" class=""><p>页面中也没有了跨域请求的报错，可以正常的获取数据了。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require5.png" class=""><p>接下来就部署到vercel中看看会不会产生跨域的问题。</p><p>每当项目修改后在终端中输入<code>vercel</code>即可重写上传到vercel平台中。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require6.png" class=""><p>文件上传可以正常进行，但阅览网页却发现请求报错了。说明vercel并不能因为我们在vite中配置了代理而不产生跨域问题。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require7.png" class=""><h5 id="配置vercel代理"><a href="#配置vercel代理" class="headerlink" title="配置vercel代理"></a>配置vercel代理</h5><p>这里配置代理参考了<a href="https://blog.csdn.net/qq_40890601/article/details/120755007">vercel 自动化部署项目和跨域问题_小k铁柱的博客-CSDN博客_vercel部署</a></p><p><strong>需要先在终端<code>npm i http-proxy-middleware</code>下载配置所需要的依赖包</strong></p><p>然后要在根目录创建<code>vercel.json</code>配置文件，让vercel知道我们要对其做一些修改。</p><pre class="language-json" data-language="json"><code class="language-json"><span class="token comment">//vercel.json文件</span><span class="token punctuation">&#123;</span>  <span class="token property">"rewrites"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token comment">//寻找/api下的文件 然后可以在/api/proxy文件中进行跨域处理</span>    <span class="token punctuation">&#123;</span>      <span class="token property">"source"</span><span class="token operator">:</span> <span class="token string">"/api/(.*)"</span><span class="token punctuation">,</span>      <span class="token property">"destination"</span><span class="token operator">:</span> <span class="token string">"/api/proxy"</span>    <span class="token punctuation">&#125;</span>  <span class="token punctuation">]</span> <span class="token punctuation">&#125;</span></code></pre><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require8.png" class=""><p>在根目录中创建<code>api</code>文件夹，其中添加<code>proxy.js</code>文件（不叫这个也可以，不过使用<code>proxy</code>更加语义化）</p><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 该服务为 vercel serve跨域处理</span><span class="token keyword">const</span> <span class="token punctuation">&#123;</span>  createProxyMiddleware  <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span>  module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>  <span class="token keyword">let</span> target <span class="token operator">=</span> <span class="token string">''</span>  <span class="token comment">// 代理目标地址</span>  <span class="token comment">// xxxxx 替换为你跨域请求的服务器 如： http://baidu.com</span>  <span class="token keyword">if</span> <span class="token punctuation">(</span>req<span class="token punctuation">.</span>url<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">'/api'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token comment">//这里使用/api可能会与vercel serverless 的 api 路径冲突，根据接口进行调整</span>  target <span class="token operator">=</span> <span class="token string">'https://c.m.163.com'</span> <span class="token comment">//这里就是在vite中配置的一样</span>  <span class="token punctuation">&#125;</span>  <span class="token comment">// 创建代理对象并转发请求</span>  <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>  target<span class="token punctuation">,</span>  <span class="token literal-property property">changeOrigin</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>  <span class="token literal-property property">pathRewrite</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>  <span class="token comment">// 通过路径重写，去除请求路径中的 `/api`</span>  <span class="token string-property property">'^/api/'</span><span class="token operator">:</span> <span class="token string">'/'</span>  <span class="token punctuation">&#125;</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">)</span>  <span class="token punctuation">&#125;</span></code></pre><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require9.png" class=""><p>配置完成后终端使用<code>vercel</code>更新代码看看还有没有跨域问题。</p><img src="/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/require10.png" class=""><p>发送请求成功，完美解决问题！</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Velcel </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Vercel </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>JavaScript常见的数组方法与使用</title>
       <link href="/2022/05/26/javascript-shu-zu-de-shi-yong/"/>
       <url>/2022/05/26/javascript-shu-zu-de-shi-yong/</url>
