@@ -7,7 +7,7 @@
     <meta name="keywords" content="Vuex, LsWorld">
     <meta name="description" content="Vuex工作原理
 
-Vuex三个重要工作区域Actions​    在Vue Components调用dispatch()要至少传两个传输，第一个参数为object对象，为在Actions中想要调用的函数名称，第二个参数为想要传递的数据。逻">
+Vuex三个重要工作区域Actions​	在Vue Components调用dispatch()要至少传两个传输，第一个参数为object对象，为在Actions中想要调用的函数名称，第二个参数为想要传递的数据。逻辑运算">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -34,7 +34,7 @@ Vuex三个重要工作区域Actions​    在Vue Components调用dispatch()要�
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
@@ -475,9 +475,9 @@ Vuex三个重要工作区域Actions​    在Vue Components调用dispatch()要�
             <div id="articleContent">
                 <h3 id="Vuex工作原理"><a href="#Vuex工作原理" class="headerlink" title="Vuex工作原理"></a>Vuex工作原理</h3><img src="/2022/04/12/vuex/vuex.png" class="">
 
-<h4 id="Vuex三个重要工作区域"><a href="#Vuex三个重要工作区域" class="headerlink" title="Vuex三个重要工作区域"></a>Vuex三个重要工作区域</h4><h5 id="Actions"><a href="#Actions" class="headerlink" title="Actions"></a><code>Actions</code></h5><p>​    在<code>Vue Components</code>调用<code>dispatch()</code>要至少传两个传输，第一个参数为<code>object</code>对象，为在Actions中想要调用的函数名称，第二个参数为想要传递的数据。逻辑运算由Actions来进行，可以减少代码的冗余和增加复用性。在Actions可以调用后端接口或发ajax请求等操作，可以处理业务逻辑。在Actions获得的第一个参数为<code>context</code>可以在<code>context</code>调用<code>commit</code>等方法。<strong>尽量不要在Actions修改state中数据，Devtools捕捉不到行为</strong></p>
-<h5 id="Mutations（方法名一般为大写，方便与Actions区分）"><a href="#Mutations（方法名一般为大写，方便与Actions区分）" class="headerlink" title="Mutations（方法名一般为大写，方便与Actions区分）"></a><code>Mutations</code>（方法名一般为大写，方便与Actions区分）</h5><p>​    在<code>Vue Components</code>或<code>Actinos</code>中调用<code>commit()</code>要至少传两个传输，第一个参数为<code>object</code>对象，为在Mutations中想要调用的函数名称，第二个参数为想要传递的数据。此时Mutations所要调用的第一个值为整个<code>state</code>，第二个则为传递过来的数据，在Mutations中调用state里的参数会自动进行调用<code>Mutate</code>函数将State数据进行变换。<strong>函数内部需要return</strong></p>
-<h5 id="State"><a href="#State" class="headerlink" title="State"></a><code>State</code></h5><p>​    state主要存放数据，State中数据改变Vuex会主动调用<code>Render</code>对组件重新进行渲染。</p>
+<h4 id="Vuex三个重要工作区域"><a href="#Vuex三个重要工作区域" class="headerlink" title="Vuex三个重要工作区域"></a>Vuex三个重要工作区域</h4><h5 id="Actions"><a href="#Actions" class="headerlink" title="Actions"></a><code>Actions</code></h5><p>​	在<code>Vue Components</code>调用<code>dispatch()</code>要至少传两个传输，第一个参数为<code>object</code>对象，为在Actions中想要调用的函数名称，第二个参数为想要传递的数据。逻辑运算由Actions来进行，可以减少代码的冗余和增加复用性。在Actions可以调用后端接口或发ajax请求等操作，可以处理业务逻辑。在Actions获得的第一个参数为<code>context</code>可以在<code>context</code>调用<code>commit</code>等方法。<strong>尽量不要在Actions修改state中数据，Devtools捕捉不到行为</strong></p>
+<h5 id="Mutations（方法名一般为大写，方便与Actions区分）"><a href="#Mutations（方法名一般为大写，方便与Actions区分）" class="headerlink" title="Mutations（方法名一般为大写，方便与Actions区分）"></a><code>Mutations</code>（方法名一般为大写，方便与Actions区分）</h5><p>​	在<code>Vue Components</code>或<code>Actinos</code>中调用<code>commit()</code>要至少传两个传输，第一个参数为<code>object</code>对象，为在Mutations中想要调用的函数名称，第二个参数为想要传递的数据。此时Mutations所要调用的第一个值为整个<code>state</code>，第二个则为传递过来的数据，在Mutations中调用state里的参数会自动进行调用<code>Mutate</code>函数将State数据进行变换。<strong>函数内部需要return</strong></p>
+<h5 id="State"><a href="#State" class="headerlink" title="State"></a><code>State</code></h5><p>​	state主要存放数据，State中数据改变Vuex会主动调用<code>Render</code>对组件重新进行渲染。</p>
 <h4 id="其他配置项"><a href="#其他配置项" class="headerlink" title="其他配置项"></a>其他配置项</h4><h5 id="getters"><a href="#getters" class="headerlink" title="getters"></a><code>getters</code></h5><p>类似于vue中的<code>computed</code>属性，在<code>getters</code>中调用时可以获取到<code>state</code>中的相关数据。适合逻辑复杂并且需要复用的数据。</p>
 <h5 id="mapState"><a href="#mapState" class="headerlink" title="mapState"></a><code>mapState</code></h5><p>可以直接从<code>state</code>中拿数据，增加效率，一般以扩展运算符<code>...</code>形式放在computed中</p>
 <pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//在要使用state的组件中的computed调用</span>

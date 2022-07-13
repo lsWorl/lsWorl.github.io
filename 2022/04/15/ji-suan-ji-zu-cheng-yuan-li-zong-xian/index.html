@@ -6,10 +6,10 @@
     <meta charset="utf-8">
     <meta name="keywords" content="计算机组成原理_总线, LsWorld">
     <meta name="description" content="总线的基本概念一、为什么要用总线分散连接存在的问题：
-​    1.内部的连线复杂
-​    2.新增IO设备困难
-二、什么是总线​        总线是连接各个部件的信息传输线，是各个部件共享的传输介质
-三、总线上信息的传送​    串行">
+​	1.内部的连线复杂
+​	2.新增IO设备困难
+二、什么是总线​		总线是连接各个部件的信息传输线，是各个部件共享的传输介质
+三、总线上信息的传送​	串行：所谓的串行就是将要传输的信息">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -36,7 +36,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
@@ -476,32 +476,32 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h3 id="总线的基本概念"><a href="#总线的基本概念" class="headerlink" title="总线的基本概念"></a>总线的基本概念</h3><h4 id="一、为什么要用总线"><a href="#一、为什么要用总线" class="headerlink" title="一、为什么要用总线"></a>一、为什么要用总线</h4><p>分散连接存在的问题：</p>
-<p>​    1.内部的连线复杂</p>
-<p>​    2.新增IO设备困难</p>
-<h4 id="二、什么是总线"><a href="#二、什么是总线" class="headerlink" title="二、什么是总线"></a>二、什么是总线</h4><p>​        总线是连接各个部件的信息传输线，是<strong>各个部件共享的传输介质</strong></p>
-<h4 id="三、总线上信息的传送"><a href="#三、总线上信息的传送" class="headerlink" title="三、总线上信息的传送"></a>三、总线上信息的传送</h4><p>​    串行：所谓的串行就是将要传输的信息一位一位的放在总线上，接收方一位一位的进行接收，支持距离长</p>
-<p>​    并行：需要多条数据线进行传输，数据能同步进行传输，如果传输距离长，线与线之间并行传输，传输信号可能会发生变形，接收方很难接收到正确信号</p>
+<p>​	1.内部的连线复杂</p>
+<p>​	2.新增IO设备困难</p>
+<h4 id="二、什么是总线"><a href="#二、什么是总线" class="headerlink" title="二、什么是总线"></a>二、什么是总线</h4><p>​		总线是连接各个部件的信息传输线，是<strong>各个部件共享的传输介质</strong></p>
+<h4 id="三、总线上信息的传送"><a href="#三、总线上信息的传送" class="headerlink" title="三、总线上信息的传送"></a>三、总线上信息的传送</h4><p>​	串行：所谓的串行就是将要传输的信息一位一位的放在总线上，接收方一位一位的进行接收，支持距离长</p>
+<p>​	并行：需要多条数据线进行传输，数据能同步进行传输，如果传输距离长，线与线之间并行传输，传输信号可能会发生变形，接收方很难接收到正确信号</p>
 <p>四、总线结构</p>
-<p>​    1.单总线结构</p>
-<p>​        所有数据在同一条总线上传输，会发生总线争用问题</p>
-<p>​    2.面向CPU双总线结构</p>
-<p>​        向CPU延生出两条总线，IO总线和M总线，M总线连接主存。</p>
-<p>​        存在问题：一旦IO总线和M总线同时向CPU发送数据，CPU的计算任务还是会被打断。</p>
-<p>​    3.以存储器为中心的双总线结构</p>
-<p>​        从贮存延生两条总线，一条连接系统总线（包括IO设备接口和CPU），一条存储总线连接CPU。</p>
+<p>​	1.单总线结构</p>
+<p>​		所有数据在同一条总线上传输，会发生总线争用问题</p>
+<p>​	2.面向CPU双总线结构</p>
+<p>​		向CPU延生出两条总线，IO总线和M总线，M总线连接主存。</p>
+<p>​		存在问题：一旦IO总线和M总线同时向CPU发送数据，CPU的计算任务还是会被打断。</p>
+<p>​	3.以存储器为中心的双总线结构</p>
+<p>​		从贮存延生两条总线，一条连接系统总线（包括IO设备接口和CPU），一条存储总线连接CPU。</p>
 <hr>
-<h3 id="3-2总线的分类"><a href="#3-2总线的分类" class="headerlink" title="3.2总线的分类"></a>3.2总线的分类</h3><h4 id="1-片内总线（芯片内部的总线）"><a href="#1-片内总线（芯片内部的总线）" class="headerlink" title="1.片内总线（芯片内部的总线）"></a>1.片内总线（芯片内部的总线）</h4><h4 id="2-系统总线（计算机各部件之间的信息）"><a href="#2-系统总线（计算机各部件之间的信息）" class="headerlink" title="2.系统总线（计算机各部件之间的信息）"></a>2.系统总线（计算机各部件之间的信息）</h4><h5 id="1-数据总线"><a href="#1-数据总线" class="headerlink" title="1.数据总线"></a>1.数据总线</h5><p>​            <strong>双向</strong>与机器字长、存储字长有关。通常情况下，总线宽度&lt;&#x3D;机器字长或存储字长</p>
-<h5 id="2-地址总线"><a href="#2-地址总线" class="headerlink" title="2.地址总线"></a>2.地址总线</h5><p>​            <strong>单向</strong>与存储地址、IO地址有关</p>
-<h5 id="3-控制总线"><a href="#3-控制总线" class="headerlink" title="3.控制总线"></a>3.控制总线</h5><p>​            <strong>有出</strong> <strong>有入</strong>：存储器读、存储器写，总线允许、中断确认（都是由CPU向外送）</p>
-<h4 id="3-通信总线"><a href="#3-通信总线" class="headerlink" title="3.通信总线"></a>3.通信总线</h4><p>​        用于<strong>计算机系统之间</strong>或<strong>计算机系统与其他系统</strong>（如控制仪表、移动通信等）之间的通信</p>
-<p>​        传输方式： </p>
-<p>​            串行通信总线 </p>
-<p>​            并行通信总线</p>
+<h3 id="3-2总线的分类"><a href="#3-2总线的分类" class="headerlink" title="3.2总线的分类"></a>3.2总线的分类</h3><h4 id="1-片内总线（芯片内部的总线）"><a href="#1-片内总线（芯片内部的总线）" class="headerlink" title="1.片内总线（芯片内部的总线）"></a>1.片内总线（芯片内部的总线）</h4><h4 id="2-系统总线（计算机各部件之间的信息）"><a href="#2-系统总线（计算机各部件之间的信息）" class="headerlink" title="2.系统总线（计算机各部件之间的信息）"></a>2.系统总线（计算机各部件之间的信息）</h4><h5 id="1-数据总线"><a href="#1-数据总线" class="headerlink" title="1.数据总线"></a>1.数据总线</h5><p>​			<strong>双向</strong>与机器字长、存储字长有关。通常情况下，总线宽度&lt;&#x3D;机器字长或存储字长</p>
+<h5 id="2-地址总线"><a href="#2-地址总线" class="headerlink" title="2.地址总线"></a>2.地址总线</h5><p>​			<strong>单向</strong>与存储地址、IO地址有关</p>
+<h5 id="3-控制总线"><a href="#3-控制总线" class="headerlink" title="3.控制总线"></a>3.控制总线</h5><p>​			<strong>有出</strong> <strong>有入</strong>：存储器读、存储器写，总线允许、中断确认（都是由CPU向外送）</p>
+<h4 id="3-通信总线"><a href="#3-通信总线" class="headerlink" title="3.通信总线"></a>3.通信总线</h4><p>​		用于<strong>计算机系统之间</strong>或<strong>计算机系统与其他系统</strong>（如控制仪表、移动通信等）之间的通信</p>
+<p>​		传输方式： </p>
+<p>​			串行通信总线 </p>
+<p>​			并行通信总线</p>
 <hr>
-<h3 id="3-3总线特性及性能指标"><a href="#3-3总线特性及性能指标" class="headerlink" title="3.3总线特性及性能指标"></a>3.3总线特性及性能指标</h3><h4 id="总线特性"><a href="#总线特性" class="headerlink" title="总线特性"></a>总线特性</h4><h5 id="机械特性"><a href="#机械特性" class="headerlink" title="机械特性"></a>机械特性</h5><p>​            尺寸、形状、管脚数以及排列顺序</p>
-<h5 id="电气特性"><a href="#电气特性" class="headerlink" title="电气特性"></a>电气特性</h5><p>​            传输方向和有效的电平范围</p>
-<h5 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h5><p>​            每根传输线的功能</p>
-<h5 id="时间特性"><a href="#时间特性" class="headerlink" title="时间特性"></a>时间特性</h5><p>​            信号的时序关系</p>
+<h3 id="3-3总线特性及性能指标"><a href="#3-3总线特性及性能指标" class="headerlink" title="3.3总线特性及性能指标"></a>3.3总线特性及性能指标</h3><h4 id="总线特性"><a href="#总线特性" class="headerlink" title="总线特性"></a>总线特性</h4><h5 id="机械特性"><a href="#机械特性" class="headerlink" title="机械特性"></a>机械特性</h5><p>​			尺寸、形状、管脚数以及排列顺序</p>
+<h5 id="电气特性"><a href="#电气特性" class="headerlink" title="电气特性"></a>电气特性</h5><p>​			传输方向和有效的电平范围</p>
+<h5 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h5><p>​			每根传输线的功能</p>
+<h5 id="时间特性"><a href="#时间特性" class="headerlink" title="时间特性"></a>时间特性</h5><p>​			信号的时序关系</p>
 <h4 id="总线的性能指标"><a href="#总线的性能指标" class="headerlink" title="总线的性能指标"></a>总线的性能指标</h4><ol>
 <li><p>总线宽度： 数据线的根数</p>
 </li>
@@ -519,31 +519,31 @@
 </li>
 </ol>
 <hr>
-<h3 id="3-4总线结构"><a href="#3-4总线结构" class="headerlink" title="3.4总线结构"></a>3.4总线结构</h3><h4 id="单总线结构"><a href="#单总线结构" class="headerlink" title="单总线结构"></a>单总线结构</h4><p>​        将所有设备都连接在一条总线（系统总线）上</p>
-<h4 id="多总线结构"><a href="#多总线结构" class="headerlink" title="多总线结构"></a>多总线结构</h4><p>​    分为主存总线与IO总线，通过通道（具有特殊功能的处理器，由通道对IO统一管理）进行连接</p>
-<h5 id="主存总线"><a href="#主存总线" class="headerlink" title="主存总线"></a>主存总线</h5><p>​        连接CPU和主存</p>
-<h5 id="IO总线"><a href="#IO总线" class="headerlink" title="IO总线"></a>IO总线</h5><p>​        连接各种IO设备</p>
-<h4 id="三总线结构"><a href="#三总线结构" class="headerlink" title="三总线结构"></a>三总线结构</h4><h5 id="结构一："><a href="#结构一：" class="headerlink" title="结构一："></a>结构一：</h5><p>​    分为主存总线、IO总线、DMA总线（直接存储器访问）。</p>
-<p>​    主存总线连接CPU与主存。</p>
-<p>​    IO总线连接CPU与IO接口。</p>
-<p>​    DMA总线连接主存与IO接口。</p>
-<h5 id="结构二："><a href="#结构二：" class="headerlink" title="结构二："></a>结构二：</h5><p>​    分为局部总线、系统总线、扩展总线。</p>
-<p>​    <strong>局部总线</strong>连接CPU和Cache与局部IO控制器。</p>
-<p>​    <strong>系统总线</strong>连接主存与扩展总线接口。</p>
-<p>​    <strong>扩展总线</strong>连接局域网、SCSI、扩展总线接口、Modem、串行接口</p>
-<h4 id="四总线结构"><a href="#四总线结构" class="headerlink" title="四总线结构"></a>四总线结构</h4><p>​    分为局部总线、系统总线、高速总线、扩展总线。</p>
-<p>​    <strong>局部总线</strong>连接CPU和Cache&#x2F;桥。</p>
-<p>​    <strong>系统总线</strong>连接主存与Cache&#x2F;桥。</p>
-<p>​    <strong>高速总线</strong>连接SCSI、图形、多媒体、局域网、Cache&#x2F;桥和扩展总线接口。</p>
-<p>​    <strong>扩展总线</strong>连接FAX、扩展总线接口、Modem、串行接口。</p>
-<h4 id="传统微型机总线结构"><a href="#传统微型机总线结构" class="headerlink" title="传统微型机总线结构"></a>传统微型机总线结构</h4><p>​    分为系统总线和IO总线</p>
-<p>​    <strong>系统总线</strong>通过<strong>33MHz的32位数据通路</strong>连接CPU和主存控制器与存储器。</p>
-<p>​    系统总线通过<strong>标准总线控制器</strong>与IO总线相连。</p>
-<p>​    <strong>IO总线</strong>通过<strong>8MHz的16位数据通路</strong>连接SCSI II控制器、多媒体、高速局域网、高性能图形、Modem等。</p>
-<h4 id="VL-BUS局部总线结构"><a href="#VL-BUS局部总线结构" class="headerlink" title="VL-BUS局部总线结构"></a>VL-BUS局部总线结构</h4><p>​    分为系统总线、VL-BUS总线、IO总线</p>
-<p>​    <strong>系统总线</strong>连接CPU和主存控制器与存储器并延生一条线连接局部总线控制器和VL-BUS总线。</p>
-<p>​    <strong>VL-BUS总线（高速总线）</strong>通过<strong>33MHz的32位数据通路</strong>连接标准总线控制器、SCSI II控制器、多媒体、高速局域网、高性能图形等。</p>
-<p>​    <strong>IO总线</strong>通过<strong>8MHz的16位数据通路</strong>连接标准总线控制器、图文传真、Modem等</p>
+<h3 id="3-4总线结构"><a href="#3-4总线结构" class="headerlink" title="3.4总线结构"></a>3.4总线结构</h3><h4 id="单总线结构"><a href="#单总线结构" class="headerlink" title="单总线结构"></a>单总线结构</h4><p>​		将所有设备都连接在一条总线（系统总线）上</p>
+<h4 id="多总线结构"><a href="#多总线结构" class="headerlink" title="多总线结构"></a>多总线结构</h4><p>​	分为主存总线与IO总线，通过通道（具有特殊功能的处理器，由通道对IO统一管理）进行连接</p>
+<h5 id="主存总线"><a href="#主存总线" class="headerlink" title="主存总线"></a>主存总线</h5><p>​		连接CPU和主存</p>
+<h5 id="IO总线"><a href="#IO总线" class="headerlink" title="IO总线"></a>IO总线</h5><p>​		连接各种IO设备</p>
+<h4 id="三总线结构"><a href="#三总线结构" class="headerlink" title="三总线结构"></a>三总线结构</h4><h5 id="结构一："><a href="#结构一：" class="headerlink" title="结构一："></a>结构一：</h5><p>​	分为主存总线、IO总线、DMA总线（直接存储器访问）。</p>
+<p>​	主存总线连接CPU与主存。</p>
+<p>​	IO总线连接CPU与IO接口。</p>
+<p>​	DMA总线连接主存与IO接口。</p>
+<h5 id="结构二："><a href="#结构二：" class="headerlink" title="结构二："></a>结构二：</h5><p>​	分为局部总线、系统总线、扩展总线。</p>
+<p>​	<strong>局部总线</strong>连接CPU和Cache与局部IO控制器。</p>
+<p>​	<strong>系统总线</strong>连接主存与扩展总线接口。</p>
+<p>​	<strong>扩展总线</strong>连接局域网、SCSI、扩展总线接口、Modem、串行接口</p>
+<h4 id="四总线结构"><a href="#四总线结构" class="headerlink" title="四总线结构"></a>四总线结构</h4><p>​	分为局部总线、系统总线、高速总线、扩展总线。</p>
+<p>​	<strong>局部总线</strong>连接CPU和Cache&#x2F;桥。</p>
+<p>​	<strong>系统总线</strong>连接主存与Cache&#x2F;桥。</p>
+<p>​	<strong>高速总线</strong>连接SCSI、图形、多媒体、局域网、Cache&#x2F;桥和扩展总线接口。</p>
+<p>​	<strong>扩展总线</strong>连接FAX、扩展总线接口、Modem、串行接口。</p>
+<h4 id="传统微型机总线结构"><a href="#传统微型机总线结构" class="headerlink" title="传统微型机总线结构"></a>传统微型机总线结构</h4><p>​	分为系统总线和IO总线</p>
+<p>​	<strong>系统总线</strong>通过<strong>33MHz的32位数据通路</strong>连接CPU和主存控制器与存储器。</p>
+<p>​	系统总线通过<strong>标准总线控制器</strong>与IO总线相连。</p>
+<p>​	<strong>IO总线</strong>通过<strong>8MHz的16位数据通路</strong>连接SCSI II控制器、多媒体、高速局域网、高性能图形、Modem等。</p>
+<h4 id="VL-BUS局部总线结构"><a href="#VL-BUS局部总线结构" class="headerlink" title="VL-BUS局部总线结构"></a>VL-BUS局部总线结构</h4><p>​	分为系统总线、VL-BUS总线、IO总线</p>
+<p>​	<strong>系统总线</strong>连接CPU和主存控制器与存储器并延生一条线连接局部总线控制器和VL-BUS总线。</p>
+<p>​	<strong>VL-BUS总线（高速总线）</strong>通过<strong>33MHz的32位数据通路</strong>连接标准总线控制器、SCSI II控制器、多媒体、高速局域网、高性能图形等。</p>
+<p>​	<strong>IO总线</strong>通过<strong>8MHz的16位数据通路</strong>连接标准总线控制器、图文传真、Modem等</p>
 <h4 id="PCI总线结构"><a href="#PCI总线结构" class="headerlink" title="PCI总线结构"></a>PCI总线结构</h4><p>分为系统总线、PCI总线、IO总线</p>
 <p><strong>系统总线</strong>连接CPU、存储器和<strong>PCI桥</strong></p>
 <p><strong>PCI总线</strong>通过<strong>33MHz的32位数据通路</strong>连接标准总线控制器、SCSI II控制器、多媒体、高速局域网、高性能图形等。</p>
@@ -551,50 +551,50 @@
 <h4 id="多层PCI总线结构"><a href="#多层PCI总线结构" class="headerlink" title="多层PCI总线结构"></a>多层PCI总线结构</h4><p>分为存储器总线与各种桥电路</p>
 <hr>
 <h3 id="3-5总线控制"><a href="#3-5总线控制" class="headerlink" title="3.5总线控制"></a>3.5总线控制</h3><p>如何完成通信过程，保证通信过程的准确性，这就是总线控制</p>
-<h4 id="总线判优控制"><a href="#总线判优控制" class="headerlink" title="总线判优控制"></a>总线判优控制</h4><h5 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h5><p>​        主设备（模块）：对总线由控制权</p>
-<p>​        从设备（模块）：相应从主设备发来的总线命令<strong>（有些设备既可以作为主设备也可以作为从设备）</strong></p>
-<p>​        总线判优控制：</p>
-<p>​            集中式（总线控制部件集中在一起）：</p>
-<h6 id="链式查询方式："><a href="#链式查询方式：" class="headerlink" title="链式查询方式："></a>链式查询方式：</h6><p>​            <img src="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/chainSearch.png" class=""></p>
-<p>​            数据线：用于信息交换过程数据的传输</p>
-<p>​            地址线：主设备与从设备进行数据传输要通过地址总线</p>
-<p>​            BR：所有线通过这条发送总线占用请求</p>
-<p>​            BS：某个设备占用了总线通过这条线告诉其他部件总线忙</p>
-<p>​            BG： 总线授权线</p>
-<p>​            <strong>注意：有一条总线出现故障，后面的电路均无法使用总线</strong></p>
-<h6 id="计时器定时查询方式："><a href="#计时器定时查询方式：" class="headerlink" title="计时器定时查询方式："></a>计时器定时查询方式：</h6><p>​    <img src="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/countSearch.png" class=""></p>
-<p>​            通过BR发送总线占用请求，总线控制部件收到请求后，通过<strong>设备地址</strong>向外传输响应。再通过计数器向IO接口进行查询是否提出了总线占用请求。最后通过BS进行应答。</p>
-<p>​            这种方式优先级确定非常灵活。</p>
-<h6 id="独立请求方式："><a href="#独立请求方式：" class="headerlink" title="独立请求方式："></a>独立请求方式：</h6><p>​    <img src="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/SingleQuestion.png" class=""></p>
-<p>​    在总线控制部件中有排队器进行优先级控制</p>
-<p>​        分布式：</p>
-<p>​    </p>
-<h4 id="总线通信控制"><a href="#总线通信控制" class="headerlink" title="总线通信控制"></a>总线通信控制</h4><p>​    目的：解决通信双方协同配合问题</p>
-<h5 id="总线传输周期"><a href="#总线传输周期" class="headerlink" title="总线传输周期"></a>总线传输周期</h5><p>​        申请分配阶段：主模块申请，总线仲裁决定</p>
-<p>​        寻址阶段：主模块向从模块给出地址和命令</p>
-<p>​        传数阶段：主模块和从模块交换数据</p>
-<p>​        结束阶段：主模块撤销有关信息</p>
-<h5 id="总线通信的四种方式"><a href="#总线通信的四种方式" class="headerlink" title="总线通信的四种方式"></a>总线通信的四种方式</h5><p>​        同步通信：由统一时标控制数据传送</p>
-<p>​        异步通信：采用应答方式，没有公告时钟标准</p>
-<p>​        半同步通信：同步、异步结合</p>
-<p>​            同步： 发送方用系统时钟前沿发信号</p>
-<p>​                        接收方用系统时钟后延判断、识别</p>
-<p>​            异步：允许不同速度的模块和谐工作</p>
-<p>​                        增加一条“等待”响应信号</p>
-<p>​        上述三种通信的共同点：</p>
-<p>​        一个总线传输周期（以输入数据为例）</p>
+<h4 id="总线判优控制"><a href="#总线判优控制" class="headerlink" title="总线判优控制"></a>总线判优控制</h4><h5 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h5><p>​		主设备（模块）：对总线由控制权</p>
+<p>​		从设备（模块）：相应从主设备发来的总线命令<strong>（有些设备既可以作为主设备也可以作为从设备）</strong></p>
+<p>​		总线判优控制：</p>
+<p>​			集中式（总线控制部件集中在一起）：</p>
+<h6 id="链式查询方式："><a href="#链式查询方式：" class="headerlink" title="链式查询方式："></a>链式查询方式：</h6><p>​			<img src="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/chainSearch.png" class=""></p>
+<p>​			数据线：用于信息交换过程数据的传输</p>
+<p>​			地址线：主设备与从设备进行数据传输要通过地址总线</p>
+<p>​			BR：所有线通过这条发送总线占用请求</p>
+<p>​			BS：某个设备占用了总线通过这条线告诉其他部件总线忙</p>
+<p>​			BG： 总线授权线</p>
+<p>​			<strong>注意：有一条总线出现故障，后面的电路均无法使用总线</strong></p>
+<h6 id="计时器定时查询方式："><a href="#计时器定时查询方式：" class="headerlink" title="计时器定时查询方式："></a>计时器定时查询方式：</h6><p>​	<img src="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/countSearch.png" class=""></p>
+<p>​			通过BR发送总线占用请求，总线控制部件收到请求后，通过<strong>设备地址</strong>向外传输响应。再通过计数器向IO接口进行查询是否提出了总线占用请求。最后通过BS进行应答。</p>
+<p>​			这种方式优先级确定非常灵活。</p>
+<h6 id="独立请求方式："><a href="#独立请求方式：" class="headerlink" title="独立请求方式："></a>独立请求方式：</h6><p>​	<img src="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/SingleQuestion.png" class=""></p>
+<p>​	在总线控制部件中有排队器进行优先级控制</p>
+<p>​		分布式：</p>
+<p>​	</p>
+<h4 id="总线通信控制"><a href="#总线通信控制" class="headerlink" title="总线通信控制"></a>总线通信控制</h4><p>​	目的：解决通信双方协同配合问题</p>
+<h5 id="总线传输周期"><a href="#总线传输周期" class="headerlink" title="总线传输周期"></a>总线传输周期</h5><p>​		申请分配阶段：主模块申请，总线仲裁决定</p>
+<p>​		寻址阶段：主模块向从模块给出地址和命令</p>
+<p>​		传数阶段：主模块和从模块交换数据</p>
+<p>​		结束阶段：主模块撤销有关信息</p>
+<h5 id="总线通信的四种方式"><a href="#总线通信的四种方式" class="headerlink" title="总线通信的四种方式"></a>总线通信的四种方式</h5><p>​		同步通信：由统一时标控制数据传送</p>
+<p>​		异步通信：采用应答方式，没有公告时钟标准</p>
+<p>​		半同步通信：同步、异步结合</p>
+<p>​			同步： 发送方用系统时钟前沿发信号</p>
+<p>​						接收方用系统时钟后延判断、识别</p>
+<p>​			异步：允许不同速度的模块和谐工作</p>
+<p>​						增加一条“等待”响应信号</p>
+<p>​		上述三种通信的共同点：</p>
+<p>​		一个总线传输周期（以输入数据为例）</p>
 <ul>
-<li>​    主模块发地址、命令   占用总线</li>
+<li>​	主模块发地址、命令   占用总线</li>
 <li>​     从模块准备数据    不占用总线（此时总线空闲，对总线资源是一种浪费）</li>
 <li>​     从模块向主模块发数据  占用总线</li>
 </ul>
-<p>​        分离式通信：充分挖掘系统总线每个瞬间的最大效能</p>
-<p>​            一个总线传输周期</p>
-<p>​                子周期1    主模块申请占用总线，使用完后即放弃总线的使用权</p>
-<p>​                子周期2     从模块申请占用总线，将各种信息送至总线上</p>
-<p>​            分离式通信特点：</p>
+<p>​		分离式通信：充分挖掘系统总线每个瞬间的最大效能</p>
+<p>​			一个总线传输周期</p>
+<p>​				子周期1    主模块申请占用总线，使用完后即放弃总线的使用权</p>
+<p>​				子周期2     从模块申请占用总线，将各种信息送至总线上</p>
+<p>​			分离式通信特点：</p>
 <ol>
-<li>​    各模块有权申请占用总线</li>
+<li>​	各模块有权申请占用总线</li>
 <li>采用同步方式通信，不等对方回答</li>
 <li>各模块准备数据时，不占用总线</li>
 <li>总线被占用时，无空闲</li>

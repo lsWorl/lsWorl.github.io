@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta name="keywords" content="计算机组成原理_存储器, LsWorld">
     <meta name="description" content="概述存储器分类
-​    按存储介质分类
+​	按存储介质分类
 (1)半导体存储器：TTL、MOS 
-​    如果半导体中没有电流，存储器中的信息将会消失，称这种情况为易失
+​	如果半导体中没有电流，存储器中的信息将会消失，称这种情况为易失
 (2)磁表面存储器：磁头载磁体   非易失（不通电其中的存储信息也是保存的）
-(3)磁">
+(3)磁芯存储器：硬">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -37,7 +37,7 @@
 
     <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 6.2.0"></head>
 
 
 <body>
@@ -477,17 +477,17 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><h4 id="存储器分类"><a href="#存储器分类" class="headerlink" title="存储器分类"></a>存储器分类</h4><ol>
-<li><p>​    按存储介质分类</p>
+<li><p>​	按存储介质分类</p>
 <p>(1)半导体存储器：TTL、MOS </p>
-<p>​    如果半导体中没有电流，存储器中的信息将会消失，称这种情况为<strong>易失</strong></p>
+<p>​	如果半导体中没有电流，存储器中的信息将会消失，称这种情况为<strong>易失</strong></p>
 <p>(2)磁表面存储器：磁头载磁体   非易失（不通电其中的存储信息也是保存的）</p>
 <p>(3)磁芯存储器：硬磁材料、环状元件  非易失</p>
 <p>(4)光盘存储器：激光、激光材料  非易失</p>
 </li>
 <li><p>​    按存取方式分类</p>
 <p>(1)存取时间与物理地址无关（随机访问）</p>
-<p>​    随机存储器   在程序的执行过程中 可读可写</p>
-<p>​    只读存储器    在程序的执行过程中  只读</p>
+<p>​	随机存储器   在程序的执行过程中 可读可写</p>
+<p>​	只读存储器    在程序的执行过程中  只读</p>
 <p>(2)存取时间与物理地址有关（串行访问）</p>
 <p>​    顺序存取存储器   磁带</p>
 <p>​    直接存取存储器   磁盘</p>
@@ -526,13 +526,13 @@
 </li>
 </ol>
 <hr>
-<h4 id="主存储器"><a href="#主存储器" class="headerlink" title="主存储器"></a>主存储器</h4><h5 id="主存的中存储单元地址的分配"><a href="#主存的中存储单元地址的分配" class="headerlink" title="主存的中存储单元地址的分配"></a>主存的中存储单元地址的分配</h5><p>​    12345678H这个数据如何在主存储器中进行存储？</p>
-<p>​    <img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/address.png" class=""></p>
-<h5 id="主存的技术指标"><a href="#主存的技术指标" class="headerlink" title="主存的技术指标"></a>主存的技术指标</h5><p>​    存储容量： 主存 存放二进制代码的个位数</p>
-<p>​    存储速度：</p>
-<p>​        存取时间：存储器的访问时间   读出时间  写入时间</p>
-<p>​        存取周期：  连续两次独立的存储器操作（读或写）所需的最小间隔时间</p>
-<p>​    存储器的带宽 单位（位&#x2F;秒）</p>
+<h4 id="主存储器"><a href="#主存储器" class="headerlink" title="主存储器"></a>主存储器</h4><h5 id="主存的中存储单元地址的分配"><a href="#主存的中存储单元地址的分配" class="headerlink" title="主存的中存储单元地址的分配"></a>主存的中存储单元地址的分配</h5><p>​	12345678H这个数据如何在主存储器中进行存储？</p>
+<p>​	<img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/address.png" class=""></p>
+<h5 id="主存的技术指标"><a href="#主存的技术指标" class="headerlink" title="主存的技术指标"></a>主存的技术指标</h5><p>​	存储容量： 主存 存放二进制代码的个位数</p>
+<p>​	存储速度：</p>
+<p>​		存取时间：存储器的访问时间   读出时间  写入时间</p>
+<p>​		存取周期：  连续两次独立的存储器操作（读或写）所需的最小间隔时间</p>
+<p>​	存储器的带宽 单位（位&#x2F;秒）</p>
 <h5 id="半导体存储芯片的基本结构"><a href="#半导体存储芯片的基本结构" class="headerlink" title="半导体存储芯片的基本结构"></a>半导体存储芯片的基本结构</h5><img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/contain.png" class="">
 
 <p>地址线是单向传输，数据线是双向传输。<br>$$<br>芯片容量 &#x3D; 2^{地址线}(K) × 数据线(位)<br>$$<br>片选线：包括CS（芯片选择）和CE（使能信号）（上面有一表示低电平有效）</p>
