@@ -34,11 +34,13 @@
 }
 
 body {
+    cursor: url('../mouse_cursor.png'),auto;
     background-color: #eaeaea;
     margin: 0;
     color: #34495e;
     overflow-x: hidden;
     overflow-y: auto;
+    
 }
 
 h1 {
@@ -182,7 +184,7 @@ code {
     right: 25px;
     z-index: 1;
     filter: invert(50%);
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 .codecopy_notice {
@@ -203,7 +205,7 @@ code {
     font-family: normal;
     z-index: 1;
     filter: invert(50%);
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 .code-expand {
@@ -213,7 +215,7 @@ code {
     filter: invert(50%);
     padding: 7px;
     z-index: 999 !important;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
     transition: all .3s;
     transform: rotate(0deg);
 }
@@ -343,6 +345,7 @@ header .brand-logo .logo-img {
 
 header .brand-logo .logo-span {
     font-size: 1.6rem;
+    
 }
 
 /*修改顶部 logo 的文字垂直对齐为 top，避免默认 middle 看起来偏下*/
@@ -1233,14 +1236,14 @@ article .article-tags .chip {
 #articleContent img {
     max-width: 100%;
     height: auto;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 #articleContent video {
     display: block;
     margin: 30px auto;
     box-shadow: 0 5px 35px 0 rgba(0, 0, 0, .2), 0 10px 35px -11px rgba(0, 0, 0, .6);
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 #articleContent ol,
@@ -1356,7 +1359,7 @@ thead {
     font-size: 1rem;
     font-weight: 500;
     border-radius: 5px;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
     box-shadow: 0 3px 5px rgba(0, 0, 0, .12);
     z-index: 0;
 }
@@ -1871,7 +1874,7 @@ thead {
     width: 100%;
     height: 200px;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 /*尾部样式*/

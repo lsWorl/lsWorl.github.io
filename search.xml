@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>node.js-fs文件操作模块</title>
+      <link href="/2022/07/14/node-js-fs-wen-jian-cao-zuo-mo-kuai/"/>
+      <url>/2022/07/14/node-js-fs-wen-jian-cao-zuo-mo-kuai/</url>
+      
+        <content type="html"><![CDATA[<h3 id="fs文件操作模块"><a href="#fs文件操作模块" class="headerlink" title="fs文件操作模块"></a>fs文件操作模块</h3><p><code>fs</code>作为node.js的内置模块，只需用<code>require(&quot;fs&quot;)</code>引入后即可使用。可以用js来实现对计算机文件的增删改查操作</p><h4 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token comment">//在根目录下创建avatar文件夹 创建成功err为null，反之则有失败的原因</span>fs<span class="token punctuation">.</span><span class="token function">mkdir</span><span class="token punctuation">(</span><span class="token string">'./avatar'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> node.js </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> node.js </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>node.js-http模块</title>
       <link href="/2022/07/12/nodejs-http-mo-kuai/"/>
       <url>/2022/07/12/nodejs-http-mo-kuai/</url>

@@ -120,7 +120,7 @@ a.gitment-header-issue-link:visited {
 
 .gitment-comments-pagination .gitment-comments-page-item {
     display: inline-block;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
     margin: 4px 5px;
     padding: .25rem .5rem;
     background-color: #9c27b0;
@@ -160,7 +160,7 @@ a.gitment-header-issue-link:visited {
 .gitment-markdown img {
     max-width: 100%;
     height: auto;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 .gitment-markdown ol li {

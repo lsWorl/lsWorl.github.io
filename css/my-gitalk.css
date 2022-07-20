@@ -78,7 +78,7 @@
 .markdown-body img {
     max-width: 100%;
     height: auto;
-    cursor: pointer;
+    cursor: url('../mouse-click-solid.png'),pointer;
 }
 
 .markdown-body ol li {
