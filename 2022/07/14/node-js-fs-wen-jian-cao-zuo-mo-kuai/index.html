@@ -6,8 +6,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="node.js-fs文件操作模块, LsWorld">
     <meta name="description" content="fs文件操作模块fs作为node.js的内置模块，只需用require(&amp;quot;fs&amp;quot;)引入后即可使用。可以用js来实现对计算机文件的增删改查操作
-创建目录const fs = require(&#39;fs&#39;)
-//在根目录下创建a">
+创建目录//在根目录下创建avatar文件夹 创建成功err为null，反之则">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -442,14 +441,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-07-14
+                    2022-07-22
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    92
+                    473
                 </div>
                 
 
@@ -470,11 +469,88 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h3 id="fs文件操作模块"><a href="#fs文件操作模块" class="headerlink" title="fs文件操作模块"></a>fs文件操作模块</h3><p><code>fs</code>作为node.js的内置模块，只需用<code>require(&quot;fs&quot;)</code>引入后即可使用。可以用js来实现对计算机文件的增删改查操作</p>
-<h4 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span>
-<span class="token comment">//在根目录下创建avatar文件夹 创建成功err为null，反之则有失败的原因</span>
+<h4 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//在根目录下创建avatar文件夹 创建成功err为null，反之则有失败的原因</span>
 fs<span class="token punctuation">.</span><span class="token function">mkdir</span><span class="token punctuation">(</span><span class="token string">'./avatar'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="目录重命名"><a href="#目录重命名" class="headerlink" title="目录重命名"></a>目录重命名</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//将avatar改名为avatar2</span>
+fs<span class="token punctuation">.</span><span class="token function">rename</span><span class="token punctuation">(</span><span class="token string">'./avatar'</span><span class="token punctuation">,</span><span class="token string">'./avatar2'</span><span class="token punctuation">,</span><span class="token parameter">err</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="删除目录"><a href="#删除目录" class="headerlink" title="删除目录"></a>删除目录</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//删除名为avatar2的目录</span>
+fs<span class="token punctuation">.</span><span class="token function">rmdir</span><span class="token punctuation">(</span><span class="token string">'./avatar2'</span><span class="token punctuation">,</span><span class="token parameter">err</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="往文件中写入数据-会覆盖其中内容"><a href="#往文件中写入数据-会覆盖其中内容" class="headerlink" title="往文件中写入数据  会覆盖其中内容"></a>往文件中写入数据  会覆盖其中内容</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//往text.txt文件中写入helloworld 文件不存在会自动创建</span>
+fs<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span><span class="token string">'./text.txt'</span><span class="token punctuation">,</span><span class="token string">'helloWorld'</span><span class="token punctuation">,</span><span class="token parameter">err</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="往文件中追加数据"><a href="#往文件中追加数据" class="headerlink" title="往文件中追加数据"></a>往文件中追加数据</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//往text.txt文件中追加123 文件不存在会自动创建</span>
+fs<span class="token punctuation">.</span><span class="token function">appendFile</span><span class="token punctuation">(</span><span class="token string">'./text.txt'</span><span class="token punctuation">,</span><span class="token string">'\n123'</span><span class="token punctuation">,</span><span class="token parameter">err</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="读取文件"><a href="#读取文件" class="headerlink" title="读取文件"></a>读取文件</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 读取的为字符流需转换 文件不存在则data为undefined 并且err有值</span>
+fs<span class="token punctuation">.</span><span class="token function">readFile</span><span class="token punctuation">(</span><span class="token string">'./text.txt'</span><span class="token punctuation">,</span><span class="token string">'utf-8'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span>data</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript">fs<span class="token punctuation">.</span><span class="token function">unlink</span><span class="token punctuation">(</span><span class="token string">'./text.txt'</span><span class="token punctuation">,</span><span class="token parameter">err</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+ <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="读取文件夹下的所有文件名和文件类型"><a href="#读取文件夹下的所有文件名和文件类型" class="headerlink" title="读取文件夹下的所有文件名和文件类型"></a>读取文件夹下的所有文件名和文件类型</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//读取dir目录下的所有文件 目录不存在则报错 返回值为数组</span>
+fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span><span class="token string">'./dir'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span>data</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="同步删除文件"><a href="#同步删除文件" class="headerlink" title="同步删除文件"></a>同步删除文件</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript">fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span><span class="token string">'./dir'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span>data</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+   data<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">item</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+     <span class="token comment">//使用Sync会将异步代码转为同步执行</span>
+     fs<span class="token punctuation">.</span><span class="token function">unlinkSync</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">./dir/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>item<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+   <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="Promise读取文件"><a href="#Promise读取文件" class="headerlink" title="Promise读取文件"></a>Promise读取文件</h4><p>使用<code>promise</code>需要读取fs模块下的<code>promises</code>方法，即<code>const fs = require(&#39;fs&#39;).promises</code></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//这样读取的好处是不需要用sync来特地将代码转换为同步读取</span>
+fs<span class="token punctuation">.</span><span class="token function">mkdir</span><span class="token punctuation">(</span><span class="token string">'./dir'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+ <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+
+
+<h4 id="使用Promise来删除文件夹下的所有文件"><a href="#使用Promise来删除文件夹下的所有文件" class="headerlink" title="使用Promise来删除文件夹下的所有文件"></a>使用Promise来删除文件夹下的所有文件</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+   fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span><span class="token string">'./dir'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+     data<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">item</span><span class="token operator">=></span><span class="token punctuation">&#123;</span>
+       fs<span class="token punctuation">.</span><span class="token function">unlink</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">./dir/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>item<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+     <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  	 <span class="token comment">//删除内部文件后再删除目录</span>
+     fs<span class="token punctuation">.</span><span class="token function">rmdir</span><span class="token punctuation">(</span><span class="token string">'./dir'</span><span class="token punctuation">)</span>
+   <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+ <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span>
+ <span class="token punctuation">&#125;</span></code></pre>
 
 
                 
@@ -855,18 +931,17 @@ fs<span class="token punctuation">.</span><span class="token function">mkdir</sp
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/07/14/node-js-fs-wen-jian-cao-zuo-mo-kuai/">
+                <a href="/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="node.js-fs文件操作模块">
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="vue3的ref与reactive的区别">
                         
-                        <span class="card-title">node.js-fs文件操作模块</span>
+                        <span class="card-title">vue3的ref与reactive的区别</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -876,27 +951,30 @@ fs<span class="token punctuation">.</span><span class="token function">mkdir</sp
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-07-14
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-08-18
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/node-js/" class="post-category">
-                                    node.js
+                            <a href="/categories/Vue3/" class="post-category">
+                                    Vue3
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/node-js/">
-                        <span class="chip bg-color">node.js</span>
+                    <a href="/tags/Vue3/">
+                        <span class="chip bg-color">Vue3</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                        <span class="chip bg-color">前端</span>
                     </a>
                     
                 </div>
