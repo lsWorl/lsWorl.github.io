@@ -4,9 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="vue3的ref与reactive的区别, LsWorld">
-    <meta name="description" content="Vue3中使用ref和reactive需要注意的点最近在开发项目中，想到复杂的数据对象都应该用reactive，就想用reactive来接收父组件传来的值，再通过emit传递回去。
-但在这遇到了一个坑，用reactive来接收对象时，控制台">
+    <meta name="keywords" content="获取扇贝单词接口数据, LsWorld">
+    <meta name="description" content="@TOC
+最近想做一个背单词相关的app，要是自己一个个去网站搜然后再复制到数据库中太慢了，所以就考虑能不能通过接口或者python自动将数据爬下来。
+第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）首先要先登录去寻找扇贝单词中">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +21,7 @@
 
     
 
-    <title>vue3的ref与reactive的区别 | LsWorld</title>
+    <title>获取扇贝单词接口数据 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -288,12 +289,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">vue3的ref与reactive的区别</h1>
+                    <h1 class="description center-align post-title">获取扇贝单词接口数据</h1>
                 </div>
             </div>
         </div>
@@ -409,12 +410,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Vue3/">
-                                <span class="chip bg-color">Vue3</span>
-                            </a>
-                        
-                            <a href="/tags/%E5%89%8D%E7%AB%AF/">
-                                <span class="chip bg-color">前端</span>
+                            <a href="/tags/%E7%88%AC%E8%99%AB/">
+                                <span class="chip bg-color">爬虫</span>
                             </a>
                         
                     </div>
@@ -425,8 +422,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/Vue3/" class="post-category">
-                                Vue3
+                            <a href="/categories/%E7%88%AC%E8%99%AB/" class="post-category">
+                                爬虫
                             </a>
                         
                     </div>
@@ -438,21 +435,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-08-18
+                    2022-08-19
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-08-18
+                    2022-08-19
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    772
+                    887
                 </div>
                 
 
@@ -472,75 +469,17 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h4 id="Vue3中使用ref和reactive需要注意的点"><a href="#Vue3中使用ref和reactive需要注意的点" class="headerlink" title="Vue3中使用ref和reactive需要注意的点"></a>Vue3中使用ref和reactive需要注意的点</h4><p>最近在开发项目中，想到复杂的数据对象都应该用<code>reactive</code>，就想用<code>reactive</code>来接收父组件传来的值，再通过<code>emit</code>传递回去。</p>
-<p>但在这遇到了一个坑，用<code>reactive</code>来接收对象时，控制台输出没有问题，但页面显示却是空白！</p>
-<p>目前要实现的是一个编辑的功能，列表中的数据是通过父组件传递给子组件数据实现的，因为要保证单向数据流，所以当用户点击编辑按钮的时候（即触发<code>handleEdit</code>），将从父组件收到的点击的那一条数据存到<code>form</code>中。</p>
-<img src="/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/showpage.png" class="">
-
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">// 对类型进行限制</span>
-<span class="token keyword">interface</span> <span class="token class-name">Props</span> <span class="token punctuation">&#123;</span>
-  barTitle<span class="token operator">:</span> <span class="token builtin">Array</span><span class="token operator">&lt;</span>BarType<span class="token operator">></span><span class="token punctuation">,</span> <span class="token comment">//这里类型不用多了解，就是为了减少维护成本</span>
-  tableData<span class="token operator">:</span> <span class="token builtin">Array</span><span class="token operator">&lt;</span>String<span class="token operator">></span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token comment">// 提供初始值</span>
-<span class="token keyword">const</span> props <span class="token operator">=</span> <span class="token function">withDefaults</span><span class="token punctuation">(</span><span class="token generic-function"><span class="token function">defineProps</span><span class="token generic class-name"><span class="token operator">&lt;</span>Props<span class="token operator">></span></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
-  <span class="token function-variable function">barTitle</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token function-variable function">tableData</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-
-<span class="token comment">// 点击编辑按钮后的模态框</span>
-<span class="token keyword">const</span> dialogFormVisible <span class="token operator">=</span> <span class="token generic-function"><span class="token function">ref</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token builtin">boolean</span><span class="token operator">></span></span></span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
-<span class="token comment">// 选择要编辑的索引值</span>
-<span class="token keyword">let</span> indexEdit <span class="token operator">=</span> <span class="token generic-function"><span class="token function">ref</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token builtin">number</span><span class="token operator">></span></span></span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token comment">// 用来编辑表格数据</span>
-<span class="token keyword">let</span> form<span class="token operator">:</span><span class="token builtin">any</span> <span class="token operator">=</span> <span class="token function">reactive</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token comment">// 点击编辑按钮的回调</span>
-<span class="token keyword">const</span> <span class="token function-variable function">handleEdit</span> <span class="token operator">=</span> <span class="token punctuation">(</span>index<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span> row<span class="token operator">:</span> User<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
-  dialogFormVisible<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token boolean">true</span>
-  indexEdit<span class="token punctuation">.</span>value <span class="token operator">=</span> index
-  form <span class="token operator">=</span> props<span class="token punctuation">.</span>tableData<span class="token punctuation">[</span>index<span class="token punctuation">]</span>
-  <span class="token comment">// console.log(index, row)</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<pre class="language-vue" data-language="vue"><code class="language-vue">&lt;!-- 弹窗后的页面部分，与上方的页面不是同个代码 这里的props就是每个字段的标题，和表单的数据名相同 --&gt;
-    &lt;el-dialog v-model&#x3D;&quot;dialogFormVisible&quot; title&#x3D;&quot;编辑&quot;&gt;
-      &lt;el-form ref&#x3D;&quot;ruleFormRef&quot; &gt;
-        &lt;el-form-item :label-width&#x3D;&quot;formLabelWidth&quot; v-for&#x3D;&quot;item in barTitle&quot; :key&#x3D;&quot;item&quot;
-          label&#x3D;&quot;item.name&quot; &gt;
-          &lt;el-input v-model&#x3D;&quot;form[item.props]&quot; autocomplete&#x3D;&quot;off&quot; &#x2F;&gt;
-        &lt;&#x2F;el-form-item&gt;
-        &lt;el-form-item :label-width&#x3D;&quot;formLabelWidth&quot;&gt;
-          &lt;el-button type&#x3D;&quot;primary&quot; @click&#x3D;&quot;submitForm()&quot;&gt;Submit&lt;&#x2F;el-button&gt;
-          &lt;el-button @click&#x3D;&quot;resetForm()&quot;&gt;Reset&lt;&#x2F;el-button&gt;
-        &lt;&#x2F;el-form-item&gt;
-
-      &lt;&#x2F;el-form&gt;
-    &lt;&#x2F;el-dialog&gt;</code></pre>
-
-
-
-<p>当点击了编辑后，理想状态应该是每个数据都会通过<code>v-model</code>展示在模态框中，即下图（这里点击的是第一个用户，即<code>index=0</code>）</p>
-<img src="/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/modalShow.png" class="">
-
-
-
-<p>但用<code>reactive</code>来做数据代理实际的效果却是：</p>
-<img src="/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/showpage2.png" class="">
-
-
-
-<p>并没有展示出预想的效果，结果去[官网](<a target="_blank" rel="noopener" href="https://staging-cn.vuejs.org/guide/essentials/reactivity-fundamentals.html#limitations-of-reactive">响应式基础 | Vue.js (vuejs.org)</a>)查看了 <code>reactive</code>只能进行深度监听，如果修改了第一层的值就会丢失响应！所以才会导致上方的响应丢失。如下代码，我在使用<code>reactive</code>在点击编辑的时候将最外层的对象进行的改变，所以导致了丢失响应。</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">let</span> state <span class="token operator">=</span> <span class="token function">reactive</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">count</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-
-<span class="token comment">// 上面的引用 (&#123; count: 0 &#125;) 将不再被追踪（响应性连接已丢失！）</span>
-state <span class="token operator">=</span> <span class="token function">reactive</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">count</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
-
-
-
-<p>真正的做法应该是把<code>let form:any = reactive(&#123;&#125;)</code>改为<code>let form:any = ref(&#123;&#125;)</code>后续调用内部数据加上<code>value</code>，这样就能正常实现响应式了。于此同时，要是对象或数组嵌套要实现响应式，就推荐用<code>reactive</code>，可以实行深度监听。</p>
+                <p>@<a href="%E4%B8%8D%E5%86%99%E4%B8%80%E6%AE%B5%E4%BB%A3%E7%A0%81%E6%9D%A5%E8%8E%B7%E5%8F%96%E6%89%87%E8%B4%9D%E5%8D%95%E8%AF%8D%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE">TOC</a></p>
+<p>最近想做一个背单词相关的app，要是自己一个个去网站搜然后再复制到数据库中太慢了，所以就考虑能不能通过接口或者python自动将数据爬下来。</p>
+<h2 id="第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）"><a href="#第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）" class="headerlink" title="第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）"></a>第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）</h2><p>首先要先登录去寻找扇贝单词中有显示单词的地方，在我找了一圈，发现在<a target="_blank" rel="noopener" href="https://web.shanbay.com/wordsweb/#/study/entry">单词学习</a>的词表中（这要先自己提前添加一本词书），只要自己单词还没有开始背，可以在未学单词中来获取本词书的单词数据。</p>
+<p><img src="https://img-blog.csdnimg.cn/69df9b19dee44d9281c715ec6ddc89a2.png" alt="单词展示"><br><strong>到这未学单词页面，首先就是先查看扇贝单词是通过服务器渲染还是客户端渲染，要是服务器渲染，在源码中就可以直接看到单词的数据，那样就可以直接通过python来进行爬取，要是客户端渲染，那就得考虑通过调用接口来拿取单词数据了。<br>这里我到源码中去搜索matter这个单词。</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/b17678c83bec4ddfbb1a8bf95c1241a5.png" alt="搜索单词"><br><strong>结果发现，源码中并没有这个单词的数据，就说明得通过接口的方式来获得数据了。</strong></p>
+<h2 id="第二步，对症下药"><a href="#第二步，对症下药" class="headerlink" title="第二步，对症下药"></a>第二步，对症下药</h2><p><strong>那此时就是得通过F12的网络检查来进行抓包了。（注意：这里要在<code>Fetch/XHR</code>中才会更清晰的展示）</strong><br><img src="https://img-blog.csdnimg.cn/c3d5174dceb3496094757f8034a74c37.png" alt="抓包"></p>
+<p><strong>通过下方的按钮，我们转换到第二页，看看发送的网络请求是什么样的。</strong><br><img src="https://img-blog.csdnimg.cn/c3729808b1894649b600c730ecbe4b1c.png" alt="抓包2"></p>
+<p><strong>这里我们可以点击后在<code>preview</code>中查看，发现数据是有返回的，但却做了加密。</strong><br><img src="https://img-blog.csdnimg.cn/8481dc11da664837a7d455e4e2443e54.png" alt="加密数据"><br><strong>到这一步，接下来的问题也就明确了很多，就是需要来解密他这个数据了。</strong></p>
+<h2 id="第三步，解密接口"><a href="#第三步，解密接口" class="headerlink" title="第三步，解密接口"></a>第三步，解密接口</h2><p>接下来点击<code>initiator</code>，来查看接口发请求的时候所调用的栈是怎么样的<br><img src="https://img-blog.csdnimg.cn/3c8476d4710041268c5f9b5cdb22dae5.png" alt="检查栈"><br>上方图片中蓝色标记的就是调用的文件名，因为我先前已经研究过扇贝的源码了，这里就直接到他接口解密的位置。（即在<code>learning.ts</code>文件）</p>
+<p><img src="https://img-blog.csdnimg.cn/238bd63f26e746ae9eed673240e97328.png" alt="源文件"><br><strong>看着代码可以发现，代码发请求的url就是获取单词的url，所以可以断定就是通过了<code>bayDecode</code>来进行了解密（对比url图片在下面）</strong><br><img src="https://img-blog.csdnimg.cn/4427125400d5470980212dbc9f0843a9.png" alt="请求链接"><br><strong>接下来就需要先去寻找下解密的具体代码到底是什么，这里通过<code>Ctrl+F</code>调出搜索来搜索<code>bayDecode</code>在哪里出现过。</strong><br><img src="https://img-blog.csdnimg.cn/fefe31de104441ab880f9320231e92ef.png" alt="搜索"><br><strong>发现<code>bayDecode</code>是从<code>helpers</code>中解构出的一个函数，那接下来就是去寻找<code>helpers</code>文件所在位置了</strong><br><img src="https://img-blog.csdnimg.cn/ef9764d270fc4750a215b149c825cd43.png" alt="搜索"><br><strong>这里我就直接找出来给大家看代码所在位置</strong><br><img src="https://img-blog.csdnimg.cn/48ae33f41a8b49b69c861e2d2f0e6451.png" alt="bayDecode"><br><strong>上图可以发现，原来是调用了<code>bays4.d()</code>方法，并且还挂载在了<code>window</code>，那解密我们就可以直接通过别人写好的，直接在控制台中调用<code>bays4.d()</code>来进行解密(这里要是有兴趣也可以使用<code>debug</code>来看扇贝是怎么实现加密的)</strong></p>
+<h2 id="第四步，使用现成的方法获取数据"><a href="#第四步，使用现成的方法获取数据" class="headerlink" title="第四步，使用现成的方法获取数据"></a>第四步，使用现成的方法获取数据</h2><p><strong>回到发请求的地方，将返回的加密数据<code>Ctrl+C</code>复制</strong><br><img src="https://img-blog.csdnimg.cn/e8db973b7bdd4340932f96eaf9652571.png" alt="复制"><br><strong>然后到控制台中，直接在控制台调用<code>bays4.d()</code>方法。</strong><br><img src="https://img-blog.csdnimg.cn/26717b7c45ac482382d158bac526196b.png" alt="调用函数"><br><strong>然后将加密的数据直接<code>Ctrl+V</code>粘贴进去，回车一按！</strong><br><img src="https://img-blog.csdnimg.cn/7bda675ab4784c0b92fc868c5f1903ea.png" alt="获取json"><br><strong>发现接口的数据我们就获取到了，最后再将数据保存到json格式中，使用vscode或其他编译器来查看</strong><br><img src="https://img-blog.csdnimg.cn/3532dbc8cedd47d894b541cdd635e322.png" alt="数据"><br><strong>音频，单词，中文释义，轻轻松松获取到。</strong></p>
 
                 
             </div>
@@ -567,7 +506,7 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/">http://example.com/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/</a>
+                    <a href="http://example.com/2022/08/19/huo-qu-shan-bei-dan-ci-jie-kou-shu-ju/">http://example.com/2022/08/19/huo-qu-shan-bei-dan-ci-jie-kou-shu-ju/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -605,12 +544,8 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/Vue3/">
-                                    <span class="chip bg-color">Vue3</span>
-                                </a>
-                            
-                                <a href="/tags/%E5%89%8D%E7%AB%AF/">
-                                    <span class="chip bg-color">前端</span>
+                                <a href="/tags/%E7%88%AC%E8%99%AB/">
+                                    <span class="chip bg-color">爬虫</span>
                                 </a>
                             
                         </div>
@@ -924,9 +859,10 @@ state <span class="token operator">=</span> <span class="token function">reactiv
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2022/08/19/huo-qu-shan-bei-dan-ci-jie-kou-shu-ju/">
                     <div class="card-image">
@@ -944,9 +880,9 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-08-19
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-08-19
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -959,6 +895,7 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -977,13 +914,13 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/07/14/node-js-fs-wen-jian-cao-zuo-mo-kuai/">
+                <a href="/2022/08/18/vue3-de-ref-yu-reactive-de-qu-bie/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="node.js-fs文件操作模块">
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="vue3的ref与reactive的区别">
                         
-                        <span class="card-title">node.js-fs文件操作模块</span>
+                        <span class="card-title">vue3的ref与reactive的区别</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -994,14 +931,14 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-07-14
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-08-18
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/node-js/" class="post-category">
-                                    node.js
+                            <a href="/categories/Vue3/" class="post-category">
+                                    Vue3
                                 </a>
                             
                             
@@ -1011,8 +948,12 @@ state <span class="token operator">=</span> <span class="token function">reactiv
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/node-js/">
-                        <span class="chip bg-color">node.js</span>
+                    <a href="/tags/Vue3/">
+                        <span class="chip bg-color">Vue3</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                        <span class="chip bg-color">前端</span>
                     </a>
                     
                 </div>
