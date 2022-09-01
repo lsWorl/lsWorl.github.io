@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>mysql常用语句总结</title>
+      <link href="/2022/09/01/mysql-yu-ju/"/>
+      <url>/2022/09/01/mysql-yu-ju/</url>
+      
+        <content type="html"><![CDATA[<h3 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">CREATE DATABASE 数据库名；</code></pre><h3 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">drop database 数据库名;</code></pre><h3 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">#IF NOT 表示不存在就创建CREATE TABLE IF NOT 表名 (column_name column_type);</code></pre><p>例子：</p><pre class="language-mysql" data-language="mysql"><code class="language-mysql">#AUTO_INCREMENT 表示自增 NOT NULL表示不为空 PRIMARY表示主键CREATE TABLE IF NOT user(&#39;id&#39; int PRIMARY NOT NULL AUTO_INCREMENT,&#39;name&#39; VARCHAR(20) NOT NULL);</code></pre><h3 id="删除表"><a href="#删除表" class="headerlink" title="删除表"></a>删除表</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">DROP TABLE table_name ;</code></pre><h3 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO table_name ( field1, field2,...fieldN ) VALUES ( value1, value2,...valueN );</code></pre><p>例子：</p><pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO user(id,name,phone,permissions) VALUES(1,&#39;张三&#39;,&#39;17857956137&#39;,&#39;管理员&#39;)</code></pre><h3 id="为已有表添加字段"><a href="#为已有表添加字段" class="headerlink" title="为已有表添加字段"></a>为已有表添加字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table 表名 ADD 字段名 字段类型</code></pre><p>例子：</p><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table user ADD password varchar(20)</code></pre><h3 id="将已有字段设置为非空字段"><a href="#将已有字段设置为非空字段" class="headerlink" title="将已有字段设置为非空字段"></a>将已有字段设置为非空字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table 表名 CHANGE 字段名 字段名 字段类型 NOT NULL;</code></pre><p>例子：</p><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table login_user CHANGE phone phone VARCHAR(11) NOT NULL;</code></pre><h3 id="更新表字段数据"><a href="#更新表字段数据" class="headerlink" title="更新表字段数据"></a>更新表字段数据</h3><h4 id="更新所有"><a href="#更新所有" class="headerlink" title="更新所有"></a>更新所有</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">update 表名 set 字段名 &#x3D; 要修改的数据</code></pre><p>例子：</p><pre class="language-mysql" data-language="mysql"><code class="language-mysql">update user set password &#x3D; &#39;123456&#39;</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> mysql </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> mysql </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>JavaScript实现方法的重载</title>
       <link href="/2022/08/26/javascript-shi-xian-fang-fa-de-chong-zai/"/>
       <url>/2022/08/26/javascript-shi-xian-fang-fa-de-chong-zai/</url>

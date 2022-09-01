@@ -4,11 +4,17 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="JavaScript实现方法的重载, LsWorld">
-    <meta name="description" content="最近在使用node.js做后端时，想使用方法重载来实现一个函数可以接收不同的参数，但是javascript作为一个弱类型语言，无法实现方法的重载，就只能通过奇淫技巧来实现。
-目前发现的方法有：
+    <meta name="keywords" content="mysql常用语句总结, LsWorld">
+    <meta name="description" content="创建数据库CREATE DATABASE 数据库名；
 
-使用arguments 参数的长度来判断传入">
+
+
+删除数据库drop database 数据库名;
+
+
+
+创建表#IF NOT 表示不存在就创建
+CREATE TABLE IF NOT 表名 (column_name column">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -22,7 +28,7 @@
 
     
 
-    <title>JavaScript实现方法的重载 | LsWorld</title>
+    <title>mysql常用语句总结 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -290,12 +296,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">JavaScript实现方法的重载</h1>
+                    <h1 class="description center-align post-title">mysql常用语句总结</h1>
                 </div>
             </div>
         </div>
@@ -411,12 +417,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/javascript/">
-                                <span class="chip bg-color">javascript</span>
-                            </a>
-                        
-                            <a href="/tags/%E5%9F%BA%E7%A1%80/">
-                                <span class="chip bg-color">基础</span>
+                            <a href="/tags/mysql/">
+                                <span class="chip bg-color">mysql</span>
                             </a>
                         
                     </div>
@@ -427,8 +429,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/javascript/" class="post-category">
-                                javascript
+                            <a href="/categories/mysql/" class="post-category">
+                                mysql
                             </a>
                         
                     </div>
@@ -440,21 +442,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-08-26
+                    2022-09-01
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-08-26
+                    2022-09-01
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    304
+                    230
                 </div>
                 
 
@@ -474,49 +476,70 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>最近在使用<code>node.js</code>做后端时，想使用方法重载来实现一个函数可以接收不同的参数，但是<code>javascript</code>作为一个弱类型语言，无法实现方法的重载，就只能通过奇淫技巧来实现。</p>
-<p>目前发现的方法有：</p>
-<ul>
-<li>使用<code>arguments</code> 参数的长度来判断传入参数的数量，从而实现不同业务逻辑</li>
-</ul>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//使用arguments来实现方法重载</span>
-<span class="token keyword">function</span> <span class="token function">OverLoad</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>age</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">//arguments.length===0说明没有传入参数</span>
-    <span class="token keyword">switch</span><span class="token punctuation">(</span>arguments<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">case</span> <span class="token number">0</span><span class="token operator">:</span>
-           代码块
-           <span class="token keyword">break</span><span class="token punctuation">;</span>
-        <span class="token comment">//传入了name走这块</span>
-        <span class="token keyword">case</span> <span class="token number">1</span><span class="token operator">:</span>
-           代码块
-           <span class="token keyword">break</span><span class="token punctuation">;</span>
-        <span class="token comment">//传入了age走这块</span>
-        <span class="token keyword">case</span> <span class="token number">2</span><span class="token operator">:</span>
-           代码块
-           <span class="token keyword">break</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
+                <h3 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">CREATE DATABASE 数据库名；</code></pre>
 
 
 
-<ul>
-<li><p>直接判断传入的参数是否为<code>undefined</code>。</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">OverLoad</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>age</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>name<span class="token operator">===</span><span class="token keyword">undefined</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-		<span class="token comment">//走这说明没有传参</span>
-        代码块
-        <span class="token keyword">return</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>age<span class="token operator">===</span><span class="token keyword">undefined</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token comment">//走这说明只传了一个参数</span>
-        代码块
-        <span class="token keyword">return</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//走这说明只参数都传了</span>
-    代码块
-<span class="token punctuation">&#125;</span></code></pre></li>
-</ul>
-<p>用上面几种方法都有大量的判断语句，没有很好的实现重载，网上还有些通过闭包来实现，但现在可以使用<code>class</code>中的<code>#</code>来实现属性的私有，这里就没有介绍闭包的方法了。</p>
+<h3 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">drop database 数据库名;</code></pre>
+
+
+
+<h3 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">#IF NOT 表示不存在就创建
+CREATE TABLE IF NOT 表名 (column_name column_type);</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">#AUTO_INCREMENT 表示自增 NOT NULL表示不为空 PRIMARY表示主键
+CREATE TABLE IF NOT user(
+&#39;id&#39; int PRIMARY NOT NULL AUTO_INCREMENT,
+&#39;name&#39; VARCHAR(20) NOT NULL
+);</code></pre>
+
+
+
+<h3 id="删除表"><a href="#删除表" class="headerlink" title="删除表"></a>删除表</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">DROP TABLE table_name ;</code></pre>
+
+
+
+<h3 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO table_name ( field1, field2,...fieldN ) VALUES ( value1, value2,...valueN );</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO user(id,name,phone,permissions) VALUES(1,&#39;张三&#39;,&#39;17857956137&#39;,&#39;管理员&#39;)</code></pre>
+
+
+
+<h3 id="为已有表添加字段"><a href="#为已有表添加字段" class="headerlink" title="为已有表添加字段"></a>为已有表添加字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table 表名 ADD 字段名 字段类型</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table user ADD password varchar(20)</code></pre>
+
+
+
+<h3 id="将已有字段设置为非空字段"><a href="#将已有字段设置为非空字段" class="headerlink" title="将已有字段设置为非空字段"></a>将已有字段设置为非空字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table 表名 CHANGE 字段名 字段名 字段类型 NOT NULL;</code></pre>
+
+
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table login_user CHANGE phone phone VARCHAR(11) NOT NULL;</code></pre>
+
+
+
+<h3 id="更新表字段数据"><a href="#更新表字段数据" class="headerlink" title="更新表字段数据"></a>更新表字段数据</h3><h4 id="更新所有"><a href="#更新所有" class="headerlink" title="更新所有"></a>更新所有</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">update 表名 set 字段名 &#x3D; 要修改的数据</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">update user set password &#x3D; &#39;123456&#39;</code></pre>
+
+
+
 
                 
             </div>
@@ -543,7 +566,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/08/26/javascript-shi-xian-fang-fa-de-chong-zai/">http://example.com/2022/08/26/javascript-shi-xian-fang-fa-de-chong-zai/</a>
+                    <a href="http://example.com/2022/09/01/mysql-yu-ju/">http://example.com/2022/09/01/mysql-yu-ju/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -581,12 +604,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/javascript/">
-                                    <span class="chip bg-color">javascript</span>
-                                </a>
-                            
-                                <a href="/tags/%E5%9F%BA%E7%A1%80/">
-                                    <span class="chip bg-color">基础</span>
+                                <a href="/tags/mysql/">
+                                    <span class="chip bg-color">mysql</span>
                                 </a>
                             
                         </div>
@@ -900,9 +919,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2022/09/01/mysql-yu-ju/">
                     <div class="card-image">
@@ -920,9 +940,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-09-01
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-01
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -935,6 +955,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -953,13 +974,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/08/19/huo-qu-shan-bei-dan-ci-jie-kou-shu-ju/">
+                <a href="/2022/08/26/javascript-shi-xian-fang-fa-de-chong-zai/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="获取扇贝单词接口数据">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="JavaScript实现方法的重载">
                         
-                        <span class="card-title">获取扇贝单词接口数据</span>
+                        <span class="card-title">JavaScript实现方法的重载</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -970,14 +991,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-08-19
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-08-26
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E7%88%AC%E8%99%AB/" class="post-category">
-                                    爬虫
+                            <a href="/categories/javascript/" class="post-category">
+                                    javascript
                                 </a>
                             
                             
@@ -987,8 +1008,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E7%88%AC%E8%99%AB/">
-                        <span class="chip bg-color">爬虫</span>
+                    <a href="/tags/javascript/">
+                        <span class="chip bg-color">javascript</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%9F%BA%E7%A1%80/">
+                        <span class="chip bg-color">基础</span>
                     </a>
                     
                 </div>
