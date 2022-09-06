@@ -4,17 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="mysql常用语句总结, LsWorld">
-    <meta name="description" content="创建数据库CREATE DATABASE 数据库名；
-
-
-
-删除数据库drop database 数据库名;
-
-
-
-创建表#IF NOT 表示不存在就创建
-CREATE TABLE IF NOT 表名 (column_name column">
+    <meta name="keywords" content="Dart语言学习, LsWorld">
+    <meta name="description" content="最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有electron(主要桌面开发)、uniapp(小程序方面应用多)、react native(和flutter在app占比差不多)和flutt">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -28,7 +19,7 @@ CREATE TABLE IF NOT 表名 (column_name column">
 
     
 
-    <title>mysql常用语句总结 | LsWorld</title>
+    <title>Dart语言学习 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -296,12 +287,12 @@ CREATE TABLE IF NOT 表名 (column_name column">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">mysql常用语句总结</h1>
+                    <h1 class="description center-align post-title">Dart语言学习</h1>
                 </div>
             </div>
         </div>
@@ -417,8 +408,16 @@ CREATE TABLE IF NOT 表名 (column_name column">
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/mysql/">
-                                <span class="chip bg-color">mysql</span>
+                            <a href="/tags/dart/">
+                                <span class="chip bg-color">dart</span>
+                            </a>
+                        
+                            <a href="/tags/android/">
+                                <span class="chip bg-color">android</span>
+                            </a>
+                        
+                            <a href="/tags/flutter/">
+                                <span class="chip bg-color">flutter</span>
                             </a>
                         
                     </div>
@@ -429,8 +428,8 @@ CREATE TABLE IF NOT 表名 (column_name column">
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/mysql/" class="post-category">
-                                mysql
+                            <a href="/categories/flutter/" class="post-category">
+                                flutter
                             </a>
                         
                     </div>
@@ -442,21 +441,21 @@ CREATE TABLE IF NOT 表名 (column_name column">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-09-01
+                    2022-09-06
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-09-04
+                    2022-09-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    409
+                    237
                 </div>
                 
 
@@ -476,105 +475,11 @@ CREATE TABLE IF NOT 表名 (column_name column">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">CREATE DATABASE 数据库名；</code></pre>
-
-
-
-<h3 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">drop database 数据库名;</code></pre>
-
-
-
-<h3 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">#IF NOT 表示不存在就创建
-CREATE TABLE IF NOT 表名 (column_name column_type);</code></pre>
-
-
-
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">#AUTO_INCREMENT 表示自增 NOT NULL表示不为空 PRIMARY表示主键
-CREATE TABLE IF NOT user(
-&#39;id&#39; int PRIMARY NOT NULL AUTO_INCREMENT,
-&#39;name&#39; VARCHAR(20) NOT NULL
-);</code></pre>
-
-
-
-<h3 id="删除表"><a href="#删除表" class="headerlink" title="删除表"></a>删除表</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">DROP TABLE table_name ;</code></pre>
-
-
-
-<h3 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO table_name ( field1, field2,...fieldN ) VALUES ( value1, value2,...valueN );</code></pre>
-
-
-
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO user(id,name,phone,permissions) VALUES(1,&#39;张三&#39;,&#39;17857956137&#39;,&#39;管理员&#39;)</code></pre>
-
-
-
-<h3 id="为已有表添加字段"><a href="#为已有表添加字段" class="headerlink" title="为已有表添加字段"></a>为已有表添加字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table 表名 ADD 字段名 字段类型</code></pre>
-
-
-
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table user ADD password varchar(20)</code></pre>
-
-
-
-<h3 id="将已有字段设置为非空字段"><a href="#将已有字段设置为非空字段" class="headerlink" title="将已有字段设置为非空字段"></a>将已有字段设置为非空字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table 表名 CHANGE 字段名 字段名 字段类型 NOT NULL;</code></pre>
-
-
-
-
-
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table login_user CHANGE phone phone VARCHAR(11) NOT NULL;</code></pre>
-
-
-
-<h3 id="更新表字段数据"><a href="#更新表字段数据" class="headerlink" title="更新表字段数据"></a>更新表字段数据</h3><h4 id="更新所有"><a href="#更新所有" class="headerlink" title="更新所有"></a>更新所有</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">update 表名 set 字段名 &#x3D; 要修改的数据</code></pre>
-
-
-
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">update user set password &#x3D; &#39;123456&#39;</code></pre>
-
-
-
-<h3 id="字段默认值"><a href="#字段默认值" class="headerlink" title="字段默认值"></a>字段默认值</h3><h4 id="创建表时添加默认值"><a href="#创建表时添加默认值" class="headerlink" title="创建表时添加默认值"></a>创建表时添加默认值</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">create table 表名(
-  name varchar(50) not null default &#39;0&#39;
-)</code></pre>
-
-
-
-<h4 id="为已存在字段附上默认值"><a href="#为已存在字段附上默认值" class="headerlink" title="为已存在字段附上默认值"></a>为已存在字段附上默认值</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">ALTER TABLE 表名 ALTER COLUMN 字段名 SET DEFAULT 默认值</code></pre>
-
-<p><strong>(注：已有默认值的话需要先删除默认值后再添加，删除语法：<code>alter table 表名 alter column 字段名 drop default</code>)</strong></p>
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">ALTER TABLE login_user ALTER COLUMN password SET DEFAULT &#39;123456&#39;</code></pre>
-
-
-
-<h3 id="查询语句"><a href="#查询语句" class="headerlink" title="查询语句"></a>查询语句</h3><h4 id="查询所有"><a href="#查询所有" class="headerlink" title="查询所有"></a>查询所有</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT * FROM 表名</code></pre>
-
-
-
-<h4 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a>条件查询</h4><h5 id="查询表中的字段数量"><a href="#查询表中的字段数量" class="headerlink" title="查询表中的字段数量"></a>查询表中的字段数量</h5><pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT count(*)  FROM 表名</code></pre>
-
-
-
-<h5 id="查询出固定数量"><a href="#查询出固定数量" class="headerlink" title="查询出固定数量"></a>查询出固定数量</h5><pre class="language-mysql" data-language="mysql"><code class="language-mysql">#偏移量不填默认为0
-SELECT * FROM 表名 LIMIT 偏移量,数量 </code></pre>
-
-
-
-<p>例子：</p>
-<pre class="language-mysql" data-language="mysql"><code class="language-mysql">#查出user表中第10条开始，取出11条数据
-SELECT * FROM user LIMIT 10,11</code></pre>
-
-
-
-
-
+                <p>最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有<code>electron</code>(主要桌面开发)、<code>uniapp</code>(小程序方面应用多)、<code>react native</code>(和<code>flutter</code>在app占比差不多)和<code>flutter</code>。当时技术选型时，因为本人是对<code>Vue</code>为主要前端框架进行深入学习，所以开发app时候<code>react native</code>就没有纳入我的范围，<code>uniapp</code>又因为觉得做小程序比较多，在网上搜索<code>uniapp</code>对app的兼容不如<code>react native</code>和<code>flutter</code>，所以最后就决定选择学习<code>flutter</code>来作为主要开发工具。</p>
+<p>本文主要介绍<code>Dart</code>的基本语法，<code>Dart</code>大部分都是为了<code>flutter</code>而服务，所以这里并不会对<code>Dart</code>进行过多的了解，相信要是有<code>javascript</code>或<code>java</code>语言等高级语言基础的话，可以很快的进行入门。</p>
+<blockquote>
+<p>文章参考了<a target="_blank" rel="noopener" href="https://dart.cn/">Dart</a>的官网</p>
+</blockquote>
 
                 
             </div>
@@ -601,7 +506,7 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/09/01/mysql-yu-ju/">http://example.com/2022/09/01/mysql-yu-ju/</a>
+                    <a href="http://example.com/2022/09/06/dart-yu-yan-xue-xi/">http://example.com/2022/09/06/dart-yu-yan-xue-xi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -639,8 +544,16 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/mysql/">
-                                    <span class="chip bg-color">mysql</span>
+                                <a href="/tags/dart/">
+                                    <span class="chip bg-color">dart</span>
+                                </a>
+                            
+                                <a href="/tags/android/">
+                                    <span class="chip bg-color">android</span>
+                                </a>
+                            
+                                <a href="/tags/flutter/">
+                                    <span class="chip bg-color">flutter</span>
                                 </a>
                             
                         </div>
@@ -954,9 +867,10 @@ SELECT * FROM user LIMIT 10,11</code></pre>
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2022/09/06/dart-yu-yan-xue-xi/">
                     <div class="card-image">
@@ -974,9 +888,9 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-09-06
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-06
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -989,6 +903,7 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1015,13 +930,13 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/08/26/javascript-shi-xian-fang-fa-de-chong-zai/">
+                <a href="/2022/09/01/mysql-yu-ju/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="JavaScript实现方法的重载">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="mysql常用语句总结">
                         
-                        <span class="card-title">JavaScript实现方法的重载</span>
+                        <span class="card-title">mysql常用语句总结</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1032,14 +947,14 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-08-26
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-01
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/javascript/" class="post-category">
-                                    javascript
+                            <a href="/categories/mysql/" class="post-category">
+                                    mysql
                                 </a>
                             
                             
@@ -1049,12 +964,8 @@ SELECT * FROM user LIMIT 10,11</code></pre>
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/javascript/">
-                        <span class="chip bg-color">javascript</span>
-                    </a>
-                    
-                    <a href="/tags/%E5%9F%BA%E7%A1%80/">
-                        <span class="chip bg-color">基础</span>
+                    <a href="/tags/mysql/">
+                        <span class="chip bg-color">mysql</span>
                     </a>
                     
                 </div>
