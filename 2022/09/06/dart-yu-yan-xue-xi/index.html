@@ -448,14 +448,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-09-06
+                    2022-09-08
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    237
+                    886
                 </div>
                 
 
@@ -478,8 +478,124 @@
                 <p>最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有<code>electron</code>(主要桌面开发)、<code>uniapp</code>(小程序方面应用多)、<code>react native</code>(和<code>flutter</code>在app占比差不多)和<code>flutter</code>。当时技术选型时，因为本人是对<code>Vue</code>为主要前端框架进行深入学习，所以开发app时候<code>react native</code>就没有纳入我的范围，<code>uniapp</code>又因为觉得做小程序比较多，在网上搜索<code>uniapp</code>对app的兼容不如<code>react native</code>和<code>flutter</code>，所以最后就决定选择学习<code>flutter</code>来作为主要开发工具。</p>
 <p>本文主要介绍<code>Dart</code>的基本语法，<code>Dart</code>大部分都是为了<code>flutter</code>而服务，所以这里并不会对<code>Dart</code>进行过多的了解，相信要是有<code>javascript</code>或<code>java</code>语言等高级语言基础的话，可以很快的进行入门。</p>
 <blockquote>
-<p>文章参考了<a target="_blank" rel="noopener" href="https://dart.cn/">Dart</a>的官网</p>
+<p>文章参考了<a target="_blank" rel="noopener" href="https://dart.cn/">Dart</a>的官网。</p>
 </blockquote>
+<hr>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>Dart</code>和<code>Java</code>一样是面向对象的语言，所以他们都有一个<code>main</code>方法，要是数据不是在函数体内声明，则默认为全局方法，不会像<code>Javascript</code>那种面向编程的语言一样，无论在什么环境修改变量都不会报错，在<code>Dart</code>中，全局是默认只能声明不能进行修改的，要想数据必须在<code>void main()&#123;&#125;</code>中，所以以下的代码测试默认处于<code>void main()&#123;&#125;</code>环境。</p>
+<h3 id="Dart数据类型"><a href="#Dart数据类型" class="headerlink" title="Dart数据类型"></a>Dart数据类型</h3><p><code>Dart</code>的数据类型基本与<code>Java</code>的相同，作为一个类型安全的语言，虽然其中可以使用<code>var</code>来声明变量，但声明后就不能修改类型。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token keyword">var</span> name <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'小明'</span></span><span class="token punctuation">;</span>
+name <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment">//报错</span></code></pre>
+
+
+
+<p>所以要用类型最好就在声明时候确定下来。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'小明'</span></span><span class="token punctuation">;</span></code></pre>
+
+
+
+<h4 id="Dart数据类型种类"><a href="#Dart数据类型种类" class="headerlink" title="Dart数据类型种类"></a>Dart数据类型种类</h4><table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Numbers（数字）</td>
+<td align="center">int a &#x3D; 1;或double &#x3D; 2.1;</td>
+</tr>
+<tr>
+<td align="center">Strings（字符串）</td>
+<td align="center">String a &#x3D; ‘你好’;</td>
+</tr>
+<tr>
+<td align="center">Booleans（布尔）</td>
+<td align="center">bool b &#x3D; true;</td>
+</tr>
+<tr>
+<td align="center">Lists（数组）</td>
+<td align="center">var list &#x3D; [1, 2, 3];</td>
+</tr>
+<tr>
+<td align="center">Sets（无序集合）</td>
+<td align="center">var halogens &#x3D; {‘fluorine’, ‘chlorine’, ‘bromine’, ‘iodine’, ‘astatine’}; 或 var names &#x3D; <String>{};</td>
+</tr>
+<tr>
+<td align="center">Map（对象，即Key:value）</td>
+<td align="center">var gifts &#x3D; {‘first’: ‘partridge’,   ‘second’: ‘turtledoves’,   ‘fifth’: ‘golden rings’ }; 或构造器创建：var gifts &#x3D; Map&lt;String, String&gt;();</td>
+</tr>
+<tr>
+<td align="center">Runes</td>
+<td align="center">需要导入 <a target="_blank" rel="noopener" href="https://pub.flutter-io.cn/packages/characters">characters 包</a>，可以用Unicode字符来显示emoji表情，如：大笑的 emoji 表情（😆）的 Unicode 为 <code>\u&#123;1f600&#125;</code>。</td>
+</tr>
+<tr>
+<td align="center">Symbols（用的比较少）</td>
+<td align="center">Symbol obj &#x3D; new Symbol(‘name’);</td>
+</tr>
+<tr>
+<td align="center">null</td>
+<td align="center">null即为null</td>
+</tr>
+</tbody></table>
+<p><strong>各种数值类型具体使用方法下方介绍！（以下Numbers，Strings，Booleans皆可用var声明）</strong></p>
+<h5 id="Numbers（数字类型）"><a href="#Numbers（数字类型）" class="headerlink" title="Numbers（数字类型）"></a>Numbers（数字类型）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义整数类型</span>
+int a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+a <span class="token operator">=</span> <span class="token number">10.9</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+a <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+
+<span class="token comment">//定义浮点数类型</span>
+double b <span class="token operator">=</span> <span class="token number">1.9</span><span class="token punctuation">;</span>
+
+b <span class="token operator">=</span> <span class="token number">2</span> <span class="token punctuation">;</span> <span class="token comment">//不报错</span>
+b <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+</code></pre>
+
+
+
+<h5 id="Strings（字符串）"><a href="#Strings（字符串）" class="headerlink" title="Strings（字符串）"></a>Strings（字符串）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义字符串</span>
+<span class="token class-name">String</span> s <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span>
+s <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+s <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'147'</span></span><span class="token punctuation">;</span> <span class="token comment">//不报错</span></code></pre>
+
+
+
+<h5 id="Booleans（布尔）"><a href="#Booleans（布尔）" class="headerlink" title="Booleans（布尔）"></a>Booleans（布尔）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义布尔</span>
+bool b <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+b <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+b <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span> <span class="token comment">//不报错</span></code></pre>
+
+
+
+<h5 id="Lists（数组）"><a href="#Lists（数组）" class="headerlink" title="Lists（数组）"></a>Lists（数组）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义一个内部全为字符串的数组 &lt;>符号是为了限制类型</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'1'</span></span><span class="token punctuation">,</span><span class="token string-literal"><span class="token string">'2'</span></span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//不报错</span>
+arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//报错</span></code></pre>
+
+
+
+<h5 id="Sets（无序集合）"><a href="#Sets（无序集合）" class="headerlink" title="Sets（无序集合）"></a>Sets（无序集合）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//用&#123;&#125;创建时候默认为Map，Dart通过调用方法来判断为Set还是Map &lt;>用来限制Set里面为String类型</span>
+<span class="token keyword">var</span> elements <span class="token operator">=</span> <span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+elements<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'fluorine'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+elements<span class="token punctuation">.</span><span class="token function">addAll</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">,</span> <span class="token string-literal"><span class="token string">'b'</span></span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>elements<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出&#123;fluorine, a, b&#125;</span>
+
+
+<span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span>num<span class="token punctuation">></span></span> s <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+s<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出 &#123;2&#125;</span></code></pre>
+
+
+
+<h5 id="Map（对象）"><a href="#Map（对象）" class="headerlink" title="Map（对象）"></a>Map（对象）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义一个key和value都是字符串的对象</span>
+<span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span><span class="token class-name">String</span><span class="token punctuation">></span></span> m <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+m <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">'a的value'</span></span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>m<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出 a的value</span></code></pre>
+
+
+
+<p><strong>Runes和Symbol目前用的比较少，所以也没有过多研究，等到时候摸透了再回来补….</strong></p>
 
                 
             </div>
