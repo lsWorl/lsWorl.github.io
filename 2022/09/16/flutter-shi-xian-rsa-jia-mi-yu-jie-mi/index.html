@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Dart语言学习, LsWorld">
-    <meta name="description" content="最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有electron(主要桌面开发)、uniapp(小程序方面应用多)、react native(和flutter在app占比差不多)和flutt">
+    <meta name="keywords" content="Flutter实现rsa加密与解密, LsWorld">
+    <meta name="description" content="前言在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置公钥和私钥（私钥一般都是放在后端，这里演示就全在前端中演示）。
+导包">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +20,7 @@
 
     
 
-    <title>Dart语言学习 | LsWorld</title>
+    <title>Flutter实现rsa加密与解密 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -287,12 +288,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Dart语言学习</h1>
+                    <h1 class="description center-align post-title">Flutter实现rsa加密与解密</h1>
                 </div>
             </div>
         </div>
@@ -408,16 +409,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/dart/">
-                                <span class="chip bg-color">dart</span>
+                            <a href="/tags/Flutter/">
+                                <span class="chip bg-color">Flutter</span>
                             </a>
                         
-                            <a href="/tags/android/">
-                                <span class="chip bg-color">android</span>
-                            </a>
-                        
-                            <a href="/tags/flutter/">
-                                <span class="chip bg-color">flutter</span>
+                            <a href="/tags/Dart/">
+                                <span class="chip bg-color">Dart</span>
                             </a>
                         
                     </div>
@@ -428,8 +425,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/flutter/" class="post-category">
-                                flutter
+                            <a href="/categories/Flutter/" class="post-category">
+                                Flutter
                             </a>
                         
                     </div>
@@ -441,21 +438,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-09-06
+                    2022-09-16
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-09-08
+                    2022-09-16
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    886
+                    614
                 </div>
                 
 
@@ -475,127 +472,83 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有<code>electron</code>(主要桌面开发)、<code>uniapp</code>(小程序方面应用多)、<code>react native</code>(和<code>flutter</code>在app占比差不多)和<code>flutter</code>。当时技术选型时，因为本人是对<code>Vue</code>为主要前端框架进行深入学习，所以开发app时候<code>react native</code>就没有纳入我的范围，<code>uniapp</code>又因为觉得做小程序比较多，在网上搜索<code>uniapp</code>对app的兼容不如<code>react native</code>和<code>flutter</code>，所以最后就决定选择学习<code>flutter</code>来作为主要开发工具。</p>
-<p>本文主要介绍<code>Dart</code>的基本语法，<code>Dart</code>大部分都是为了<code>flutter</code>而服务，所以这里并不会对<code>Dart</code>进行过多的了解，相信要是有<code>javascript</code>或<code>java</code>语言等高级语言基础的话，可以很快的进行入门。</p>
-<blockquote>
-<p>文章参考了<a target="_blank" rel="noopener" href="https://dart.cn/">Dart</a>的官网。</p>
-</blockquote>
-<hr>
-<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>Dart</code>和<code>Java</code>一样是面向对象的语言，所以他们都有一个<code>main</code>方法，要是数据不是在函数体内声明，则默认为全局方法，不会像<code>Javascript</code>那种面向编程的语言一样，无论在什么环境修改变量都不会报错，在<code>Dart</code>中，全局是默认只能声明不能进行修改的，要想数据必须在<code>void main()&#123;&#125;</code>中，所以以下的代码测试默认处于<code>void main()&#123;&#125;</code>环境。</p>
-<h3 id="Dart数据类型"><a href="#Dart数据类型" class="headerlink" title="Dart数据类型"></a>Dart数据类型</h3><p><code>Dart</code>的数据类型基本与<code>Java</code>的相同，作为一个类型安全的语言，虽然其中可以使用<code>var</code>来声明变量，但声明后就不能修改类型。</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token keyword">var</span> name <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'小明'</span></span><span class="token punctuation">;</span>
-name <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment">//报错</span></code></pre>
+                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置<strong>公钥</strong>和<strong>私钥</strong>（私钥一般都是放在后端，这里演示就全在前端中演示）。</p>
+<h3 id="导包与获取钥匙"><a href="#导包与获取钥匙" class="headerlink" title="导包与获取钥匙"></a>导包与获取钥匙</h3><p>在<code>Flutter</code>中使用加密算法，需先在<code>pubspec.yaml</code>文件中导如<code>encrypt</code>包（版本以flutter社区的最新版为准），修改文件后保存会自动导包。</p>
+<p><img src="https://img-blog.csdnimg.cn/a09eb410d52943a7b7e6474bf1814dad.png" alt="importPackage"></p>
+<p>然后去获取公钥和私钥（可以在网页上生成），并放在静态资源文件夹中。</p>
+<p><img src="https://img-blog.csdnimg.cn/66197e0ad4da47658847b835ce1788df.png" alt="key"></p>
+<p>公钥格式为：（<code>-----BEGIN PUBLIC KEY-----</code>和结尾的<code>-----END PUBLIC KEY-----</code>是必加的，中间内容为公钥，私钥同理）</p>
+<pre class="language-pem" data-language="pem"><code class="language-pem">-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2&#x2F;vF49zKHdP0EY1B9Zim
+5t4X1GsnP1TEYgYMnWXQNLluWV53iInEJBmw&#x2F;xf++Ohbgp7WhAFcjlRJ6Bxnqj6n
+CtAsXAjIXnv1UDCabw&#x2F;pUb2Tm349I990wSGEeIbuSRPD&#x2F;t1O4qOTgpvCWRDgVVfX
+PILWBkshMhQA7xs0LeEXtimtCLnjUywlXw+Hthlx2Zi6Ba656HKro9EPZ2BRGGUd
+mbPLWibeD7MF8ETz5R0w&#x2F;N+3GyTnizPihsFU4sPOnWwhsR0FWz0i+uVeYrIkpyo6
+hkXFQMLt4RzA9VVsd+nk5h&#x2F;SQ&#x2F;NQ38VrpUlLfcL4K&#x2F;pzUXCrJ6X5KYOIfEcG16QG
+sQIDAQAB
+-----END PUBLIC KEY-----</code></pre>
+
+<p>私钥格式为：</p>
+<pre class="language-pem" data-language="pem"><code class="language-pem">-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDb+8Xj3Mod0&#x2F;QR
+jUH1mKbm3hfUayc&#x2F;VMRiBgydZdA0uW5ZXneIicQkGbD&#x2F;F&#x2F;746FuCntaEAVyOVEno
+HGeqPqcK0CxcCMhee&#x2F;VQMJpvD+lRvZObfj0j33TBIYR4hu5JE8P+3U7io5OCm8JZ
+EOBVV9c8gtYGSyEyFADvGzQt4Re2Ka0IueNTLCVfD4e2GXHZmLoFrrnocquj0Q9n
+YFEYZR2Zs8taJt4PswXwRPPlHTD837cbJOeLM+KGwVTiw86dbCGxHQVbPSL65V5i
+siSnKjqGRcVAwu3hHMD1VWx36eTmH9JD81DfxWulSUt9wvgr+nNRcKsnpfkpg4h8
+RwbXpAaxAgMBAAECggEAOXZP39CJnzcBVyBd7WhdmIrFEMCYtOtQjQZlfyvcMhmJ
+4KBTev&#x2F;5kzB+0nOTL7OKS9lv0XWFlswfrhjVX1wUSDfOjo&#x2F;gvwWEM9kuTfqLCMYL
+a5+TGu7A0b4Om2krjz0xgj6O35a47nH&#x2F;V0KYRtK2L2FBxM0VM76T6+FgROe6SOOn
+8BOvAiljHu+hzxOAx8T881daO2TpLXGcwSHcT8UfhIIiE7KBjqUmgDQwkBNcZvhd
+uhNsSMBjNpf0sws6N2bJ3fK&#x2F;Yo+23obW03yKqdWOXZ1&#x2F;QD8PfdRn1gkNn1HwNKTU
+JuC2K7gUNfHugYDywz2wL2YMiGwzBKOdVULMMPhzkQKBgQD3e2bOIcW5+OOeabIq
+gGBzoOLaElUwJtFKZBNPG84t+mfYAzwHYkf416WXsR6ql0mLsmZaKBGYk+H5&#x2F;Kco
+1xxPfHlENHHZVfof1K1pQLxLoF9vW7rtMVT+CwdgbppBXoVDcqkri8h9aVPTPL&#x2F;D
+q6a9qFfcTO+wlfnCgaxXqlDAtQKBgQDjjhPx8sf55G7dZjl9wzfgGjsBRxOeecWr
+dcfRy4S&#x2F;WxTC0NwTNaPMyb534RbwHh&#x2F;MDg9naoLg0kUZQ+AfzleUC5D&#x2F;PI0G8fO7
+qADXenb2ZwflBkyw5JmSsk2iJ8tREFgLfqAKrGDTSVc33q6mfm+fZHvZsGVUgxvr
+riB1EZc3jQKBgFlUib9OIXkHheHgdRcyT55tLHVauLUwzcr0ZKPhfYLLKECoqjpg
+F2qTLIqcvF0HTtzGAHv6ip9wgdkigZQUUXu&#x2F;imY8J&#x2F;wzNJ3Yvt+HJnCF6uzfR5Hm
+hK9Oe9MrGTMPUzsNYFL&#x2F;mdbq9f8BppaSlxVOdqhmfP5YpFa5R+Q87fkhAoGBAKnT
+rGEC72o5qOAFXdzVKEtRaD4A3MyGVxcq1NFnUZA6mpj2pXiUrMW2vzbav3K&#x2F;GL4C
+tE5bOIgvhbBgbtFt&#x2F;wCXTUSf3SSUyHGB5fbrCAPHSyYK+IuAYHkSJ0xg5KWATCVw
+AGNW2QB3GOeygqfxbr8HkEMcGdPj8Z+IGeMlGLU1AoGBANpu3Sx5J6ELxpL3110I
+6GfhmADZ&#x2F;k8rTlkST+sfUJI1R3TcKqLBbyiNd1id1O1rKrnPfym41lNWz6MWRn6m
+1GPrdTNZIfMJugEfJyaF2vojWyFXMEA&#x2F;pvjfHeEjQLsoEoupKXLH&#x2F;Tkm6zaNunJH
+cX2rgz3C2PGugq1h2EZGBU5z
+-----END PRIVATE KEY-----</code></pre>
 
 
 
-<p>所以要用类型最好就在声明时候确定下来。</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'小明'</span></span><span class="token punctuation">;</span></code></pre>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>接下来就是通过函数来进行全局使用。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:encrypt/encrypt.dart'</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:flutter/services.dart'</span></span><span class="token punctuation">;</span>
+
+<span class="token comment">// 加密 Future代表异步操作</span>
+<span class="token class-name">Future</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">encodeString</span><span class="token punctuation">(</span><span class="token class-name">String</span> content<span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">final</span> publicPem <span class="token operator">=</span> <span class="token keyword">await</span> rootBundle<span class="token punctuation">.</span><span class="token function">loadString</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'key/public.pem'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//key/public.pem为我上方放的公钥位置 这里不可使用encrypt文档中的parseKeyFromFile方法，会显示找不到文件</span>
+  <span class="token keyword">dynamic</span> publicKey <span class="token operator">=</span> <span class="token class-name">RSAKeyParser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>publicPem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">final</span> encrypter <span class="token operator">=</span> <span class="token class-name">Encrypter</span><span class="token punctuation">(</span><span class="token function">RSA</span><span class="token punctuation">(</span>publicKey<span class="token punctuation">:</span> publicKey<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> encrypter<span class="token punctuation">.</span><span class="token function">encrypt</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">.</span>base64<span class="token punctuation">;</span> <span class="token comment">//返回加密后的base64格式文件</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 解密</span>
+<span class="token class-name">Future</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">decodeString</span><span class="token punctuation">(</span><span class="token class-name">String</span> content<span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">final</span> privatePem <span class="token operator">=</span> <span class="token keyword">await</span> rootBundle<span class="token punctuation">.</span><span class="token function">loadString</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'key/private.pem'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">dynamic</span> privateKey <span class="token operator">=</span> <span class="token class-name">RSAKeyParser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>privatePem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">final</span> encrypter <span class="token operator">=</span> <span class="token class-name">Encrypter</span><span class="token punctuation">(</span><span class="token function">RSA</span><span class="token punctuation">(</span>privateKey<span class="token punctuation">:</span> privateKey<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> encrypter<span class="token punctuation">.</span><span class="token function">decrypt</span><span class="token punctuation">(</span><span class="token class-name">Encrypted</span><span class="token punctuation">.</span><span class="token function">fromBase64</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
 
 
-<h4 id="Dart数据类型种类"><a href="#Dart数据类型种类" class="headerlink" title="Dart数据类型种类"></a>Dart数据类型种类</h4><table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">用法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Numbers（数字）</td>
-<td align="center">int a &#x3D; 1;或double &#x3D; 2.1;</td>
-</tr>
-<tr>
-<td align="center">Strings（字符串）</td>
-<td align="center">String a &#x3D; ‘你好’;</td>
-</tr>
-<tr>
-<td align="center">Booleans（布尔）</td>
-<td align="center">bool b &#x3D; true;</td>
-</tr>
-<tr>
-<td align="center">Lists（数组）</td>
-<td align="center">var list &#x3D; [1, 2, 3];</td>
-</tr>
-<tr>
-<td align="center">Sets（无序集合）</td>
-<td align="center">var halogens &#x3D; {‘fluorine’, ‘chlorine’, ‘bromine’, ‘iodine’, ‘astatine’}; 或 var names &#x3D; <String>{};</td>
-</tr>
-<tr>
-<td align="center">Map（对象，即Key:value）</td>
-<td align="center">var gifts &#x3D; {‘first’: ‘partridge’,   ‘second’: ‘turtledoves’,   ‘fifth’: ‘golden rings’ }; 或构造器创建：var gifts &#x3D; Map&lt;String, String&gt;();</td>
-</tr>
-<tr>
-<td align="center">Runes</td>
-<td align="center">需要导入 <a target="_blank" rel="noopener" href="https://pub.flutter-io.cn/packages/characters">characters 包</a>，可以用Unicode字符来显示emoji表情，如：大笑的 emoji 表情（😆）的 Unicode 为 <code>\u&#123;1f600&#125;</code>。</td>
-</tr>
-<tr>
-<td align="center">Symbols（用的比较少）</td>
-<td align="center">Symbol obj &#x3D; new Symbol(‘name’);</td>
-</tr>
-<tr>
-<td align="center">null</td>
-<td align="center">null即为null</td>
-</tr>
-</tbody></table>
-<p><strong>各种数值类型具体使用方法下方介绍！（以下Numbers，Strings，Booleans皆可用var声明）</strong></p>
-<h5 id="Numbers（数字类型）"><a href="#Numbers（数字类型）" class="headerlink" title="Numbers（数字类型）"></a>Numbers（数字类型）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义整数类型</span>
-int a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
-
-a <span class="token operator">=</span> <span class="token number">10.9</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
-a <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
-
-<span class="token comment">//定义浮点数类型</span>
-double b <span class="token operator">=</span> <span class="token number">1.9</span><span class="token punctuation">;</span>
-
-b <span class="token operator">=</span> <span class="token number">2</span> <span class="token punctuation">;</span> <span class="token comment">//不报错</span>
-b <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
-</code></pre>
-
-
-
-<h5 id="Strings（字符串）"><a href="#Strings（字符串）" class="headerlink" title="Strings（字符串）"></a>Strings（字符串）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义字符串</span>
-<span class="token class-name">String</span> s <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span>
-s <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
-s <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'147'</span></span><span class="token punctuation">;</span> <span class="token comment">//不报错</span></code></pre>
-
-
-
-<h5 id="Booleans（布尔）"><a href="#Booleans（布尔）" class="headerlink" title="Booleans（布尔）"></a>Booleans（布尔）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义布尔</span>
-bool b <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-b <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
-b <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span> <span class="token comment">//不报错</span></code></pre>
-
-
-
-<h5 id="Lists（数组）"><a href="#Lists（数组）" class="headerlink" title="Lists（数组）"></a>Lists（数组）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义一个内部全为字符串的数组 &lt;>符号是为了限制类型</span>
-<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'1'</span></span><span class="token punctuation">,</span><span class="token string-literal"><span class="token string">'2'</span></span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//不报错</span>
-arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//报错</span></code></pre>
-
-
-
-<h5 id="Sets（无序集合）"><a href="#Sets（无序集合）" class="headerlink" title="Sets（无序集合）"></a>Sets（无序集合）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//用&#123;&#125;创建时候默认为Map，Dart通过调用方法来判断为Set还是Map &lt;>用来限制Set里面为String类型</span>
-<span class="token keyword">var</span> elements <span class="token operator">=</span> <span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-elements<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'fluorine'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-elements<span class="token punctuation">.</span><span class="token function">addAll</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">,</span> <span class="token string-literal"><span class="token string">'b'</span></span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token function">print</span><span class="token punctuation">(</span>elements<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出&#123;fluorine, a, b&#125;</span>
-
-
-<span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span>num<span class="token punctuation">></span></span> s <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-s<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token function">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出 &#123;2&#125;</span></code></pre>
-
-
-
-<h5 id="Map（对象）"><a href="#Map（对象）" class="headerlink" title="Map（对象）"></a>Map（对象）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义一个key和value都是字符串的对象</span>
-<span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span><span class="token class-name">String</span><span class="token punctuation">></span></span> m <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-m <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">'a的value'</span></span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token function">print</span><span class="token punctuation">(</span>m<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出 a的value</span></code></pre>
-
-
-
-<p><strong>Runes和Symbol目前用的比较少，所以也没有过多研究，等到时候摸透了再回来补….</strong></p>
+<h3 id="实际运行"><a href="#实际运行" class="headerlink" title="实际运行"></a>实际运行</h3><p><img src="https://img-blog.csdnimg.cn/0aa9eb0c8e8d4a2080c56893cff7e530.png" alt="show"></p>
+<p>我在按钮中添加了点击事件，当点击后会调用<code>encodeString</code>方法，因为方法使用了<code>Future</code>包裹为异步返回结果，所以都用<code>then</code>进行取值（前端的小伙伴应该很熟悉），最后进行打印，然后又将获得的加密数据进行解密并打印（实际运行结果看下面结果图）。</p>
+<p><img src="https://img-blog.csdnimg.cn/d7a0233a28744dedbd0afdc76324c3e9.png" alt="final"></p>
+<p>可见数据成功进行了加密并解密了。</p>
 
                 
             </div>
@@ -622,7 +575,7 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/09/06/dart-yu-yan-xue-xi/">http://example.com/2022/09/06/dart-yu-yan-xue-xi/</a>
+                    <a href="http://example.com/2022/09/16/flutter-shi-xian-rsa-jia-mi-yu-jie-mi/">http://example.com/2022/09/16/flutter-shi-xian-rsa-jia-mi-yu-jie-mi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -660,16 +613,12 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/dart/">
-                                    <span class="chip bg-color">dart</span>
+                                <a href="/tags/Flutter/">
+                                    <span class="chip bg-color">Flutter</span>
                                 </a>
                             
-                                <a href="/tags/android/">
-                                    <span class="chip bg-color">android</span>
-                                </a>
-                            
-                                <a href="/tags/flutter/">
-                                    <span class="chip bg-color">flutter</span>
+                                <a href="/tags/Dart/">
+                                    <span class="chip bg-color">Dart</span>
                                 </a>
                             
                         </div>
@@ -983,9 +932,10 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2022/09/16/flutter-shi-xian-rsa-jia-mi-yu-jie-mi/">
                     <div class="card-image">
@@ -1003,9 +953,9 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-09-16
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-16
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1018,6 +968,7 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1040,13 +991,13 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/09/01/mysql-yu-ju/">
+                <a href="/2022/09/06/dart-yu-yan-xue-xi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="mysql常用语句总结">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Dart语言学习">
                         
-                        <span class="card-title">mysql常用语句总结</span>
+                        <span class="card-title">Dart语言学习</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1057,14 +1008,14 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-01
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-06
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/mysql/" class="post-category">
-                                    mysql
+                            <a href="/categories/flutter/" class="post-category">
+                                    flutter
                                 </a>
                             
                             
@@ -1074,8 +1025,16 @@ m <span class="token operator">=</span> <span class="token punctuation">&#123;</
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/mysql/">
-                        <span class="chip bg-color">mysql</span>
+                    <a href="/tags/dart/">
+                        <span class="chip bg-color">dart</span>
+                    </a>
+                    
+                    <a href="/tags/android/">
+                        <span class="chip bg-color">android</span>
+                    </a>
+                    
+                    <a href="/tags/flutter/">
+                        <span class="chip bg-color">flutter</span>
                     </a>
                     
                 </div>
