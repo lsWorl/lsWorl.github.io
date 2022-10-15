@@ -454,7 +454,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    837
+                    1.4k
                 </div>
                 
 
@@ -495,7 +495,7 @@ nest new project-name <span class="token comment">#project-name为项目名，�
 <p><img src="https://img-blog.csdnimg.cn/4b38cf21d8334bffbd63a97067b49438.png" alt="main.ts"></p>
 <h4 id="module"><a href="#module" class="headerlink" title="module"></a><code>module</code></h4><p>因为在<code>main.ts</code>的入口文件中引入了<code>AppModule</code>，所以首先我们先看<code>module</code>文件。</p>
 <p><img src="https://img-blog.csdnimg.cn/d2abea4b6830477fbb30cd36c68c1da5.png" alt="module"></p>
-<p>根据上图可以看到先前的<code>AppController</code>和<code>AppService</code>文件都是经过<code>AppModule</code>模块，这里就涉及nestjs很重要的概念，**<code>Controllers</code>和<code>Providers</code>**，这就像后端很经典的<code>MVC</code>架构，将控制层和服务层分层进行，将所有对数据库的操作都放在<code>Providers</code>中，将要返回前端的数据逻辑都在<code>Controllers</code>中进行，而<code>Module</code>主要为了管理控制层和服务层，有可能一个接口中需要调用多个数据库的操作，这时候就需要在<code>Module</code>中注册。</p>
+<p>根据上图可以看到先前的<code>AppController</code>和<code>AppService</code>文件都是经过<code>AppModule</code>模块，这里就涉及nestjs很重要的概念，**<code>Controllers</code>和<code>Providers</code>**，这就像后端很经典的<code>MVC</code>架构，将控制层和服务层分层进行，将所有对数据库的操作都放在<code>Providers</code>(但不是所有的<code>Providers</code>都是用于操作数据库)中，将要返回前端的数据逻辑都在<code>Controllers</code>中进行，而<code>Module</code>主要为了管理控制层和服务层，有可能一个接口中需要调用多个数据库的操作，这时候就需要在<code>Module</code>中注册。</p>
 <p><img src="https://img-blog.csdnimg.cn/e1d57f967ad6405db6f83e7970197951.png" alt="module"></p>
 <p>在目前的Module的<code>imports</code>的部分就会用到上图的模块管理，也可以在其中结合<code>TypeOrm</code>来实现用<code>ORM</code>框架来对数据库进行操作。</p>
 <p>总之，在每次新建了控制器或提供者就需要在<code>module</code>中进行引入，这样nest才能识别的到。</p>
@@ -504,7 +504,7 @@ nest new project-name <span class="token comment">#project-name为项目名，�
 <p>可以使用路由来实现一个基本的接口。</p>
 <pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//@Controller创建一个以/text为路径的控制器</span>
 <span class="token decorator"><span class="token at operator">@</span><span class="token function">Controller</span></span><span class="token punctuation">(</span><span class="token string">'/text'</span><span class="token punctuation">)</span>
-<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">ctroll</span><span class="token punctuation">&#123;</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Ctroll</span><span class="token punctuation">&#123;</span>
     <span class="token comment">//当发送以/text为路径的请求并以Get的方式时会走这</span>
     <span class="token decorator"><span class="token at operator">@</span><span class="token function">Get</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token function">find</span><span class="token punctuation">(</span><span class="token decorator"><span class="token at operator">@</span><span class="token function">Query</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>query<span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//以query的形式发送，即localhost:3000/text?a=1  query的值就是&#123;a:1&#125;</span>
@@ -539,6 +539,66 @@ axios<span class="token punctuation">.</span><span class="token function">post</
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>此时要是不需要操作数据库的话，就已经实现了一个简单的后端接口了，当然，还有许多如设置相应头，相应码等功能，就得通过官方文档来了解了。</p>
+<h4 id="Providers"><a href="#Providers" class="headerlink" title="Providers"></a><code>Providers</code></h4><p><code>Providers</code>是基于nestjs的一个概念，<code>Providers</code>可以是操作数据库的服务层，也可以是<code>helpers</code>，或者其他，主要就是为了提供一些注入的依赖。</p>
+<p><img src="https://docs.nestjs.com/assets/Components_1.png" alt="providers"></p>
+<p>在使用<code>Service</code>之前，我们可以先连接数据库，这里以<code>mysql</code>为例，需要先下载<code>mysql</code>和<code>typeorm</code>的依赖，当然<code>typeorm</code>不是必要的,即<code>npm i mysql2</code>和<code>npm install typeorm --save</code>。</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//app.module.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">&#123;</span> TypeOrmModule <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'@nestjs/typeorm'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">&#123;</span> UserTable <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'./entity/userTable.entity'</span><span class="token punctuation">;</span>
+<span class="token decorator"><span class="token at operator">@</span><span class="token function">Module</span></span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    imports<span class="token operator">:</span><span class="token punctuation">[</span>
+        <span class="token comment">//连接数据库</span>
+        <span class="token comment">// 连接数据库</span>
+    	TypeOrmModule<span class="token punctuation">.</span><span class="token function">forRoot</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+      	  type<span class="token operator">:</span> <span class="token string">'mysql'</span><span class="token punctuation">,</span>
+      	  host<span class="token operator">:</span> <span class="token string">'ip地址'</span><span class="token punctuation">,</span>
+      	  port<span class="token operator">:</span> 端口<span class="token punctuation">,</span>
+      	  username<span class="token operator">:</span> <span class="token string">'用户'</span><span class="token punctuation">,</span>
+      	  password<span class="token operator">:</span> <span class="token string">'密码'</span><span class="token punctuation">,</span>
+      	  database<span class="token operator">:</span> <span class="token string">'表'</span><span class="token punctuation">,</span>
+      	  entities<span class="token operator">:</span> <span class="token punctuation">[</span>UserTable<span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token comment">//添加的实体 UserTable在代码在下方</span>
+      	<span class="token comment">// 数据库同步更新</span>
+      	synchronize<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>不过目前最多还是用来对于数据库的增删改查。<code>Providers</code>一般以<code>@Injectable()</code>开头，使用类来包裹，用构造函数来注入要修改的数据，构造函数中声明了以后，在调用函数就可以通过<code>this</code>来调用其中的函数。</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//service</span>
+<span class="token decorator"><span class="token at operator">@</span><span class="token function">Injectable</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">TextService</span><span class="token punctuation">&#123;</span>
+    <span class="token function">constructor</span><span class="token punctuation">(</span>
+      <span class="token decorator"><span class="token at operator">@</span><span class="token function">InjectRepository</span></span><span class="token punctuation">(</span>UserTable<span class="token punctuation">)</span> <span class="token comment">//userTable是一个用typeorm的实体，代码在下方，要是不了解typeorm可以去查看下他的官方文档</span>
+      <span class="token keyword">private</span> <span class="token keyword">readonly</span> userTableRepository<span class="token operator">:</span> Repository<span class="token operator">&lt;</span>UserTable<span class="token operator">></span><span class="token punctuation">,</span> <span class="token comment">//添加私人与只读属性防止修改</span>
+    <span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+    <span class="token keyword">async</span> <span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>userTableRepository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//find是typeorm的一个方法，类似于sql语句的SELECT * FROM userTable;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token decorator"><span class="token at operator">@</span><span class="token function">Entity</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">UserTable</span><span class="token punctuation">&#123;</span>
+    <span class="token decorator"><span class="token at operator">@</span><span class="token function">PrimaryGeneratedColumn</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  	id<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
+    <span class="token decorator"><span class="token at operator">@</span><span class="token function">Column</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    userName<span class="token operator">:</span><span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>当然，上方是连接了mysql后所可以进行的操作，要是没有连接mysql，则nest就会直接报错。</p>
+<h5 id="controller中运用service"><a href="#controller中运用service" class="headerlink" title="controller中运用service"></a>controller中运用service</h5><p>在nest中基本都是通过构造函数的方式来传递相互的数据，当然这些都需要在Module模块中进行注册。</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> TextService <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'./financial_table.service'</span><span class="token punctuation">;</span>
+
+<span class="token decorator"><span class="token at operator">@</span><span class="token function">Controller</span></span><span class="token punctuation">(</span><span class="token string">'/text'</span><span class="token punctuation">)</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Ctroll</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//这里就获取了Textservice了</span>
+    <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token keyword">private</span> <span class="token keyword">readonly</span> textService<span class="token operator">:</span> TextService<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>、
+    <span class="token decorator"><span class="token at operator">@</span><span class="token function">Get</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">async</span> <span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">await</span> <span class="token keyword">this</span><span class="token punctuation">.</span>textService<span class="token punctuation">.</span><span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>这样就完成了基本的数据库操作了，也可以实现最基础的后端接口了，当然还有其他使用<code>Pipe</code>进行管道验证等功能可以通过官方文档来了解更多。</p>
 
                 
             </div>
