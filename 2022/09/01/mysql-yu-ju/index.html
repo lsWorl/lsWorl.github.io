@@ -449,14 +449,14 @@ CREATE TABLE IF NOT 表名 (column_name column">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-09-04
+                    2022-10-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    409
+                    636
                 </div>
                 
 
@@ -492,9 +492,42 @@ CREATE TABLE IF NOT 表名 (column_name column_type);</code></pre>
 <p>例子：</p>
 <pre class="language-mysql" data-language="mysql"><code class="language-mysql">#AUTO_INCREMENT 表示自增 NOT NULL表示不为空 PRIMARY表示主键
 CREATE TABLE IF NOT user(
-&#39;id&#39; int PRIMARY NOT NULL AUTO_INCREMENT,
-&#39;name&#39; VARCHAR(20) NOT NULL
+id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+name VARCHAR(20) NOT NULL
 );</code></pre>
+
+
+
+<h3 id="表创建时添加外键约束"><a href="#表创建时添加外键约束" class="headerlink" title="表创建时添加外键约束"></a>表创建时添加外键约束</h3><p>两个表之间需要相关的值的话就可以使用外键约束，并且设置外键的字段名所用的是主表的主键字段才行。</p>
+<h4 id="表创建时添加外键约束-1"><a href="#表创建时添加外键约束-1" class="headerlink" title="表创建时添加外键约束"></a>表创建时添加外键约束</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">CONSTRAINT 外键名 FOREIGN KEY(从表的外键字段名) REFERENCES 主表名(主表的主键字段名)</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">#主表
+CREATE TABLE IF NOT user(
+id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+name VARCHAR(20) NOT NULL
+);
+#从表
+CREATE TABLE user_contacts (
+	id INT PRIMARY KEY NOT NULL,
+	name VARCHAR(20) not null,
+	avatar VARCHAR(40),
+	user_id INT,
+    #添加外键约束
+	CONSTRAINT fk_user_contacts_user FOREIGN KEY(user_id) REFERENCES user(id)
+);</code></pre>
+
+
+
+<h4 id="已存在表添加外键约束"><a href="#已存在表添加外键约束" class="headerlink" title="已存在表添加外键约束"></a>已存在表添加外键约束</h4><pre class="language-mysql" data-language="mysql"><code class="language-mysql">ALTER TABLE 从表名 ADD CONSTRAINT 外键名 FOREIGN KEY(从表的外键字段名) REFERENCES 主表名(主表的主键字段名)</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">#主表用上方的user表
+ALTER TABLE user_contacts ADD CONSTRAINT fk_user_contacts_user FOREIGN KEY(user_id) REFERENCES user(id)</code></pre>
 
 
 
@@ -528,6 +561,15 @@ CREATE TABLE IF NOT user(
 
 <p>例子：</p>
 <pre class="language-mysql" data-language="mysql"><code class="language-mysql">alter table login_user CHANGE phone phone VARCHAR(11) NOT NULL;</code></pre>
+
+
+
+<h3 id="删除字段"><a href="#删除字段" class="headerlink" title="删除字段"></a>删除字段</h3><pre class="language-mysql" data-language="mysql"><code class="language-mysql">ALTER TABLE 表名 DROP 字段名;</code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">ALTER TABLE user DROP name;</code></pre>
 
 
 
