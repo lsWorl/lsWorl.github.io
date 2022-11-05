@@ -471,14 +471,14 @@ CREATE TABLE IF NOT 表名 (column_name column">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-10-06
+                    2022-11-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    636
+                    701
                 </div>
                 
 
@@ -637,7 +637,23 @@ SELECT * FROM user LIMIT 10,11</code></pre>
 
 
 
+<h4 id="使用distinct去重查询"><a href="#使用distinct去重查询" class="headerlink" title="使用distinct去重查询"></a>使用distinct去重查询</h4><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token keyword">DISTINCT</span> 列<span class="token punctuation">,</span>列<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">from</span> 表</code></pre>
 
+
+
+<p>例子：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token comment">#查出user表中name和address不相同的数据</span>
+<span class="token keyword">SELECT</span> <span class="token keyword">DISTINCT</span> name<span class="token punctuation">,</span>address <span class="token keyword">from</span> <span class="token keyword">user</span></code></pre>
+
+
+
+<h4 id="查询列为空的值"><a href="#查询列为空的值" class="headerlink" title="查询列为空的值"></a>查询列为空的值</h4><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> 表 <span class="token keyword">where</span> 字段 <span class="token operator">is</span> <span class="token boolean">null</span></code></pre>
+
+
+
+<p>例子：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token comment">#查出user表中address为空的值</span>
+<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token keyword">user</span> <span class="token keyword">where</span> address <span class="token operator">is</span> <span class="token boolean">null</span></code></pre>
 
 
                 
