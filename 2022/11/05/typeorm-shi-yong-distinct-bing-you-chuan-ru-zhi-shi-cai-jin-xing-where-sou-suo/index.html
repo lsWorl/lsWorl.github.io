@@ -4,11 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="nestjs的模块，控制器，提供者介绍, LsWorld">
-    <meta name="description" content="介绍
-本文参考了nestjs官方文档
-
-在使用了用nodejs搭建的koa和express框架后发现使用前端的语法也可以搭建一个不错的后端，而现在又逐渐趋势于用typescript来开发，就发现了nestjs可以很好的支持typescrip">
+    <meta name="keywords" content="typeorm使用distinct并有传入值时才进行where搜索, LsWorld">
+    <meta name="description" content="TypeOrm介绍typeorm是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用typeorm可能有时候不如直接sql语法查询，但是使用orm框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -22,7 +19,7 @@
 
     
 
-    <title>nestjs的模块，控制器，提供者介绍 | LsWorld</title>
+    <title>typeorm使用distinct并有传入值时才进行where搜索 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -312,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">nestjs的模块，控制器，提供者介绍</h1>
+                    <h1 class="description center-align post-title">typeorm使用distinct并有传入值时才进行where搜索</h1>
                 </div>
             </div>
         </div>
@@ -441,6 +438,10 @@
                                 <span class="chip bg-color">node.js</span>
                             </a>
                         
+                            <a href="/tags/typeorm/">
+                                <span class="chip bg-color">typeorm</span>
+                            </a>
+                        
                     </div>
                     
                 </div>
@@ -462,21 +463,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-10-15
+                    2022-11-05
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-10-15
+                    2022-11-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.4k
+                    771
                 </div>
                 
 
@@ -496,131 +497,67 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><blockquote>
-<p>本文参考了<a target="_blank" rel="noopener" href="https://docs.nestjs.com/">nestjs官方文档</a></p>
-</blockquote>
-<p>在使用了用<code>nodejs</code>搭建的<code>koa</code>和<code>express</code>框架后发现使用前端的语法也可以搭建一个不错的后端，而现在又逐渐趋势于用<code>typescript</code>来开发，就发现了<code>nestjs</code>可以很好的支持<code>typescript</code>并进行一个工程化的开发。</p>
-<h3 id="新建"><a href="#新建" class="headerlink" title="新建"></a>新建</h3><p>在开始之前，可以使用nest的脚手架来快速搭建一个nest项目。（确保Node.js（&gt;&#x3D;10.13.0,v13除外））</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i -g @nestjs/cli
-nest new project-name <span class="token comment">#project-name为项目名，会在当前目录下新建一个nestjs项目</span></code></pre>
+                <h3 id="TypeOrm介绍"><a href="#TypeOrm介绍" class="headerlink" title="TypeOrm介绍"></a>TypeOrm介绍</h3><p><code>typeorm</code>是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用<code>typeorm</code>可能有时候不如直接<code>sql</code>语法查询，但是使用<code>orm</code>框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少重复代码的书写。</p>
+<h3 id="使用distinct与where配合搜索"><a href="#使用distinct与where配合搜索" class="headerlink" title="使用distinct与where配合搜索"></a>使用distinct与where配合搜索</h3><p>在一些场景中，<code>typeorm</code>所提供的<code>Repository API</code>并不能满足我们查询的需求，这时候就只有两种方案，一种是直接使用<code>typeorm</code>提供的<code>query()</code>方法直接使用<code>sql</code>语句来进行复杂查询，还有就是使用查询构造器<code>Query Builder</code>来进行查询。</p>
+<p>当然，既然我们都用<code>orm</code>框架了，当然是要减少使用<code>sql</code>语句的场景的。</p>
+<p>此时这就有个需求，当我们需要查询数据有多条，但我们只需要其中一条，并且他的<code>where</code>的值可能是不存在的，这种场景单纯使用<code>find()</code>是解决不了的，就需要使用<code>Query Builder</code>。</p>
+<h4 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h4><p>就如这有个<code>User</code>表，结构为：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
+  <span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>name<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>phone<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
-<p>创建时会让你选择用什么作为包管理工具，这里默认使用npm。</p>
-<p><img src="https://img-blog.csdnimg.cn/b5f16a74f7e84eb5ab019f1c48fd4909.png" alt="start"></p>
-<p>等待完成后就可以进入到项目中使用<code>npm run start</code>来运行项目了。（也可以使用<code>npm run start:dev</code>来运行启动热更新。）</p>
-<h3 id="文件介绍"><a href="#文件介绍" class="headerlink" title="文件介绍"></a>文件介绍</h3><p>项目创建后，自动在<code>src</code>生成了一下文件：</p>
-<p>app.controller.ts</p>
-<p>app.controller.spec.ts</p>
-<p>app.module.ts</p>
-<p>app.service.ts</p>
-<p>main.ts</p>
-<p><code>main.ts</code>作为项目入口文件，默认监听了<code>3000</code>端口，并将<code>AppModule</code>进行了挂载。根据<code>nestjs</code>自动生成的这些文件就可以大概了解一个<code>nestjs</code>项目应该如何书写。</p>
-<p><img src="https://img-blog.csdnimg.cn/4b38cf21d8334bffbd63a97067b49438.png" alt="main.ts"></p>
-<h4 id="module"><a href="#module" class="headerlink" title="module"></a><code>module</code></h4><p>因为在<code>main.ts</code>的入口文件中引入了<code>AppModule</code>，所以首先我们先看<code>module</code>文件。</p>
-<p><img src="https://img-blog.csdnimg.cn/d2abea4b6830477fbb30cd36c68c1da5.png" alt="module"></p>
-<p>根据上图可以看到先前的<code>AppController</code>和<code>AppService</code>文件都是经过<code>AppModule</code>模块，这里就涉及nestjs很重要的概念，**<code>Controllers</code>和<code>Providers</code>**，这就像后端很经典的<code>MVC</code>架构，将控制层和服务层分层进行，将所有对数据库的操作都放在<code>Providers</code>(但不是所有的<code>Providers</code>都是用于操作数据库)中，将要返回前端的数据逻辑都在<code>Controllers</code>中进行，而<code>Module</code>主要为了管理控制层和服务层，有可能一个接口中需要调用多个数据库的操作，这时候就需要在<code>Module</code>中注册。</p>
-<p><img src="https://img-blog.csdnimg.cn/e1d57f967ad6405db6f83e7970197951.png" alt="module"></p>
-<p>在目前的Module的<code>imports</code>的部分就会用到上图的模块管理，也可以在其中结合<code>TypeOrm</code>来实现用<code>ORM</code>框架来对数据库进行操作。</p>
-<p>总之，在每次新建了控制器或提供者就需要在<code>module</code>中进行引入，这样nest才能识别的到。</p>
-<h4 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a><code>Controller</code></h4><p>在控制器中，主要处理要返回给客户端的相应相关的数据。</p>
-<p><img src="https://nestjs.bootcss.com/assets/Controllers_1.png" alt="controller"></p>
-<p>可以使用路由来实现一个基本的接口。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//@Controller创建一个以/text为路径的控制器</span>
-<span class="token decorator"><span class="token at operator">@</span><span class="token function">Controller</span></span><span class="token punctuation">(</span><span class="token string">'/text'</span><span class="token punctuation">)</span>
-<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Ctroll</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">//当发送以/text为路径的请求并以Get的方式时会走这</span>
-    <span class="token decorator"><span class="token at operator">@</span><span class="token function">Get</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token function">find</span><span class="token punctuation">(</span><span class="token decorator"><span class="token at operator">@</span><span class="token function">Query</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>query<span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token comment">//以query的形式发送，即localhost:3000/text?a=1  query的值就是&#123;a:1&#125;</span>
-        <span class="token keyword">return</span> query<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
+<p>这时为这张表添加三个用户，让名字和手机号各有两个为相同。</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'2'</span><span class="token punctuation">,</span> <span class="token string">'李四'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'3'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'09876543210'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
-<p>使用控制器可以接收三种类型的参数，除了上方用到的<code>query</code>，还有<code>param</code>和<code>body</code>。</p>
-<ul>
-<li><code>query</code>就是以<code>localhost:3000/text?a=1</code>的形式进行发送</li>
-<li><code>param</code>就是以<code>localhost:3000/text/:id</code>的形式进行发送</li>
-</ul>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token decorator"><span class="token at operator">@</span><span class="token function">Get</span></span><span class="token punctuation">(</span><span class="token string">':id'</span><span class="token punctuation">)</span> <span class="token comment">//以路径的形式发送</span>
-<span class="token function">find</span><span class="token punctuation">(</span><span class="token decorator"><span class="token at operator">@</span><span class="token function">Param</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>param<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> param
-<span class="token punctuation">&#125;</span></code></pre>
+<p>此时我们要是只是想单纯查出名字叫张三的人用<code>find()</code>就能实现。</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">this</span><span class="token punctuation">.</span>Repository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    where<span class="token operator">:</span><span class="token punctuation">&#123;</span>name<span class="token operator">:</span><span class="token string">'张三'</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token comment">//转换成的sql语句：SELECT * FROM user WHERE name = '张三'</span></code></pre>
 
-<ul>
-<li><code>body</code>则是以对象的形式进行发送(常用于POST请求)</li>
-</ul>
-<p>例：</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//发送数据</span>
-axios<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/user'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
-    firstName<span class="token operator">:</span> <span class="token string">'Fred'</span><span class="token punctuation">,</span>
-    lastName<span class="token operator">:</span> <span class="token string">'Flintstone'</span>
-  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+<p>此时再加一个需求，要是查询的时候没有name这个<code>name</code>字段并且还需要对手机号进行去重后要求返回所有数据。（这里业务可能不太清晰，主要为了实现功能…）此时可能就需要使用<code>distinct</code>并且来判断<code>name</code>字段是否为空。</p>
+<p>很显然<code>find()</code>方法中没有这个<code>distinct</code>方法，此时就得使用<code>Query Builder</code>来协助我们完成这个需求。</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//因为要是直接使用where(&#123;phone:xxx&#125;)来进行查询，当传入值为null的时候就会生成WHERE phone = null这样的sql语句，显然是不符合我们的需求的，就需要动态来添加</span>
 
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//接收数据</span>
-<span class="token decorator"><span class="token at operator">@</span><span class="token function">Post</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token function">find</span><span class="token punctuation">(</span><span class="token decorator"><span class="token at operator">@</span><span class="token function">Body</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>body<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> body
-<span class="token punctuation">&#125;</span></code></pre>
+<span class="token comment">// 条件对象</span>
+<span class="token keyword">const</span> whereInfo <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>phone <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//如果传入的手机不为空，我们就动态为对象添加一个key 只有当phone有值的时候才会添加，否则默认全查询</span>
+    whereInfo<span class="token punctuation">[</span><span class="token string">'phone'</span><span class="token punctuation">]</span> <span class="token operator">=</span> phone
+<span class="token punctuation">&#125;</span>
 
-<p>此时要是不需要操作数据库的话，就已经实现了一个简单的后端接口了，当然，还有许多如设置相应头，相应码等功能，就得通过官方文档来了解了。</p>
-<h4 id="Providers"><a href="#Providers" class="headerlink" title="Providers"></a><code>Providers</code></h4><p><code>Providers</code>是基于nestjs的一个概念，<code>Providers</code>可以是操作数据库的服务层，也可以是<code>helpers</code>，或者其他，主要就是为了提供一些注入的依赖。</p>
-<p><img src="https://docs.nestjs.com/assets/Components_1.png" alt="providers"></p>
-<p>在使用<code>Service</code>之前，我们可以先连接数据库，这里以<code>mysql</code>为例，需要先下载<code>mysql</code>和<code>typeorm</code>的依赖，当然<code>typeorm</code>不是必要的,即<code>npm i mysql2</code>和<code>npm install typeorm --save</code>。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//app.module.ts</span>
-<span class="token keyword">import</span> <span class="token punctuation">&#123;</span> TypeOrmModule <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'@nestjs/typeorm'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">&#123;</span> UserTable <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'./entity/userTable.entity'</span><span class="token punctuation">;</span>
-<span class="token decorator"><span class="token at operator">@</span><span class="token function">Module</span></span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-    imports<span class="token operator">:</span><span class="token punctuation">[</span>
-        <span class="token comment">//连接数据库</span>
-        <span class="token comment">// 连接数据库</span>
-    	TypeOrmModule<span class="token punctuation">.</span><span class="token function">forRoot</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-      	  type<span class="token operator">:</span> <span class="token string">'mysql'</span><span class="token punctuation">,</span>
-      	  host<span class="token operator">:</span> <span class="token string">'ip地址'</span><span class="token punctuation">,</span>
-      	  port<span class="token operator">:</span> 端口<span class="token punctuation">,</span>
-      	  username<span class="token operator">:</span> <span class="token string">'用户'</span><span class="token punctuation">,</span>
-      	  password<span class="token operator">:</span> <span class="token string">'密码'</span><span class="token punctuation">,</span>
-      	  database<span class="token operator">:</span> <span class="token string">'表'</span><span class="token punctuation">,</span>
-      	  entities<span class="token operator">:</span> <span class="token punctuation">[</span>UserTable<span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token comment">//添加的实体 UserTable在代码在下方</span>
-      	<span class="token comment">// 数据库同步更新</span>
-      	synchronize<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token keyword">this</span><span class="token punctuation">.</span>Repository
+      <span class="token punctuation">.</span><span class="token function">createQueryBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+        <span class="token string">'user.phone as phone'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>User<span class="token punctuation">,</span> <span class="token string">'user'</span><span class="token punctuation">)</span> <span class="token comment">//这里的User是实体Entity的User，别名为user</span>
+      <span class="token punctuation">.</span><span class="token function">distinct</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token comment">//开启distinct</span>
+      <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span>whereInfo<span class="token punctuation">)</span><span class="token comment">//使用where，里面传入数组</span>
+      <span class="token punctuation">.</span><span class="token function">getRawMany</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取数据</span></code></pre>
+
+<p>使用上方语句，要是没传参应该是默认会获取到：</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+    <span class="token punctuation">[</span>
+    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span>
+    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">09876543210</span>
     <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
-
-<p>不过目前最多还是用来对于数据库的增删改查。<code>Providers</code>一般以<code>@Injectable()</code>开头，使用类来包裹，用构造函数来注入要修改的数据，构造函数中声明了以后，在调用函数就可以通过<code>this</code>来调用其中的函数。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//service</span>
-<span class="token decorator"><span class="token at operator">@</span><span class="token function">Injectable</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">TextService</span><span class="token punctuation">&#123;</span>
-    <span class="token function">constructor</span><span class="token punctuation">(</span>
-      <span class="token decorator"><span class="token at operator">@</span><span class="token function">InjectRepository</span></span><span class="token punctuation">(</span>UserTable<span class="token punctuation">)</span> <span class="token comment">//userTable是一个用typeorm的实体，代码在下方，要是不了解typeorm可以去查看下他的官方文档</span>
-      <span class="token keyword">private</span> <span class="token keyword">readonly</span> userTableRepository<span class="token operator">:</span> Repository<span class="token operator">&lt;</span>UserTable<span class="token operator">></span><span class="token punctuation">,</span> <span class="token comment">//添加私人与只读属性防止修改</span>
-    <span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-    <span class="token keyword">async</span> <span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>userTableRepository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//find是typeorm的一个方法，类似于sql语句的SELECT * FROM userTable;</span>
-    <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token decorator"><span class="token at operator">@</span><span class="token function">Entity</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">UserTable</span><span class="token punctuation">&#123;</span>
-    <span class="token decorator"><span class="token at operator">@</span><span class="token function">PrimaryGeneratedColumn</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-  	id<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
-    <span class="token decorator"><span class="token at operator">@</span><span class="token function">Column</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    userName<span class="token operator">:</span><span class="token builtin">string</span>
+<p>如上两条数据，当我们传入<code>phone</code>参数为：12345678910时，获取到：</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+    <span class="token punctuation">[</span>
+    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
+    <span class="token punctuation">]</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>当然，上方是连接了mysql后所可以进行的操作，要是没有连接mysql，则nest就会直接报错。</p>
-<h5 id="controller中运用service"><a href="#controller中运用service" class="headerlink" title="controller中运用service"></a>controller中运用service</h5><p>在nest中基本都是通过构造函数的方式来传递相互的数据，当然这些都需要在Module模块中进行注册。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> TextService <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'./financial_table.service'</span><span class="token punctuation">;</span>
-
-<span class="token decorator"><span class="token at operator">@</span><span class="token function">Controller</span></span><span class="token punctuation">(</span><span class="token string">'/text'</span><span class="token punctuation">)</span>
-<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Ctroll</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">//这里就获取了Textservice了</span>
-    <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token keyword">private</span> <span class="token keyword">readonly</span> textService<span class="token operator">:</span> TextService<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>、
-    <span class="token decorator"><span class="token at operator">@</span><span class="token function">Get</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">async</span> <span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">await</span> <span class="token keyword">this</span><span class="token punctuation">.</span>textService<span class="token punctuation">.</span><span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>这样就完成了基本的数据库操作了，也可以实现最基础的后端接口了，当然还有其他使用<code>Pipe</code>进行管道验证等功能可以通过官方文档来了解更多。</p>
+<p>这样就完美符合我们的业务需求了，使用<code>distinct</code>来去除相同数据并使用<code>where</code>动态进行搜索。</p>
 
                 
             </div>
@@ -647,7 +584,7 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/10/15/nestjs-de-shi-yong/">http://example.com/2022/10/15/nestjs-de-shi-yong/</a>
+                    <a href="http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -691,6 +628,10 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                             
                                 <a href="/tags/node-js/">
                                     <span class="chip bg-color">node.js</span>
+                                </a>
+                            
+                                <a href="/tags/typeorm/">
+                                    <span class="chip bg-color">typeorm</span>
                                 </a>
                             
                         </div>
@@ -1004,9 +945,10 @@ axios<span class="token punctuation">.</span><span class="token function">post</
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">
                     <div class="card-image">
@@ -1024,9 +966,9 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-11-05
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-05
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1039,6 +981,7 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1065,13 +1008,13 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/09/29/flutter-zhong-yun-yong-provider/">
+                <a href="/2022/10/15/nestjs-de-shi-yong/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="Flutter中运用Provider">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="nestjs的模块，控制器，提供者介绍">
                         
-                        <span class="card-title">Flutter中运用Provider</span>
+                        <span class="card-title">nestjs的模块，控制器，提供者介绍</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1082,14 +1025,14 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-09-29
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-15
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Flutter/" class="post-category">
-                                    Flutter
+                            <a href="/categories/node-js/" class="post-category">
+                                    node.js
                                 </a>
                             
                             
@@ -1099,12 +1042,12 @@ axios<span class="token punctuation">.</span><span class="token function">post</
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Flutter/">
-                        <span class="chip bg-color">Flutter</span>
+                    <a href="/tags/nestjs/">
+                        <span class="chip bg-color">nestjs</span>
                     </a>
                     
-                    <a href="/tags/Provider/">
-                        <span class="chip bg-color">Provider</span>
+                    <a href="/tags/node-js/">
+                        <span class="chip bg-color">node.js</span>
                     </a>
                     
                 </div>
