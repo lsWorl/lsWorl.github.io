@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="typeorm使用distinct并有传入值时才进行where搜索, LsWorld">
-    <meta name="description" content="TypeOrm介绍typeorm是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用typeorm可能有时候不如直接sql语法查询，但是使用orm框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少">
+    <meta name="keywords" content="如何对后端传来的数据进行JSON序列化, LsWorld">
+    <meta name="description" content="引言在传统Web开发领域我们通过ajax请求接收到后端发来的数据时，浏览器都已经帮我们完成了json的序列化，而在Flutter显然是不支持直接显示后端接收到的请求的，如此我们就需要对请求接收到的数据进行序列化，转变成为我们能看懂的东西。这">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +19,7 @@
 
     
 
-    <title>typeorm使用distinct并有传入值时才进行where搜索 | LsWorld</title>
+    <title>如何对后端传来的数据进行JSON序列化 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +309,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">typeorm使用distinct并有传入值时才进行where搜索</h1>
+                    <h1 class="description center-align post-title">如何对后端传来的数据进行JSON序列化</h1>
                 </div>
             </div>
         </div>
@@ -430,16 +430,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/nestjs/">
-                                <span class="chip bg-color">nestjs</span>
+                            <a href="/tags/Flutter/">
+                                <span class="chip bg-color">Flutter</span>
                             </a>
                         
-                            <a href="/tags/node-js/">
-                                <span class="chip bg-color">node.js</span>
-                            </a>
-                        
-                            <a href="/tags/typeorm/">
-                                <span class="chip bg-color">typeorm</span>
+                            <a href="/tags/JSON/">
+                                <span class="chip bg-color">JSON</span>
                             </a>
                         
                     </div>
@@ -450,8 +446,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/node-js/" class="post-category">
-                                node.js
+                            <a href="/categories/Flutter/" class="post-category">
+                                Flutter
                             </a>
                         
                     </div>
@@ -463,21 +459,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-11-05
+                    2022-11-09
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-05
+                    2022-11-10
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    771
+                    1.2k
                 </div>
                 
 
@@ -497,67 +493,135 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="TypeOrm介绍"><a href="#TypeOrm介绍" class="headerlink" title="TypeOrm介绍"></a>TypeOrm介绍</h3><p><code>typeorm</code>是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用<code>typeorm</code>可能有时候不如直接<code>sql</code>语法查询，但是使用<code>orm</code>框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少重复代码的书写。</p>
-<h3 id="使用distinct与where配合搜索"><a href="#使用distinct与where配合搜索" class="headerlink" title="使用distinct与where配合搜索"></a>使用distinct与where配合搜索</h3><p>在一些场景中，<code>typeorm</code>所提供的<code>Repository API</code>并不能满足我们查询的需求，这时候就只有两种方案，一种是直接使用<code>typeorm</code>提供的<code>query()</code>方法直接使用<code>sql</code>语句来进行复杂查询，还有就是使用查询构造器<code>Query Builder</code>来进行查询。</p>
-<p>当然，既然我们都用<code>orm</code>框架了，当然是要减少使用<code>sql</code>语句的场景的。</p>
-<p>此时这就有个需求，当我们需要查询数据有多条，但我们只需要其中一条，并且他的<code>where</code>的值可能是不存在的，这种场景单纯使用<code>find()</code>是解决不了的，就需要使用<code>Query Builder</code>。</p>
-<h4 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h4><p>就如这有个<code>User</code>表，结构为：</p>
-<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
-  <span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
-  <span class="token identifier"><span class="token punctuation">`</span>name<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-  <span class="token identifier"><span class="token punctuation">`</span>phone<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>这时为这张表添加三个用户，让名字和手机号各有两个为相同。</p>
-<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'2'</span><span class="token punctuation">,</span> <span class="token string">'李四'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'3'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'09876543210'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>此时我们要是只是想单纯查出名字叫张三的人用<code>find()</code>就能实现。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">this</span><span class="token punctuation">.</span>Repository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-    where<span class="token operator">:</span><span class="token punctuation">&#123;</span>name<span class="token operator">:</span><span class="token string">'张三'</span><span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token comment">//转换成的sql语句：SELECT * FROM user WHERE name = '张三'</span></code></pre>
-
-<p>此时再加一个需求，要是查询的时候没有name这个<code>name</code>字段并且还需要对手机号进行去重后要求返回所有数据。（这里业务可能不太清晰，主要为了实现功能…）此时可能就需要使用<code>distinct</code>并且来判断<code>name</code>字段是否为空。</p>
-<p>很显然<code>find()</code>方法中没有这个<code>distinct</code>方法，此时就得使用<code>Query Builder</code>来协助我们完成这个需求。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//因为要是直接使用where(&#123;phone:xxx&#125;)来进行查询，当传入值为null的时候就会生成WHERE phone = null这样的sql语句，显然是不符合我们的需求的，就需要动态来添加</span>
-
-<span class="token comment">// 条件对象</span>
-<span class="token keyword">const</span> whereInfo <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span><span class="token punctuation">(</span>phone <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">//如果传入的手机不为空，我们就动态为对象添加一个key 只有当phone有值的时候才会添加，否则默认全查询</span>
-    whereInfo<span class="token punctuation">[</span><span class="token string">'phone'</span><span class="token punctuation">]</span> <span class="token operator">=</span> phone
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">this</span><span class="token punctuation">.</span>Repository
-      <span class="token punctuation">.</span><span class="token function">createQueryBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
-        <span class="token string">'user.phone as phone'</span><span class="token punctuation">,</span>
-      <span class="token punctuation">]</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>User<span class="token punctuation">,</span> <span class="token string">'user'</span><span class="token punctuation">)</span> <span class="token comment">//这里的User是实体Entity的User，别名为user</span>
-      <span class="token punctuation">.</span><span class="token function">distinct</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token comment">//开启distinct</span>
-      <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span>whereInfo<span class="token punctuation">)</span><span class="token comment">//使用where，里面传入数组</span>
-      <span class="token punctuation">.</span><span class="token function">getRawMany</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取数据</span></code></pre>
-
-<p>使用上方语句，要是没传参应该是默认会获取到：</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
-    <span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">09876543210</span>
-    <span class="token punctuation">]</span>
+                <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在传统Web开发领域我们通过ajax请求接收到后端发来的数据时，浏览器都已经帮我们完成了<code>json</code>的序列化，而在<code>Flutter</code>显然是不支持直接显示后端接收到的请求的，如此我们就需要对请求接收到的数据进行序列化，转变成为我们能看懂的东西。这里我主要介绍<a target="_blank" rel="noopener" href="https://flutter.cn/docs/development/data-and-backend/json">JSON 和序列化数据 - Flutter 中文文档 - Flutter 中文开发者网站 - Flutter</a>中的三种序列化方式。</p>
+<ul>
+<li>直接使用内联序列化JSON数据（这种方式很方便，但是在代码运行前你都无法知道你取的类型是否正确，导致代码很容易出错）</li>
+<li></li>
+</ul>
+<h3 id="内联序列化JSON数据"><a href="#内联序列化JSON数据" class="headerlink" title="内联序列化JSON数据"></a>内联序列化JSON数据</h3><p>实现方法很简单，主要依靠<code>Flutter</code>内置的<code>json.decode()</code>函数来对接收到后端的数据进行解码。</p>
+<p>先说结论，主要用的就是<code>json.decode(value.toString());</code>，就是将获取到的数据转为字符串后进行<code>json</code>解码。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//发送请求类 这里使用的是dio来进行发请求 就简易的实现发送get请求</span>
+<span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:dio/dio.dart'</span></span><span class="token punctuation">;</span>
+<span class="token keyword">class</span> <span class="token class-name">Request</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">// 配置实例</span>
+  	<span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">BaseOptions</span> _options <span class="token operator">=</span> <span class="token class-name">BaseOptions</span><span class="token punctuation">(</span>
+    <span class="token comment">// baseUrl配置要发请求的地址</span>
+    baseUrl<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">'http://127.0.0.1:3000/'</span></span><span class="token punctuation">,</span>
+    <span class="token comment">//连接超时时间</span>
+    connectTimeout<span class="token punctuation">:</span> <span class="token number">5000</span><span class="token punctuation">,</span>
+    <span class="token comment">//接收超时时间</span>
+    receiveTimeout<span class="token punctuation">:</span> <span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 创建Dio实例</span>
+    <span class="token keyword">static</span> <span class="token class-name">Dio</span> _dio <span class="token operator">=</span> <span class="token class-name">Dio</span><span class="token punctuation">(</span>_options<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">Future</span> <span class="token keyword">get</span><span class="token punctuation">(</span><span class="token class-name">String</span> path<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span><span class="token operator">?</span> params<span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>params <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> _dio<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> queryParameters<span class="token punctuation">:</span> params<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> _dio<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>如上两条数据，当我们传入<code>phone</code>参数为：12345678910时，获取到：</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
-    <span class="token punctuation">]</span>
+<p>有了发送请求类，接下来就是调用像后端发送请求。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//这里是发送请求获取具体数据的类</span>
+<span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:imapp/http/request.dart'</span></span><span class="token punctuation">;</span>
+<span class="token keyword">class</span> <span class="token class-name">ContactsModel</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">//创建请求实例</span>
+  <span class="token class-name">Request</span> http <span class="token operator">=</span> <span class="token class-name">Request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">//根据传入的userId来向后端发送请求</span>
+  <span class="token class-name">Future</span> <span class="token function">getContactsInfo</span><span class="token punctuation">(</span>int userId<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> http<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'/userContacts'</span></span><span class="token punctuation">,</span> params<span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">:</span> userId<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>这样就完美符合我们的业务需求了，使用<code>distinct</code>来去除相同数据并使用<code>where</code>动态进行搜索。</p>
+<p>经过上面一系列的操作后，就是具体视图层的操作。<strong>这里是主要进行序列化的地方</strong></p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//获取联系人模型，就是将上方的类进行实例化</span>
+<span class="token class-name">ContactsModel</span> contactsModel <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ContactsModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//用来存放获取的用户数据</span>
+late <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> contactsResult<span class="token punctuation">;</span>
+
+<span class="token comment">// 获取联系人</span>
+<span class="token keyword">await</span> contactsModel
+    <span class="token punctuation">.</span><span class="token function">getContactsInfo</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'------------联系人数据----------'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//主要序列化的方式</span>
+        contactsResult <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'code'</span></span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">//这就获取到了后端的数据了</span>
+            <span class="token function">print</span><span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'data'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>使用上方这种方法，想获取内部数据就只能用<code>map[&#39;name&#39;]</code>这种形式来读取，就很难判断类型，因此需要更好的方法。</p>
+<h3 id="在模型类中序列化-JSON-数据"><a href="#在模型类中序列化-JSON-数据" class="headerlink" title="在模型类中序列化 JSON 数据"></a>在模型类中序列化 JSON 数据</h3><p>在上方代码中新建一个模型类来解决难以判断类型的方法。代码如下：</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//模型类 这里直接拷贝文档的代码了，想了解更多可以去阅读官方文档（文档很清晰！！！）</span>
+<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">final</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
+  <span class="token keyword">final</span> <span class="token class-name">String</span> email<span class="token punctuation">;</span>
+
+  <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token class-name">User</span><span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> json<span class="token punctuation">)</span>
+      <span class="token punctuation">:</span> name <span class="token operator">=</span> json<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'name'</span></span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        email <span class="token operator">=</span> json<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'email'</span></span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+  <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> <span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">&#123;</span>
+        <span class="token string-literal"><span class="token string">'name'</span></span><span class="token punctuation">:</span> name<span class="token punctuation">,</span>
+        <span class="token string-literal"><span class="token string">'email'</span></span><span class="token punctuation">:</span> email<span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>接下来在上方获取联系人的时候使用这个模型类</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token class-name">ContactsModel</span> contactsModel <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ContactsModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//用来存放获取的用户数据</span>
+late <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> contactsResult<span class="token punctuation">;</span>
+
+<span class="token comment">// 获取联系人</span>
+<span class="token keyword">await</span> contactsModel
+    <span class="token punctuation">.</span><span class="token function">getContactsInfo</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'------------联系人数据----------'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//主要序列化的方式</span>
+        contactsResult <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'code'</span></span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">//这就获取到了后端的数据了</span>
+            <span class="token function">print</span><span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'data'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">//主要操作在这！！！！！</span>
+            <span class="token keyword">var</span> user <span class="token operator">=</span> <span class="token class-name">User</span><span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'data'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+            <span class="token comment">//就可以直接使用user.email来获取到数据了</span>
+            <span class="token function">print</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//打印email</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>虽然这种方法解决了无法判断类型的问题，但仍然不是最优的方法，有没有一种方法可以直接根据我们提供的参数自动生成<code>json</code>序列化格式呢？当然是有的，官方就推荐了使用<code>json_serializable</code>。</p>
+<p>具体如下。</p>
+<h2 id="使用代码生成库序列化-JSON-数据"><a href="#使用代码生成库序列化-JSON-数据" class="headerlink" title="使用代码生成库序列化 JSON 数据"></a>使用代码生成库序列化 JSON 数据</h2><p>在此之前，需要安装依赖：</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#这些都需要安装</span>
+<span class="token key atrule">dependencies</span><span class="token punctuation">:</span>
+  <span class="token comment"># 生成依赖</span>
+  <span class="token key atrule">json_annotation</span><span class="token punctuation">:</span> &lt;latest_version<span class="token punctuation">></span>
+
+<span class="token key atrule">dev_dependencies</span><span class="token punctuation">:</span>
+  <span class="token comment"># 开发依赖</span>
+  <span class="token key atrule">build_runner</span><span class="token punctuation">:</span> &lt;latest_version<span class="token punctuation">></span>
+  <span class="token key atrule">json_serializable</span><span class="token punctuation">:</span> &lt;latest_version<span class="token punctuation">></span></code></pre>
+
+<p>在项目根目录下运行<code>flutter pub get 包名</code>或者直接在<code>pubspec.yaml</code>进行安装。</p>
+<p>安装完成后，以上方当时的<code>User</code>模型类来作为例子。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:json_annotation/json_annotation.dart'</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">part</span> <span class="token string-literal"><span class="token string">'user.g.dart'</span></span><span class="token punctuation">;</span><span class="token comment">//这部分在使用flutter pub run build_runner watch来进行监听后会自动根据类型来生成，所以要保证前后端的参数名要一致</span>
+<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">final</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
+  <span class="token keyword">final</span> <span class="token class-name">String</span> email<span class="token punctuation">;</span>
+
+  <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">factory</span> <span class="token class-name">User</span><span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> json<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> _$<span class="token class-name">UserFromJson</span><span class="token punctuation">(</span>json<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> <span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> _$<span class="token class-name">UserToJson</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>这样就会和原先达到相同的效果，但是以更加灵活的方式来实现，调用的方法还是与第二种方法是相同的。</p>
 
                 
             </div>
@@ -584,7 +648,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/</a>
+                    <a href="http://example.com/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/">http://example.com/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -622,16 +686,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/nestjs/">
-                                    <span class="chip bg-color">nestjs</span>
+                                <a href="/tags/Flutter/">
+                                    <span class="chip bg-color">Flutter</span>
                                 </a>
                             
-                                <a href="/tags/node-js/">
-                                    <span class="chip bg-color">node.js</span>
-                                </a>
-                            
-                                <a href="/tags/typeorm/">
-                                    <span class="chip bg-color">typeorm</span>
+                                <a href="/tags/JSON/">
+                                    <span class="chip bg-color">JSON</span>
                                 </a>
                             
                         </div>
@@ -945,9 +1005,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/">
                     <div class="card-image">
@@ -965,9 +1026,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-11-09
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-09
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -980,6 +1041,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1002,13 +1064,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/10/15/nestjs-de-shi-yong/">
+                <a href="/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="nestjs的模块，控制器，提供者介绍">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="typeorm使用distinct并有传入值时才进行where搜索">
                         
-                        <span class="card-title">nestjs的模块，控制器，提供者介绍</span>
+                        <span class="card-title">typeorm使用distinct并有传入值时才进行where搜索</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1019,7 +1081,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-15
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-05
                             </span>
                         <span class="publish-author">
                             
@@ -1042,6 +1104,10 @@
                     
                     <a href="/tags/node-js/">
                         <span class="chip bg-color">node.js</span>
+                    </a>
+                    
+                    <a href="/tags/typeorm/">
+                        <span class="chip bg-color">typeorm</span>
                     </a>
                     
                 </div>
