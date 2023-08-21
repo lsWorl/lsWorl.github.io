@@ -4,8 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="如何对后端传来的数据进行JSON序列化, LsWorld">
-    <meta name="description" content="引言在传统Web开发领域我们通过ajax请求接收到后端发来的数据时，浏览器都已经帮我们完成了json的序列化，而在Flutter显然是不支持直接显示后端接收到的请求的，如此我们就需要对请求接收到的数据进行序列化，转变成为我们能看懂的东西。这">
+    <meta name="keywords" content="数据存储相关, LsWorld">
+    <meta name="description" content="整型内存存储的数据形式计算机中的有符号数（整形，**即首位为符号位，0表示”正”，1表示”负”**）有三种表示方式，即原码，反码和补码。（无符号数的原码反码补码和符号位为正时规则相同。）
+当符号位为正时（首位为0）则原码反码补码相同。
+当符">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +21,7 @@
 
     
 
-    <title>如何对后端传来的数据进行JSON序列化 | LsWorld</title>
+    <title>数据存储相关 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +311,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">如何对后端传来的数据进行JSON序列化</h1>
+                    <h1 class="description center-align post-title">数据存储相关</h1>
                 </div>
             </div>
         </div>
@@ -430,12 +432,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Flutter/">
-                                <span class="chip bg-color">Flutter</span>
-                            </a>
-                        
-                            <a href="/tags/JSON/">
-                                <span class="chip bg-color">JSON</span>
+                            <a href="/tags/C/">
+                                <span class="chip bg-color">C</span>
                             </a>
                         
                     </div>
@@ -446,8 +444,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/Flutter/" class="post-category">
-                                Flutter
+                            <a href="/categories/C/" class="post-category">
+                                C
                             </a>
                         
                     </div>
@@ -459,21 +457,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-11-09
+                    2023-08-20
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-10
+                    2023-08-21
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.2k
+                    894
                 </div>
                 
 
@@ -493,135 +491,64 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在传统Web开发领域我们通过ajax请求接收到后端发来的数据时，浏览器都已经帮我们完成了<code>json</code>的序列化，而在<code>Flutter</code>显然是不支持直接显示后端接收到的请求的，如此我们就需要对请求接收到的数据进行序列化，转变成为我们能看懂的东西。这里我主要介绍<a target="_blank" rel="noopener" href="https://flutter.cn/docs/development/data-and-backend/json">JSON 和序列化数据 - Flutter 中文文档 - Flutter 中文开发者网站 - Flutter</a>中的三种序列化方式。</p>
-<ul>
-<li>直接使用内联序列化JSON数据（这种方式很方便，但是在代码运行前你都无法知道你取的类型是否正确，导致代码很容易出错）</li>
-<li></li>
-</ul>
-<h3 id="内联序列化JSON数据"><a href="#内联序列化JSON数据" class="headerlink" title="内联序列化JSON数据"></a>内联序列化JSON数据</h3><p>实现方法很简单，主要依靠<code>Flutter</code>内置的<code>json.decode()</code>函数来对接收到后端的数据进行解码。</p>
-<p>先说结论，主要用的就是<code>json.decode(value.toString());</code>，就是将获取到的数据转为字符串后进行<code>json</code>解码。</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//发送请求类 这里使用的是dio来进行发请求 就简易的实现发送get请求</span>
-<span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:dio/dio.dart'</span></span><span class="token punctuation">;</span>
-<span class="token keyword">class</span> <span class="token class-name">Request</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">// 配置实例</span>
-  	<span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">BaseOptions</span> _options <span class="token operator">=</span> <span class="token class-name">BaseOptions</span><span class="token punctuation">(</span>
-    <span class="token comment">// baseUrl配置要发请求的地址</span>
-    baseUrl<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">'http://127.0.0.1:3000/'</span></span><span class="token punctuation">,</span>
-    <span class="token comment">//连接超时时间</span>
-    connectTimeout<span class="token punctuation">:</span> <span class="token number">5000</span><span class="token punctuation">,</span>
-    <span class="token comment">//接收超时时间</span>
-    receiveTimeout<span class="token punctuation">:</span> <span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">// 创建Dio实例</span>
-    <span class="token keyword">static</span> <span class="token class-name">Dio</span> _dio <span class="token operator">=</span> <span class="token class-name">Dio</span><span class="token punctuation">(</span>_options<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">Future</span> <span class="token keyword">get</span><span class="token punctuation">(</span><span class="token class-name">String</span> path<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span><span class="token operator">?</span> params<span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>params <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-      <span class="token keyword">return</span> _dio<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> queryParameters<span class="token punctuation">:</span> params<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> _dio<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
+                <h3 id="整型内存存储的数据形式"><a href="#整型内存存储的数据形式" class="headerlink" title="整型内存存储的数据形式"></a>整型内存存储的数据形式</h3><p>计算机中的有符号数（整形，**即首位为符号位，0表示”正”，1表示”负”**）有三种表示方式，即原码，反码和补码。（无符号数的原码反码补码和符号位为正时规则相同。）</p>
+<h4 id="当符号位为正时（首位为0）"><a href="#当符号位为正时（首位为0）" class="headerlink" title="当符号位为正时（首位为0）"></a>当符号位为正时（首位为0）</h4><p>则原码反码补码相同。</p>
+<h4 id="当符号位为负时（首位为1）"><a href="#当符号位为负时（首位为1）" class="headerlink" title="当符号位为负时（首位为1）"></a>当符号位为负时（首位为1）</h4><h5 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h5><p>将值翻译成二进制形式。</p>
+<h5 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h5><p>原码的符号位不变，其他位依次取反。</p>
+<h5 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h5><p>在反码的基础上+1就可以得到补码。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span> <span class="token comment">//4个字节-32bit</span>
+<span class="token comment">//转换成二进制</span>
+<span class="token comment">//原码：00000000 00000000 00000000 00000100</span>
+<span class="token comment">//反码：00000000 00000000 00000000 00000100</span>
+<span class="token comment">//补码：00000000 00000000 00000000 00000100</span>
+<span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">5</span><span class="token punctuation">;</span>
+<span class="token comment">//转换成二进制</span>
+<span class="token comment">//原码：10000000 00000000 00000000 00000101</span>
+<span class="token comment">//反码：11111111 11111111 11111111 11111010</span>
+<span class="token comment">//补码：11111111 11111111 11111111 11111100</span></code></pre>
 
-<p>有了发送请求类，接下来就是调用像后端发送请求。</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//这里是发送请求获取具体数据的类</span>
-<span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:imapp/http/request.dart'</span></span><span class="token punctuation">;</span>
-<span class="token keyword">class</span> <span class="token class-name">ContactsModel</span> <span class="token punctuation">&#123;</span>
-  <span class="token comment">//创建请求实例</span>
-  <span class="token class-name">Request</span> http <span class="token operator">=</span> <span class="token class-name">Request</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token comment">//根据传入的userId来向后端发送请求</span>
-  <span class="token class-name">Future</span> <span class="token function">getContactsInfo</span><span class="token punctuation">(</span>int userId<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> http<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'/userContacts'</span></span><span class="token punctuation">,</span> params<span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">:</span> userId<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
 
-<p>经过上面一系列的操作后，就是具体视图层的操作。<strong>这里是主要进行序列化的地方</strong></p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//获取联系人模型，就是将上方的类进行实例化</span>
-<span class="token class-name">ContactsModel</span> contactsModel <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ContactsModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">//用来存放获取的用户数据</span>
-late <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> contactsResult<span class="token punctuation">;</span>
 
-<span class="token comment">// 获取联系人</span>
-<span class="token keyword">await</span> contactsModel
-    <span class="token punctuation">.</span><span class="token function">getContactsInfo</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
-    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'------------联系人数据----------'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">//主要序列化的方式</span>
-        contactsResult <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'code'</span></span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token comment">//这就获取到了后端的数据了</span>
-            <span class="token function">print</span><span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'data'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><strong>对于整形来说：内存中存放的时补码（补码可以让加减法统一处理，无需额外的硬件电路）。</strong></p>
+<h4 id="大小端的概念"><a href="#大小端的概念" class="headerlink" title="大小端的概念"></a>大小端的概念</h4><blockquote>
+<p>大端（存储）模式，指数据的低位保存在内存的<strong>高</strong>地址中，而数据的高位，保存在内存的<strong>低</strong>地址中；</p>
+<p>小端（存储）模式，指数据的低位保存在内存的<strong>低</strong>地址中，而数据的高位，保存在内存的<strong>高</strong>地址中；</p>
+</blockquote>
+<p>大端： 假设有十六进制数 <code>0x11223344</code>， 内存从低位到高位存储<code>0x11223344</code>。</p>
+<p>小端： 假设有十六进制数 <code>0x11223344</code>， 内存从低位到高位存储<code>0x44332211</code>。</p>
+<h4 id="整形提升"><a href="#整形提升" class="headerlink" title="整形提升"></a>整形提升</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//当将char类型打印整形时会进行整形提升，根据符号位来补充剩下的位以保证有32位</span>
+<span class="token comment">//符号位为1则全补1</span>
+<span class="token comment">//符号位为0则全补0</span>
+<span class="token keyword">char</span> a <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">char</span> b <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"a=%d,b=%d"</span><span class="token punctuation">,</span>a<span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// a=-1 b=255</span>
+<span class="token comment">//a的补码：11111111</span>
+<span class="token comment">//整形提升后补码：11111111 11111111 11111111 11111111，则原码化为十进制为-1</span>
+<span class="token comment">//b的补码：11111111</span>
+<span class="token comment">//因为没有符号位所以默认补充0，则整形提升后补码：0000000 00000000 00000000 11111111，则原码化为十进制为255</span></code></pre>
 
-<p>使用上方这种方法，想获取内部数据就只能用<code>map[&#39;name&#39;]</code>这种形式来读取，就很难判断类型，因此需要更好的方法。</p>
-<h3 id="在模型类中序列化-JSON-数据"><a href="#在模型类中序列化-JSON-数据" class="headerlink" title="在模型类中序列化 JSON 数据"></a>在模型类中序列化 JSON 数据</h3><p>在上方代码中新建一个模型类来解决难以判断类型的方法。代码如下：</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//模型类 这里直接拷贝文档的代码了，想了解更多可以去阅读官方文档（文档很清晰！！！）</span>
-<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">final</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
-  <span class="token keyword">final</span> <span class="token class-name">String</span> email<span class="token punctuation">;</span>
 
-  <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  <span class="token class-name">User</span><span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> json<span class="token punctuation">)</span>
-      <span class="token punctuation">:</span> name <span class="token operator">=</span> json<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'name'</span></span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-        email <span class="token operator">=</span> json<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'email'</span></span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<h4 id="有符号数和无符号数区别"><a href="#有符号数和无符号数区别" class="headerlink" title="有符号数和无符号数区别"></a>有符号数和无符号数区别</h4><h5 id="有符号数"><a href="#有符号数" class="headerlink" title="有符号数"></a>有符号数</h5><p>当声明<code>int</code>或<code>char</code>等类型默认为有符号数，即bit的第一位为符号位（0正1负）。</p>
+<h5 id="无符号数"><a href="#无符号数" class="headerlink" title="无符号数"></a>无符号数</h5><p>声明变量前使用关键字<code>unsigned</code>即为无符号数，即bit的第一位为有效位，不做符号位。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> a <span class="token operator">=</span> <span class="token number">0</span>b10000001<span class="token punctuation">;</span><span class="token comment">//有符号数 char为8bit</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">char</span> b <span class="token operator">=</span> <span class="token number">0</span>b10000001<span class="token punctuation">;</span><span class="token comment">//无符号数</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//-127</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//129</span></code></pre>
 
-  <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> <span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">&#123;</span>
-        <span class="token string-literal"><span class="token string">'name'</span></span><span class="token punctuation">:</span> name<span class="token punctuation">,</span>
-        <span class="token string-literal"><span class="token string">'email'</span></span><span class="token punctuation">:</span> email<span class="token punctuation">,</span>
-      <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
 
-<p>接下来在上方获取联系人的时候使用这个模型类</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token class-name">ContactsModel</span> contactsModel <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ContactsModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">//用来存放获取的用户数据</span>
-late <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> contactsResult<span class="token punctuation">;</span>
 
-<span class="token comment">// 获取联系人</span>
-<span class="token keyword">await</span> contactsModel
-    <span class="token punctuation">.</span><span class="token function">getContactsInfo</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
-    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'------------联系人数据----------'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">//主要序列化的方式</span>
-        contactsResult <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'code'</span></span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token comment">//这就获取到了后端的数据了</span>
-            <span class="token function">print</span><span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'data'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token comment">//主要操作在这！！！！！</span>
-            <span class="token keyword">var</span> user <span class="token operator">=</span> <span class="token class-name">User</span><span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span>contactsResult<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'data'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-            <span class="token comment">//就可以直接使用user.email来获取到数据了</span>
-            <span class="token function">print</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//打印email</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>虽然这种方法解决了无法判断类型的问题，但仍然不是最优的方法，有没有一种方法可以直接根据我们提供的参数自动生成<code>json</code>序列化格式呢？当然是有的，官方就推荐了使用<code>json_serializable</code>。</p>
-<p>具体如下。</p>
-<h2 id="使用代码生成库序列化-JSON-数据"><a href="#使用代码生成库序列化-JSON-数据" class="headerlink" title="使用代码生成库序列化 JSON 数据"></a>使用代码生成库序列化 JSON 数据</h2><p>在此之前，需要安装依赖：</p>
-<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#这些都需要安装</span>
-<span class="token key atrule">dependencies</span><span class="token punctuation">:</span>
-  <span class="token comment"># 生成依赖</span>
-  <span class="token key atrule">json_annotation</span><span class="token punctuation">:</span> &lt;latest_version<span class="token punctuation">></span>
-
-<span class="token key atrule">dev_dependencies</span><span class="token punctuation">:</span>
-  <span class="token comment"># 开发依赖</span>
-  <span class="token key atrule">build_runner</span><span class="token punctuation">:</span> &lt;latest_version<span class="token punctuation">></span>
-  <span class="token key atrule">json_serializable</span><span class="token punctuation">:</span> &lt;latest_version<span class="token punctuation">></span></code></pre>
-
-<p>在项目根目录下运行<code>flutter pub get 包名</code>或者直接在<code>pubspec.yaml</code>进行安装。</p>
-<p>安装完成后，以上方当时的<code>User</code>模型类来作为例子。</p>
-<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token keyword">import</span> <span class="token string-literal"><span class="token string">'package:json_annotation/json_annotation.dart'</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">part</span> <span class="token string-literal"><span class="token string">'user.g.dart'</span></span><span class="token punctuation">;</span><span class="token comment">//这部分在使用flutter pub run build_runner watch来进行监听后会自动根据类型来生成，所以要保证前后端的参数名要一致</span>
-<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">final</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
-  <span class="token keyword">final</span> <span class="token class-name">String</span> email<span class="token punctuation">;</span>
-
-  <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-  <span class="token keyword">factory</span> <span class="token class-name">User</span><span class="token punctuation">.</span><span class="token function">fromJson</span><span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> json<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> _$<span class="token class-name">UserFromJson</span><span class="token punctuation">(</span>json<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token keyword">dynamic</span><span class="token punctuation">></span></span> <span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> _$<span class="token class-name">UserToJson</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>这样就会和原先达到相同的效果，但是以更加灵活的方式来实现，调用的方法还是与第二种方法是相同的。</p>
+<h3 id="浮点型在内存的存储形式"><a href="#浮点型在内存的存储形式" class="headerlink" title="浮点型在内存的存储形式"></a>浮点型在内存的存储形式</h3><p>任何二进制浮点数V可以根据IEEE754表示成以下形式：</p>
+<p>$$<br>(-1)^S<em>M</em>2^E<br>$$</p>
+<blockquote>
+<p>(-1)^S表示符号位，当S&#x3D;0，V为正数，当S&#x3D;1,V为负数。</p>
+<p>M表示有效数字（即化成的进制数），大于等于1，小于2.</p>
+<p>2^E表示指数位。</p>
+</blockquote>
+<p><code>9.0</code>化二进制为<code>1001.0</code>用以上准则表示为<code>(-1)^0 * 1.001 * 2^3</code>，得出：<br>$$<br>S&#x3D;0 \quad M&#x3D;1.001 \quad E&#x3D;3<br>$$</p>
+<h4 id="浮点型存入内存方式"><a href="#浮点型存入内存方式" class="headerlink" title="浮点型存入内存方式"></a>浮点型存入内存方式</h4><p><strong>IEEE 754规定：</strong>对于<strong>32位</strong>的浮点数，最高的1位是符号位s，接着8位是指数E（<strong>E为无符号数</strong>），剩下的23位位有效数字M。（为防止E出现负数，<strong>32位</strong>默认**+127<strong>后再进行存储，为了增加精度，</strong>存M时默认去掉小数点前的1**。）</p>
+<p>即上方存储到内存中为<code>0 10000010 00100000000000000000000 </code>。</p>
+<p>对于<strong>64位</strong>浮点数则最高的1位是符号位s，接着11位是指数E，剩下的52位位有效数字M。（规则与32位相同，<strong>64位</strong>默认**+1023**后再进行存储）</p>
 
                 
             </div>
@@ -648,7 +575,7 @@ late <span class="token class-name">Map</span><span class="token generics"><span
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/">http://example.com/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/</a>
+                    <a href="http://example.com/2023/08/20/shu-ju-cun-chu-xiang-guan/">http://example.com/2023/08/20/shu-ju-cun-chu-xiang-guan/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -686,12 +613,8 @@ late <span class="token class-name">Map</span><span class="token generics"><span
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/Flutter/">
-                                    <span class="chip bg-color">Flutter</span>
-                                </a>
-                            
-                                <a href="/tags/JSON/">
-                                    <span class="chip bg-color">JSON</span>
+                                <a href="/tags/C/">
+                                    <span class="chip bg-color">C</span>
                                 </a>
                             
                         </div>
@@ -1009,13 +932,13 @@ late <span class="token class-name">Map</span><span class="token generics"><span
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/08/20/shu-ju-cun-chu-xiang-guan/">
+                <a href="/2023/08/20/c-yu-yan-zhi-zhen/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="数据存储相关">
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="C语言指针">
                         
-                        <span class="card-title">数据存储相关</span>
+                        <span class="card-title">C语言指针</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1047,6 +970,10 @@ late <span class="token class-name">Map</span><span class="token generics"><span
                         <span class="chip bg-color">C</span>
                     </a>
                     
+                    <a href="/tags/%E6%8C%87%E9%92%88/">
+                        <span class="chip bg-color">指针</span>
+                    </a>
+                    
                 </div>
                 
             </div>
@@ -1058,13 +985,13 @@ late <span class="token class-name">Map</span><span class="token generics"><span
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">
+                <a href="/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="typeorm使用distinct并有传入值时才进行where搜索">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="如何对后端传来的数据进行JSON序列化">
                         
-                        <span class="card-title">typeorm使用distinct并有传入值时才进行where搜索</span>
+                        <span class="card-title">如何对后端传来的数据进行JSON序列化</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1075,14 +1002,14 @@ late <span class="token class-name">Map</span><span class="token generics"><span
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-05
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-11-09
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/node-js/" class="post-category">
-                                    node.js
+                            <a href="/categories/Flutter/" class="post-category">
+                                    Flutter
                                 </a>
                             
                             
@@ -1092,16 +1019,12 @@ late <span class="token class-name">Map</span><span class="token generics"><span
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/nestjs/">
-                        <span class="chip bg-color">nestjs</span>
+                    <a href="/tags/Flutter/">
+                        <span class="chip bg-color">Flutter</span>
                     </a>
                     
-                    <a href="/tags/node-js/">
-                        <span class="chip bg-color">node.js</span>
-                    </a>
-                    
-                    <a href="/tags/typeorm/">
-                        <span class="chip bg-color">typeorm</span>
+                    <a href="/tags/JSON/">
+                        <span class="chip bg-color">JSON</span>
                     </a>
                     
                 </div>
@@ -1219,6 +1142,13 @@ late <span class="token class-name">Map</span><span class="token generics"><span
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
