@@ -4,12 +4,11 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="C语言实现任何类型的冒泡排序, LsWorld">
+    <meta name="keywords" content="C语言字符串函数, LsWorld">
     <meta name="description" content="
-根据qsort函数来实现冒泡排序版本，实现后时间复杂度为O(n^3)，仅供练习使用，实际运用效率过于低下。
+使用以下所有函数需要引入头文件#include &amp;lt;string.h&amp;gt;
 
-qsort 函数定义于&amp;lt;stdlib.h&amp;gt;头文件中，主要接收参数：
-void qsort( void *ptr, [">
+strlen()函数size_t strlen(const char *string)传入字符串返回字符串长度，这里size_t == unsigned ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -23,7 +22,7 @@ void qsort( void *ptr, [">
 
     
 
-    <title>C语言实现任何类型的冒泡排序 | LsWorld</title>
+    <title>C语言字符串函数 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -313,12 +312,12 @@ void qsort( void *ptr, [">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">C语言实现任何类型的冒泡排序</h1>
+                    <h1 class="description center-align post-title">C语言字符串函数</h1>
                 </div>
             </div>
         </div>
@@ -459,21 +458,21 @@ void qsort( void *ptr, [">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-08-30
+                    2023-09-03
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-08-30
+                    2023-09-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    700
+                    326
                 </div>
                 
 
@@ -494,128 +493,61 @@ void qsort( void *ptr, [">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <blockquote>
-<p>根据qsort函数来实现冒泡排序版本，实现后时间复杂度为O(n^3)，仅供练习使用，实际运用效率过于低下。</p>
+<p>使用以下所有函数需要引入头文件<code>#include &lt;string.h&gt;</code></p>
 </blockquote>
-<h4 id="qsort-函数"><a href="#qsort-函数" class="headerlink" title="qsort 函数"></a><code>qsort</code> 函数</h4><p>定义于<code>&lt;stdlib.h&gt;</code>头文件中，主要接收参数：</p>
-<p><code>void qsort( void *ptr, [size_t] count, [size_t] size,int (*comp)(const void *, const void *) );</code></p>
-<ul>
-<li><code>ptr</code>为传入的数组</li>
-<li><code>count</code>为数组的长度</li>
-<li><code>size</code>为类型所占字节大小</li>
-<li><code>comp</code>为一个比较函数，若前一个元素大于后面的元素则返回大于0的数，反之返回小于0的数，相等则返回0。</li>
-</ul>
-<p>了解<code>qsort</code>基本参数后就可将要实现的排序通过这些参数为标准来进行设计。</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//主要排序函数实现</span>
-
-<span class="token comment">// base:要排序的数组 sz:数组长度 width:类型所占字节大小 cmp:排序所要传的函数(通过正负来判断大小)</span>
-<span class="token keyword">void</span> <span class="token function">bubble_sort</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>base<span class="token punctuation">,</span> <span class="token keyword">int</span> sz<span class="token punctuation">,</span> <span class="token keyword">int</span> width<span class="token punctuation">,</span> <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>cmp<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>e1<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>e2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<h4 id="strlen-函数"><a href="#strlen-函数" class="headerlink" title="strlen()函数"></a><code>strlen()</code>函数</h4><p><code>size_t strlen(const char *string)</code>传入字符串返回字符串长度，这里<code>size_t == unsigned int</code>所以这里要是直接进行比较将会以无符号数进行比较。</p>
+<p>例：</p>
+<pre class="language-c" data-language="c"><code class="language-c">
+<span class="token comment">// strlen("abc") == 3  strlen("abcef") == 5 (strlen("abc") - strlen("abcef")) == 2 无符号数加减符号位默认为正</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token string">"abcef"</span><span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
-  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sz <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> sz <span class="token operator">-</span> i <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-      <span class="token comment">//将强制转化为char *表示无论什么元素都只查找一个字节，但加上width后则表示当前数组单个元素所占字节大小，因此进行比较。</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">cmp</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>base <span class="token operator">+</span> width <span class="token operator">*</span> j<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>base <span class="token operator">+</span> width <span class="token operator">*</span> <span class="token punctuation">(</span>j <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
-      <span class="token punctuation">&#123;</span>
-        <span class="token function">Swap</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>base <span class="token operator">+</span> width <span class="token operator">*</span> j<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>base <span class="token operator">+</span> width <span class="token operator">*</span> <span class="token punctuation">(</span>j <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> width<span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//交换函数实现</span>
-<span class="token comment">//char*表示每次只查找一个字节，通过++的方式能实现一个一个字节进行交换。</span>
-<span class="token keyword">void</span> <span class="token function">Swap</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>buf1<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>buf2<span class="token punctuation">,</span> <span class="token keyword">int</span> width<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> width<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">char</span> tmp <span class="token operator">=</span> <span class="token operator">*</span>buf1<span class="token punctuation">;</span>
-    <span class="token operator">*</span>buf1 <span class="token operator">=</span> <span class="token operator">*</span>buf2<span class="token punctuation">;</span>
-    <span class="token operator">*</span>buf2 <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
-    buf1<span class="token operator">++</span><span class="token punctuation">;</span>
-    buf2<span class="token operator">++</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//要传入的排序类型实现</span>
-
-<span class="token comment">// 排序整数类型</span>
-<span class="token keyword">int</span> <span class="token function">cmp_int</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>e1<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>e2<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span>e1 <span class="token operator">></span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span>e2<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span>e1 <span class="token operator">&lt;</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span>e2<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">else</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"unsigned"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//这条语句将会打印</span>
 <span class="token punctuation">&#125;</span>
-
-<span class="token comment">// 排序浮点数类型</span>
-<span class="token keyword">int</span> <span class="token function">cmp_float</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>e1<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>e2<span class="token punctuation">)</span>
+<span class="token keyword">else</span>
 <span class="token punctuation">&#123;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">float</span> <span class="token operator">*</span><span class="token punctuation">)</span>e1 <span class="token operator">></span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">float</span> <span class="token operator">*</span><span class="token punctuation">)</span>e2<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">float</span> <span class="token operator">*</span><span class="token punctuation">)</span>e1 <span class="token operator">&lt;</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">float</span> <span class="token operator">*</span><span class="token punctuation">)</span>e2<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">else</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"signed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="递归实现strlen-函数"><a href="#递归实现strlen-函数" class="headerlink" title="递归实现strlen()函数"></a>递归实现<code>strlen()函数</code></h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">Strlen</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token comment">//当查询到为\0时结束递归</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>str <span class="token operator">==</span> <span class="token char">'\0'</span><span class="token punctuation">)</span>
   <span class="token punctuation">&#123;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
   <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token comment">// 结构体类型</span>
-<span class="token keyword">struct</span> <span class="token class-name">Student</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> age<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token keyword">int</span> <span class="token function">cmp_struct</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span>e1<span class="token punctuation">,</span><span class="token keyword">void</span><span class="token operator">*</span>e2<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">Student</span><span class="token operator">*</span><span class="token punctuation">)</span>e1<span class="token punctuation">)</span><span class="token operator">-></span>age <span class="token operator">></span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">Student</span><span class="token operator">*</span><span class="token punctuation">)</span>e2<span class="token punctuation">)</span><span class="token operator">-></span>age<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">Student</span><span class="token operator">*</span><span class="token punctuation">)</span>e1<span class="token punctuation">)</span><span class="token operator">-></span>age <span class="token operator">&lt;</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">Student</span><span class="token operator">*</span><span class="token punctuation">)</span>e2<span class="token punctuation">)</span><span class="token operator">-></span>age<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
   <span class="token keyword">else</span>
   <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">//每次递归指针往后走一位，并值+1</span>
+    <span class="token keyword">return</span> <span class="token number">1</span> <span class="token operator">+</span> <span class="token function">my_strlen</span><span class="token punctuation">(</span>str <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
 
 
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//测试</span>
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<h4 id="strcpy-函数"><a href="#strcpy-函数" class="headerlink" title="strcpy()函数"></a><code>strcpy()</code>函数</h4><p><code>char* strcpy( char* dest, const char* src )</code>用于字符串拷贝，拷贝的时候会将<code>src</code>的<code>&#39;\0&#39;</code>一同拷贝</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> arr1<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"abcdef"</span><span class="token punctuation">;</span>
+<span class="token keyword">char</span> arr2<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"abc"</span><span class="token punctuation">;</span>
+<span class="token function">strcpy</span><span class="token punctuation">(</span>arr1<span class="token punctuation">,</span>arr2<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//地址查看arr1结果为 &#123;'a','b','c','\0','e','f','\0'&#125;</span></code></pre>
+
+
+
+<h4 id="实现strcpy-函数"><a href="#实现strcpy-函数" class="headerlink" title="实现strcpy()函数"></a>实现<code>strcpy()</code>函数</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//src在这函数内并没有需要进行值变化，所以用const声明保证不可变</span>
+<span class="token keyword">char</span><span class="token operator">*</span> <span class="token function">Strcpy</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>dest<span class="token punctuation">,</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>src<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> arrInt<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">9</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> szInt <span class="token operator">=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>arrInt<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token operator">*</span>arrInt<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">bubble_sort</span><span class="token punctuation">(</span>arrInt<span class="token punctuation">,</span> szInt<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>arrInt<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> cmp_int<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//排序后数组： 0 1 2 3 4 5 6 7 8 9</span>
-  
-  <span class="token keyword">float</span> arrFloat<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">3.1</span><span class="token punctuation">,</span> <span class="token number">4.5</span><span class="token punctuation">,</span> <span class="token number">3.0</span><span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token number">2.0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> szFloat <span class="token operator">=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>arrFloat<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token operator">*</span>arrFloat<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">bubble_sort</span><span class="token punctuation">(</span>arrFloat<span class="token punctuation">,</span> szFloat<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>arrFloat<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> cmp_float<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//排序后数组： 1.0 2.0 3.0 3.1 4.5</span>
-
-  <span class="token keyword">struct</span> <span class="token class-name">Student</span> s<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span>name <span class="token operator">:</span> <span class="token string">"zhangsan"</span><span class="token punctuation">,</span> age <span class="token operator">:</span> <span class="token number">18</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>name <span class="token operator">:</span> <span class="token string">"lisi"</span><span class="token punctuation">,</span> age <span class="token operator">:</span> <span class="token number">14</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>name <span class="token operator">:</span> <span class="token string">"wangwu"</span><span class="token punctuation">,</span> age <span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> szStu <span class="token operator">=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token operator">*</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">bubble_sort</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> szStu<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> cmp_struct<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//排序后数组 &#123;name : "lisi", age : 14&#125; &#123;name : "zhangsan", age : 18&#125; &#123;name : "wangwu", age : 20&#125;</span>
-
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token comment">//断言保证传入的不是空指针</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span>dest <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span>src <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">char</span><span class="token operator">*</span> ret <span class="token operator">=</span> dest<span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span> <span class="token operator">*</span>src <span class="token operator">!=</span> <span class="token char">'\0'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token comment">//将src的值赋值给dest的值后指针往后查找</span>
+    <span class="token operator">*</span>dest<span class="token operator">++</span> <span class="token operator">=</span> <span class="token operator">*</span>src<span class="token operator">++</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token operator">*</span>dest <span class="token operator">=</span> <span class="token char">'\0'</span><span class="token punctuation">;</span>
+  <span class="token comment">//返回dest的起始地址</span>
+  <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
 
@@ -644,7 +576,7 @@ void qsort( void *ptr, [">
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/08/30/c-yu-yan-shi-xian-ren-he-lei-xing-de-mou-pao-pai-xu/">http://example.com/2023/08/30/c-yu-yan-shi-xian-ren-he-lei-xing-de-mou-pao-pai-xu/</a>
+                    <a href="http://example.com/2023/09/03/c-yu-yan-zi-fu-chuan-han-shu/">http://example.com/2023/09/03/c-yu-yan-zi-fu-chuan-han-shu/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -997,9 +929,10 @@ void qsort( void *ptr, [">
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/09/03/c-yu-yan-zi-fu-chuan-han-shu/">
                     <div class="card-image">
@@ -1017,9 +950,9 @@ void qsort( void *ptr, [">
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-09-03
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-03
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1032,6 +965,7 @@ void qsort( void *ptr, [">
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1050,13 +984,13 @@ void qsort( void *ptr, [">
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/08/20/c-yu-yan-zhi-zhen/">
+                <a href="/2023/08/30/c-yu-yan-shi-xian-ren-he-lei-xing-de-mou-pao-pai-xu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="C语言指针">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="C语言实现任何类型的冒泡排序">
                         
-                        <span class="card-title">C语言指针</span>
+                        <span class="card-title">C语言实现任何类型的冒泡排序</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1067,7 +1001,7 @@ void qsort( void *ptr, [">
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-08-20
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-08-30
                             </span>
                         <span class="publish-author">
                             
@@ -1086,10 +1020,6 @@ void qsort( void *ptr, [">
                     
                     <a href="/tags/C/">
                         <span class="chip bg-color">C</span>
-                    </a>
-                    
-                    <a href="/tags/%E6%8C%87%E9%92%88/">
-                        <span class="chip bg-color">指针</span>
                     </a>
                     
                 </div>
