@@ -465,14 +465,14 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-03
+                    2023-09-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    895
+                    1.5k
                 </div>
                 
 
@@ -529,6 +529,13 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
 <h4 id="strcpy-函数"><a href="#strcpy-函数" class="headerlink" title="strcpy()函数"></a><code>strcpy()</code>函数</h4><p><code>char* strcpy( char* dest, const char* src )</code>用于字符串拷贝，拷贝的时候会将<code>src</code>的<code>&#39;\0&#39;</code>一同拷贝，长度不受限制。</p>
 <blockquote>
 <p>想用拷贝固定个数的用<code>char* strncpy( char* dest, const char* src, size_t count )</code>用于字符串拷贝，长度受限制。</p>
+<p><strong>使用函数时需要注意：</strong></p>
+<ul>
+<li>源字符串<code>src</code>必须以<code>&#39;\0&#39;</code>结束。</li>
+<li>会将源字符串中的<code>&#39;\0&#39;</code>拷贝到目标空间<code>dest</code>。</li>
+<li>目标空间必须足够大，以确保能放下源字符串。</li>
+<li>目标空间必须可变。</li>
+</ul>
 </blockquote>
 <pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> arr1<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"abcdef"</span><span class="token punctuation">;</span>
 <span class="token keyword">char</span> arr2<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"abc"</span><span class="token punctuation">;</span>
@@ -586,6 +593,12 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
 <h4 id="strcat-函数"><a href="#strcat-函数" class="headerlink" title="strcat()函数"></a><code>strcat()</code>函数</h4><p><code>char *strcat( char *strDestination, const char *strSource)</code> 将<code>strSource</code>追加到<code>strDestination</code>字符串中（此函数不可目标字符串和资源字符串相同，会因找不到<code>\0</code>而陷入死循环）。</p>
 <blockquote>
 <p>想用追加固定个数的用<code>char* strncat( char* strDest, const char* strSource, size_t count )</code>用于字符串追加，追加完后会补’\0’，**要是<code>count</code>个数大于<code>strSource</code>长度不会补’\0’**。</p>
+<p><strong>使用函数时需要注意：</strong></p>
+<ul>
+<li>源字符串<code>strSource</code>必须以<code>&#39;\0&#39;</code>结束。</li>
+<li>目标空间必须足够大，以确保能放下源字符串。</li>
+<li>目标空间必须可变。</li>
+</ul>
 </blockquote>
 <pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> arr1<span class="token punctuation">[</span><span class="token number">30</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"hello "</span><span class="token punctuation">;</span>
 <span class="token keyword">char</span> arr2<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"world"</span><span class="token punctuation">;</span>
@@ -599,7 +612,7 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
 
 
 
-<h5 id="实现strcat-函数"><a href="#实现strcat-函数" class="headerlink" title="实现strcat()函数"></a>实现<code>strcat()</code>函数</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">my_strcat</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>strDestination<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>strSource<span class="token punctuation">)</span>
+<h5 id="实现strcat-和strncat-函数"><a href="#实现strcat-和strncat-函数" class="headerlink" title="实现strcat()和strncat()函数"></a>实现<code>strcat()</code>和<code>strncat()</code>函数</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">my_strcat</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>strDestination<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>strSource<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
   <span class="token function">assert</span><span class="token punctuation">(</span>strDestination<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token function">assert</span><span class="token punctuation">(</span>strSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -615,11 +628,42 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
     <span class="token punctuation">;</span>
   <span class="token punctuation">&#125;</span>
   <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//根据个数追加字符串</span>
+<span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">Strncat</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>strDest<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>strSource<span class="token punctuation">,</span> <span class="token keyword">int</span> count<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>ret <span class="token operator">=</span> strDest<span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">*</span>strDest<span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    strDest<span class="token operator">++</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>count <span class="token operator">&amp;&amp;</span> <span class="token operator">*</span>strSource<span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token operator">*</span>strDest <span class="token operator">=</span> <span class="token operator">*</span>strSource<span class="token punctuation">;</span>
+    strDest<span class="token operator">++</span><span class="token punctuation">;</span>
+    strSource<span class="token operator">++</span><span class="token punctuation">;</span>
+    count<span class="token operator">--</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">//不管strDest的'\0'后是否还有值，直接添加完strSource的字符后添加'\0'</span>
+  <span class="token operator">*</span>strDest <span class="token operator">=</span> <span class="token char">'\0'</span><span class="token punctuation">;</span>
+  
+  <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
 
 
-<h4 id="strcmp-函数"><a href="#strcmp-函数" class="headerlink" title="strcmp()函数"></a><code>strcmp()</code>函数</h4><p><code>int strcmp( const char *str1, const char *str2 )</code>按从左往右的顺序比较两字符串在ASCLL表中的大小，<code>str1</code>大返回大于0的数字，<code>str2</code>大返回小于0的数字，相等返回0。</p>
+<h4 id="strcmp-函数"><a href="#strcmp-函数" class="headerlink" title="strcmp()函数"></a><code>strcmp()</code>函数</h4><p><code>int strcmp( const char *str1, const char *str2 )</code></p>
+<blockquote>
+<p><code>int strncmp( const char *str1, const char *str2 ,size_t count )</code> 用于比较固定数量的字符串大小</p>
+<p>按从左往右的顺序比较两字符串在ASCLL表中的大小。</p>
+<ul>
+<li><code>str1</code>大返回大于0的数字</li>
+<li><code>str2</code>大返回小于0的数字</li>
+<li>相等返回0。</li>
+</ul>
+</blockquote>
 <pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//用char *声明保证是常量</span>
 <span class="token keyword">char</span> <span class="token operator">*</span>arr1 <span class="token operator">=</span> <span class="token string">"abcdef"</span><span class="token punctuation">;</span>
 <span class="token keyword">char</span> <span class="token operator">*</span>arr2 <span class="token operator">=</span> <span class="token string">"abc"</span><span class="token punctuation">;</span>
@@ -630,7 +674,14 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
 <span class="token keyword">int</span> ret3 <span class="token operator">=</span> <span class="token function">strcmp</span><span class="token punctuation">(</span>arr2<span class="token punctuation">,</span>arr3<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> ret1<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//1</span>
 <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> ret2<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//-1</span>
-<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> ret3<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//0</span></code></pre>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> ret3<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//0</span>
+
+<span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>arr4 <span class="token operator">=</span> <span class="token string">"abcdjf"</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>arr5 <span class="token operator">=</span> <span class="token string">"abcfgh"</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> ret4 <span class="token operator">=</span> <span class="token function">strncmp</span><span class="token punctuation">(</span>arr4<span class="token punctuation">,</span> arr5<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> ret5 <span class="token operator">=</span> <span class="token function">strncmp</span><span class="token punctuation">(</span>arr4<span class="token punctuation">,</span> arr5<span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> ret4<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 输出 0</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> ret5<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// d小于f 输出 -2</span></code></pre>
 
 
 
@@ -647,6 +698,75 @@ strlen()函数size_t strlen(const char *string)传入字符串返回字符串长
   <span class="token punctuation">&#125;</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span> <span class="token operator">*</span>str1 <span class="token operator">-</span> <span class="token operator">*</span>str2 <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//前者大返回大于0的数字，后者大返回小于0的数字</span>
 <span class="token punctuation">&#125;</span></code></pre>
+
+
+
+
+
+<h4 id="strstr-函数"><a href="#strstr-函数" class="headerlink" title="strstr()函数"></a><code>strstr()</code>函数</h4><p><code>char *strstr( const char *string, const char *strCharSet)</code>用于查找一个子字符串<code>strCharSet</code>。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>p1 <span class="token operator">=</span> <span class="token string">"abcdjf"</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>p2 <span class="token operator">=</span> <span class="token string">"bc"</span><span class="token punctuation">;</span>
+<span class="token keyword">char</span><span class="token operator">*</span> ret <span class="token operator">=</span> <span class="token function">strstr</span><span class="token punctuation">(</span>p1<span class="token punctuation">,</span>p2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>ret<span class="token operator">==</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Not Find\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span>ret<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//打印 bcdjf</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+
+
+<h5 id="strstr-函数实现"><a href="#strstr-函数实现" class="headerlink" title="strstr()函数实现"></a><code>strstr()</code>函数实现</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">Strstr</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str1<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str2<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span>str1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span>str2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">char</span> <span class="token operator">*</span>s1 <span class="token punctuation">,</span><span class="token operator">*</span>s2<span class="token punctuation">;</span>
+   <span class="token keyword">char</span> <span class="token operator">*</span>cur <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>str1<span class="token punctuation">;</span>
+  <span class="token comment">// str2为空字符串</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token operator">*</span>str2<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>str1<span class="token punctuation">;</span>
+
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">*</span>cur<span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>s1 <span class="token operator">=</span> cur<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>s2 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>str2<span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span>s1 <span class="token operator">!=</span> <span class="token char">'\0'</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">*</span>s2 <span class="token operator">!=</span> <span class="token char">'\0'</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">*</span>s1 <span class="token operator">==</span> <span class="token operator">*</span>s2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      s1<span class="token operator">++</span><span class="token punctuation">;</span>
+      s2<span class="token operator">++</span><span class="token punctuation">;</span>
+      
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>s2 <span class="token operator">==</span> <span class="token char">'\0'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>cur<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    cur<span class="token operator">++</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span><span class="token comment">//找不到字符串</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="strtok-函数"><a href="#strtok-函数" class="headerlink" title="strtok()函数"></a><code>strtok()</code>函数</h4><p><code>char * strtok( char * str, const char * sep)</code>用于分切字符串。</p>
+<blockquote>
+<p>第一个参数指定要切割的字符串。</p>
+<p><code>strtok</code>函数会通过<code>sep</code>集合来找到标记，并将其用<code>\0</code>结尾，返回一个指向这个标记的指针。（此函数会改变被操作的字符串，所以要使用建议先临时拷贝）。</p>
+<p><code>strtok</code>函数的第一个参数不为<code>NULL</code>，函数将找到<code>str</code>中的第一个标记，并保存它在字符串中的位置。以此循环，直到<code>sep</code>中的标记全部被查找完成，返回<code>NULL</code>指针。</p>
+</blockquote>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> arr<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"192.168.0.123a@b.1"</span><span class="token punctuation">;</span>
+<span class="token keyword">char</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token string">".@"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">1027</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token function">strcpy</span><span class="token punctuation">(</span>buf<span class="token punctuation">,</span> arr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">char</span> <span class="token operator">*</span>ret <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>ret <span class="token operator">=</span> <span class="token function">strtok</span><span class="token punctuation">(</span>buf<span class="token punctuation">,</span> p<span class="token punctuation">)</span><span class="token punctuation">;</span> ret <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span> ret <span class="token operator">=</span> <span class="token function">strtok</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">,</span> p<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span> ret<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//192 168 0 123a b 1</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span></code></pre>
 
 
                 
