@@ -474,7 +474,7 @@ struct stu&amp;#12">
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    684
+                    766
                 </div>
                 
 
@@ -603,6 +603,30 @@ struct stu&amp;#12">
 <span class="token punctuation">&#123;</span>
   <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
   <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//结果为6</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="结构体传参"><a href="#结构体传参" class="headerlink" title="结构体传参"></a>结构体传参</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">s1</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
+  <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token comment">//传地址要是不想修改结构体值可以前加const ，变成const struct s1 *ps</span>
+<span class="token keyword">void</span> <span class="token function">Init</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">s1</span> <span class="token operator">*</span>ps<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token comment">//将1赋值给a</span>
+  ps<span class="token operator">-></span>a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token comment">//传入s1的地址</span>
+  <span class="token function">Init</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span>s1<span class="token punctuation">.</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//打印 1</span>
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
