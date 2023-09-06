@@ -4,8 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="typeorm使用distinct并有传入值时才进行where搜索, LsWorld">
-    <meta name="description" content="TypeOrm介绍typeorm是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用typeorm可能有时候不如直接sql语法查询，但是使用orm框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少">
+    <meta name="keywords" content="C语言自定义数据类型, LsWorld">
+    <meta name="description" content="结构体的声明结构体是用于自定义一个复杂类型（可以包括整形、字符串、浮点数等）
+struct tag&amp;#123;
+    member-list:
+&amp;#125;variable-list;
+//例如描述一个学生：
+struct stu&amp;#12">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +24,7 @@
 
     
 
-    <title>typeorm使用distinct并有传入值时才进行where搜索 | LsWorld</title>
+    <title>C语言自定义数据类型 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">typeorm使用distinct并有传入值时才进行where搜索</h1>
+                    <h1 class="description center-align post-title">C语言自定义数据类型</h1>
                 </div>
             </div>
         </div>
@@ -430,16 +435,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/nestjs/">
-                                <span class="chip bg-color">nestjs</span>
-                            </a>
-                        
-                            <a href="/tags/node-js/">
-                                <span class="chip bg-color">node.js</span>
-                            </a>
-                        
-                            <a href="/tags/typeorm/">
-                                <span class="chip bg-color">typeorm</span>
+                            <a href="/tags/C/">
+                                <span class="chip bg-color">C</span>
                             </a>
                         
                     </div>
@@ -450,8 +447,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/node-js/" class="post-category">
-                                node.js
+                            <a href="/categories/C/" class="post-category">
+                                C
                             </a>
                         
                     </div>
@@ -463,21 +460,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-11-05
+                    2023-09-06
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-05
+                    2023-09-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    771
+                    684
                 </div>
                 
 
@@ -497,67 +494,118 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="TypeOrm介绍"><a href="#TypeOrm介绍" class="headerlink" title="TypeOrm介绍"></a>TypeOrm介绍</h3><p><code>typeorm</code>是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用<code>typeorm</code>可能有时候不如直接<code>sql</code>语法查询，但是使用<code>orm</code>框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少重复代码的书写。</p>
-<h3 id="使用distinct与where配合搜索"><a href="#使用distinct与where配合搜索" class="headerlink" title="使用distinct与where配合搜索"></a>使用distinct与where配合搜索</h3><p>在一些场景中，<code>typeorm</code>所提供的<code>Repository API</code>并不能满足我们查询的需求，这时候就只有两种方案，一种是直接使用<code>typeorm</code>提供的<code>query()</code>方法直接使用<code>sql</code>语句来进行复杂查询，还有就是使用查询构造器<code>Query Builder</code>来进行查询。</p>
-<p>当然，既然我们都用<code>orm</code>框架了，当然是要减少使用<code>sql</code>语句的场景的。</p>
-<p>此时这就有个需求，当我们需要查询数据有多条，但我们只需要其中一条，并且他的<code>where</code>的值可能是不存在的，这种场景单纯使用<code>find()</code>是解决不了的，就需要使用<code>Query Builder</code>。</p>
-<h4 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h4><p>就如这有个<code>User</code>表，结构为：</p>
-<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
-  <span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
-  <span class="token identifier"><span class="token punctuation">`</span>name<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-  <span class="token identifier"><span class="token punctuation">`</span>phone<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+                <h4 id="结构体的声明"><a href="#结构体的声明" class="headerlink" title="结构体的声明"></a>结构体的声明</h4><p>结构体是用于自定义一个复杂类型（可以包括整形、字符串、浮点数等）</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">tag</span><span class="token punctuation">&#123;</span>
+    member<span class="token operator">-</span>list<span class="token operator">:</span>
+<span class="token punctuation">&#125;</span>variable<span class="token operator">-</span>list<span class="token punctuation">;</span>
+<span class="token comment">//例如描述一个学生：</span>
+<span class="token keyword">struct</span> <span class="token class-name">stu</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> age<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> id<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></code></pre>
 
-<p>这时为这张表添加三个用户，让名字和手机号各有两个为相同。</p>
-<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'2'</span><span class="token punctuation">,</span> <span class="token string">'李四'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'3'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'09876543210'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
-<p>此时我们要是只是想单纯查出名字叫张三的人用<code>find()</code>就能实现。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">this</span><span class="token punctuation">.</span>Repository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-    where<span class="token operator">:</span><span class="token punctuation">&#123;</span>name<span class="token operator">:</span><span class="token string">'张三'</span><span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token comment">//转换成的sql语句：SELECT * FROM user WHERE name = '张三'</span></code></pre>
 
-<p>此时再加一个需求，要是查询的时候没有name这个<code>name</code>字段并且还需要对手机号进行去重后要求返回所有数据。（这里业务可能不太清晰，主要为了实现功能…）此时可能就需要使用<code>distinct</code>并且来判断<code>name</code>字段是否为空。</p>
-<p>很显然<code>find()</code>方法中没有这个<code>distinct</code>方法，此时就得使用<code>Query Builder</code>来协助我们完成这个需求。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//因为要是直接使用where(&#123;phone:xxx&#125;)来进行查询，当传入值为null的时候就会生成WHERE phone = null这样的sql语句，显然是不符合我们的需求的，就需要动态来添加</span>
+<h5 id="结构体的使用"><a href="#结构体的使用" class="headerlink" title="结构体的使用"></a>结构体的使用</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">Stu</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">char</span> tele<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">char</span> sex<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> age<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> s4<span class="token punctuation">,</span>s5<span class="token punctuation">,</span>s6<span class="token punctuation">;</span> <span class="token comment">//s4  s5  s6也是全局变量</span>
 
-<span class="token comment">// 条件对象</span>
-<span class="token keyword">const</span> whereInfo <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span><span class="token punctuation">(</span>phone <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">//如果传入的手机不为空，我们就动态为对象添加一个key 只有当phone有值的时候才会添加，否则默认全查询</span>
-    whereInfo<span class="token punctuation">[</span><span class="token string">'phone'</span><span class="token punctuation">]</span> <span class="token operator">=</span> phone
-<span class="token punctuation">&#125;</span>
+<span class="token comment">//创建全局变量</span>
+<span class="token keyword">struct</span> <span class="token class-name">Stu</span> s3<span class="token punctuation">;</span>
 
-<span class="token keyword">this</span><span class="token punctuation">.</span>Repository
-      <span class="token punctuation">.</span><span class="token function">createQueryBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
-        <span class="token string">'user.phone as phone'</span><span class="token punctuation">,</span>
-      <span class="token punctuation">]</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>User<span class="token punctuation">,</span> <span class="token string">'user'</span><span class="token punctuation">)</span> <span class="token comment">//这里的User是实体Entity的User，别名为user</span>
-      <span class="token punctuation">.</span><span class="token function">distinct</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token comment">//开启distinct</span>
-      <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span>whereInfo<span class="token punctuation">)</span><span class="token comment">//使用where，里面传入数组</span>
-      <span class="token punctuation">.</span><span class="token function">getRawMany</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取数据</span></code></pre>
+<span class="token comment">//匿名结构体</span>
+<span class="token keyword">struct</span> 
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
+  <span class="token keyword">char</span> c<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>s<span class="token punctuation">;</span> <span class="token comment">//使用时通过 s 来进行取值</span>
 
-<p>使用上方语句，要是没传参应该是默认会获取到：</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
-    <span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">09876543210</span>
-    <span class="token punctuation">]</span>
+<span class="token comment">//结构体的自引用</span>
+<span class="token comment">//这里用链表的节点举例</span>
+<span class="token keyword">struct</span> <span class="token class-name">Node</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> data<span class="token punctuation">;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">Node</span><span class="token operator">*</span> next<span class="token punctuation">;</span> <span class="token comment">//保存下一个节点的地址</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">Stu</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span> <span class="token string">"zhang"</span><span class="token punctuation">,</span> <span class="token string">"1234567891"</span><span class="token punctuation">,</span> <span class="token string">"male"</span><span class="token punctuation">,</span> <span class="token number">18</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span> <span class="token comment">//赋值</span>
+  <span class="token keyword">struct</span> <span class="token class-name">Stu</span> s2<span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s %s %s %d"</span><span class="token punctuation">,</span>s1<span class="token punctuation">.</span>name<span class="token punctuation">,</span>s1<span class="token punctuation">.</span>tele<span class="token punctuation">,</span>s1<span class="token punctuation">.</span>sex<span class="token punctuation">,</span>s1<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//取值</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>如上两条数据，当我们传入<code>phone</code>参数为：12345678910时，获取到：</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
-    <span class="token punctuation">]</span>
+
+
+<h4 id="结构体内存对齐"><a href="#结构体内存对齐" class="headerlink" title="结构体内存对齐"></a>结构体内存对齐</h4><blockquote>
+<p>结构体对齐规则：</p>
+<ol>
+<li><p>第一个成员在与结构体变量偏移量为0的地址处。</p>
+</li>
+<li><p>其他成员变量对齐到某个数字（对齐数）的整数倍的地址处。</p>
+<p><strong>对齐数</strong>&#x3D;&#x3D;编译器默认的一个对齐数与该成员大小的较小值。（<code>VScode</code>中默认为8）</p>
+</li>
+<li><p>结构体总大小为对齐数（结构体中最大的）的整数倍。</p>
+</li>
+<li><p>如果是嵌套结构体，则内部嵌套的结构体的对齐数大小就是嵌套结构体数据中最大的对齐数的整数倍。</p>
+</li>
+</ol>
+</blockquote>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">s1</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> c1<span class="token punctuation">;</span> <span class="token comment">//vscode的默认对齐数为8 , char为1字节，取较小值，则c1占首地址偏移量为0的地址。</span>
+  <span class="token keyword">int</span> a<span class="token punctuation">;</span> <span class="token comment">//int占4字节，与默认对齐数8小，所以取4，而成员要放在对齐数的整数倍，即4的整数倍，所以放的位置为首地址偏移4，随后占4字节</span>
+  <span class="token keyword">char</span> c2<span class="token punctuation">;</span> <span class="token comment">//char占1字节 和 默认8 相比，取1，以1的整数倍，所以放的位置为首地址偏移9（a总共大小占了4字节）</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token comment">//经过以上偏移后再对s1进行大小计算，由于结构体大小为最大的对齐数的整数倍（这里为4），此时上方所计算出来的大小默认为9字节，要成为4的整数倍，所以最终计算结果为12字节，即下方所打印。</span>
+
+<span class="token comment">//s2和s1同理</span>
+<span class="token keyword">struct</span> <span class="token class-name">s2</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
+  <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">s2</span> s2 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 12</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s2<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 8</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>这样就完美符合我们的业务需求了，使用<code>distinct</code>来去除相同数据并使用<code>where</code>动态进行搜索。</p>
+
+
+<h5 id="修改默认对齐数"><a href="#修改默认对齐数" class="headerlink" title="修改默认对齐数"></a>修改默认对齐数</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression"><span class="token function">pack</span><span class="token punctuation">(</span>k<span class="token punctuation">)</span> </span><span class="token comment">//可将默认对齐数修改成k</span></span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression"><span class="token function">pack</span><span class="token punctuation">(</span><span class="token punctuation">)</span> </span><span class="token comment">//什么都不填，取消设置的对齐数</span></span></code></pre>
+
+
+
+<p>例：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression"><span class="token function">pack</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></span></span>
+
+<span class="token keyword">struct</span> <span class="token class-name">s1</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
+  <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//结果为6</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
 
                 
             </div>
@@ -584,7 +632,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/</a>
+                    <a href="http://example.com/2023/09/06/c-yu-yan-zi-ding-yi-shu-ju-lei-xing/">http://example.com/2023/09/06/c-yu-yan-zi-ding-yi-shu-ju-lei-xing/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -622,16 +670,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/nestjs/">
-                                    <span class="chip bg-color">nestjs</span>
-                                </a>
-                            
-                                <a href="/tags/node-js/">
-                                    <span class="chip bg-color">node.js</span>
-                                </a>
-                            
-                                <a href="/tags/typeorm/">
-                                    <span class="chip bg-color">typeorm</span>
+                                <a href="/tags/C/">
+                                    <span class="chip bg-color">C</span>
                                 </a>
                             
                         </div>
@@ -945,17 +985,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/">
+                <a href="/2023/09/06/c-yu-yan-zi-ding-yi-shu-ju-lei-xing/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="如何对后端传来的数据进行JSON序列化">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="C语言自定义数据类型">
                         
-                        <span class="card-title">如何对后端传来的数据进行JSON序列化</span>
+                        <span class="card-title">C语言自定义数据类型</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -965,30 +1006,27 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-11-09
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-06
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Flutter/" class="post-category">
-                                    Flutter
+                            <a href="/categories/C/" class="post-category">
+                                    C
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Flutter/">
-                        <span class="chip bg-color">Flutter</span>
-                    </a>
-                    
-                    <a href="/tags/JSON/">
-                        <span class="chip bg-color">JSON</span>
+                    <a href="/tags/C/">
+                        <span class="chip bg-color">C</span>
                     </a>
                     
                 </div>
@@ -1002,13 +1040,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/10/15/nestjs-de-shi-yong/">
+                <a href="/2023/09/03/c-yu-yan-zi-fu-chuan-han-shu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="nestjs的模块，控制器，提供者介绍">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="C语言字符串函数">
                         
-                        <span class="card-title">nestjs的模块，控制器，提供者介绍</span>
+                        <span class="card-title">C语言字符串函数</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1019,14 +1057,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-15
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-03
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/node-js/" class="post-category">
-                                    node.js
+                            <a href="/categories/C/" class="post-category">
+                                    C
                                 </a>
                             
                             
@@ -1036,12 +1074,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/nestjs/">
-                        <span class="chip bg-color">nestjs</span>
-                    </a>
-                    
-                    <a href="/tags/node-js/">
-                        <span class="chip bg-color">node.js</span>
+                    <a href="/tags/C/">
+                        <span class="chip bg-color">C</span>
                     </a>
                     
                 </div>
