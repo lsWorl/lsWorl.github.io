@@ -4,13 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="C语言自定义数据类型, LsWorld">
-    <meta name="description" content="结构体的声明结构体是用于自定义一个复杂类型（可以包括整形、字符串、浮点数等）
-struct tag&amp;#123;
-    member-list:
-&amp;#125;variable-list;
-//例如描述一个学生：
-struct stu&amp;#12">
+    <meta name="keywords" content="C语言动态内存管理, LsWorld">
+    <meta name="description" content="动态内存函数为解决动态的开辟内存空间的需求，C语言提供了一个动态内存开辟的函数：
+void *malloc( size_t size);
+
+这个函数向内存申请一块连续可用的空间，并返回指向这块空间的指针。
+
+开辟成功后会返回指向这片空间的指">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -24,7 +24,7 @@ struct stu&amp;#12">
 
     
 
-    <title>C语言自定义数据类型 | LsWorld</title>
+    <title>C语言动态内存管理 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +314,12 @@ struct stu&amp;#12">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">C语言自定义数据类型</h1>
+                    <h1 class="description center-align post-title">C语言动态内存管理</h1>
                 </div>
             </div>
         </div>
@@ -460,21 +460,21 @@ struct stu&amp;#12">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-09-06
+                    2023-09-08
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-07
+                    2023-09-08
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.2k
+                    454
                 </div>
                 
 
@@ -494,219 +494,59 @@ struct stu&amp;#12">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h4 id="结构体的声明"><a href="#结构体的声明" class="headerlink" title="结构体的声明"></a>结构体的声明</h4><p>结构体是用于自定义一个复杂类型（可以包括整形、字符串、浮点数等）</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">tag</span><span class="token punctuation">&#123;</span>
-    member<span class="token operator">-</span>list<span class="token operator">:</span>
-<span class="token punctuation">&#125;</span>variable<span class="token operator">-</span>list<span class="token punctuation">;</span>
-<span class="token comment">//例如描述一个学生：</span>
-<span class="token keyword">struct</span> <span class="token class-name">stu</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> age<span class="token punctuation">;</span>
-    <span class="token keyword">char</span> id<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></code></pre>
-
-
-
-<h5 id="结构体的使用"><a href="#结构体的使用" class="headerlink" title="结构体的使用"></a>结构体的使用</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">Stu</span><span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token keyword">char</span> tele<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token keyword">char</span> sex<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> age<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span> s4<span class="token punctuation">,</span>s5<span class="token punctuation">,</span>s6<span class="token punctuation">;</span> <span class="token comment">//s4  s5  s6也是全局变量</span>
-
-<span class="token comment">//创建全局变量</span>
-<span class="token keyword">struct</span> <span class="token class-name">Stu</span> s3<span class="token punctuation">;</span>
-
-<span class="token comment">//匿名结构体</span>
-<span class="token keyword">struct</span> 
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
-  <span class="token keyword">char</span> c<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>s<span class="token punctuation">;</span> <span class="token comment">//使用时通过 s 来进行取值</span>
-
-<span class="token comment">//结构体的自引用</span>
-<span class="token comment">//这里用链表的节点举例</span>
-<span class="token keyword">struct</span> <span class="token class-name">Node</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> data<span class="token punctuation">;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">Node</span><span class="token operator">*</span> next<span class="token punctuation">;</span> <span class="token comment">//保存下一个节点的地址</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">Stu</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span> <span class="token string">"zhang"</span><span class="token punctuation">,</span> <span class="token string">"1234567891"</span><span class="token punctuation">,</span> <span class="token string">"male"</span><span class="token punctuation">,</span> <span class="token number">18</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span> <span class="token comment">//赋值</span>
-  <span class="token keyword">struct</span> <span class="token class-name">Stu</span> s2<span class="token punctuation">;</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s %s %s %d"</span><span class="token punctuation">,</span>s1<span class="token punctuation">.</span>name<span class="token punctuation">,</span>s1<span class="token punctuation">.</span>tele<span class="token punctuation">,</span>s1<span class="token punctuation">.</span>sex<span class="token punctuation">,</span>s1<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//取值</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h4 id="结构体内存对齐"><a href="#结构体内存对齐" class="headerlink" title="结构体内存对齐"></a>结构体内存对齐</h4><blockquote>
-<p>结构体对齐规则：</p>
-<ol>
-<li><p>第一个成员在与结构体变量偏移量为0的地址处。</p>
-</li>
-<li><p>其他成员变量对齐到某个数字（对齐数）的整数倍的地址处。</p>
-<p><strong>对齐数</strong>&#x3D;&#x3D;编译器默认的一个对齐数与该成员大小的较小值。（<code>VScode</code>中默认为8）</p>
-</li>
-<li><p>结构体总大小为对齐数（结构体中最大的）的整数倍。</p>
-</li>
-<li><p>如果是嵌套结构体，则内部嵌套的结构体的对齐数大小就是嵌套结构体数据中最大的对齐数的整数倍。</p>
-</li>
-</ol>
+                <h4 id="动态内存函数"><a href="#动态内存函数" class="headerlink" title="动态内存函数"></a>动态内存函数</h4><p>为解决动态的开辟内存空间的需求，C语言提供了一个动态内存开辟的函数：</p>
+<p><code>void *malloc( size_t size);</code></p>
+<blockquote>
+<p>这个函数向内存申请一块连续可用的空间，并返回指向这块空间的指针。</p>
+<ul>
+<li>开辟成功后会返回指向这片空间的指针。</li>
+<li>若失败则会返回NULL指针。</li>
+</ul>
 </blockquote>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">s1</span>
+<p>并且提供了<code>void free(void *ptr)</code>来释放不再使用的动态内存空间。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//向内存申请10个整形的空间</span>
+<span class="token keyword">int</span><span class="token operator">*</span> p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token operator">*</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//向内存申请失败打印错误原因</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>p <span class="token operator">==</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span><span class="token function">strerror</span><span class="token punctuation">(</span>errno<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//当动态申请空间不再使用则释放</span>
+<span class="token function">free</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+p <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></code></pre>
+
+
+
+<h5 id="开辟动态数组"><a href="#开辟动态数组" class="headerlink" title="开辟动态数组"></a>开辟动态数组</h5><p><code>void *calloc(size_t num,size_t size)</code>会在内存中开辟一个初始全为0的数组。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 向内存申请10个整形的空间</span>
+<span class="token keyword">int</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">calloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 当动态申请空间不再使用则释放</span>
+<span class="token function">free</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+p <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></code></pre>
+
+
+
+<h5 id="调整动态开辟空间的大小"><a href="#调整动态开辟空间的大小" class="headerlink" title="调整动态开辟空间的大小"></a>调整动态开辟空间的大小</h5><p><code>void *realloc(void *memblock,size_t size)</code>当使用<code>calloc</code>或<code>malloc</code>开辟的内存空间不够用可以用<code>realloc</code>增加空间。</p>
+<blockquote>
+<p>若原先开辟的空间再增加新的空间之后有足够的内存空间，则直接追加，返回原先所开辟空间的地址。</p>
+<p>若没有足够的内存空间，则<code>realloc</code>会新开辟一个内存空间，并且将原先数据拷贝，并释放旧的内存空间，最后返回新开辟的内存地址。</p>
+</blockquote>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 向内存申请10个整形的空间</span>
+<span class="token keyword">int</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">calloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 为p多增加4个整形的空间</span>
+<span class="token keyword">int</span> <span class="token operator">*</span>ptr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">realloc</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> <span class="token number">4</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 追加成功后再赋值地址</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>ptr <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> c1<span class="token punctuation">;</span> <span class="token comment">//vscode的默认对齐数为8 , char为1字节，取较小值，则c1占首地址偏移量为0的地址。</span>
-  <span class="token keyword">int</span> a<span class="token punctuation">;</span> <span class="token comment">//int占4字节，与默认对齐数8小，所以取4，而成员要放在对齐数的整数倍，即4的整数倍，所以放的位置为首地址偏移4，随后占4字节</span>
-  <span class="token keyword">char</span> c2<span class="token punctuation">;</span> <span class="token comment">//char占1字节 和 默认8 相比，取1，以1的整数倍，所以放的位置为首地址偏移9（a总共大小占了4字节）</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token comment">//经过以上偏移后再对s1进行大小计算，由于结构体大小为最大的对齐数的整数倍（这里为4），此时上方所计算出来的大小默认为9字节，要成为4的整数倍，所以最终计算结果为12字节，即下方所打印。</span>
-
-<span class="token comment">//s2和s1同理</span>
-<span class="token keyword">struct</span> <span class="token class-name">s2</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
-  <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
-  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">s2</span> s2 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 12</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s2<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 8</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h5 id="修改默认对齐数"><a href="#修改默认对齐数" class="headerlink" title="修改默认对齐数"></a>修改默认对齐数</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression"><span class="token function">pack</span><span class="token punctuation">(</span>k<span class="token punctuation">)</span> </span><span class="token comment">//可将默认对齐数修改成k</span></span>
-
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression"><span class="token function">pack</span><span class="token punctuation">(</span><span class="token punctuation">)</span> </span><span class="token comment">//什么都不填，取消设置的对齐数</span></span></code></pre>
-
-
-
-<p>例：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression"><span class="token function">pack</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></span></span>
-
-<span class="token keyword">struct</span> <span class="token class-name">s1</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
-  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
-  <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//结果为6</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h4 id="结构体传参"><a href="#结构体传参" class="headerlink" title="结构体传参"></a>结构体传参</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">s1</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> c1<span class="token punctuation">;</span>
-  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
-  <span class="token keyword">char</span> c2<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token comment">//传地址要是不想修改结构体值可以前加const ，变成const struct s1 *ps</span>
-<span class="token keyword">void</span> <span class="token function">Init</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">s1</span> <span class="token operator">*</span>ps<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-  <span class="token comment">//将1赋值给a</span>
-  ps<span class="token operator">-></span>a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+  p <span class="token operator">=</span> ptr<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span>
 
+<span class="token comment">// 当动态申请空间不再使用则释放</span>
+<span class="token function">free</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+p <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></code></pre>
 
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">s1</span> s1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token comment">//传入s1的地址</span>
-  <span class="token function">Init</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s1<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span>s1<span class="token punctuation">.</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//打印 1</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-
-
-<h4 id="位段"><a href="#位段" class="headerlink" title="位段"></a>位段</h4><blockquote>
-<p>什么是位段：</p>
-<ol>
-<li>位段的成员必须是<code>int</code>、<code>unsigned int</code>或<code>signed int</code>。</li>
-<li>位段的成员名后边有一个冒号和一个数字。</li>
-</ol>
-</blockquote>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//例：</span>
-<span class="token keyword">struct</span> <span class="token class-name">S</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> a <span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">//意味着a只占2bit</span>
-  <span class="token keyword">int</span> b <span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">;</span> <span class="token comment">//意味着b只占5bit</span>
-  <span class="token keyword">int</span> c <span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment">//意味着c只占10bit</span>
-  <span class="token keyword">int</span> d <span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">;</span> <span class="token comment">//意味着d只占30bit</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h5 id="位段的内存分配"><a href="#位段的内存分配" class="headerlink" title="位段的内存分配"></a>位段的内存分配</h5><blockquote>
-<ol>
-<li>位段的空间是按照以4个字节(<code>int</code>)或1个字节(<code>char</code>)来开辟的。</li>
-<li>位段涉及很多不确定因素，可移植的程序慎用。</li>
-</ol>
-</blockquote>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">S</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> a <span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">//意味着a只占2bit</span>
-  <span class="token keyword">int</span> b <span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">;</span> <span class="token comment">//意味着b只占5bit</span>
-  <span class="token keyword">int</span> c <span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment">//意味着c只占10bit</span>
-  <span class="token keyword">int</span> d <span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">;</span> <span class="token comment">//意味着d只占30bit</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">struct</span> <span class="token class-name">S</span> s <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//打印 8  内存首先分配4个字节供 a b c占用，剩下d再占4字节</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h4 id="枚举类型"><a href="#枚举类型" class="headerlink" title="枚举类型"></a>枚举类型</h4><p>就是将把可能的取值一一列举。</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//赋值只能赋值里面有的常量 值默认从0开始</span>
-<span class="token keyword">enum</span> <span class="token class-name">Gender</span>
-<span class="token punctuation">&#123;</span>
-  MALE<span class="token punctuation">,</span><span class="token comment">// 0</span>
-  FEMALE<span class="token punctuation">,</span><span class="token comment">// 1</span>
-  SECRET<span class="token comment">// 2</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></code></pre>
-
-
-
-
-
-<h4 id="联合（共用体）"><a href="#联合（共用体）" class="headerlink" title="联合（共用体）"></a>联合（共用体）</h4><p>联合是一种特殊的自定义类型，这种类型定义的变量包含一系列的成员，并公用同一块空间。</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">union</span> Un
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">char</span> c<span class="token punctuation">;</span>
-  <span class="token keyword">int</span> i<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
- <span class="token keyword">union</span> Un u<span class="token punctuation">;</span>
- <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>u<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//打印 4 共用同一块空间，大小为最大成员的大小</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h5 id="联合体大小的计算"><a href="#联合体大小的计算" class="headerlink" title="联合体大小的计算"></a>联合体大小的计算</h5><ul>
-<li>联合的大小至少是最大成员的大小。</li>
-<li>当最大成员大小不是最大对齐数的整数倍的时候，就要对齐到最大对齐数的整数倍。</li>
-</ul>
 
                 
             </div>
@@ -733,7 +573,7 @@ struct stu&amp;#12">
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/09/06/c-yu-yan-zi-ding-yi-shu-ju-lei-xing/">http://example.com/2023/09/06/c-yu-yan-zi-ding-yi-shu-ju-lei-xing/</a>
+                    <a href="http://example.com/2023/09/08/c-yu-yan-dong-tai-nei-cun-guan-li/">http://example.com/2023/09/08/c-yu-yan-dong-tai-nei-cun-guan-li/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1086,9 +926,10 @@ struct stu&amp;#12">
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/09/08/c-yu-yan-dong-tai-nei-cun-guan-li/">
                     <div class="card-image">
@@ -1106,9 +947,9 @@ struct stu&amp;#12">
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-09-08
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-08
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1121,6 +962,7 @@ struct stu&amp;#12">
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1139,13 +981,13 @@ struct stu&amp;#12">
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/09/03/c-yu-yan-zi-fu-chuan-han-shu/">
+                <a href="/2023/09/06/c-yu-yan-zi-ding-yi-shu-ju-lei-xing/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="C语言字符串函数">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="C语言自定义数据类型">
                         
-                        <span class="card-title">C语言字符串函数</span>
+                        <span class="card-title">C语言自定义数据类型</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1156,7 +998,7 @@ struct stu&amp;#12">
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-03
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-06
                             </span>
                         <span class="publish-author">
                             
