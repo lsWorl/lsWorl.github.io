@@ -467,14 +467,14 @@ struct stu&amp;#12">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-06
+                    2023-09-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    766
+                    1.2k
                 </div>
                 
 
@@ -630,6 +630,83 @@ struct stu&amp;#12">
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
+
+
+
+
+<h4 id="位段"><a href="#位段" class="headerlink" title="位段"></a>位段</h4><blockquote>
+<p>什么是位段：</p>
+<ol>
+<li>位段的成员必须是<code>int</code>、<code>unsigned int</code>或<code>signed int</code>。</li>
+<li>位段的成员名后边有一个冒号和一个数字。</li>
+</ol>
+</blockquote>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//例：</span>
+<span class="token keyword">struct</span> <span class="token class-name">S</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> a <span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">//意味着a只占2bit</span>
+  <span class="token keyword">int</span> b <span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">;</span> <span class="token comment">//意味着b只占5bit</span>
+  <span class="token keyword">int</span> c <span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment">//意味着c只占10bit</span>
+  <span class="token keyword">int</span> d <span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">;</span> <span class="token comment">//意味着d只占30bit</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="位段的内存分配"><a href="#位段的内存分配" class="headerlink" title="位段的内存分配"></a>位段的内存分配</h5><blockquote>
+<ol>
+<li>位段的空间是按照以4个字节(<code>int</code>)或1个字节(<code>char</code>)来开辟的。</li>
+<li>位段涉及很多不确定因素，可移植的程序慎用。</li>
+</ol>
+</blockquote>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">S</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> a <span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">//意味着a只占2bit</span>
+  <span class="token keyword">int</span> b <span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">;</span> <span class="token comment">//意味着b只占5bit</span>
+  <span class="token keyword">int</span> c <span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment">//意味着c只占10bit</span>
+  <span class="token keyword">int</span> d <span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">;</span> <span class="token comment">//意味着d只占30bit</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">S</span> s <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//打印 8  内存首先分配4个字节供 a b c占用，剩下d再占4字节</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="枚举类型"><a href="#枚举类型" class="headerlink" title="枚举类型"></a>枚举类型</h4><p>就是将把可能的取值一一列举。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//赋值只能赋值里面有的常量 值默认从0开始</span>
+<span class="token keyword">enum</span> <span class="token class-name">Gender</span>
+<span class="token punctuation">&#123;</span>
+  MALE<span class="token punctuation">,</span><span class="token comment">// 0</span>
+  FEMALE<span class="token punctuation">,</span><span class="token comment">// 1</span>
+  SECRET<span class="token comment">// 2</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></code></pre>
+
+
+
+
+
+<h4 id="联合（共用体）"><a href="#联合（共用体）" class="headerlink" title="联合（共用体）"></a>联合（共用体）</h4><p>联合是一种特殊的自定义类型，这种类型定义的变量包含一系列的成员，并公用同一块空间。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">union</span> Un
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> c<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+ <span class="token keyword">union</span> Un u<span class="token punctuation">;</span>
+ <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>u<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//打印 4 共用同一块空间，大小为最大成员的大小</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="联合体大小的计算"><a href="#联合体大小的计算" class="headerlink" title="联合体大小的计算"></a>联合体大小的计算</h5><ul>
+<li>联合的大小至少是最大成员的大小。</li>
+<li>当最大成员大小不是最大对齐数的整数倍的时候，就要对齐到最大对齐数的整数倍。</li>
+</ul>
 
                 
             </div>
