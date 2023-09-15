@@ -471,14 +471,14 @@ bool SqListDele">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-14
+                    2023-09-15
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    785
+                    1.1k
                 </div>
                 
 
@@ -593,6 +593,71 @@ a <span class="token operator">=</span> a<span class="token operator">^</span>b<
     <span class="token punctuation">&#125;</span>
     L<span class="token operator">-></span>length <span class="token operator">=</span> k<span class="token punctuation">;</span><span class="token comment">//将长度改为不包含的x元素的k，之后的元素就无法通过顺序表查询到，就达到了删除的效果</span>
 <span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="题目4：删除指定区间内的元素"><a href="#题目4：删除指定区间内的元素" class="headerlink" title="题目4：删除指定区间内的元素"></a>题目4：删除指定区间内的元素</h4><blockquote>
+<p>题目：</p>
+<p>从顺序表中删除其值在给定值s与t之间（包含s和t，要求s&lt;t）的所有元素，若s或t不合理或顺序表为空，则显示出错信息并退出运行。</p>
+</blockquote>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 删除指定区间的元素</span>
+bool <span class="token function">SqListDeleteDomain</span><span class="token punctuation">(</span>SqList <span class="token operator">*</span>L<span class="token punctuation">,</span> ElemType s<span class="token punctuation">,</span> ElemType t<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token comment">// 用来存储s的索引值</span>
+  <span class="token keyword">int</span> sIndex <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token comment">// 用来存储t的索引值</span>
+  <span class="token keyword">int</span> tIndex <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token comment">// 判断行为是否合法</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>s <span class="token operator">>=</span> t <span class="token operator">||</span> L<span class="token operator">-></span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> L<span class="token operator">-></span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 若值为s则将索引值赋值给sIndex</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> s<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      sIndex <span class="token operator">=</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 若值为t则将索引值赋值给tIndex</span>
+    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> t<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      tIndex <span class="token operator">=</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 若s和t的索引值都已找到就提前结束循环</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>sIndex <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> tIndex <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 走这条说明s或t没有在顺序表中找到</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>sIndex <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>tIndex<span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// t若为最后一个元素则直接减少长度</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>tIndex<span class="token punctuation">]</span> <span class="token operator">==</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>L<span class="token operator">-></span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    L<span class="token operator">-></span>length <span class="token operator">-=</span> tIndex <span class="token operator">-</span> sIndex<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> true<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 临时存储s的索引值</span>
+  <span class="token keyword">int</span> tmp <span class="token operator">=</span> sIndex<span class="token punctuation">;</span>
+
+  <span class="token comment">// 将t往后的数据前移</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> tIndex<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> L<span class="token operator">-></span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    L<span class="token operator">-></span>data<span class="token punctuation">[</span>tmp<span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tmp<span class="token operator">++</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  L<span class="token operator">-></span>length <span class="token operator">=</span> L<span class="token operator">-></span>length <span class="token operator">-</span> <span class="token punctuation">(</span>tIndex <span class="token operator">-</span> sIndex <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> true<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
 
 
 
