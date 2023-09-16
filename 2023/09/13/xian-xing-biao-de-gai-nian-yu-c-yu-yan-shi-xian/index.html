@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-15
+                    2023-09-16
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.3k
+                    1.4k
                 </div>
                 
 
@@ -645,8 +645,14 @@ bool <span class="token function">SqListDelete</span><span class="token punctuat
 <span class="token punctuation">&#125;</span>LNode<span class="token punctuation">,</span> <span class="token operator">*</span>LinkList<span class="token punctuation">;</span><span class="token comment">//重命名为LNode表示单个节点 *LinkList表示链表</span></code></pre>
 
 <p>由于链表非随机存取的存储结构，每次要寻找一个特定的节点时，需要从表头开始遍历，依次查找。</p>
-<p>在单链表中也分为带头节点与</p>
-
+<p>在单链表中也分为带头节点与不带头节点。引入头节点，可以带来两个优点：</p>
+<blockquote>
+<ul>
+<li>由于第一个数据结点的位置被存放在头节点的指针域中，因此在链表的第一个位置上的操作与其他表的操作一致，无需像不带头节点一样特殊处理。</li>
+<li>无论链表是否为空，其头指针都是指向头节点的非空指针，因此空表和非空表的处理也就得到了统一。</li>
+</ul>
+</blockquote>
+<h4 id="单链表的基本操作实现"><a href="#单链表的基本操作实现" class="headerlink" title="单链表的基本操作实现"></a>单链表的基本操作实现</h4>
                 
             </div>
             <hr/>
