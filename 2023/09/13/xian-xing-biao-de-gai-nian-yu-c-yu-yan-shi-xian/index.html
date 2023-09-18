@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-17
+                    2023-09-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.9k
+                    2.1k
                 </div>
                 
 
@@ -699,7 +699,7 @@ bool <span class="token function">ListInsert</span><span class="token punctuatio
 
 
 
-<h5 id="后插操作"><a href="#后插操作" class="headerlink" title="后插操作"></a>后插操作</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 在节点后插入元素</span>
+<h5 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 在节点后插入元素</span>
 bool <span class="token function">InsertNextNode</span><span class="token punctuation">(</span>LNode <span class="token operator">*</span>L<span class="token punctuation">,</span> ElemType e<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
   <span class="token comment">// 判断是否为空</span>
@@ -718,7 +718,7 @@ bool <span class="token function">InsertNextNode</span><span class="token punctu
 
 
 
-<h5 id="前插操作"><a href="#前插操作" class="headerlink" title="前插操作"></a>前插操作</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 在节点前插入元素  LNode为要插入的节点</span>
+<h5 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 在节点前插入元素  LNode为要插入的节点</span>
 bool <span class="token function">InsertPriorNode</span><span class="token punctuation">(</span>LNode <span class="token operator">*</span>p<span class="token punctuation">,</span> ElemType e<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
   <span class="token comment">// 判断是否为空</span>
@@ -785,6 +785,46 @@ LNode <span class="token function">GetElem</span><span class="token punctuation"
   
   <span class="token keyword">return</span> <span class="token operator">*</span>L<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="按值查找节点"><a href="#按值查找节点" class="headerlink" title="按值查找节点"></a>按值查找节点</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//按值查找</span>
+LNode <span class="token function">LocateElem</span><span class="token punctuation">(</span>LinkList L<span class="token punctuation">,</span> ElemType e<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">LinkIsEmpty</span><span class="token punctuation">(</span>L<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token operator">*</span><span class="token punctuation">(</span>LNode <span class="token operator">*</span><span class="token punctuation">)</span><span class="token constant">NULL</span><span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">!=</span> e <span class="token operator">&amp;&amp;</span> L <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    L <span class="token operator">=</span> L<span class="token operator">-></span>next<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>L<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token operator">*</span><span class="token punctuation">(</span>LNode <span class="token operator">*</span><span class="token punctuation">)</span><span class="token constant">NULL</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token operator">*</span>L<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="求表长"><a href="#求表长" class="headerlink" title="求表长"></a>求表长</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//求表长</span>
+<span class="token keyword">int</span> <span class="token function">ListLength</span><span class="token punctuation">(</span>LinkList L<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> length <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>L <span class="token operator">!=</span><span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    L <span class="token operator">=</span> L<span class="token operator">-></span>next<span class="token punctuation">;</span>
+    length<span class="token operator">++</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> length  <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">//减去表头</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="双链表的定义"><a href="#双链表的定义" class="headerlink" title="双链表的定义"></a>双链表的定义</h4><blockquote>
+<p>单链表中只有一个指向后继的指针，使得链表只能从头节点依次顺序地向后遍历。为了克服单链表中的求点，引入了双链表，双链表节点中有两个指针<code>prior</code>和<code>next</code>，分别用来指向前驱节点和后继节点。</p>
+</blockquote>
+<p>类型定义如下：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">DNode</span><span class="token punctuation">&#123;</span>
+  ElemType data<span class="token punctuation">;</span> <span class="token comment">//数据域</span>
+  <span class="token keyword">struct</span> <span class="token class-name">DNode</span> <span class="token operator">*</span>prior<span class="token punctuation">,</span><span class="token operator">*</span>next<span class="token punctuation">;</span>  <span class="token comment">//前继和后继指针</span>
+<span class="token punctuation">&#125;</span>DNode<span class="token punctuation">,</span> <span class="token operator">*</span>DLinkList<span class="token punctuation">;</span></code></pre>
 
 
                 
