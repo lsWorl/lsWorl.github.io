@@ -4,13 +4,14 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="顺序表的相关算法实现, LsWorld">
-    <meta name="description" content="题目1：删除最小值
-题目：
-从顺序表中删除具有最小值的元素（假设唯一）并由函数返回被删元素的值。空出的位置由最后一个元素填补，若顺序表为空，则显示出错信息并退出运行。
+    <meta name="keywords" content="电路模型和电路定律, LsWorld">
+    <meta name="description" content="电路和电路模型
+电路是由电路零件、器件经导线连接而成的电通路装置。
 
-具体实现// 删除顺序表中最小值的元素
-bool SqListDele">
+电路零件常称为电路部件（例如电阻器、开关、蓄电池等）；
+电路器件则是由电路部件组成且具有某种功能的产品（如晶体管、集成电路等）；
+
+在电路中所产生的电压、电流是在电源的作">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -24,7 +25,7 @@ bool SqListDele">
 
     
 
-    <title>顺序表的相关算法实现 | LsWorld</title>
+    <title>电路模型和电路定律 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +315,12 @@ bool SqListDele">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">顺序表的相关算法实现</h1>
+                    <h1 class="description center-align post-title">电路模型和电路定律</h1>
                 </div>
             </div>
         </div>
@@ -435,12 +436,8 @@ bool SqListDele">
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/C/">
-                                <span class="chip bg-color">C</span>
-                            </a>
-                        
-                            <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-                                <span class="chip bg-color">数据结构</span>
+                            <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                                <span class="chip bg-color">电路</span>
                             </a>
                         
                     </div>
@@ -451,8 +448,8 @@ bool SqListDele">
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
-                                数据结构
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                电路
                             </a>
                         
                     </div>
@@ -464,21 +461,21 @@ bool SqListDele">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-09-14
+                    2023-09-20
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-15
+                    2023-09-20
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    985
                 </div>
                 
 
@@ -498,169 +495,34 @@ bool SqListDele">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h4 id="题目1：删除最小值"><a href="#题目1：删除最小值" class="headerlink" title="题目1：删除最小值"></a>题目1：删除最小值</h4><blockquote>
-<p>题目：</p>
-<p>从顺序表中删除具有最小值的元素（假设唯一）并由函数返回被删元素的值。空出的位置由最后一个元素填补，若顺序表为空，则显示出错信息并退出运行。</p>
+                <h3 id="电路和电路模型"><a href="#电路和电路模型" class="headerlink" title="电路和电路模型"></a>电路和电路模型</h3><blockquote>
+<p>电路是由电路零件、器件经导线连接而成的电通路装置。</p>
+<ul>
+<li>电路零件常称为电路部件（例如电阻器、开关、蓄电池等）；</li>
+<li>电路器件则是由电路部件组成且具有某种功能的产品（如晶体管、集成电路等）；</li>
+</ul>
+<p>在电路中所产生的电压、电流是在电源的作用下产生的，因此电源又称为激励源或激励；由激励在电路中产生的电压、电流等称为响应。</p>
 </blockquote>
-<h5 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 删除顺序表中最小值的元素</span>
-bool <span class="token function">SqListDeleteMinimun</span><span class="token punctuation">(</span>SqList <span class="token operator">*</span>L<span class="token punctuation">,</span>ElemType <span class="token operator">*</span>e<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token comment">//判断顺序表是否为空</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token comment">// 用于存放最小值</span>
-  ElemType minValue <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">+</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token comment">// 用于存放最小值的索引</span>
-  <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> L<span class="token operator">-></span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">+</span> i<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token operator">*</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">+</span> i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        minValue <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">+</span> i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        index <span class="token operator">=</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token comment">//将删除的元素由最后一个元素填补</span>
-  <span class="token operator">*</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">+</span> index<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data <span class="token operator">+</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>length <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
-  <span class="token comment">//返回删除的值</span>
-  <span class="token operator">*</span>e <span class="token operator">=</span> minValue<span class="token punctuation">;</span>
-  <span class="token keyword">return</span> true<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>上方是通过<code>for</code>循环实现，时间复杂度为O(n)。</p>
-<h4 id="题目2：逆置顺序表"><a href="#题目2：逆置顺序表" class="headerlink" title="题目2：逆置顺序表"></a>题目2：逆置顺序表</h4><blockquote>
-<p>题目：</p>
-<p>设计一个高效算法，将顺序表L的所有元素逆置，要求算法的空间复杂度为O(1)。</p>
+<h4 id="电路模型"><a href="#电路模型" class="headerlink" title="电路模型"></a>电路模型</h4><p><img src="https://img-blog.csdnimg.cn/cf84230a2f504e218f6a76a8600fe632.png" alt="电路模型图"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动">电路模型</p>
+<p>图片中左侧为简单的实际电路，由若干个干电池和小灯泡组成，右侧为电路模型，反映了将嗲能转换为热能和光能的物理现象；用理想电路元件或它们的组合模拟实际器件就是建立其模型，简称<strong>建模</strong>。</p>
+<h4 id="电流和电压的参考方向"><a href="#电流和电压的参考方向" class="headerlink" title="电流和电压的参考方向"></a>电流和电压的参考方向</h4><blockquote>
+<p>电路理论中将电流（I）、电压（U）、电荷（Q）和磁通（Φ）来进行表示。磁通链用ψ进行表示。电功率和电能量分别用P和W。</p>
+<p>在电路分析中，需指定电流或电压的参考方向后才能开始进行分析和计算。</p>
 </blockquote>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 逆置顺序表</span>
-<span class="token keyword">void</span> <span class="token function">SqListReverse</span><span class="token punctuation">(</span>SqList <span class="token operator">*</span>L<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> left <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> right <span class="token operator">=</span> L<span class="token operator">-></span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token keyword">while</span> <span class="token punctuation">(</span>left <span class="token operator">&lt;</span> right<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token comment">//将元素进行交换</span>
-    ElemType tmp <span class="token operator">=</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span> <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
-    left<span class="token operator">++</span><span class="token punctuation">;</span>
-    right<span class="token operator">--</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<p>中间元素交换部分也可以采用异或的方式来实现，当然循环部分也可以使用<code>for(int i = 0; i&lt; L-&gt;length / 2; i++)</code>来通过进行前一半元素和后一半元素的交换来实现。</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">while</span> <span class="token punctuation">(</span>left <span class="token operator">&lt;</span> right<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token comment">//当两个值不相同时交换位置</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token operator">!=</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-      L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">^</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">^</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">^</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    left<span class="token operator">++</span><span class="token punctuation">;</span>
-    right<span class="token operator">--</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span></code></pre>
-
-<h5 id="异或实现原理："><a href="#异或实现原理：" class="headerlink" title="异或实现原理："></a>异或实现原理：</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//注释表示二进制形式 异或是同位相同则为0 不相同则为1</span>
-<span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span> <span class="token comment">//4的二进制形式为    00000000 00000000 00000000 00000100</span>
-<span class="token keyword">int</span> b <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">;</span> <span class="token comment">//5的二进制形式为    00000000 00000000 00000000 00000101</span>
-
-a <span class="token operator">=</span> a<span class="token operator">^</span>b<span class="token punctuation">;</span> <span class="token comment">//通过异或运算后此时a为 00000000 00000000 00000000 00000001 </span>
-b <span class="token operator">=</span> a<span class="token operator">^</span>b<span class="token punctuation">;</span> <span class="token comment">//通过异或运算后此时b为 00000000 00000000 00000000 00000100  这里的b是和已经异或过的a重新再一次进行异或运算</span>
-a <span class="token operator">=</span> a<span class="token operator">^</span>b<span class="token punctuation">;</span> <span class="token comment">//通过异或运算后此时a为 00000000 00000000 00000000 00000101</span></code></pre>
-
-<p>经过异或运算就将二进制位进行了交换从而实现元素交换。</p>
-<h4 id="题目3：删除顺序表中值为x的数据元素"><a href="#题目3：删除顺序表中值为x的数据元素" class="headerlink" title="题目3：删除顺序表中值为x的数据元素"></a>题目3：删除顺序表中值为x的数据元素</h4><blockquote>
-<p>题目：</p>
-<p>对长度为n的顺序表L，编写一个时间复杂度为O(n)、空间复杂度为O(1)的算法，该算法删除线性表中所有值为x的数据元素。</p>
+<p><img src="https://img-blog.csdnimg.cn/01572499b0fc4a6bbf12b749795e8fc5.png" alt="电流方向"></p>
+<p>在上图中规定了A到B电流i的方向为A-&gt;B，若实际电流方向和参考方向一致，则电流为正值，即<code>i&gt;0</code>；若参考方向和实际方向不一致，即<code>i&lt;0</code>。这样在指定的电流参考方向下，电流值的正负就可以反映除电流的实际方向，如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/2c2f78d2693d422f826a5b839760c3c9.png" alt="img"></p>
+<p>同理，对电路两点之间的电压也要指定参考方向或参考极性。在表达两点之间的电压时，用正极性（+）表示高电位，负极性（-）表示低点位，而正极指向负极的方向就是电压的参考方向，如下图，若电压实际方向和参考方向相同，则<code>U&gt;0</code>，若电压实际方向和参考方向相反，则<code>U&lt;0</code>。</p>
+<p><img src="https://img-blog.csdnimg.cn/5076a2ce2f97451490b6bda9fcd94aa1.png" alt="img"></p>
+<h4 id="关联参考方向"><a href="#关联参考方向" class="headerlink" title="关联参考方向"></a>关联参考方向</h4><blockquote>
+<p>一个元件的电流和电压的参考方向可以独立地任意指定。如果指定流过元件的电流参考方向和电压的参考方向一致，则成为<strong>关联参考方向</strong>，当两者不一致时，称为<strong>非关联参考方向</strong>，如下图所示。</p>
 </blockquote>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//这题用的王道书的解法</span>
-<span class="token keyword">void</span> <span class="token function">SqListDeleteX</span><span class="token punctuation">(</span>SqList <span class="token operator">*</span>L<span class="token punctuation">,</span>ElemType x<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token comment">//计算不为x的元素</span>
-    <span class="token keyword">int</span> k <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> L<span class="token operator">-></span>length <span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token comment">//查询表中所有不为x的元素，并将这些元素重新排放</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!=</span> x<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-            L<span class="token operator">-></span>data<span class="token punctuation">[</span>k<span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
-            k<span class="token operator">++</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-    L<span class="token operator">-></span>length <span class="token operator">=</span> k<span class="token punctuation">;</span><span class="token comment">//将长度改为不包含的x元素的k，之后的元素就无法通过顺序表查询到，就达到了删除的效果</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<h4 id="题目4：删除指定区间内的元素"><a href="#题目4：删除指定区间内的元素" class="headerlink" title="题目4：删除指定区间内的元素"></a>题目4：删除指定区间内的元素</h4><blockquote>
-<p>题目：</p>
-<p>从顺序表中删除其值在给定值s与t之间（包含s和t，要求s&lt;t）的所有元素，若s或t不合理或顺序表为空，则显示出错信息并退出运行。</p>
+<p><img src="https://img-blog.csdnimg.cn/76a8077b06504aa68f89f7029e32b41f.png" alt="img"></p>
+<h4 id="电路单位制"><a href="#电路单位制" class="headerlink" title="电路单位制"></a>电路单位制</h4><p>在国际单位制（SI）中，电流的单位为A（安培，简称安），电荷的单位为C（库伦，简称库），电压的单位为V（伏特，简称伏），磁通链的单位为Wb（韦伯，简称韦）。</p>
+<h3 id="电功率和能量"><a href="#电功率和能量" class="headerlink" title="电功率和能量"></a>电功率和能量</h3><blockquote>
+<p>电功率与电压和电流密切相关。当正电荷从元件上电压的<code>+</code>极经元件运动到电压的<code>-</code>极时，与此电压相应的电场力要对电荷做功，这时，元件<strong>吸收能量</strong>；反之为<strong>释放电能</strong>。</p>
 </blockquote>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 删除指定区间的元素</span>
-bool <span class="token function">SqListDeleteDomain</span><span class="token punctuation">(</span>SqList <span class="token operator">*</span>L<span class="token punctuation">,</span> ElemType s<span class="token punctuation">,</span> ElemType t<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-  <span class="token comment">// 用来存储s的索引值</span>
-  <span class="token keyword">int</span> sIndex <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token comment">// 用来存储t的索引值</span>
-  <span class="token keyword">int</span> tIndex <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token comment">// 判断行为是否合法</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>s <span class="token operator">>=</span> t <span class="token operator">||</span> L<span class="token operator">-></span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-
-  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> L<span class="token operator">-></span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token comment">// 若值为s则将索引值赋值给sIndex</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> s<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-      sIndex <span class="token operator">=</span> i<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">// 若值为t则将索引值赋值给tIndex</span>
-    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> t<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-      tIndex <span class="token operator">=</span> i<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">// 若s和t的索引值都已找到就提前结束循环</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>sIndex <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> tIndex <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-      <span class="token keyword">break</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-
-  <span class="token comment">// 走这条说明s或t没有在顺序表中找到</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>sIndex <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>tIndex<span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-
-  <span class="token comment">// t若为最后一个元素则直接减少长度</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>data<span class="token punctuation">[</span>tIndex<span class="token punctuation">]</span> <span class="token operator">==</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>L<span class="token operator">-></span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    L<span class="token operator">-></span>length <span class="token operator">-=</span> tIndex <span class="token operator">-</span> sIndex<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> true<span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token comment">// 临时存储s的索引值</span>
-  <span class="token keyword">int</span> tmp <span class="token operator">=</span> sIndex<span class="token punctuation">;</span>
-
-  <span class="token comment">// 将t往后的数据前移</span>
-  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> tIndex<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> L<span class="token operator">-></span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#123;</span>
-    L<span class="token operator">-></span>data<span class="token punctuation">[</span>tmp<span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token operator">-></span>data<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    tmp<span class="token operator">++</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  L<span class="token operator">-></span>length <span class="token operator">=</span> L<span class="token operator">-></span>length <span class="token operator">-</span> <span class="token punctuation">(</span>tIndex <span class="token operator">-</span> sIndex <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> true<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-
-
+<p>在dt时间内，有dq电荷自元件上电压的<code>+</code>极经历电压u到电压的<code>-</code>极。根据电压的定义（A、B两点的电压u等于电场力将单位正电荷自A电移动至B点时所做的功），电场力所做功，也即元件吸收的能量为：<br>$$<br>dW &#x3D;udq<br>$$<br>假设电流<code>i</code>在元件上与<code>u</code>成关联方向，由<code>i</code>的定义<code>i=dq/dt</code>（即<code>q</code>对<code>t</code>求导），由<code>dW = uidt</code>，功率是能量对时间的导数，故元件的吸收功率为<br>$$<br>p&#x3D;\frac{dW}{dt}&#x3D;ui<br>$$<br>在<code>t_0</code>到<code>t</code>的时间内，元件吸收能量为<br>$$<br>W(t)&#x3D;\int dW &#x3D; \int_{q(t_0)}^{q(t)}udq&#x3D;\int_{t_0}^t u(\xi)i(\xi)d\xi<br>$$<br>由于<code>u</code>、<code>i</code>都是代数量，因此，功率p和吸收的能量W也都是代数量。当最后结果<code>p&gt;0</code>，<code>W&gt;0</code>，元件确实吸收功率与能量；当<code>p&lt;0</code>，<code>w&lt;0</code>时，元件实际释放电能或发出功率。</p>
 
                 
             </div>
@@ -687,7 +549,7 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/09/14/shun-xu-biao-de-xiang-guan-suan-fa-shi-xian/">http://example.com/2023/09/14/shun-xu-biao-de-xiang-guan-suan-fa-shi-xian/</a>
+                    <a href="http://example.com/2023/09/20/dian-lu-mo-xing-he-dian-lu-ding-lu/">http://example.com/2023/09/20/dian-lu-mo-xing-he-dian-lu-ding-lu/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -725,12 +587,8 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/C/">
-                                    <span class="chip bg-color">C</span>
-                                </a>
-                            
-                                <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-                                    <span class="chip bg-color">数据结构</span>
+                                <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                                    <span class="chip bg-color">电路</span>
                                 </a>
                             
                         </div>
@@ -1044,9 +902,10 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/09/20/dian-lu-mo-xing-he-dian-lu-ding-lu/">
                     <div class="card-image">
@@ -1064,9 +923,9 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-09-20
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-20
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1079,6 +938,7 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1097,13 +957,13 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/09/13/xian-xing-biao-de-gai-nian-yu-c-yu-yan-shi-xian/">
+                <a href="/2023/09/14/shun-xu-biao-de-xiang-guan-suan-fa-shi-xian/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="线性表的概念与C语言实现">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="顺序表的相关算法实现">
                         
-                        <span class="card-title">线性表的概念与C语言实现</span>
+                        <span class="card-title">顺序表的相关算法实现</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1114,7 +974,7 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-13
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-14
                             </span>
                         <span class="publish-author">
                             
@@ -1254,6 +1114,13 @@ bool <span class="token function">SqListDeleteDomain</span><span class="token pu
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
