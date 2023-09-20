@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-18
+                    2023-09-20
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.1k
+                    3.1k
                 </div>
                 
 
@@ -652,6 +652,10 @@ bool <span class="token function">SqListDelete</span><span class="token punctuat
 <li>无论链表是否为空，其头指针都是指向头节点的非空指针，因此空表和非空表的处理也就得到了统一。</li>
 </ul>
 </blockquote>
+<h5 id="循环单链表"><a href="#循环单链表" class="headerlink" title="循环单链表"></a>循环单链表</h5><blockquote>
+<p>循环单链表和单链表的区别就在于最后一个节点的<code>next</code>指向的是头节点，从而整个链表形成一个环。使单链表无论从哪开始扫描都能获得全部元素。</p>
+</blockquote>
+<p>由于没有节点会指向<code>NULL</code>，当判空就变成了<code>L-&gt;next == L</code>，判断链表的下一个节点是否指向本身，由于循环单链表的插入、删除算法与单链表几乎一样，除了在最后一个节点需特殊处理将后一节点指向于头节点，以让单链表保持循环的性质。</p>
 <h4 id="单链表的基本操作实现"><a href="#单链表的基本操作实现" class="headerlink" title="单链表的基本操作实现"></a>单链表的基本操作实现</h4><h5 id="初始化链表"><a href="#初始化链表" class="headerlink" title="初始化链表"></a>初始化链表</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 初始化带头节点的链表</span>
 LNode<span class="token operator">*</span> <span class="token function">InitLNode</span><span class="token punctuation">(</span>LinkList L<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
@@ -826,6 +830,129 @@ LNode <span class="token function">LocateElem</span><span class="token punctuati
   <span class="token keyword">struct</span> <span class="token class-name">DNode</span> <span class="token operator">*</span>prior<span class="token punctuation">,</span><span class="token operator">*</span>next<span class="token punctuation">;</span>  <span class="token comment">//前继和后继指针</span>
 <span class="token punctuation">&#125;</span>DNode<span class="token punctuation">,</span> <span class="token operator">*</span>DLinkList<span class="token punctuation">;</span></code></pre>
 
+
+
+<blockquote>
+<p>双链表在单链表的节点中增加了指向前驱指针<code>prior</code>，由此可以通过<code>prior</code>找到前驱节点，因此，插入、删除操作的时间复杂度仅为O(1).</p>
+</blockquote>
+<h5 id="循环双链表"><a href="#循环双链表" class="headerlink" title="循环双链表"></a>循环双链表</h5><blockquote>
+<p>循环双链表的定义和循环单链表基本相同，就是将最后一个节点的<code>next</code>指向头节点，并将头节点的<code>prior</code>指向最后一个节点，即形成闭环。判空操作也于循环单链表如出一辙，判断<code>L-&gt;next == L &amp;&amp; L-&gt;prior == L</code>即可，而其他删除插入等操作都与双链表几乎相同。</p>
+</blockquote>
+<h4 id="双链表的基本操作实现"><a href="#双链表的基本操作实现" class="headerlink" title="双链表的基本操作实现"></a>双链表的基本操作实现</h4><h5 id="双链表的初始化"><a href="#双链表的初始化" class="headerlink" title="双链表的初始化"></a>双链表的初始化</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//初始化带头节点的双链表</span>
+DNode <span class="token operator">*</span><span class="token function">InitDLinkList</span><span class="token punctuation">(</span>DLinkList L<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  L <span class="token operator">=</span> <span class="token punctuation">(</span>DNode <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>DNode<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//分配内存空间</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>L <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>DNode <span class="token operator">*</span><span class="token punctuation">)</span><span class="token constant">NULL</span><span class="token punctuation">;</span>
+    L<span class="token operator">-></span>data <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  L<span class="token operator">-></span>prior <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span> <span class="token comment">//前驱节点永远指向NULL</span>
+  L<span class="token operator">-></span>next <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> L<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="双链表的插入操作"><a href="#双链表的插入操作" class="headerlink" title="双链表的插入操作"></a>双链表的插入操作</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 双链表的插入操作,p节点后插入s节点</span>
+bool <span class="token function">InsertNextDNode</span><span class="token punctuation">(</span>DNode <span class="token operator">*</span>p<span class="token punctuation">,</span> DNode <span class="token operator">*</span>s<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">==</span> <span class="token constant">NULL</span> <span class="token operator">||</span> s <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+  s<span class="token operator">-></span>next <span class="token operator">=</span> p<span class="token operator">-></span>next<span class="token punctuation">;</span>
+  <span class="token comment">// 判断p是否是最后一个节点</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>next <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    p<span class="token operator">-></span>next<span class="token operator">-></span>prior <span class="token operator">=</span> s<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  s<span class="token operator">-></span>prior <span class="token operator">=</span> p<span class="token punctuation">;</span>
+  p<span class="token operator">-></span>next <span class="token operator">=</span> s<span class="token punctuation">;</span>
+  <span class="token keyword">return</span> true<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="双链表的删除操作"><a href="#双链表的删除操作" class="headerlink" title="双链表的删除操作"></a>双链表的删除操作</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//双链表的删除操作 将p节点删除</span>
+bool <span class="token function">DeleteDNode</span><span class="token punctuation">(</span>DNode <span class="token operator">*</span> p<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>p<span class="token operator">==</span><span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+ p<span class="token operator">-></span>prior<span class="token operator">-></span>next <span class="token operator">=</span> p<span class="token operator">-></span>next<span class="token punctuation">;</span>
+ <span class="token comment">//判断是否为最后一个元素</span>
+ <span class="token keyword">if</span><span class="token punctuation">(</span>p<span class="token operator">-></span>next <span class="token operator">!=</span><span class="token constant">NULL</span><span class="token punctuation">)</span>
+ p<span class="token operator">-></span>next<span class="token operator">-></span>prior <span class="token operator">=</span> p<span class="token operator">-></span>prior<span class="token punctuation">;</span>
+ <span class="token function">free</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 删除p节点的后继节点</span>
+bool <span class="token function">DeleteNextDNode</span><span class="token punctuation">(</span>DNode <span class="token operator">*</span>p<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+  <span class="token comment">// 存储p的下一个节点</span>
+  DNode <span class="token operator">*</span>q <span class="token operator">=</span> p<span class="token operator">-></span>next<span class="token punctuation">;</span>
+  <span class="token comment">// 判断p的后继节点是否为空</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>q <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>q<span class="token operator">-></span>next <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    p<span class="token operator">-></span>next <span class="token operator">=</span> q<span class="token operator">-></span>next<span class="token punctuation">;</span>
+    q<span class="token operator">-></span>next<span class="token operator">-></span>prior <span class="token operator">=</span> p<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span>
+  <span class="token punctuation">&#123;</span>
+    p<span class="token operator">-></span>next <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">free</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> true<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//摧毁链表</span>
+<span class="token keyword">void</span> <span class="token function">DestoryDLinkList</span><span class="token punctuation">(</span>DLinkList L<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>L<span class="token operator">-></span>next <span class="token operator">!=</span><span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token comment">//这函数即是上方用于删除后继节点</span>
+    <span class="token function">DeleteNextDNode</span><span class="token punctuation">(</span>L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token function">free</span><span class="token punctuation">(</span>L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  L <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<blockquote>
+<p>查询操作和单链表基本相同，就不再过多赘述。</p>
+</blockquote>
+<h4 id="静态链表"><a href="#静态链表" class="headerlink" title="静态链表"></a>静态链表</h4><blockquote>
+<p>静态链表借用数组的特性来描述链式存储结构，即使链表在物理上也实现临近，节点也有数据域<code>data</code>和指针域<code>next</code>，只不过<code>next</code>是存放节点的相对地址（数组下标），又称游标。与顺序表一样，静态链表也要预先分配一块连续的内存空间。静态链表以<code>next == -1</code>作为其结束的标志。</p>
+</blockquote>
+<p><strong>静态链表结构类型</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MaxSize</span> <span class="token expression"><span class="token number">10</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">ElemType</span> <span class="token expression"><span class="token keyword">int</span></span></span>
+
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">SNode</span>
+<span class="token punctuation">&#123;</span>
+  ElemType data<span class="token punctuation">;</span> <span class="token comment">//存储数据元素</span>
+  <span class="token keyword">int</span> next<span class="token punctuation">;</span> <span class="token comment">//下个元素的数组下标</span>
+<span class="token punctuation">&#125;</span> SNode<span class="token punctuation">;</span></code></pre>
+
+
+
+<h3 id="顺序表和链表的比较"><a href="#顺序表和链表的比较" class="headerlink" title="顺序表和链表的比较"></a>顺序表和链表的比较</h3><ul>
+<li><p><strong>存储（读写）方式</strong></p>
+<p>顺序表可以顺序存取，也可以随机存取，链表只能从表头顺序存取元素。例如在第<code>i</code>个位置上执行存或取的操作，顺序表仅需依次访问，而链表则需从表头开始依次访问<code>i</code>次。</p>
+</li>
+<li><p><strong>逻辑结构与物理结构</strong></p>
+</li>
+</ul>
+<p>​	采用顺序存储时，逻辑上相邻的元素，对应的物理存储位置也相邻。采用链式存储时，逻辑上相邻物理上并不一定相邻，得通过指针来进行查找下一个元素。</p>
+<ul>
+<li><strong>查找、插入和删除操作</strong></li>
+</ul>
+<p>​	对于按值查找，顺序表无序时，两者的时间复杂度都为<code>O(n)</code>;顺序表有序可使用二分查找，复杂度为<code>O(log_2 n)</code>。</p>
+<p>​	对于序号查找，顺序表支持随机访问，时间复杂度为<code>O(1)</code>，而链表复杂度为<code>O(n)</code>。</p>
 
                 
             </div>
