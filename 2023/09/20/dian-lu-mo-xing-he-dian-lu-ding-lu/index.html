@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-20
+                    2023-09-21
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    985
+                    1.7k
                 </div>
                 
 
@@ -523,6 +523,32 @@
 <p>电功率与电压和电流密切相关。当正电荷从元件上电压的<code>+</code>极经元件运动到电压的<code>-</code>极时，与此电压相应的电场力要对电荷做功，这时，元件<strong>吸收能量</strong>；反之为<strong>释放电能</strong>。</p>
 </blockquote>
 <p>在dt时间内，有dq电荷自元件上电压的<code>+</code>极经历电压u到电压的<code>-</code>极。根据电压的定义（A、B两点的电压u等于电场力将单位正电荷自A电移动至B点时所做的功），电场力所做功，也即元件吸收的能量为：<br>$$<br>dW &#x3D;udq<br>$$<br>假设电流<code>i</code>在元件上与<code>u</code>成关联方向，由<code>i</code>的定义<code>i=dq/dt</code>（即<code>q</code>对<code>t</code>求导），由<code>dW = uidt</code>，功率是能量对时间的导数，故元件的吸收功率为<br>$$<br>p&#x3D;\frac{dW}{dt}&#x3D;ui<br>$$<br>在<code>t_0</code>到<code>t</code>的时间内，元件吸收能量为<br>$$<br>W(t)&#x3D;\int dW &#x3D; \int_{q(t_0)}^{q(t)}udq&#x3D;\int_{t_0}^t u(\xi)i(\xi)d\xi<br>$$<br>由于<code>u</code>、<code>i</code>都是代数量，因此，功率p和吸收的能量W也都是代数量。当最后结果<code>p&gt;0</code>，<code>W&gt;0</code>，元件确实吸收功率与能量；当<code>p&lt;0</code>，<code>w&lt;0</code>时，元件实际释放电能或发出功率。</p>
+<p>在电路中，通常将电流单位为<code>A</code>，电压的单位为<code>V</code>时，能量的单位为<code>J</code>，当时间的单位为<code>s</code>，功率的单位为<code>W</code>，来进行运算。</p>
+<h4 id="电路吸收或发出功率判断"><a href="#电路吸收或发出功率判断" class="headerlink" title="电路吸收或发出功率判断"></a>电路吸收或发出功率判断</h4><p><img src="https://img-blog.csdnimg.cn/3b7ad0d55c6343cdad1210ee59229609.png" alt="img"></p>
+<p>当由元件所吸收功率，则记为<code>+</code>，且<code>ui</code>关联（即电流和电压方向相同），也记为<code>+</code>，则最后元件所吸收功率为<code>P= ++ui</code>。如上图所示。若<code>u&gt;0 i&gt;0</code>则为吸收正功率（实际吸收）反之为吸收负功率（实际发出）。</p>
+<h3 id="电路元件"><a href="#电路元件" class="headerlink" title="电路元件"></a>电路元件</h3><blockquote>
+<p>电路元件是电路中最基本的组成单元。电路元件通过其端子与外部连接。</p>
+<p><strong>电阻元件</strong>的元件特性是电压<code>u</code>与电流<code>i</code>的代数关系<code>f(u,i)=0</code>;<strong>电容元件</strong>的元件特性是电荷<code>q</code>与电压<code>u</code>的代数关系<code>f(q,u)=0</code>;电感元件的元件特性是磁通链<code>ψ</code> 与电流<code>i</code>的代数关系<code>f(ψ,i)=0</code>。这三种特性称之为元件的伏安特性、库伏特性和韦安特性。</p>
+<p>电路元件按与外部连接的端子数目可分为二端、三端、四端元件等。</p>
+</blockquote>
+<p><strong>注意：</strong></p>
+<p>如果表征元件端子特性的数学关系式是线性关系，该元件称为线性元件，否则成为非线性元件。</p>
+<h3 id="电阻元件"><a href="#电阻元件" class="headerlink" title="电阻元件"></a>电阻元件</h3><blockquote>
+<p>线性电阻元件在理想情况下：在电压和电流取关联参考方向时，在任何时刻它两端的电压和电流服从欧姆定律</p>
+</blockquote>
+<p>$$<br>欧姆定律：u&#x3D;Ri<br>$$</p>
+<p>R:电阻元件的参数，称为元件的电阻。R是一个正实常数。</p>
+<p>当电压单位为<code>V</code>，电流单位为<code>A</code>时，电阻的单位为<code>Ω</code>（欧姆，简称欧）。</p>
+<p>$$<br>令：G&#x3D;\frac{1}{R} \得：i&#x3D;Gu<br>$$<br>在上式中称<code>G</code>为电阻元件的电导，单位<code>S</code>(西门子，简称西)。<code>R</code>和<code>G</code>都是电阻元件的参数。</p>
+<p>若电压、电流参考方向取非关联参考方向，则<br>$$<br>u&#x3D;-Ri 或i&#x3D;-Gu<br>$$<br><strong>欧姆定律注意点：</strong></p>
+<ul>
+<li>只适用于线性电阻（R为常数）；</li>
+<li>如电阻上的电压与电流参考方向非关联，公式中应冠以负号；</li>
+<li>说明线性电阻是无记忆、双向性的元件。</li>
+</ul>
+<h4 id="开路和短路"><a href="#开路和短路" class="headerlink" title="开路和短路"></a>开路和短路</h4><p><img src="https://img-blog.csdnimg.cn/da3021b277e34206bcec699580043671.png" alt="img"></p>
+<p>当电流<code>i=0</code>，电压<code>u</code>任意时，称为“开路”。此时伏安特性在<code>u-i</code>平面上与电压轴重合，相当于电阻<code>R=∞</code>或电导<code>G=0</code>。短路则相反。</p>
+<h3 id="电压源和电流源"><a href="#电压源和电流源" class="headerlink" title="电压源和电流源"></a>电压源和电流源</h3><h4 id="理想电压源"><a href="#理想电压源" class="headerlink" title="理想电压源"></a>理想电压源</h4><p>定义：电压源两端电压总能保持定值或一定的时间函数，其值与流过他的电流i无关的元件叫理想电压源。</p>
 
                 
             </div>
@@ -902,18 +928,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/09/20/dian-lu-mo-xing-he-dian-lu-ding-lu/">
+                <a href="/2023/09/21/zhan-dui-lie-he-shu-zu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="电路模型和电路定律">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="栈、队列和数组">
                         
-                        <span class="card-title">电路模型和电路定律</span>
+                        <span class="card-title">栈、队列和数组</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -923,29 +948,16 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-20
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-09-21
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
-                                    电路
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            LsWorld
                             
                         </span>
                     </div>
-                </div>
-
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/%E7%94%B5%E8%B7%AF/">
-                        <span class="chip bg-color">电路</span>
-                    </a>
-                    
                 </div>
                 
             </div>
