@@ -468,7 +468,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-22
+                    2023-09-23
                 </div>
                 
 
@@ -524,8 +524,8 @@
 </blockquote>
 <p>在dt时间内，有dq电荷自元件上电压的<code>+</code>极经历电压u到电压的<code>-</code>极。根据电压的定义（A、B两点的电压u等于电场力将单位正电荷自A电移动至B点时所做的功），电场力所做功，也即元件吸收的能量为：<br>$$<br>dW &#x3D;udq<br>$$<br>假设电流<code>i</code>在元件上与<code>u</code>成关联方向，由<code>i</code>的定义<code>i=dq/dt</code>（即<code>q</code>对<code>t</code>求导），由<code>dW = uidt</code>，功率是能量对时间的导数，故元件的吸收功率为<br>$$<br>p&#x3D;\frac{dW}{dt}&#x3D;ui<br>$$<br>在<code>t_0</code>到<code>t</code>的时间内，元件吸收能量为<br>$$<br>W(t)&#x3D;\int dW &#x3D; \int_{q(t_0)}^{q(t)}udq&#x3D;\int_{t_0}^t u(\xi)i(\xi)d\xi<br>$$<br>由于<code>u</code>、<code>i</code>都是代数量，因此，功率p和吸收的能量W也都是代数量。当最后结果<code>p&gt;0</code>，<code>W&gt;0</code>，元件确实吸收功率与能量；当<code>p&lt;0</code>，<code>w&lt;0</code>时，元件实际释放电能或发出功率。</p>
 <p>在电路中，通常将电流单位为<code>A</code>，电压的单位为<code>V</code>时，能量的单位为<code>J</code>，当时间的单位为<code>s</code>，功率的单位为<code>W</code>，来进行运算。</p>
-<h4 id="电路吸收或发出功率判断"><a href="#电路吸收或发出功率判断" class="headerlink" title="电路吸收或发出功率判断"></a>电路吸收或发出功率判断</h4><p><img src="https://img-blog.csdnimg.cn/3b7ad0d55c6343cdad1210ee59229609.png" alt="img"></p>
-<p>当由元件所吸收功率，则记为<code>+</code>，且<code>ui</code>关联（即电流和电压方向相同），也记为<code>+</code>，则最后元件所吸收功率为<code>P= ++ui</code>。如上图所示。若<code>u&gt;0 i&gt;0</code>则为吸收正功率（实际吸收）反之为吸收负功率（实际发出）。</p>
+<h4 id="电路吸收或发出功率判断"><a href="#电路吸收或发出功率判断" class="headerlink" title="电路吸收或发出功率判断"></a>电路吸收或发出功率判断</h4><p><img src="https://img-blog.csdnimg.cn/73aa45a1fadd4714b5c04992fe3bd55d.png" alt="img"></p>
+<p>当由元件所吸收功率，则记为<code>+</code>，且<code>ui</code>关联（即电流和电压方向相同），也记为<code>+</code>，则最后元件所吸收功率为<code>P= ++ui</code>。如上图所示。若<code>P&gt;0</code>，则参考吸收则实际吸收，<code>P&lt;0</code>则参考吸收，实际发出（即大于零就取参考的，小于零取相反的）。（对于完整的电路而言，吸收的功率一定等于发出的功率）</p>
 <h3 id="电路元件"><a href="#电路元件" class="headerlink" title="电路元件"></a>电路元件</h3><blockquote>
 <p>电路元件是电路中最基本的组成单元。电路元件通过其端子与外部连接。</p>
 <p><strong>电阻元件</strong>的元件特性是电压<code>u</code>与电流<code>i</code>的代数关系<code>f(u,i)=0</code>;<strong>电容元件</strong>的元件特性是电荷<code>q</code>与电压<code>u</code>的代数关系<code>f(q,u)=0</code>;电感元件的元件特性是磁通链<code>ψ</code> 与电流<code>i</code>的代数关系<code>f(ψ,i)=0</code>。这三种特性称之为元件的伏安特性、库伏特性和韦安特性。</p>
