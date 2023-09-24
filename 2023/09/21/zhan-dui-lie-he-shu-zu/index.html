@@ -471,14 +471,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-23
+                    2023-09-24
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.3k
+                    2.9k
                 </div>
                 
 
@@ -796,6 +796,60 @@ bool <span class="token function">PopLinkQueue</span><span class="token punctuat
 <p>双端队列是指允许两端都可以进行入队和出队操作的队列，如图所示。其元素的逻辑结构仍是线性结构。</p>
 </blockquote>
 <p><img src="https://img-blog.csdnimg.cn/581157f3cb35461999419b8dd6de71fd.png" alt="img"></p>
+<h3 id="栈和队列的应用"><a href="#栈和队列的应用" class="headerlink" title="栈和队列的应用"></a>栈和队列的应用</h3><h4 id="栈在括号匹配中的应用"><a href="#栈在括号匹配中的应用" class="headerlink" title="栈在括号匹配中的应用"></a>栈在括号匹配中的应用</h4><blockquote>
+<p>假设表达式中包含<code>()[]</code>这三种括号，其嵌套的顺序任意即<code>([]())</code>或<code>[([][])]</code>等均为正确格式，即左括号和右括号必定可以成一对且匹配到时为同种类型，<code>[(])</code>或<code>([())</code>或<code>(()]</code>均为不正确的格式。</p>
+</blockquote>
+<h5 id="算法分析："><a href="#算法分析：" class="headerlink" title="算法分析："></a>算法分析：</h5><p>当输入括号序列：<code>[([][])] </code>。</p>
+<ul>
+<li>计算机入栈第1个括号<code>[</code>后，仅当第8个括号<code>]</code>出现后才会出栈。</li>
+<li>获得第2个括号<code>(</code>，由于<code>)</code>在第7个位置<code>)</code>才会出栈，所以也将<code>(</code>入栈。</li>
+<li>第3个<code>[</code>由于第4个<code>]</code>即为相应匹配，根据就近原则，第3个和第4个有限匹配出栈，而非第1个括号。所以第3个和第4个括号匹配后就会进行出栈。</li>
+<li>第5个和第6个和第3个第4个括号同理，也根据就近原则直接匹配成功。</li>
+<li>此时扫描到第7个位置的<code>)</code>，由于前面没有其他的<code>(</code>，只会和第2个入栈的<code>(</code>进行匹配，最后匹配成功出栈。</li>
+<li>第8个也同理，与第1个<code>[</code>匹配成功后出栈。</li>
+<li>当扫描完成后判断栈是否为空，为空则匹配成功，不为空则代表匹配失败。</li>
+</ul>
+<h4 id="括号匹配代码实现"><a href="#括号匹配代码实现" class="headerlink" title="括号匹配代码实现"></a>括号匹配代码实现</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 括号匹配 传入括号字符串以及对应的长度</span>
+bool <span class="token function">bracketCheck</span><span class="token punctuation">(</span><span class="token keyword">char</span> str<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">int</span> length<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  SqStack S<span class="token punctuation">;</span>
+  
+  <span class="token comment">// 初始化栈</span>
+  <span class="token function">InitStack</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">size_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 为左括号就入栈</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>str<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token char">'('</span> <span class="token operator">||</span> str<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token char">'['</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token function">Push</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>S<span class="token punctuation">,</span> str<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">else</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token comment">//扫描到右括号但栈已为空</span>
+      <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">StackEmpty</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>S<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+      Elemtype popEl<span class="token punctuation">;</span>
+      <span class="token function">Pop</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>S<span class="token punctuation">,</span> <span class="token operator">&amp;</span>popEl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment">//仅当弹出的括号为一对时算匹配成功</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>str<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token char">')'</span> <span class="token operator">&amp;&amp;</span> popEl <span class="token operator">!=</span> <span class="token char">'('</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>str<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token char">']'</span> <span class="token operator">&amp;&amp;</span> popEl <span class="token operator">!=</span> <span class="token char">'['</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 为空代表匹配成功，不为空代表匹配失败</span>
+  <span class="token keyword">return</span> <span class="token function">StackEmpty</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="栈在表达式求值中的应用"><a href="#栈在表达式求值中的应用" class="headerlink" title="栈在表达式求值中的应用"></a>栈在表达式求值中的应用</h4><blockquote>
+<p>表达式求值是程序设计语言中最基本的问题，在中缀表达式中不仅依赖运算符的优先级，而且还要处理括号。后缀表达式的运算符在操作数后面，在后缀表达式中已考虑了运算符的优先级，没有括号，只有操作数和运算符，更符合CPU的运算与处理。</p>
+</blockquote>
+<p>中缀表达式<code>A + B * (C - D) - E / F</code>化为后缀表达式采用左优先的原则（没有运算符更高级的一律从左往右进行匹配），在这表达式中先进行<code>( )</code></p>
 
                 
             </div>
