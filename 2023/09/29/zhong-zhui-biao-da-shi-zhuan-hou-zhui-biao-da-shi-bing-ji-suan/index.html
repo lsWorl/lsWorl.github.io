@@ -467,14 +467,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-29
+                    2023-09-30
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1k
+                    1.3k
                 </div>
                 
 
@@ -508,7 +508,7 @@
 <li>遇到<strong>界限符</strong>。遇到<code>&quot;(&quot;</code>直接入栈：遇到<code>&quot;)&quot;</code>则依次弹出栈内运算符并加入后缀表达式，直到弹出<code>&quot;(&quot;</code>为止。但<code>&quot;(&quot;</code>不加入到后缀表达式中。</li>
 <li>遇到<strong>运算符</strong>。依次弹出栈中优先级高于或等于当前运算符的所有运算符，并加入后缀表达式，若碰到<code>&quot;(&quot;</code>或栈空则停止。之后再把当前运算符入栈。</li>
 </ul>
-<h4 id="具体代码实现"><a href="#具体代码实现" class="headerlink" title="具体代码实现"></a>具体代码实现</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 判断是否是操作数</span>
+<h5 id="具体代码实现"><a href="#具体代码实现" class="headerlink" title="具体代码实现"></a>具体代码实现</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 判断是否是操作数</span>
 <span class="token keyword">int</span> <span class="token function">isNumber</span><span class="token punctuation">(</span><span class="token keyword">char</span> e<span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>e <span class="token operator">==</span> <span class="token char">'+'</span> <span class="token operator">||</span> e <span class="token operator">==</span> <span class="token char">'-'</span> <span class="token operator">||</span> e <span class="token operator">==</span> <span class="token char">'*'</span> <span class="token operator">||</span> e <span class="token operator">==</span> <span class="token char">'/'</span> <span class="token operator">||</span> e <span class="token operator">==</span> <span class="token char">'('</span> <span class="token operator">||</span> e <span class="token operator">==</span> <span class="token char">')'</span><span class="token punctuation">)</span>
@@ -630,6 +630,21 @@ Elemtype <span class="token operator">*</span><span class="token function">Infix
   <span class="token keyword">return</span> SuffixExpression<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
+
+
+<h5 id="后缀表达式计算（手算）"><a href="#后缀表达式计算（手算）" class="headerlink" title="后缀表达式计算（手算）"></a>后缀表达式计算（手算）</h5><blockquote>
+<p>方法：</p>
+<p>从左往右扫描，每遇到一个运算符，就让运算符前面最近的两个操作数执行对应运算，合体为一个操作数。</p>
+</blockquote>
+<p>例：<code>A + B * (C - D) - E / F</code>转为后缀为<code>ABCD-*+EF/-</code>，计算先扫描到第一个操作符，然后将操作符左边两个操作数进行运算，则<code>CD-</code>进行运算得<code>C-D</code>，后将<code>C-D</code>视为一个整体，然后继续扫描下一个操作数<code>*</code>，然后将<code>C-D</code>与左边的<code>B</code>进行运算得<code>B*(C-D)</code>再视为一个整体，再扫描下一个操作数<code>+</code>，同样的将<code>A</code>与<code>B*(C-D)</code>进行运算得<code>A + B*(C-D)</code>，以此类推就可以将后缀表达式还原成中缀表达式并计算出值。</p>
+<h5 id="后缀表达式计算（机算）"><a href="#后缀表达式计算（机算）" class="headerlink" title="后缀表达式计算（机算）"></a>后缀表达式计算（机算）</h5><blockquote>
+<p>用栈实现后缀表达式的计算：</p>
+<ol>
+<li>用左往右扫描下一个元素，直到处理完所有元素</li>
+<li>若扫描到操作数则直接压入栈，并回到(1)；否则执行(3)</li>
+<li>若扫描到运算符，则弹出两个栈顶元素，执行相应运算，运算结果压回栈顶，回到(1)的步骤。</li>
+</ol>
+</blockquote>
 
                 
             </div>
