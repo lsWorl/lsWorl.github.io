@@ -5,7 +5,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="踩坑合集, LsWorld">
-    <meta name="description" content="Blog优化相关在第一次使用代码块时候发现样式重叠且代码块奇丑无比，马上去网上参考了LuckySec的代码优化的文章，在根据他的步骤一步一步下来，发现代码块样式并没有改变，又去修改hexo根目录的_config.yml，将自带的highli">
+    <meta name="description" content="
+
+Blog优化相关在第一次使用代码块时候发现样式重叠且代码块奇丑无比，马上去网上参考了LuckySec的代码优化的文章，在根据他的步骤一步一步下来，发现代码块样式并没有改变，又去修改hexo根目录的_config.yml，将自带的high">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -462,14 +464,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-08
+                    2023-10-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    675
+                    724
                 </div>
                 
 
@@ -489,7 +491,14 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="Blog优化相关"><a href="#Blog优化相关" class="headerlink" title="Blog优化相关"></a>Blog优化相关</h3><p>在第一次使用代码块时候发现样式重叠且代码块奇丑无比，马上去网上参考了<a target="_blank" rel="noopener" href="http://luckyzmj.cn/posts/1b9a9e28.html">LuckySec</a>的代码优化的文章，在根据他的步骤一步一步下来，发现代码块样式并没有改变，又去修改<code>hexo</code>根目录的<code>_config.yml</code>，将自带的highlight改为false，prismjs改为true，并取消了行标显示，发现样式仍然没有太大改变，经过一段时间的琢磨，才发现需要用<code>hexo clean &amp;&amp; hexo g</code>才能使样式生效。简直了，<strong>每次修改样式必须得重新清理和编译才行，直接在本地运行会有不生效的可能</strong></p>
+                <meta name="referrer" content="no-referrer"/>
+
+<h3 id="Blog优化相关"><a href="#Blog优化相关" class="headerlink" title="Blog优化相关"></a>Blog优化相关</h3><p>在第一次使用代码块时候发现样式重叠且代码块奇丑无比，马上去网上参考了<a target="_blank" rel="noopener" href="http://luckyzmj.cn/posts/1b9a9e28.html">LuckySec</a>的代码优化的文章，在根据他的步骤一步一步下来，发现代码块样式并没有改变，又去修改<code>hexo</code>根目录的<code>_config.yml</code>，将自带的highlight改为false，prismjs改为true，并取消了行标显示，发现样式仍然没有太大改变，经过一段时间的琢磨，才发现需要用<code>hexo clean &amp;&amp; hexo g</code>才能使样式生效。简直了，<strong>每次修改样式必须得重新清理和编译才行，直接在本地运行会有不生效的可能</strong></p>
+<h4 id="使用csdn的图片部署后无法显示问题"><a href="#使用csdn的图片部署后无法显示问题" class="headerlink" title="使用csdn的图片部署后无法显示问题"></a>使用<code>csdn</code>的图片部署后无法显示问题</h4><p>需要添加这一句在文章最上方后即可解决不受后无法显示问题。</p>
+<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>referrer<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>no-referrer<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span></code></pre>
+
+
+
 <h3 id="项目实战相关"><a href="#项目实战相关" class="headerlink" title="项目实战相关"></a>项目实战相关</h3><p>在做项目不应该先考虑后续的优化问题，应该先让功能实现再考虑后续的优化问题，不然几个小时都没什么成果。</p>
 <h3 id="Flutter学习相关"><a href="#Flutter学习相关" class="headerlink" title="Flutter学习相关"></a>Flutter学习相关</h3><h4 id="Dio请求发送"><a href="#Dio请求发送" class="headerlink" title="Dio请求发送"></a>Dio请求发送</h4><p>在使用<code>Dio</code>请求发送时候，想在本地写个接口来直接开本地端口调用，却发现使用不了会报异常。</p>
 <p>目前发送使用的是我用<code>node.js</code>写的一个本地接口，开的端口号为3001。</p>

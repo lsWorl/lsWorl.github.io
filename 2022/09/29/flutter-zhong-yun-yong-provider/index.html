@@ -5,7 +5,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="Flutter中运用Provider, LsWorld">
-    <meta name="description" content="前言要明白为什么用Provider，在原先修改数据都是通过setState来进行修改，这样导致视图和逻辑无法分层，使后续代码难以维护，所以可以通过Provider来进行更好的维护。想在Flutter中实现MVVC架构的话通过Provider">
+    <meta name="description" content="
+
+前言要明白为什么用Provider，在原先修改数据都是通过setState来进行修改，这样导致视图和逻辑无法分层，使后续代码难以维护，所以可以通过Provider来进行更好的维护。想在Flutter中实现MVVC架构的话通过Provid">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -466,7 +468,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-09-29
+                    2023-10-04
                 </div>
                 
 
@@ -493,7 +495,9 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>要明白为什么用<code>Provider</code>，在原先修改数据都是通过<code>setState</code>来进行修改，这样导致视图和逻辑无法分层，使后续代码难以维护，所以可以通过<code>Provider</code>来进行更好的维护。想在<code>Flutter</code>中实现MVVC架构的话通过<code>Provider</code>是一个不错的选择，而且在<code>Provider</code>官方文档也有比较清晰的说明，这里主要就是总结我做时候的方案。（本文参考了<a target="_blank" rel="noopener" href="https://flutter.cn/docs/development/data-and-backend/state-mgmt/simple#consumer">Flutter的官方文档</a>）</p>
+                <meta name="referrer" content="no-referrer"/>
+
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>要明白为什么用<code>Provider</code>，在原先修改数据都是通过<code>setState</code>来进行修改，这样导致视图和逻辑无法分层，使后续代码难以维护，所以可以通过<code>Provider</code>来进行更好的维护。想在<code>Flutter</code>中实现MVVC架构的话通过<code>Provider</code>是一个不错的选择，而且在<code>Provider</code>官方文档也有比较清晰的说明，这里主要就是总结我做时候的方案。（本文参考了<a target="_blank" rel="noopener" href="https://flutter.cn/docs/development/data-and-backend/state-mgmt/simple#consumer">Flutter的官方文档</a>）</p>
 <h3 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h3><p>可以通过直接在<code>pubspec.yaml</code>在<code>dependencies</code>中添加<code>provider: 版本号</code>来直接安装<code>provider</code>。</p>
 <p><img src="https://img-blog.csdnimg.cn/b63b2cd543e74f18b9c0ceea51d0a409.png" alt="addPackage"></p>
 <h3 id="创建逻辑类"><a href="#创建逻辑类" class="headerlink" title="创建逻辑类"></a>创建逻辑类</h3><p>创建一个类来继承<code>Provider</code>的<code>ChangeNotifier</code>，这里用来当作改变状态的通知者。每次当状态要修改时候需要条用<code>notifyListeners()</code>才能使<code>Provider</code>知道你修改了里面的值。</p>

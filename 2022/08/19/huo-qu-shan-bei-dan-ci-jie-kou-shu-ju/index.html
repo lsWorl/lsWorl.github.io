@@ -5,9 +5,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="获取扇贝单词接口数据, LsWorld">
-    <meta name="description" content="@TOC
+    <meta name="description" content="
+
+@TOC
 最近想做一个背单词相关的app，要是自己一个个去网站搜然后再复制到数据库中太慢了，所以就考虑能不能通过接口或者python自动将数据爬下来。
-第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）首先要先登录去寻找扇贝单词中">
+第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）首先要先登录去寻找扇贝单">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -464,7 +466,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-08-19
+                    2023-10-04
                 </div>
                 
 
@@ -491,7 +493,9 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>@<a href="%E4%B8%8D%E5%86%99%E4%B8%80%E6%AE%B5%E4%BB%A3%E7%A0%81%E6%9D%A5%E8%8E%B7%E5%8F%96%E6%89%87%E8%B4%9D%E5%8D%95%E8%AF%8D%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE">TOC</a></p>
+                <meta name="referrer" content="no-referrer"/>
+
+<p>@<a href="%E4%B8%8D%E5%86%99%E4%B8%80%E6%AE%B5%E4%BB%A3%E7%A0%81%E6%9D%A5%E8%8E%B7%E5%8F%96%E6%89%87%E8%B4%9D%E5%8D%95%E8%AF%8D%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE">TOC</a></p>
 <p>最近想做一个背单词相关的app，要是自己一个个去网站搜然后再复制到数据库中太慢了，所以就考虑能不能通过接口或者python自动将数据爬下来。</p>
 <h2 id="第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）"><a href="#第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）" class="headerlink" title="第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）"></a>第一步，登录并寻找可以爬取的数据（想直接看结论可以到第四步）</h2><p>首先要先登录去寻找扇贝单词中有显示单词的地方，在我找了一圈，发现在<a target="_blank" rel="noopener" href="https://web.shanbay.com/wordsweb/#/study/entry">单词学习</a>的词表中（这要先自己提前添加一本词书），只要自己单词还没有开始背，可以在未学单词中来获取本词书的单词数据。</p>
 <p><img src="https://img-blog.csdnimg.cn/69df9b19dee44d9281c715ec6ddc89a2.png" alt="单词展示"><br><strong>到这未学单词页面，首先就是先查看扇贝单词是通过服务器渲染还是客户端渲染，要是服务器渲染，在源码中就可以直接看到单词的数据，那样就可以直接通过python来进行爬取，要是客户端渲染，那就得考虑通过调用接口来拿取单词数据了。<br>这里我到源码中去搜索matter这个单词。</strong></p>

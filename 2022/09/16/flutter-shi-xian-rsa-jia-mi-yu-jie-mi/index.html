@@ -5,7 +5,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="Flutter实现rsa加密与解密, LsWorld">
-    <meta name="description" content="前言在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置公钥和私钥（私钥一般都是放在后端，私钥在前端极其不安全，前端的代码几">
+    <meta name="description" content="
+
+前言在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置公钥和私钥（私钥一般都是放在后端，私钥在前端极其不安全，前端的代">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -466,7 +468,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-09-18
+                    2023-10-04
                 </div>
                 
 
@@ -493,7 +495,9 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置<strong>公钥</strong>和<strong>私钥</strong>（私钥一般都是放在后端，私钥在前端极其不安全，前端的代码几乎都是透明的，这里演示就全在前端中演示）。</p>
+                <meta name="referrer" content="no-referrer"/>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置<strong>公钥</strong>和<strong>私钥</strong>（私钥一般都是放在后端，私钥在前端极其不安全，前端的代码几乎都是透明的，这里演示就全在前端中演示）。</p>
 <h3 id="导包与获取钥匙"><a href="#导包与获取钥匙" class="headerlink" title="导包与获取钥匙"></a>导包与获取钥匙</h3><p>在<code>Flutter</code>中使用加密算法，需先在<code>pubspec.yaml</code>文件中导如<code>encrypt</code>包（版本以flutter社区的最新版为准），修改文件后保存会自动导包。</p>
 <p><img src="https://img-blog.csdnimg.cn/a09eb410d52943a7b7e6474bf1814dad.png" alt="importPackage"></p>
 <p>然后去获取公钥和私钥（可以在网页上生成），并放在静态资源文件夹中。</p>
