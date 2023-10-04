@@ -5,12 +5,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="栈、队列和数组, LsWorld">
-    <meta name="description" content="栈栈的定义
+    <meta name="description" content="
+
+栈栈的定义
 栈是只允许在一端进行插入或删除操作的线性表。首先栈式一种线性表，但限定这种线性表只能在某一端进行插入和删除操作，如图所示。
 栈包括：
 
 栈顶（Top）。允许进入插入删除的那一端。
-栈底（Buttom）。不许与进行插入和删除的一端">
+栈底（Buttom）。不许与进行插入和删除的">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -471,14 +473,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-09-29
+                    2023-10-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.8k
+                    3.6k
                 </div>
                 
 
@@ -498,7 +500,9 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><h4 id="栈的定义"><a href="#栈的定义" class="headerlink" title="栈的定义"></a>栈的定义</h4><blockquote>
+                <meta name="referrer" content="no-referrer"/>
+
+<h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><h4 id="栈的定义"><a href="#栈的定义" class="headerlink" title="栈的定义"></a>栈的定义</h4><blockquote>
 <p>栈是只允许在一端进行插入或删除操作的线性表。首先栈式一种线性表，但限定这种线性表只能在某一端进行插入和删除操作，如图所示。</p>
 <p>栈包括：</p>
 <ul>
@@ -843,6 +847,28 @@ bool <span class="token function">bracketCheck</span><span class="token punctuat
   <span class="token comment">// 为空代表匹配成功，不为空代表匹配失败</span>
   <span class="token keyword">return</span> <span class="token function">StackEmpty</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h3 id="数组和特殊矩阵"><a href="#数组和特殊矩阵" class="headerlink" title="数组和特殊矩阵"></a>数组和特殊矩阵</h3><h4 id="数组的定义"><a href="#数组的定义" class="headerlink" title="数组的定义"></a>数组的定义</h4><blockquote>
+<p>​	数组是由n(n&gt;&#x3D;1)个相同类型的数据元素构成的有限序列，每个数据元素称为一个数组元素，每个元素在n个线性关系中的序号称为该元素的下标，下标的取值范围称为数组的维界。</p>
+<p>​	数组与线性表的关系：数组是线性表的推广。一维数组可视为一个线性表；二维数组可视为其元素也是定长线性表的线性表。</p>
+</blockquote>
+<h4 id="数组的存储结构"><a href="#数组的存储结构" class="headerlink" title="数组的存储结构"></a>数组的存储结构</h4><p>以一维数组<code>A[0...n-1]</code>为例，其存储结构关系式为<br>$$<br>LOC(a_{i})&#x3D;LOC(a_{0})+i{\times}L(0{\leqslant}i&lt;n)<br>$$<br>其中，L是每个数组元素所占的存储单元，就是数据类型的大小（<code>sizeof(ElemType)</code>）。</p>
+<p><strong>多维数组</strong></p>
+<p>对于多维数组由两种映射方法：<strong>按行优先</strong>及<strong>按列优先</strong>。</p>
+<p><strong>按行优先</strong>存储的基本思想是：先行后列，先存储行号较小的元素，行号相等先存储列号较小的元素。设二维数组的行下标与列下标的范围分别为<code>[0,h_1]</code>与<code>[0,h_2]</code>，则存储结构关系式为<br>$$<br>LOC(a_{i,j})&#x3D;LOC(a_{0,0})+[i{\times}(h_{2}+1)+j]{\times}L<br>$$<br><code>LOC(a_0,0)</code>为数组的起始地址，<code>i*(h_2 +1) + j</code>就是<strong>行号</strong>乘矩阵的<strong>列数</strong>得到<strong>一行</strong>的个数后再加上要搜寻的元素的<strong>列号</strong>就可以搜索到元素。</p>
+<p>例：对于数组<code>A_[2][3]</code>，</p>
+<p>按行优先的存储形式为：<br>$$<br>A_{[2][3]}&#x3D;\begin{pmatrix} a_{[0][0]} &amp; a_{[0][1]} &amp; a_{[0][2]} \ a_{[1][0]} &amp; a_{[1][1]} &amp; a_{[1][2]} \ \end{pmatrix} \qquad \underbrace{a_{[0][0]}  a_{[0][1]}  a_{[0][2]}} \quad \underbrace{a_{[1][0]}  a_{[1][1]}  a_{[1][2]}}<br>$$<br>右边式子即先存储第一行后再存储第二行。</p>
+<p><strong>按列优先</strong>则存储结构关系式为<br>$$<br>LOC(a_{i,j})&#x3D;LOC(a_{0,0})+[j{\times}(h_{1}+1)+i]{\times}L<br>$$<br><code>LOC(a_0,0)</code>为数组的起始地址，<code>j*(h_1 +1) + i</code>就是<strong>列号</strong>乘矩阵的<strong>行数</strong>得到<strong>一列</strong>的个数后再加上要搜寻的元素的<strong>行号</strong>就可以搜索到元素。</p>
+<p>例：对于数组<code>A_[2][3]</code>，</p>
+<p>按行优先的存储形式为：<br>$$<br>A_{[2][3]}&#x3D;\begin{pmatrix} a_{[0][0]} &amp; a_{[0][1]} &amp; a_{[0][2]} \ a_{[1][0]} &amp; a_{[1][1]} &amp; a_{[1][2]} \ \end{pmatrix} \qquad \underbrace{a_{[0][0]}  a_{[1][0]}} \quad \underbrace{a_{[0][1]}  a_{[1][1]}} \quad \underbrace{a_{[0][2]}  a_{[1][2]}}<br>$$<br>右边式子即先存储第一列后再存储第二列，最后存储第三列。</p>
+<h4 id="特殊矩阵的压缩存储"><a href="#特殊矩阵的压缩存储" class="headerlink" title="特殊矩阵的压缩存储"></a>特殊矩阵的压缩存储</h4><blockquote>
+<p>压缩存储：指为多个相同的元素分配一个空间，零元素不分配存储空间。</p>
+<p>特殊矩阵：指具有许多相同矩阵元素或零元素，并且这些相同矩阵元素或零元素分布有一定规律。</p>
+</blockquote>
+<h5 id="对称矩阵"><a href="#对称矩阵" class="headerlink" title="对称矩阵"></a>对称矩阵</h5><p><img src="https://img-blog.csdnimg.cn/e9622e6fa5ba4b77aa2f8c13185b55ce.png" alt="1-1"></p>
+<p>如图所示，以<code>i=j</code>为主对角线，对于矩阵A任意元素都满足：<br>$$<br>a_{i,j}&#x3D;a_{j,i}<br>$$<br>则称为对称矩阵。对于n阶对称矩阵，可以将n阶对称矩阵A存放再一维数组<code>B[n(n+1)/2]</code>中，比如只放下三角部分（i&gt;j）及主对角的元素。</p>
 
                 
             </div>
