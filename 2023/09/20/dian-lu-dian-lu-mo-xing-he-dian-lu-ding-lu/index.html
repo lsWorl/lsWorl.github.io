@@ -470,14 +470,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-04
+                    2023-10-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2k
+                    2.5k
                 </div>
                 
 
@@ -566,6 +566,38 @@
 <p>由于电流源无法确定两端的电压，需要通过外电路的情况来确定电压。可以由下图的电路来简单计算并了解下电流源。</p>
 <p><img src="https://img-blog.csdnimg.cn/2f1cd8ea7c8d4a899c864d278e418f47.png" alt="img"></p>
 <p>根据欧姆定律此时电压的公式应为：<br>$$<br>u&#x3D; Ri_{S}<br>$$</p>
+<h3 id="受控电源"><a href="#受控电源" class="headerlink" title="受控电源"></a>受控电源</h3><blockquote>
+<p>定义：电压或电流的大小和方向不是给定的时间函数，而是受电路中某个地方的电压(或电流)控制的电源，称受控源。</p>
+<p>受控电压源或受控电流源视控制量是电压还或电流可分为电压控制电压源（VCVS，voltage control voltage source），电压控制电流源（VCCS，voltage control current source），电流控制电压源（CCVS）及电流控制电流源（CCCS）四种。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/0734c027f24047f598aff8282fda4d4c.png" alt="CCCS"></p>
+<p><img src="https://img-blog.csdnimg.cn/edfe510d0ae041b5955c4c5d184c7e05.png" alt="VCCS AND VCVS"></p>
+<p><img src="https://img-blog.csdnimg.cn/17b64023032849f7a0d31d337e89848c.png" alt="CCVS"></p>
+<p>算受控源一般需要通过控制的参数来进行计算。</p>
+<h3 id="霍尔霍夫定律"><a href="#霍尔霍夫定律" class="headerlink" title="霍尔霍夫定律"></a>霍尔霍夫定律</h3><blockquote>
+<p>基尔霍夫定律包括基尔霍夫电流定律（KCL）和基尔霍夫电压定律( KVL )。它反映了电路中所有支路电压和电流所遵循的基本规律，是分析集总参数电路的基本定律。基尔霍夫定律与元件特性构成了电路分析的基础。</p>
+</blockquote>
+<p>在了解霍尔霍夫定律前先要了解<strong>支路、节点和回路的概念</strong>，图中以常用为准。</p>
+<p><img src="https://img-blog.csdnimg.cn/c9aae17ad93844679da160c379a339a3.png" alt="img"></p>
+<p>支路（branch）：支路有两个概念，一个是电路中每一个两端元件就叫一条分支，和电路通过同一电流的分支（常用）。</p>
+<p>节点（node）：节点有两个概念，一个是元件的连接点称为节点，和三条以上支路的连接点称为节点（常用）。</p>
+<p><img src="https://img-blog.csdnimg.cn/f8d49c729f7b450a957976f7120813cf.png" alt="img"></p>
+<p>路径：两结点间的一条通路。</p>
+<p>回路（loop）：由支路组成的闭合路径。</p>
+<p>网孔（mesh）：内部不含任何支路的回路。</p>
+<h4 id="基尔霍夫电流定律（KCL）"><a href="#基尔霍夫电流定律（KCL）" class="headerlink" title="基尔霍夫电流定律（KCL）"></a>基尔霍夫电流定律（KCL）</h4><blockquote>
+<p>在集总电路中，任意时刻，对任意结点流出（或流入）该结点电流的代数和等于零。</p>
+</blockquote>
+<p>$$<br>\sum i_{入}&#x3D;\sum i_{出}<br>$$</p>
+<p><img src="https://img-blog.csdnimg.cn/6a939e51643b49799813cc8bb9b1f9e3.png" alt="img"></p>
+<p>图上运用KCL可得：<br>$$<br>i_1 + i_2 &#x3D; i_3 + i_4 + i_5<br>$$</p>
+<h4 id="基尔霍夫电压定律（KVL）"><a href="#基尔霍夫电压定律（KVL）" class="headerlink" title="基尔霍夫电压定律（KVL）"></a>基尔霍夫电压定律（KVL）</h4><blockquote>
+<p>在集总参数电路中，任一时刻，沿任一回路，所有支路电压的代数和恒等于零。</p>
+</blockquote>
+<p>$$<br>\sum u_{降}&#x3D;\sum u_{升}<br>$$</p>
+<p>主要公式运用就是标定各元件电压参考方向，并选定回路绕行方向是顺时针还逆时针。</p>
+<p><img src="https://img-blog.csdnimg.cn/1f187fbc33bc4fabb90c7af7ab9a3114.png" alt="img"></p>
+<p>如图所示，可得公式：<br>$$<br>-U_1 + -U_{S1} + U_2 + U_3 + U_4 + U_{S4} &#x3D; 0<br>$$<br><strong>注：KVL也适用于电路中任一假想的回路。</strong></p>
 
                 
             </div>

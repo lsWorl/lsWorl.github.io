@@ -465,10 +465,19 @@
                 </a>
                 
                 
+                <a href="/tags/TypeScript/" title="TypeScript: 1">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-default "
+                            data-tagname="TypeScript" style="background-color: #F9E79F;">TypeScript
+                        <span class="tag-length">1</span>
+                    </span>
+                </a>
+                
+                
                 <a href="/tags/%E5%9F%BA%E7%A1%80/" title="基础: 3">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
-                            data-tagname="基础" style="background-color: #F9E79F;">基础
+                            data-tagname="基础" style="background-color: #FEF9E7;">基础
                         <span class="tag-length">3</span>
                     </span>
                 </a>
@@ -478,15 +487,6 @@
                     <span class="chip center-align waves-effect waves-light
                              chip-active "
                             data-tagname="JavaScript" style="background-color: #85C1E9;">JavaScript
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/TypeScript/" title="TypeScript: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="TypeScript" style="background-color: #85C1E9;">TypeScript
                         <span class="tag-length">1</span>
                     </span>
                 </a>
@@ -528,6 +528,15 @@
                 </a>
                 
                 
+                <a href="/tags/mysql/" title="mysql: 1">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-default "
+                            data-tagname="mysql" style="background-color: #F8C471;">mysql
+                        <span class="tag-length">1</span>
+                    </span>
+                </a>
+                
+                
                 <a href="/tags/mustache/" title="mustache: 1">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
@@ -537,11 +546,11 @@
                 </a>
                 
                 
-                <a href="/tags/mysql/" title="mysql: 1">
+                <a href="/tags/node-js/" title="node.js: 6">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
-                            data-tagname="mysql" style="background-color: #F8C471;">mysql
-                        <span class="tag-length">1</span>
+                            data-tagname="node.js" style="background-color: #E8F8F5;">node.js
+                        <span class="tag-length">6</span>
                     </span>
                 </a>
                 
@@ -555,11 +564,11 @@
                 </a>
                 
                 
-                <a href="/tags/node-js/" title="node.js: 6">
+                <a href="/tags/typeorm/" title="typeorm: 1">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
-                            data-tagname="node.js" style="background-color: #E8F8F5;">node.js
-                        <span class="tag-length">6</span>
+                            data-tagname="typeorm" style="background-color: #E8F8F5;">typeorm
+                        <span class="tag-length">1</span>
                     </span>
                 </a>
                 
@@ -582,15 +591,6 @@
                 </a>
                 
                 
-                <a href="/tags/typeorm/" title="typeorm: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="typeorm" style="background-color: #E8F8F5;">typeorm
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
                 <a href="/tags/%E5%89%8D%E7%AB%AF/" title="前端: 1">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
@@ -600,11 +600,11 @@
                 </a>
                 
                 
-                <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构: 4">
+                <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构: 5">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
                             data-tagname="数据结构" style="background-color: #F5EEF8;">数据结构
-                        <span class="tag-length">4</span>
+                        <span class="tag-length">5</span>
                     </span>
                 </a>
                 
@@ -631,6 +631,24 @@
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
                             data-tagname="JSON" style="background-color: #D7BDE2;">JSON
+                        <span class="tag-length">1</span>
+                    </span>
+                </a>
+                
+                
+                <a href="/tags/%E4%B8%B2/" title="串: 1">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-default "
+                            data-tagname="串" style="background-color: #F9E79F;">串
+                        <span class="tag-length">1</span>
+                    </span>
+                </a>
+                
+                
+                <a href="/tags/%E6%95%B0%E7%94%B5/" title="数电: 1">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-default "
+                            data-tagname="数电" style="background-color: #F8C471;">数电
                         <span class="tag-length">1</span>
                     </span>
                 </a>
@@ -1028,117 +1046,6 @@ $(function () {
                                 }
                                 var match_content = content.substr(start, end);
                                 // highlight all keywords
-                                keywords.forEach(function (keyword) {
-                                    var regS = new RegExp(keyword, "gi");
-                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
-                                });
-
-                                str += "<p class=\"search-result\">" + match_content + "...</p>"
-                            }
-                            str += "</li>";
-                        }
-                    });
-                    str += "</ul>";
-                    $resultContent.innerHTML = str;
-                });
-            }
-        });
-    };
-
-    searchFunc('/search.xml', 'searchInput', 'searchResult');
-});
-</script>
-
-    <!-- 回到顶部按钮 -->
-<div id="backTop" class="top-scroll">
-    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
-        <i class="fas fa-arrow-up"></i>
-    </a>
-</div>
-
-
-    <script src="/libs/materialize/materialize.min.js"></script>
-    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
-    <script src="/libs/aos/aos.js"></script>
-    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
-    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
-    <script src="/js/matery.js"></script>
-
-    
-
-    
-        
-        <script type="text/javascript">
-            // 只在桌面版网页启用特效
-            var windowWidth = $(window).width();
-            if (windowWidth > 768) {
-                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
-            }
-        </script>
-    
-
-    <!-- 雪花特效 -->
-    
-
-    <!-- 鼠标星星特效 -->
-    
-
-     
-        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
-        <script src="/libs/others/TencentCaptcha.js"></script>
-        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
-    
-
-    <!-- Baidu Analytics -->
-
-    <!-- Baidu Push -->
-
-<script>
-    (function () {
-        var bp = document.createElement('script');
-        var curProtocol = window.location.protocol.split(':')[0];
-        if (curProtocol === 'https') {
-            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-        } else {
-            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-        }
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(bp, s);
-    })();
-</script>
-
-    
-    <script src="/libs/others/clicklove.js" async="async"></script>
-    
-    
-    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
-    
-
-    
-
-    
-
-    <!--腾讯兔小巢-->
-    
-    
-    <script type="text/javascript" color="0,147,255"
-        pointColor="0,0,255" opacity='0.7'
-        zIndex="-1" count="99"
-        src="/libs/background/canvas-nest.js"></script>
-    
-
-    
-
-    
-
-    
-    <script src="/libs/instantpage/instantpage.js" type="module"></script>
-    
-
-</body>
-
-</html>
-highlight all keywords
                                 keywords.forEach(function (keyword) {
                                     var regS = new RegExp(keyword, "gi");
                                     match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
