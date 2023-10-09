@@ -5,11 +5,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="数电-数字逻辑概论, LsWorld">
-    <meta name="description" content="数制
+    <meta name="description" content="
+
+数制
 数制的概念就不过多赘述，这里主要描述十进制，二进制，八进制以及十六机制间的相互转换。
 
-十-二进制之间的转换二进制转十进制按位权进行展开再求和。
-例：$$(101110.011)2 &amp;#x3D; 1 \times 2^5 + 0 \t">
+十-二-八-十六进制之间的转换二进制转十进制按位权进行展开再求和。
+例：$$(101110.011)2 &amp;#x3D; 1 \times 2^5">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -466,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-05
+                    2023-10-09
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    182
+                    986
                 </div>
                 
 
@@ -493,13 +495,51 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="数制"><a href="#数制" class="headerlink" title="数制"></a>数制</h3><blockquote>
+                <meta name="referrer" content="no-referrer"/>
+
+<h3 id="数制"><a href="#数制" class="headerlink" title="数制"></a>数制</h3><blockquote>
 <p>数制的概念就不过多赘述，这里主要描述十进制，二进制，八进制以及十六机制间的相互转换。</p>
 </blockquote>
-<h4 id="十-二进制之间的转换"><a href="#十-二进制之间的转换" class="headerlink" title="十-二进制之间的转换"></a>十-二进制之间的转换</h4><h5 id="二进制转十进制"><a href="#二进制转十进制" class="headerlink" title="二进制转十进制"></a>二进制转十进制</h5><p>按位权进行展开再求和。</p>
+<h4 id="十-二-八-十六进制之间的转换"><a href="#十-二-八-十六进制之间的转换" class="headerlink" title="十-二-八-十六进制之间的转换"></a>十-二-八-十六进制之间的转换</h4><h5 id="二进制转十进制"><a href="#二进制转十进制" class="headerlink" title="二进制转十进制"></a>二进制转十进制</h5><p>按位权进行展开再求和。</p>
 <p>例：<br>$$<br>(101110.011)<em>2 &#x3D; 1 \times 2^5 + 0 \times 2^4 + 1 \times 2^3 + 1 \times 2^2 + 1 \times 2^1 + 0 \times 2^0 + 0\times 2^{-1} + 1 \times 2^{-2} + 1 \times 2^{-3} &#x3D; (46.375)</em>{10}<br>$$</p>
 <h5 id="十进制转二进制"><a href="#十进制转二进制" class="headerlink" title="十进制转二进制"></a>十进制转二进制</h5><p>十进制通过除2即可将再将每次除过后的余数保存下来并倒序即可获得相应的二进制数。<strong>整数部分采用“除基取余，小鼠部分采用“乘基取整法”</strong></p>
-<p>例：<br>$$<br>(385.64)_{10}<br>$$</p>
+<p>例：$$(26.375)_{10}$$</p>
+<p>整数部分（%代表取余）：26%2 &#x3D; 0 ，后再将 13 % 2 &#x3D; 1 （13是通过26&#x2F;2算出），后 6 % 2 &#x3D; 0，再 3 % 2 &#x3D; 1，最后 1%2 &#x3D; 1，一直除到商为0为止。将取到的余倒序，则得整数二进制$$(11010)_2$$。</p>
+<p>小数部分：$$0.375\times 2 &#x3D; 0.750$$整数部分为0，后$$0.750 \times 2 &#x3D; 1.500$$整数部分为1，取出，后$$0.500 \times 2 &#x3D; 1.000$$整数部分为1取出。最后小数部分顺序得小数二进制$$(.011)_2$$。</p>
+<p>合在一起得：$$(26.375)_{10} &#x3D; (11010.011)_2$$</p>
+<p><strong>十进制转八进制或十六进制</strong>就是将除部分改为<strong>8</strong>或<strong>16</strong>。</p>
+<h5 id="二进制与八、十六进制相互转换"><a href="#二进制与八、十六进制相互转换" class="headerlink" title="二进制与八、十六进制相互转换"></a>二进制与八、十六进制相互转换</h5><p>二进制转八进制与十六进制：</p>
+<blockquote>
+<p>从小数点开始，整数部分向左、小数部分向右三位一组（十六进制以四位一组），不足三位（四位）的加0补足，再按顺序写出各组对应的八进制数（十六进制数）。</p>
+</blockquote>
+<p>以八进制为例：</p>
+<p>$$(11\quad 100\quad 101.\quad111\quad 010\quad 11)_2$$，整数部分以三位一组，得$$011\quad 100\quad 101$$（补了一位0）后将每三位换成八进制得$$(345)_8$$，小数部分则右补零得$$.111\quad 010\quad 110$$（补了一位0），后转为八进制$$(.726)_8$$，最后结果就位$$(345.726)_8$$，十六进制也是同理。</p>
+<p>八进制与十六进制转二进制：</p>
+<blockquote>
+<p>每位八进制数（十六进制数）用三位二进制（四位二进制）数来代替，再按原顺序排列。</p>
+</blockquote>
+<p>以八进制为例：</p>
+<p>$$(745.361)_8$$，将整数小数部分分为三位一组二进制即可得$$(111\quad 100\quad 101.\quad011\quad 110\quad 001)$$</p>
+<h3 id="码制"><a href="#码制" class="headerlink" title="码制"></a>码制</h3><blockquote>
+<p>码制就是一系列编码的格式，而将若干个二进制数码0和1按一定规则排列来表示某种特定含义的代码就是二进制代码。用数码的特定组合来表示特定信息的过程就称编码。常见的二进制代码有：自然（态序）二进制码，二-十进制码（BCD码）、格雷码、奇偶校验码、ASCII码</p>
+</blockquote>
+<h4 id="二-十进制码"><a href="#二-十进制码" class="headerlink" title="二-十进制码"></a>二-十进制码</h4><blockquote>
+<p>又称BCD码，就是用四位二进制数来表示十进制数中的0-9十个数码。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/ef1806a307834cb69037ce14096d301f.png" alt="1-1"></p>
+<p>图1-1就是各种常见的BCD码。</p>
+<p>例：用BCD码表示十进制数举例（用BCD码，每位十进制数用四位二进制来表示）：</p>
+<p>$$(36)<em>{10}&#x3D;(0011\quad 0110)</em>{8421BCD}$$</p>
+<p>$$(4.79)<em>{10}&#x3D;(0100\quad.0111\quad 1001)</em>{8421BCD}$$</p>
+<p>$$(0101.0001)<em>{8421BCD}&#x3D;(5.1)</em>{10}$$</p>
+<p><strong>BCD码与数制的区别：</strong></p>
+<p>$$(150)<em>{10}&#x3D;(0001\quad 0101 \quad 0000)</em>{8421BCD} &#x3D; (10010110)_2&#x3D;(226)<em>8&#x3D;(96)</em>{16}$$</p>
+<h3 id="基本逻辑运算和复合逻辑运算"><a href="#基本逻辑运算和复合逻辑运算" class="headerlink" title="基本逻辑运算和复合逻辑运算"></a>基本逻辑运算和复合逻辑运算</h3><h4 id="与和或运算"><a href="#与和或运算" class="headerlink" title="与和或运算"></a>与和或运算</h4><p>与或运算与计算机语言中<code>&amp;&amp;</code>、<code>||</code>意思相同。</p>
+<p>与运算中，表达式A和B都为真（即都为1）时候才为真，或运算中，表达式A和B其中有一个为真（即其中一个为1）时候为真。例<code>A=1 &amp;&amp; B=1</code>则为<code>true</code>，<code>A=1 || B = 0</code>为<code>true</code>，而<code>A=1 &amp;&amp; B = 0</code>为<code>false</code></p>
+<p><strong>与运算逻辑表达式：</strong> $$Y&#x3D;A· B$$或$$Y&#x3D;AB$$</p>
+<p>逻辑符号：</p>
+<p><img src="https://img-blog.csdnimg.cn/76ee8d10e71d46feba1fda59419264e9.png" alt="AND gate"></p>
+<p><strong>或运算逻辑表达式：</strong> $$Y&#x3D;A+B$$</p>
 
                 
             </div>

@@ -465,14 +465,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-08
+                    2023-10-09
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.5k
+                    2.6k
                 </div>
                 
 
@@ -567,7 +567,80 @@
 <p><img src="https://img-blog.csdnimg.cn/3cae2722e40b430b860dd8ebe30a09a6.png" alt="1-9"></p>
 <h5 id="具有n个结点的m叉树的最小高度"><a href="#具有n个结点的m叉树的最小高度" class="headerlink" title="具有n个结点的m叉树的最小高度"></a>具有n个结点的m叉树的最小高度</h5><p>具有n个结点的m叉树的最小高度$$\log_m(n(m-1)+1)$$。</p>
 <p>高度最小的情况–所有结点都有m个孩子，假设m叉树的高度为h，但没到最大结点树，可得公式：<br>$$<br>\frac{m^{h-1}-1}{m-1}&lt;n\leqslant \frac{m^h-1}{m-1}<br>$$<br>同乘$$m-1$$，并同时$$+1$$得：<br>$$<br>m^{h-1}&lt;n(m-1)+1\leqslant m^h<br>$$<br>对等式同时取对数$$\log_m$$得：<br>$$<br>h-1&lt;\log_m(n(m-1)+1)\leqslant h<br>$$<br>所以对中间取整就可得m叉树的最小高度：<br>$$<br>h_{min} &#x3D; \lceil \log_m(n(m-1)+1) \rceil<br>$$</p>
+<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><h4 id="二叉树的基本概念"><a href="#二叉树的基本概念" class="headerlink" title="二叉树的基本概念"></a>二叉树的基本概念</h4><blockquote>
+<p>二叉树是n（$$n\geqslant 0$$）个结点的有限集合：</p>
+<ol>
+<li>或者为空二叉树，即n&#x3D;0。</li>
+<li>或者由一个根结点和两个互不相交的被称为根的左子树和右子树组成。左子树和右子树又分别是一颗二叉树。</li>
+</ol>
+<p>二叉树特点：每个结点至多有两颗子树，左右子树不能颠倒（二叉树是<strong>有序树</strong>）。</p>
+</blockquote>
+<h4 id="几个特殊的二叉树"><a href="#几个特殊的二叉树" class="headerlink" title="几个特殊的二叉树"></a>几个特殊的二叉树</h4><h5 id="满二叉树"><a href="#满二叉树" class="headerlink" title="满二叉树"></a>满二叉树</h5><blockquote>
+<p>一颗高度为h，且含有$$2^h-1$$个结点的二叉树，即每个子树都有两个子分支。如图2-1所示</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/200ae2c982344c4999fb0637f45cc584.png" alt="2-1"></p>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>只有最后一层有叶子结点</li>
+<li>不存在度为1的结点</li>
+<li>按层序从1开始编号，结点i的左孩子为2i，右孩子为2i+1，结点i的父节点为[i&#x2F;2]（<code>[]</code>为取整符号），即结点7的左孩子为2i&#x3D;14，右孩子为2i+1&#x3D;15，而父节点为[i&#x2F;2]&#x3D;3。</li>
+</ul>
+<h5 id="完全二叉树"><a href="#完全二叉树" class="headerlink" title="完全二叉树"></a>完全二叉树</h5><blockquote>
+<p>当且仅当其每个结点都与高度为h的满二叉树中编号为1~n的结点意义对应时，即可删除编号最后几位的结点，但最后一层仍然能从左往右编号且中间不会出现空结点，称为完全二叉树，<strong>若完全二叉树某结点只有一个后继结点那一定是左后继结点</strong>。如图2-2所示</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/e00797b9af564adeb0c83dbce022aad1.png" alt="2-2"></p>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>只有最后两层可能有叶子结点</li>
+<li>最多只有一个度为1的结点</li>
+<li>按层序从1开始编号，结点i的左孩子为2i，右孩子为2i+1，结点i的父节点为[i&#x2F;2]（<code>[]</code>为取整符号），即结点7的左孩子为2i&#x3D;14，右孩子为2i+1&#x3D;15，而父节点为[i&#x2F;2]&#x3D;3。</li>
+<li>$$i\leqslant [n&#x2F;2]$$为分支结点，$$i\geqslant [n&#x2F;2]$$为叶子结点。</li>
+</ul>
+<h5 id="二叉排序树"><a href="#二叉排序树" class="headerlink" title="二叉排序树"></a>二叉排序树</h5><blockquote>
+<p>具有以下性质的二叉树：</p>
+<p><strong>左子树</strong>上所有结点的关键字均<strong>小于根结点</strong>的关键字；</p>
+<p><strong>右子树</strong>上所有结点的关键字均<strong>大于根结点</strong>的关键字；</p>
+<p>左子树和右子树又各是一颗二叉排序树。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/aa74459afd5944c38c6f9df13c9363e9.png" alt="2-3"></p>
+<h5 id="平衡二叉树"><a href="#平衡二叉树" class="headerlink" title="平衡二叉树"></a>平衡二叉树</h5><blockquote>
+<p>树上任一结点的左子树和右子树的深度之差不超过1。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/f478c0ab6c464e2ab7e7d0f51b58b15a.png" alt="2-4"></p>
+<h4 id="二叉树的性质"><a href="#二叉树的性质" class="headerlink" title="二叉树的性质"></a>二叉树的性质</h4><ul>
+<li>若有一颗非空二叉树中度为0、1和2的结点个数分别为$$n_0 、n_1、n_2$$，则$$n_0 &#x3D; n_2 + 1$$（$$n_0$$叶子结点比$$n_2$$二分支结点多一个）。</li>
+<li>二叉树第i层至多有$$2^{i-1}$$各结点。</li>
+<li>高度为h的二叉树至多有$$2^h-1$$个结点（满二叉树）。</li>
+</ul>
+<h4 id="完全二叉树的性质"><a href="#完全二叉树的性质" class="headerlink" title="完全二叉树的性质"></a>完全二叉树的性质</h4><ul>
+<li>具有n个（n &gt; 0）结点的完全二叉树的高度h为$$[log_2(n+1)]$$或$$[log_2n]+1$$</li>
+</ul>
+<p><strong>推导过程：</strong></p>
+<p>设高为h的满二叉树共有$$2^h-1$$个结点，高为h-1的满二叉树共有$$2^{h-1}-1$$个结点，则有：<br>$$<br>2^{h-1}-1&lt;n\leqslant 2^h-1<br>$$<br>加+1得：<br>$$<br>2^{h-1} &lt; n+1 \leqslant 2^h<br>$$<br>再取$$\log_2$$：<br>$$<br>h-1&lt;\log_2(n+1) \leqslant h<br>$$<br>则对$$\log_2(n+1)$$向上取整得$$[log_2(n+1)]$$。</p>
+<p><strong>另一个式子推导过程：</strong></p>
+<p>高为h-1的满二叉树共有$$2^{h-1}-1$$个结点，高为h的完全二叉树至少$$2^{h-1}$$个结点，至多有$$2^h-1$$。</p>
+<p>则有：<br>$$<br>2^{h-1}\leqslant n &lt; 2^h<br>$$<br>取$$log_2$$得：<br>$$<br>h-1\leqslant \log_2n&lt;h<br>$$<br>得$$h&#x3D;[log_2n+1]$$。</p>
+<ul>
+<li>对于完全二叉树，可以由结点数n推出度为0、1和2得结点个数为$$n_0 、n_1、n_2$$。</li>
+</ul>
+<p>完全二叉树最多只有一个度为1的结点，即$$n_1&#x3D;0或1$$。</p>
+<p>$$n_0&#x3D;n_2+1-&gt;n_0+n_2$$<strong>一定是奇数。</strong></p>
+<h4 id="二叉树的存储结构"><a href="#二叉树的存储结构" class="headerlink" title="二叉树的存储结构"></a>二叉树的存储结构</h4><h5 id="二叉树的顺序存储"><a href="#二叉树的顺序存储" class="headerlink" title="二叉树的顺序存储"></a>二叉树的顺序存储</h5><p>即用线性表来存储二叉树。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MaxSize</span> <span class="token expression"><span class="token number">100</span></span></span>
+<span class="token keyword">struct</span> <span class="token class-name">TreeNode</span><span class="token punctuation">&#123;</span>
+    ElemType value<span class="token punctuation">;</span> <span class="token comment">//结点中的数据元素</span>
+    bool isEmpty<span class="token punctuation">;</span> <span class="token comment">//结点是否为空</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
+<p><strong>顺序存储比较适合完全二叉树，其他类型会导致存储空间浪费</strong></p>
+<p>顺序存储的几个基本操作：</p>
+<ul>
+<li>查询第i个结点的左后继结点：<strong>2i</strong></li>
+<li>查询第i个结点的右后继结点：<strong>2i+1</strong></li>
+<li>查询第i个结点的父节点：**[i&#x2F;2]**</li>
+<li>查询第i个结点的层次：$$[log_2(n+1)]$$或$$[log_2n]+1$$</li>
+</ul>
+<h5 id="二叉树的的链式存储"><a href="#二叉树的的链式存储" class="headerlink" title="二叉树的的链式存储"></a>二叉树的的链式存储</h5>
                 
             </div>
             <hr/>
