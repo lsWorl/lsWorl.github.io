@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>电路-电阻电路的等效变换</title>
+      <link href="/2023/10/10/dian-lu-dian-zu-dian-lu-de-deng-xiao-bian-huan/"/>
+      <url>/2023/10/10/dian-lu-dian-zu-dian-lu-de-deng-xiao-bian-huan/</url>
+      
+        <content type="html"><![CDATA[<h3 id="电路的等效变换"><a href="#电路的等效变换" class="headerlink" title="电路的等效变换"></a>电路的等效变换</h3><blockquote><p>在了解电路的等效变换前先了解什么是电阻电路。</p><p>电阻电路就是仅由电源和线性电阻构成的电路。</p><p>分析方法：</p><ul><li>欧姆定律和基尔霍夫定律来分析。</li><li>等效变换的方法，也称化简。</li></ul></blockquote><p>电路的等效变换基于两端电路：两端电路即任何一个复杂的电路, 向外引出两个端钮，且从一个端子流入的电流等于从另一端子流出的电流，则称这一电路为二端网络 (或一端口网络)，如1-1所示。</p><p><img src="https://img-blog.csdnimg.cn/f00da5bbf95c4482bccf96f81f5abcfd.png" alt="1-1"></p><p><strong>两端电路等效的概念</strong></p><p>两个两端电路，端口具有相同的电压、电流关系,则称它们是等效的电路，即对于两个两端电路，他们电压和电流大小相同，参考方向也相同，即可将两个电路互相进行交换，并<strong>对外等效</strong>，如1-2图所示。</p><p><img src="https://img-blog.csdnimg.cn/6d0963c86d21419c9f5fad18a6bb6fe4.png" alt="1-2"></p><p><strong>电路等效变换的条件</strong></p><p>两电路具有相同的VCR，即电压电流电阻值相同即可等效变换。</p><h3 id="电阻的串联与并联"><a href="#电阻的串联与并联" class="headerlink" title="电阻的串联与并联"></a>电阻的串联与并联</h3><h4 id="电阻的串联"><a href="#电阻的串联" class="headerlink" title="电阻的串联"></a>电阻的串联</h4><blockquote><p>电阻串联的性质：</p><ol><li>电流相等，流过同一电流。</li><li>总电压等于各串联电阻的电压之和。</li><li>串联总电阻为电阻值相加。</li><li>电压之比等于电阻之比（串联分压）。</li></ol></blockquote><p><img src="https://img-blog.csdnimg.cn/ffb51e3bd9eb40ea8f1bf3b12950a78a.png" alt="2-1"></p><h4 id="电阻的并联"><a href="#电阻的并联" class="headerlink" title="电阻的并联"></a>电阻的并联</h4><blockquote><p>电阻并联的性质：</p><ol><li>并联电路电压相等。</li><li>总电流等于各串联电阻的电流之和。</li><li>电流之比等于电阻的反比比（并联分流）。</li></ol></blockquote><p><img src="https://img-blog.csdnimg.cn/61febf459ce44850882c8d937a4d4388.png" alt="2-2"></p><p>并联求总电阻公式：<br>$$<br>R_总 &#x3D; \frac{R_1 * R_2* \dots *R_n}{R_1 + R_2 + \dots + R_n}<br>$$</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 电路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 电路 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数据结构-树与二叉树</title>
       <link href="/2023/10/07/shu-ju-jie-gou-shu-yu-er-cha-shu/"/>
       <url>/2023/10/07/shu-ju-jie-gou-shu-yu-er-cha-shu/</url>
