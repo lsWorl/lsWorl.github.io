@@ -465,14 +465,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-09
+                    2023-10-10
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.6k
+                    2.8k
                 </div>
                 
 
@@ -640,7 +640,18 @@
 <li>查询第i个结点的父节点：**[i&#x2F;2]**</li>
 <li>查询第i个结点的层次：$$[log_2(n+1)]$$或$$[log_2n]+1$$</li>
 </ul>
-<h5 id="二叉树的的链式存储"><a href="#二叉树的的链式存储" class="headerlink" title="二叉树的的链式存储"></a>二叉树的的链式存储</h5>
+<h5 id="二叉树的的链式存储"><a href="#二叉树的的链式存储" class="headerlink" title="二叉树的的链式存储"></a>二叉树的的链式存储</h5><p>即用链表来存储二叉树。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">ElemType</span> <span class="token expression"><span class="token keyword">int</span></span></span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">BiTNode</span><span class="token punctuation">&#123;</span>
+    ElemType data<span class="token punctuation">;</span>  <span class="token comment">//数据域</span>
+    <span class="token keyword">struct</span> <span class="token class-name">BiTNode</span> <span class="token operator">*</span>lchild<span class="token punctuation">,</span><span class="token operator">*</span>rchild<span class="token punctuation">;</span>  <span class="token comment">//左右孩子指针</span>
+<span class="token punctuation">&#125;</span>BiTNode<span class="token punctuation">,</span><span class="token operator">*</span>BiTree<span class="token punctuation">;</span></code></pre>
+
+<p><strong>在含有n个结点的二叉链表中，含有n+1个空链表。</strong></p>
+<h4 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a>二叉树的遍历</h4><h5 id="二叉树的先中后序遍历"><a href="#二叉树的先中后序遍历" class="headerlink" title="二叉树的先中后序遍历"></a>二叉树的先中后序遍历</h5><p><strong>先序遍历</strong>：先访问根节点，再访问左节点，最后访问右结点。</p>
+<p><strong>中序遍历</strong>：先访问左节点，再访问根节点，最后访问右节点。</p>
+<p><strong>后序遍历</strong>：先访问左结点，在访问右节点，最后访问根节点。</p>
+
                 
             </div>
             <hr/>
