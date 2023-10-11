@@ -5,7 +5,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="电路-电阻电路的等效变换, LsWorld">
-    <meta name="description" content="电路的等效变换
+    <meta name="description" content="
+
+电路的等效变换
 在了解电路的等效变换前先了解什么是电阻电路。
 电阻电路就是仅由电源和线性电阻构成的电路。
 分析方法：
@@ -14,7 +16,7 @@
 等效变换的方法，也称化简。
 
 
-电路的等效变换基于两端电路：两端电路即任何一个复杂的电路">
+电路的等效变换基于两端电路：两端电路即任何一个复杂的">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -471,14 +473,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-10
+                    2023-10-11
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    421
+                    887
                 </div>
                 
 
@@ -498,7 +500,9 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="电路的等效变换"><a href="#电路的等效变换" class="headerlink" title="电路的等效变换"></a>电路的等效变换</h3><blockquote>
+                <meta name="referrer" content="no-referrer"/>
+
+<h3 id="电路的等效变换"><a href="#电路的等效变换" class="headerlink" title="电路的等效变换"></a>电路的等效变换</h3><blockquote>
 <p>在了解电路的等效变换前先了解什么是电阻电路。</p>
 <p>电阻电路就是仅由电源和线性电阻构成的电路。</p>
 <p>分析方法：</p>
@@ -534,6 +538,19 @@
 </blockquote>
 <p><img src="https://img-blog.csdnimg.cn/61febf459ce44850882c8d937a4d4388.png" alt="2-2"></p>
 <p>并联求总电阻公式：<br>$$<br>R_总 &#x3D; \frac{R_1 * R_2* \dots *R_n}{R_1 + R_2 + \dots + R_n}<br>$$</p>
+<h3 id="电阻的Y形连接和∆形连接的等效变换"><a href="#电阻的Y形连接和∆形连接的等效变换" class="headerlink" title="电阻的Y形连接和∆形连接的等效变换"></a>电阻的Y形连接和∆形连接的等效变换</h3><p>Y形和∆形如图3-1和图3-2所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/7cdcbc5ba4e343559fe3b9b3e70f6937.png" alt="3-1"></p>
+<p><img src="https://img-blog.csdnimg.cn/62150131e36041f3b938b1673a4215c4.png" alt="3-2"></p>
+<h4 id="电阻的Y三角转换："><a href="#电阻的Y三角转换：" class="headerlink" title="电阻的Y三角转换："></a>电阻的Y三角转换：</h4><p><strong>从三角形变成Y形</strong></p>
+<p>由图3-2转图3-1，电阻的等效变换可以变成对外等效，所以可以获得对外等效电阻的公式：<br>$$<br>R_1 &#x3D; \frac{R_{12}R_{31}}{R_{12}+R_{23}+R_{31}}\<br>R_2 &#x3D; \frac{R_{12}R_{23}}{R_{12}+R_{23}+R_{31}}\<br>R_3 &#x3D; \frac{R_{23}R_{31}}{R_{12}+R_{23}+R_{31}}\<br>$$<br><strong>Y形变成三角形</strong></p>
+<p>由图3-1转图3-2，电阻的等效变换可以变成对外等效，所以可以获得对外等效电阻的公式：<br>$$<br>R_{12} &#x3D; \frac{R_{1}R_{2}+R_2R_3+R_3R_1}{R_3}\<br>R_{23} &#x3D; \frac{R_{1}R_{2}+R_2R_3+R_3R_1}{R_1}\<br>R_{31} &#x3D; \frac{R_{1}R_{2}+R_2R_3+R_3R_1}{R_2}\<br>$$</p>
+<h3 id="电压源、电流源的串联和并联"><a href="#电压源、电流源的串联和并联" class="headerlink" title="电压源、电流源的串联和并联"></a>电压源、电流源的串联和并联</h3><h4 id="理想电压源"><a href="#理想电压源" class="headerlink" title="理想电压源"></a>理想电压源</h4><h5 id="串联情况"><a href="#串联情况" class="headerlink" title="串联情况"></a>串联情况</h5><p><img src="https://img-blog.csdnimg.cn/04988be94eb048bdbe0d4956b6c471bf.png" alt="4-1"></p>
+<p>图4-1为n个电压源的串联（参考方向相同，若有些参考方向相反则前面为负号），可以用一个电压源等效替代，且这个等效电压源激励电压为：<br>$$<br>u_s &#x3D; u_{s1} + u_{s2} + \dots + u_{sn} &#x3D; \sum_{k&#x3D;1}^{n}{u_{sk}}<br>$$<br>理想电压源等效的电压源之值等于所有电压源的代数和。</p>
+<h5 id="并联情况（仅当每个电压源电压相同）"><a href="#并联情况（仅当每个电压源电压相同）" class="headerlink" title="并联情况（仅当每个电压源电压相同）"></a>并联情况（仅当每个电压源电压相同）</h5><p><img src="https://img-blog.csdnimg.cn/7ed30ae4d3c7454fa0b4d9ee1386e8ed.png" alt="img"></p>
+<h4 id="理想电流源"><a href="#理想电流源" class="headerlink" title="理想电流源"></a>理想电流源</h4><h5 id="并联情况"><a href="#并联情况" class="headerlink" title="并联情况"></a>并联情况</h5><p><img src="https://img-blog.csdnimg.cn/064f0552f2724f23888492a5fd04e759.png" alt="4-2"></p>
+<p>图4-2为n个电压源的并联（参考方向相同，若有些参考方向相反则前面为负号），可以用一个电压源等效替代，且这个等效电压源电流为：<br>$$<br>i_s &#x3D; i_{s1} + i_{s2} + \dots + i_{sn} &#x3D; \sum_{k&#x3D;1}^ni_{sk}<br>$$<br>理想电流源等效的电流源之值等于所有电流源的代数和。</p>
+<h5 id="串联情况-1"><a href="#串联情况-1" class="headerlink" title="串联情况"></a>串联情况</h5><p><img src="https://img-blog.csdnimg.cn/8f37b5748cb94722ba286a3859b64a66.png" alt="4-3"></p>
+<p>串联情况下电流处处相等，所以可以等效为电流为i的电流源。</p>
 
                 
             </div>
