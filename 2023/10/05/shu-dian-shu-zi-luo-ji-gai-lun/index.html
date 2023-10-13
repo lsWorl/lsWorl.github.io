@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-09
+                    2023-10-13
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    986
+                    1.2k
                 </div>
                 
 
@@ -534,13 +534,26 @@
 <p>$$(0101.0001)<em>{8421BCD}&#x3D;(5.1)</em>{10}$$</p>
 <p><strong>BCD码与数制的区别：</strong></p>
 <p>$$(150)<em>{10}&#x3D;(0001\quad 0101 \quad 0000)</em>{8421BCD} &#x3D; (10010110)_2&#x3D;(226)<em>8&#x3D;(96)</em>{16}$$</p>
-<h3 id="基本逻辑运算和复合逻辑运算"><a href="#基本逻辑运算和复合逻辑运算" class="headerlink" title="基本逻辑运算和复合逻辑运算"></a>基本逻辑运算和复合逻辑运算</h3><h4 id="与和或运算"><a href="#与和或运算" class="headerlink" title="与和或运算"></a>与和或运算</h4><p>与或运算与计算机语言中<code>&amp;&amp;</code>、<code>||</code>意思相同。</p>
+<h3 id="基本逻辑运算和复合逻辑运算"><a href="#基本逻辑运算和复合逻辑运算" class="headerlink" title="基本逻辑运算和复合逻辑运算"></a>基本逻辑运算和复合逻辑运算</h3><h4 id="与或非运算"><a href="#与或非运算" class="headerlink" title="与或非运算"></a>与或非运算</h4><p>与或运算与计算机语言中<code>&amp;&amp;</code>、<code>||</code>意思相同。</p>
 <p>与运算中，表达式A和B都为真（即都为1）时候才为真，或运算中，表达式A和B其中有一个为真（即其中一个为1）时候为真。例<code>A=1 &amp;&amp; B=1</code>则为<code>true</code>，<code>A=1 || B = 0</code>为<code>true</code>，而<code>A=1 &amp;&amp; B = 0</code>为<code>false</code></p>
 <p><strong>与运算逻辑表达式：</strong> $$Y&#x3D;A· B$$或$$Y&#x3D;AB$$</p>
 <p>逻辑符号：</p>
 <p><img src="https://img-blog.csdnimg.cn/76ee8d10e71d46feba1fda59419264e9.png" alt="AND gate"></p>
 <p><strong>或运算逻辑表达式：</strong> $$Y&#x3D;A+B$$</p>
-
+<p><img src="https://img-blog.csdnimg.cn/a3d8b20261444fae886b9dfde8efb7c0.png" alt="OR gate"></p>
+<p><strong>非运算表达式：</strong>$$Y&#x3D;\bar{A}$$，即$$\bar{0}&#x3D;1 \quad \bar{1}&#x3D;0$$</p>
+<p><img src="https://img-blog.csdnimg.cn/f9ce296edaf241ca9e2555180e8ca430.png" alt="NOT gate"></p>
+<h4 id="复合逻辑运算"><a href="#复合逻辑运算" class="headerlink" title="复合逻辑运算"></a>复合逻辑运算</h4><h5 id="与非运算（NAND）"><a href="#与非运算（NAND）" class="headerlink" title="与非运算（NAND）"></a>与非运算（NAND）</h5><p>与非运算表达式：$$Y&#x3D;\bar{AB}$$，即有0出1，全1出0；</p>
+<p><img src="https://img-blog.csdnimg.cn/e4df9bea0c314264b9e507d5bb56a082.png" alt="与非门"></p>
+<h5 id="或非运算（NOR）"><a href="#或非运算（NOR）" class="headerlink" title="或非运算（NOR）"></a>或非运算（NOR）</h5><p>或非运算表达式：$$Y&#x3D;\bar{A+B}$$，即有1出0，全0出1；</p>
+<p><img src="https://img-blog.csdnimg.cn/bb400a7a8dad438bb01fd3bec1755d21.png" alt="或非门"></p>
+<h5 id="异或运算（Exclusive-OR）"><a href="#异或运算（Exclusive-OR）" class="headerlink" title="异或运算（Exclusive-OR）"></a>异或运算（Exclusive-OR）</h5><p>异或运算表达式：$$Y&#x3D;A⊕B&#x3D;\bar{A}B+A\bar{B}$$，即相同为0，不同为1；</p>
+<p><img src="https://img-blog.csdnimg.cn/4c12284d24a94eb9a4ec8eab1a8a9690.png" alt="异或门"></p>
+<h5 id="同或运算（Exclusive-NOR，即异或的非）"><a href="#同或运算（Exclusive-NOR，即异或的非）" class="headerlink" title="同或运算（Exclusive-NOR，即异或的非）"></a>同或运算（Exclusive-NOR，即异或的非）</h5><p>同或运算表达式：$$Y&#x3D;A⊙B$$，即相同为1，不同为0；</p>
+<p><img src="https://img-blog.csdnimg.cn/ac2ed668355b4822bfcdcf9888f900e3.png" alt="同或门"></p>
+<h5 id="与或非运算（AND-OR-INVERT）"><a href="#与或非运算（AND-OR-INVERT）" class="headerlink" title="与或非运算（AND-OR-INVERT）"></a>与或非运算（AND-OR-INVERT）</h5><p>与或非运算表达式：$$Y&#x3D;\bar{AB+CD}$$，先与后或再非；</p>
+<p><img src="https://img-blog.csdnimg.cn/b05c1ec0687143eebe1a34ebb0edf9cd.png" alt="与或非门"></p>
+<h3 id="逻辑代数的基本定律"><a href="#逻辑代数的基本定律" class="headerlink" title="逻辑代数的基本定律"></a>逻辑代数的基本定律</h3><h4 id="常量间的计算"><a href="#常量间的计算" class="headerlink" title="常量间的计算"></a>常量间的计算</h4>
                 
             </div>
             <hr/>

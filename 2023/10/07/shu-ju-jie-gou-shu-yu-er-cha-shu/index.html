@@ -465,14 +465,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-12
+                    2023-10-13
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.3k
+                    4.4k
                 </div>
                 
 
@@ -767,6 +767,94 @@
   
 <span class="token punctuation">&#125;</span></code></pre>
 
+
+
+<h4 id="由遍历序列构造二叉树"><a href="#由遍历序列构造二叉树" class="headerlink" title="由遍历序列构造二叉树"></a>由遍历序列构造二叉树</h4><p>想通过遍历序列来构造二叉树必须包含<strong>中序遍历</strong>，才能确定构造出唯一的二叉树，总共的构造方法有：</p>
+<ul>
+<li>前序+中序遍历序列构造</li>
+<li>后序+中序遍历序列构造</li>
+<li>层序+中序遍历序列构造</li>
+</ul>
+<h5 id="前序-中序遍历序列构造"><a href="#前序-中序遍历序列构造" class="headerlink" title="前序+中序遍历序列构造"></a>前序+中序遍历序列构造</h5><p>前序遍历是根左右，所以前序的第一个结点一定是根节点，然后就可以根据中序结点来找出根结点的左右子树有哪些，从而构造出二叉树。</p>
+<p>例：</p>
+<p>前序遍历序列为：A D B C E</p>
+<p>中序遍历序列为：B D C A E</p>
+<p>由前序可知A为根节点，再由中序得知左子树由BDC构成，右子树仅有E。</p>
+<p>再看左子树的BDC，由于在前序结点中D在B之前D为左子树的根结点，B为左结点，C为右结点就成功构造出了唯一的二叉树。</p>
+<p><img src="https://img-blog.csdnimg.cn/b6f41c49b7ee4e6c8749d7347c19ce0c.png" alt="4-1"></p>
+<h5 id="后序-中序遍历序列构造"><a href="#后序-中序遍历序列构造" class="headerlink" title="后序+中序遍历序列构造"></a>后序+中序遍历序列构造</h5><p>后序遍历是左右根顺序，所以后序遍历的最后一个结点一定是根结点，然后再根据中序结点来寻找左右子树。</p>
+<p>例：</p>
+<p>后序遍历序列： E F A H C I G B D</p>
+<p>中序遍历序列： E A F D H C B G I</p>
+<p>根据后序可得根结点为D，再根据中序可得左子树元素由EAF，右子树元素有HCBGI。</p>
+<p>对EAF进行拆分，根据后序可得A在最后方说明A为根节点，再根据中序E为左子树，则F为右子树，就可获得完整的左子树。</p>
+<p>对HCBGI进行拆分，由后序可得根结点为B，再根据中序可得左子树为HC，右子树为GI。</p>
+<p>在对HC进行拆分，由后序可得C为根节点，再根据中序得，H为左子树。</p>
+<p>最后对GI进行拆分，由后序可得G为根节点，再根据中序可得，I为右子树。即可构造出唯一二叉树。</p>
+<p><img src="https://img-blog.csdnimg.cn/0accbd04ec01490195d09c064ac83f84.png" alt="4-2"></p>
+<h5 id="层序-中序遍历序列构造"><a href="#层序-中序遍历序列构造" class="headerlink" title="层序+中序遍历序列构造"></a>层序+中序遍历序列构造</h5><p>后序遍历是从上往下根据层顺序，所以层序遍历的第一个结点一定是根结点，然后再根据中序结点来寻找左右子树。</p>
+<p>例：</p>
+<p>层序遍历序列： A B C D E</p>
+<p>中序遍历序列： A C B E D</p>
+<p>根据层序可得A为根节点，再由中序可得左子树为空，右子树有CBED。</p>
+<p>分析CBED，由层序得B为根节点，中序得C为以B为根节点的左子树，ED则为右子树。</p>
+<p>分析ED，由层序得D为根节点，中序得E为D的左子树。最后成功构造唯一二叉树。</p>
+<p><img src="https://img-blog.csdnimg.cn/bc261e5cfb4f463f90678bd68c44b422.png" alt="4-3"></p>
+<h4 id="线索二叉树"><a href="#线索二叉树" class="headerlink" title="线索二叉树"></a>线索二叉树</h4><h5 id="线索二叉树的基本概念"><a href="#线索二叉树的基本概念" class="headerlink" title="线索二叉树的基本概念"></a>线索二叉树的基本概念</h5><blockquote>
+<p>线索二叉树就是在传统二叉树上添加直接前驱和直接后继指针，来使二叉树能更块的查找到结点的前驱和后继。通过<code>ltag</code>和<code>rtag</code>来表示是否存在左右结点，当<code>ltag==1</code>时表示<code>lchild</code>指向前驱结点，<code>ltag==0</code>时表示<code>lchild</code>指向左孩子，<code>rtag</code>同理。</p>
+</blockquote>
+<p><strong>线索二叉树的存储结构</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">ThreadNode</span><span class="token punctuation">&#123;</span>
+  ElemType data<span class="token punctuation">;</span>  <span class="token comment">//数据元素</span>
+  <span class="token keyword">struct</span> <span class="token class-name">ThreadNode</span> <span class="token operator">*</span>lchild<span class="token punctuation">,</span> <span class="token operator">*</span>rchild<span class="token punctuation">;</span>  <span class="token comment">//左、右孩子指针</span>
+  <span class="token keyword">int</span> ltag<span class="token punctuation">,</span>rtag<span class="token punctuation">;</span>  <span class="token comment">//左、右线索标志</span>
+<span class="token punctuation">&#125;</span>ThreadNode<span class="token punctuation">;</span></code></pre>
+
+
+
+<h5 id="中序线索二叉树的构造"><a href="#中序线索二叉树的构造" class="headerlink" title="中序线索二叉树的构造"></a>中序线索二叉树的构造</h5><blockquote>
+<p>二叉树的线索化使将二叉链表中的空指针改为指向前驱或后继的线索。因此线索化就是要在遍历的时候进行。</p>
+</blockquote>
+<p><strong>代码实现</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 通过中序遍历对二叉树进行线索化</span>
+<span class="token keyword">void</span> <span class="token function">InThread</span><span class="token punctuation">(</span>ThreadNode <span class="token operator">*</span>p<span class="token punctuation">,</span> ThreadNode <span class="token operator">*</span><span class="token operator">*</span>pre<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">InThread</span><span class="token punctuation">(</span>p<span class="token operator">-></span>lchild<span class="token punctuation">,</span> pre<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//中序遍历线索化处理部分</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>lchild <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      p<span class="token operator">-></span>lchild <span class="token operator">=</span> <span class="token operator">*</span>pre<span class="token punctuation">;</span>
+      p<span class="token operator">-></span>ltag <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>pre <span class="token operator">!=</span> <span class="token constant">NULL</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">*</span>pre<span class="token punctuation">)</span><span class="token operator">-></span>rchild <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token punctuation">(</span><span class="token operator">*</span>pre<span class="token punctuation">)</span><span class="token operator">-></span>rchild <span class="token operator">=</span> p<span class="token punctuation">;</span>  <span class="token comment">//建立前驱结点的后继线索</span>
+      <span class="token punctuation">(</span><span class="token operator">*</span>pre<span class="token punctuation">)</span><span class="token operator">-></span>rtag <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token operator">*</span>pre <span class="token operator">=</span> p<span class="token punctuation">;</span>
+    <span class="token comment">//中序遍历线索化结束</span>
+    <span class="token function">InThread</span><span class="token punctuation">(</span>p<span class="token operator">-></span>rchild<span class="token punctuation">,</span> pre<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//在此调用</span>
+<span class="token keyword">void</span> <span class="token function">CreateInThread</span><span class="token punctuation">(</span>ThreadNode <span class="token operator">*</span>T<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  ThreadNode <span class="token operator">*</span>pre <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>T <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">InThread</span><span class="token punctuation">(</span>T<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pre<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//中序遍历最后一个结点肯定没有右孩子，所以直接设为null</span>
+    pre<span class="token operator">-></span>rchild <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    pre<span class="token operator">-></span>rtag <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>先序和后序线索化逻辑类似就不再过多赘述。</p>
+<h3 id="树、森林"><a href="#树、森林" class="headerlink" title="树、森林"></a>树、森林</h3><h4 id="树的存储结构"><a href="#树的存储结构" class="headerlink" title="树的存储结构"></a>树的存储结构</h4><blockquote>
+<p>树的存储方式有多种，即可采用顺序存储结构</p>
+</blockquote>
 
                 
             </div>
