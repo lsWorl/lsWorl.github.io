@@ -465,14 +465,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-13
+                    2023-10-14
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.4k
+                    5.3k
                 </div>
                 
 
@@ -853,7 +853,76 @@
 
 <p>先序和后序线索化逻辑类似就不再过多赘述。</p>
 <h3 id="树、森林"><a href="#树、森林" class="headerlink" title="树、森林"></a>树、森林</h3><h4 id="树的存储结构"><a href="#树的存储结构" class="headerlink" title="树的存储结构"></a>树的存储结构</h4><blockquote>
-<p>树的存储方式有多种，即可采用顺序存储结构</p>
+<p>树的存储方式有多种，即可采用顺序存储结构，又可采用链式存储，这里介绍3种常用的存储结构。</p>
+</blockquote>
+<h5 id="双亲表示法（顺序存储）"><a href="#双亲表示法（顺序存储）" class="headerlink" title="双亲表示法（顺序存储）"></a>双亲表示法（顺序存储）</h5><blockquote>
+<p>这种存储结构采用一组连续空间来存储每个结点，同时在每个结点中增设一个伪指针，指示其双亲结点在数组中的位置。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/617f87efcd614c32b8a2bea45139a314.png" alt="5-1"></p>
+<p>将图5-1以双亲表示法存储到内存中应以图5-2形式来存储。</p>
+<p><img src="https://img-blog.csdnimg.cn/2f1f9ad9a97e479e96ae782aec444ec2.png" alt="5-2"></p>
+<p><strong>除了根结点指向-1外，其余<code>parent</code>都应指向父节点的数组下标</strong>。</p>
+<p><strong>存储结构描述：</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//树的结点定义</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>
+  ElemType data<span class="token punctuation">;</span> <span class="token comment">//数据元素</span>
+  <span class="token keyword">int</span> parent<span class="token punctuation">;</span> <span class="token comment">//双亲位置域</span>
+<span class="token punctuation">&#125;</span>PTNode<span class="token punctuation">;</span>
+
+<span class="token comment">//树类型定义</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>
+  PTNode nodes<span class="token punctuation">[</span>MAX_TREE_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+  <span class="token keyword">int</span> n<span class="token punctuation">;</span> <span class="token comment">//结点数量</span>
+<span class="token punctuation">&#125;</span>PTree<span class="token punctuation">;</span></code></pre>
+
+
+
+<h5 id="孩子表示法（顺序-链式存储）"><a href="#孩子表示法（顺序-链式存储）" class="headerlink" title="孩子表示法（顺序+链式存储）"></a>孩子表示法（顺序+链式存储）</h5><blockquote>
+<p>孩子表示法是将每个结点的孩子结点都用单链表连接起来形成一个线性结构，此时n个结点就有个孩子链表。</p>
+</blockquote>
+<p>将图5-1的树来用孩子表示法存储就可得图5-3。用一个<code>firstChild</code>链表来存储结点的第一个孩子结点，后可通过第一个孩子来找到后序结点。</p>
+<p><img src="https://img-blog.csdnimg.cn/4b30fb69d5f046f3898b82fe72591f5d.png" alt="5-3"></p>
+<p><strong>存储结构描述：</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//孩子表示法</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">CTNode</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> child<span class="token punctuation">;</span> <span class="token comment">//孩子结点在数组中的位置</span>
+  <span class="token keyword">struct</span> <span class="token class-name">CTNode</span> <span class="token operator">*</span>next<span class="token punctuation">;</span> <span class="token comment">//下一个孩子结点</span>
+<span class="token punctuation">&#125;</span>CTNode<span class="token punctuation">;</span>
+
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>
+  ElemType data<span class="token punctuation">;</span>
+  CTNode <span class="token operator">*</span>firstChild<span class="token punctuation">;</span> <span class="token comment">//第一个孩子</span>
+<span class="token punctuation">&#125;</span>CTBox<span class="token punctuation">;</span></code></pre>
+
+
+
+<h5 id="孩子兄弟表示法（链式存储）"><a href="#孩子兄弟表示法（链式存储）" class="headerlink" title="孩子兄弟表示法（链式存储）"></a>孩子兄弟表示法（链式存储）</h5><blockquote>
+<p>又称二叉树表示法，即以二叉链表作为树的存储结构。共包含三部分内容：结点值、指向结点第一个孩子结点的指针，以及指向结点下一个兄弟结点的指针。</p>
+</blockquote>
+<p><strong>存储结构描述：</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//孩子兄弟表示法</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">CSNode</span><span class="token punctuation">&#123;</span>
+  ElemType data<span class="token punctuation">;</span>
+  <span class="token keyword">struct</span> <span class="token class-name">CSNode</span> <span class="token operator">*</span>firstchild<span class="token punctuation">,</span><span class="token operator">*</span>nextsibling<span class="token punctuation">;</span> <span class="token comment">//左指针指向第一个孩子，右指针指向该结点的兄弟结点</span>
+<span class="token punctuation">&#125;</span>CSNode<span class="token punctuation">;</span></code></pre>
+
+
+
+<h4 id="树、森林与二叉树的转换"><a href="#树、森林与二叉树的转换" class="headerlink" title="树、森林与二叉树的转换"></a>树、森林与二叉树的转换</h4><blockquote>
+<p>由于二叉树和树都可以用二叉链表作为存储结构，因此二叉链表作为媒介可以将树和二叉树进行转换。</p>
+</blockquote>
+<p><strong>树转换成二叉树的规则：</strong></p>
+<p>每个结点左指针指向它的第一个孩子，右指针指向它在树中相邻右兄弟（孩子兄弟表示法）。</p>
+<p>森林转二叉树也是同理，不过不像树根节点没有兄弟，根结点的兄弟就是相邻的树。</p>
+<p><strong>二叉树转成树的规则：</strong></p>
+<p>从树的根节点根据树的层序来恢复，若有左孩子代表是树的第一个孩子结点，若有右节点，代表是树的第一个孩子结点的兄弟结点，以此类推。</p>
+<p><strong>由于树的深度遍历和广度遍历与二叉树的先序遍历和中序遍历相似就不再过多赘述</strong></p>
+<h3 id="树与二叉树的应用"><a href="#树与二叉树的应用" class="headerlink" title="树与二叉树的应用"></a>树与二叉树的应用</h3><h4 id="哈夫曼树和哈夫曼编码"><a href="#哈夫曼树和哈夫曼编码" class="headerlink" title="哈夫曼树和哈夫曼编码"></a>哈夫曼树和哈夫曼编码</h4><h5 id="哈夫曼树的定义"><a href="#哈夫曼树的定义" class="headerlink" title="哈夫曼树的定义"></a>哈夫曼树的定义</h5><p>结点的权：有某种现实意义的数值称为结点的权。</p>
+<p>结点的<strong>带权路径长度</strong>：从树的根到该结点的路径长度（经过的边数）与该结点上权值的乘积。如图6-1到权值为3的带权路径长度为$$3*3&#x3D;9$$的。</p>
+<p><strong>树的带权路径长度</strong>：树中所有<strong>叶结点</strong>的带权路径之和（WPL,Weighted Path Length）。<br>$$<br>WPL &#x3D; \sum^n_{i&#x3D;1}w_il_i<br>$$</p>
+<p><img src="https://img-blog.csdnimg.cn/05e6c51821974bcda761dc3b347a02ca.png" alt="6-1"></p>
+<blockquote>
+<p>在含有n个带权叶结点的二叉树中，其中带权路径长度(WPL)最小的二叉树称为哈夫曼树，也称最优二叉树。</p>
 </blockquote>
 
                 

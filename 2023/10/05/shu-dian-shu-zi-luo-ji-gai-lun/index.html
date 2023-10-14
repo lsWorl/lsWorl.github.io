@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-13
+                    2023-10-14
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.2k
+                    1.9k
                 </div>
                 
 
@@ -543,17 +543,56 @@
 <p><img src="https://img-blog.csdnimg.cn/a3d8b20261444fae886b9dfde8efb7c0.png" alt="OR gate"></p>
 <p><strong>非运算表达式：</strong>$$Y&#x3D;\bar{A}$$，即$$\bar{0}&#x3D;1 \quad \bar{1}&#x3D;0$$</p>
 <p><img src="https://img-blog.csdnimg.cn/f9ce296edaf241ca9e2555180e8ca430.png" alt="NOT gate"></p>
-<h4 id="复合逻辑运算"><a href="#复合逻辑运算" class="headerlink" title="复合逻辑运算"></a>复合逻辑运算</h4><h5 id="与非运算（NAND）"><a href="#与非运算（NAND）" class="headerlink" title="与非运算（NAND）"></a>与非运算（NAND）</h5><p>与非运算表达式：$$Y&#x3D;\bar{AB}$$，即有0出1，全1出0；</p>
+<h4 id="复合逻辑运算"><a href="#复合逻辑运算" class="headerlink" title="复合逻辑运算"></a>复合逻辑运算</h4><h5 id="与非运算（NAND）"><a href="#与非运算（NAND）" class="headerlink" title="与非运算（NAND）"></a>与非运算（NAND）</h5><p>与非运算表达式：$$Y&#x3D;\overline{AB}$$，即有0出1，全1出0；</p>
 <p><img src="https://img-blog.csdnimg.cn/e4df9bea0c314264b9e507d5bb56a082.png" alt="与非门"></p>
-<h5 id="或非运算（NOR）"><a href="#或非运算（NOR）" class="headerlink" title="或非运算（NOR）"></a>或非运算（NOR）</h5><p>或非运算表达式：$$Y&#x3D;\bar{A+B}$$，即有1出0，全0出1；</p>
+<h5 id="或非运算（NOR）"><a href="#或非运算（NOR）" class="headerlink" title="或非运算（NOR）"></a>或非运算（NOR）</h5><p>或非运算表达式：$$Y&#x3D;\overline{A+B}$$，即有1出0，全0出1；</p>
 <p><img src="https://img-blog.csdnimg.cn/bb400a7a8dad438bb01fd3bec1755d21.png" alt="或非门"></p>
 <h5 id="异或运算（Exclusive-OR）"><a href="#异或运算（Exclusive-OR）" class="headerlink" title="异或运算（Exclusive-OR）"></a>异或运算（Exclusive-OR）</h5><p>异或运算表达式：$$Y&#x3D;A⊕B&#x3D;\bar{A}B+A\bar{B}$$，即相同为0，不同为1；</p>
 <p><img src="https://img-blog.csdnimg.cn/4c12284d24a94eb9a4ec8eab1a8a9690.png" alt="异或门"></p>
 <h5 id="同或运算（Exclusive-NOR，即异或的非）"><a href="#同或运算（Exclusive-NOR，即异或的非）" class="headerlink" title="同或运算（Exclusive-NOR，即异或的非）"></a>同或运算（Exclusive-NOR，即异或的非）</h5><p>同或运算表达式：$$Y&#x3D;A⊙B$$，即相同为1，不同为0；</p>
 <p><img src="https://img-blog.csdnimg.cn/ac2ed668355b4822bfcdcf9888f900e3.png" alt="同或门"></p>
-<h5 id="与或非运算（AND-OR-INVERT）"><a href="#与或非运算（AND-OR-INVERT）" class="headerlink" title="与或非运算（AND-OR-INVERT）"></a>与或非运算（AND-OR-INVERT）</h5><p>与或非运算表达式：$$Y&#x3D;\bar{AB+CD}$$，先与后或再非；</p>
+<h5 id="与或非运算（AND-OR-INVERT）"><a href="#与或非运算（AND-OR-INVERT）" class="headerlink" title="与或非运算（AND-OR-INVERT）"></a>与或非运算（AND-OR-INVERT）</h5><p>与或非运算表达式：$$Y&#x3D;\overline{AB+CD}$$，先与后或再非；</p>
 <p><img src="https://img-blog.csdnimg.cn/b05c1ec0687143eebe1a34ebb0edf9cd.png" alt="与或非门"></p>
-<h3 id="逻辑代数的基本定律"><a href="#逻辑代数的基本定律" class="headerlink" title="逻辑代数的基本定律"></a>逻辑代数的基本定律</h3><h4 id="常量间的计算"><a href="#常量间的计算" class="headerlink" title="常量间的计算"></a>常量间的计算</h4>
+<h3 id="逻辑代数的基本定律"><a href="#逻辑代数的基本定律" class="headerlink" title="逻辑代数的基本定律"></a>逻辑代数的基本定律</h3><h4 id="常量间的计算"><a href="#常量间的计算" class="headerlink" title="常量间的计算"></a>常量间的计算</h4><p><img src="https://img-blog.csdnimg.cn/7c1351b892134689ace41fdb108f7333.png" alt="img"></p>
+<h4 id="逻辑变量与常量的计算"><a href="#逻辑变量与常量的计算" class="headerlink" title="逻辑变量与常量的计算"></a>逻辑变量与常量的计算</h4><h5 id="0-1律"><a href="#0-1律" class="headerlink" title="0-1律"></a>0-1律</h5><p>$$<br>0+A&#x3D;A\<br>1+A&#x3D;1\<br>0 \cdot A&#x3D;0\<br>1 \cdot A &#x3D; A<br>$$</p>
+<h5 id="同一律"><a href="#同一律" class="headerlink" title="同一律"></a>同一律</h5><p>$$<br>A+A&#x3D;A\<br>A\cdot A &#x3D; A<br>$$</p>
+<h5 id="互补律"><a href="#互补律" class="headerlink" title="互补律"></a>互补律</h5><p>$$<br>A+\bar{A} &#x3D; 1\<br>A \cdot \bar{A} &#x3D; 0<br>$$</p>
+<h5 id="还原律"><a href="#还原律" class="headerlink" title="还原律"></a>还原律</h5><p>$$<br>\bar{\bar{A}} &#x3D; A<br>$$</p>
+<h4 id="逻辑代数的基本定律-1"><a href="#逻辑代数的基本定律-1" class="headerlink" title="逻辑代数的基本定律"></a>逻辑代数的基本定律</h4><h5 id="交换律"><a href="#交换律" class="headerlink" title="交换律"></a>交换律</h5><p>$$<br>A+B&#x3D;B+A\quad A\cdot B&#x3D; B \cdot A<br>$$</p>
+<h5 id="结合律"><a href="#结合律" class="headerlink" title="结合律"></a>结合律</h5><p>$$<br>(A+C)+C &#x3D; A+(B+C)\quad (A\cdot B)\cdot C&#x3D; A \cdot (B\cdot C)<br>$$</p>
+<h5 id="分配律"><a href="#分配律" class="headerlink" title="分配律"></a>分配律</h5><p>$$<br>A(B+C) &#x3D; AB+AC \quad A+BC&#x3D;(A+B)(A+C)<br>$$</p>
+<h5 id="摩根定律（反演律）"><a href="#摩根定律（反演律）" class="headerlink" title="摩根定律（反演律）"></a>摩根定律（反演律）</h5><p>$$<br>\overline{A\cdot B} &#x3D; \bar{A} + \bar{B} \quad \overline{A+ B} &#x3D; \bar{A} \cdot \bar{B}<br>$$</p>
+<p>证明等式$$A+BC&#x3D;(A+B)(A+C)$$：<br>$$<br>(A+B)(A+C)&#x3D;AA+AC+AB+BC&#x3D;A(1+C)+AB+BC\quad 注：1+C&#x3D;1\<br>&#x3D;A+AB+BC\<br>&#x3D;A(1+B)+BC&#x3D;A+BC<br>$$<br>证毕。</p>
+<h4 id="逻辑代数的常用公式"><a href="#逻辑代数的常用公式" class="headerlink" title="逻辑代数的常用公式"></a>逻辑代数的常用公式</h4><p>$$<br>AB+A\bar{B} &#x3D; A \qquad A+AB&#x3D;A\<br>A+\bar{A}B &#x3D; A + B<br>$$</p>
+<h5 id="冗余律"><a href="#冗余律" class="headerlink" title="冗余律"></a>冗余律</h5><p>$$<br>AB+\bar{A}C+BC &#x3D; AB+\bar{A}C\<br>\overline{AB+\bar{A}C} &#x3D; A\bar{B}+\bar{A}\bar{C}<br>$$</p>
+<h5 id="关于异或运算的一些公式"><a href="#关于异或运算的一些公式" class="headerlink" title="关于异或运算的一些公式"></a>关于异或运算的一些公式</h5><p>$$A⊕B&#x3D;\bar{A}B+A\bar{B}$$<br>$$<br>A⊕B&#x3D;B⊕A\<br>(A⊕B)⊕C&#x3D;A⊕(B⊕C)\<br>A\cdot (B⊕C)&#x3D;AB⊕AC\<br>A⊕1&#x3D;\bar{A}\<br>A⊕0&#x3D;A\<br>A⊕A&#x3D;0\<br>A⊕\bar{A}&#x3D;1\<br>$$<br>如果$$A⊕B&#x3D;C$$则有$$\begin{cases} A⊕C&#x3D;B\ B⊕C&#x3D;A \end{cases} $$</p>
+<h3 id="逻辑代数的基本规则"><a href="#逻辑代数的基本规则" class="headerlink" title="逻辑代数的基本规则"></a>逻辑代数的基本规则</h3><h4 id="代入规则"><a href="#代入规则" class="headerlink" title="代入规则"></a>代入规则</h4><blockquote>
+<p>将逻辑等式两边的某一变量均用同一个逻辑函数替代，等式仍然成立。</p>
+</blockquote>
+<p>例：$$A+\bar{A}B&#x3D;A+B$$</p>
+<p>$$A$$均用$$\bar{A}$$代替得：$$\bar{A}+AB&#x3D;\bar{A}+B$$等式仍然成立。</p>
+<h4 id="反演规则"><a href="#反演规则" class="headerlink" title="反演规则"></a>反演规则</h4><blockquote>
+<p>对任一逻辑函数式Y，将式子中的所有的”$$\cdot$$“换成“+”，“+”换成”$$\cdot$$“，“0”换成“1”，“1”换成“0”，原变量换成反变量，则得到原逻辑函数的反函数$$\bar{Y}$$，并不改变运算顺序。</p>
+</blockquote>
+<p>例：$$Y_1&#x3D;A(B+C)+CD$$，取反得：$$\bar{Y_1}&#x3D;(\bar{A}+\bar{B}\bar{C})(\bar{C}+\bar{D})$$</p>
+<h4 id="对偶规则"><a href="#对偶规则" class="headerlink" title="对偶规则"></a>对偶规则</h4><blockquote>
+<p>对任一逻辑函数式Y，将式子中的所有的”$$\cdot$$“换成“+”，“+”换成”$$\cdot$$“，“0”换成“1”，“1”换成“0”，，则得到原逻辑函数的对偶式$$Y’$$。</p>
+</blockquote>
+<h3 id="逻辑表达式"><a href="#逻辑表达式" class="headerlink" title="逻辑表达式"></a>逻辑表达式</h3><blockquote>
+<p>表示输出函数和输入变量逻辑关系的表达式称逻辑表达式，逻辑表达式一般根据真值表、卡诺图或逻辑图写出。</p>
+</blockquote>
+<h4 id="常见表达式"><a href="#常见表达式" class="headerlink" title="常见表达式"></a>常见表达式</h4><p>$$Y&#x3D;A\bar{B}+BC$$（与—或表达式）。</p>
+<p>$$Y&#x3D;(A+B)(\bar{B}+C)$$（或—与表达式）。</p>
+<p>$$Y&#x3D;\overline{\overline{A\bar{B}}\overline{BC}}$$（与非—与非表达式）。</p>
+<p>$$Y&#x3D;\overline{\overline{A+B}+\overline{\overline{B}+C}}$$（或非—或非表达式）。</p>
+<h4 id="最小项"><a href="#最小项" class="headerlink" title="最小项"></a>最小项</h4><blockquote>
+<p>在逻辑函数中，如果一个与项包含该逻辑函数的全部变量，且每个变量只出现一次，则称与项的最小项。对于n个变量的逻辑函数共有$$2^n$$个最小项。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/e388c1f33f034c3a8f2553fea3366447.png" alt="img"></p>
+<h5 id="最小项的基本性质"><a href="#最小项的基本性质" class="headerlink" title="最小项的基本性质"></a>最小项的基本性质</h5><ol>
+<li>对于变量的</li>
+</ol>
+
                 
             </div>
             <hr/>
