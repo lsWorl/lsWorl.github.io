@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-14
+                    2023-10-15
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.9k
+                    2.5k
                 </div>
                 
 
@@ -590,8 +590,36 @@
 </blockquote>
 <p><img src="https://img-blog.csdnimg.cn/e388c1f33f034c3a8f2553fea3366447.png" alt="img"></p>
 <h5 id="最小项的基本性质"><a href="#最小项的基本性质" class="headerlink" title="最小项的基本性质"></a>最小项的基本性质</h5><ol>
-<li>对于变量的</li>
+<li>对于变量的任一组取值，只有一个最小项的值为1。</li>
+<li>不同的最小项，使其值为1的那组变量取值也不同。</li>
+<li>对于变量的同一组取值，任意两个最小项<strong>与</strong>的结果为0.</li>
+<li>对于变量的同一组取值，全部最小项逻辑<strong>或</strong>的结果为1.</li>
 </ol>
+<h5 id="最小项编号"><a href="#最小项编号" class="headerlink" title="最小项编号"></a>最小项编号</h5><p>最小项用$$m_i$$表示，通常用十进制数作最小项的下标。</p>
+<p>编号方法是：将最小项中的<strong>原变量当作1，反变量当作0</strong>，从而得二进制，再将二进制转为对应的十进制数即为最小项的编号。</p>
+<p>例：</p>
+<p>$$\overline{A}BC$$的二进制$${011}_2$$，转为十进制为3，则下标就为3，最小项就是$$m_3$$</p>
+<h5 id="最小项表达式（标准与或表达式）"><a href="#最小项表达式（标准与或表达式）" class="headerlink" title="最小项表达式（标准与或表达式）"></a>最小项表达式（标准与或表达式）</h5><blockquote>
+<p>任何逻辑函数都是由其变量的若干个最小项构成，都可以表示成为最小项之和的形式。</p>
+<p>在与或表达式中，有时与项并不是最小项，可利用$$\overline{A}+A&#x3D;1$$的形式补充缺少的变量，将逻辑函数变成最小项之和的形式。</p>
+</blockquote>
+<p>例：</p>
+<p>$$Y&#x3D;F(A,B,C)&#x3D;AB+\overline{A}C$$，进行增项</p>
+<p>使$$AB+\overline{A}C&#x3D;AB(\overline{C}+C)+\overline{A}C(\overline{B}+B)$$，最后展开即可得最小项：</p>
+<p>$$AB\overline{C}+ABC+\overline{A}C\overline{B}+\overline{A}CB$$</p>
+<h3 id="逻辑函数的化简"><a href="#逻辑函数的化简" class="headerlink" title="逻辑函数的化简"></a>逻辑函数的化简</h3><p>不同形式逻辑式由不同的最简式，一般先求取最简与或式，然后通过变换得到所需最简式。</p>
+<h4 id="最简与或式"><a href="#最简与或式" class="headerlink" title="最简与或式"></a>最简与或式</h4><ol>
+<li>乘积项（即与项）的个数最少，使与门个数最少。</li>
+<li>每个乘积项中的变量数最少，使与门输入端数最少，</li>
+</ol>
+<h4 id="最简与非-与非式"><a href="#最简与非-与非式" class="headerlink" title="最简与非-与非式"></a>最简与非-与非式</h4><ol>
+<li>非号个数最少，使与非门个数最少。</li>
+<li>每个非号中的变量数最少，使与非门的输入端数最少。</li>
+</ol>
+<h4 id="公式化简法"><a href="#公式化简法" class="headerlink" title="公式化简法"></a>公式化简法</h4><h5 id="并项法"><a href="#并项法" class="headerlink" title="并项法"></a>并项法</h5><p>运用$$AB+A\overline{B}&#x3D;A(B+\overline{B})&#x3D;A$$，将两项合并为一项，并消去一个变量。</p>
+<h5 id="吸收法"><a href="#吸收法" class="headerlink" title="吸收法"></a>吸收法</h5><p>运用$$A+AB&#x3D;A(1+B)&#x3D;A$$和$$AB+\overline{AC}+BC&#x3D;AB+\overline{AC}$$，消去多余的与项。</p>
+<h5 id="消去法"><a href="#消去法" class="headerlink" title="消去法"></a>消去法</h5><p>运用$$A+\overline{A}B&#x3D;A+C$$or $$\overline{A}+AB &#x3D; \overline{A}+B$$，消去多余因子。</p>
+<h5 id="配项法"><a href="#配项法" class="headerlink" title="配项法"></a>配项法</h5><p>在函数某一项乘$$A+\overline{A}&#x3D;1$$，将一项展开两项，或用$$AB+\overline{A}C&#x3D;AB+\overline{A}C+BC$$，增加冗余项。</p>
 
                 
             </div>
