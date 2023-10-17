@@ -4,19 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="电路-电阻电路的等效变换, LsWorld">
-    <meta name="description" content="
-
-电路的等效变换
-在了解电路的等效变换前先了解什么是电阻电路。
-电阻电路就是仅由电源和线性电阻构成的电路。
-分析方法：
-
-欧姆定律和基尔霍夫定律来分析。
-等效变换的方法，也称化简。
+    <meta name="keywords" content="数据结构-图, LsWorld">
+    <meta name="description" content="图的基本概念图的定义
+图G（Graph）由顶点集V（Vertex）和边集E（Edge）组成，记为$$G&amp;#x3D;(V,E)$$，其中V(G)表示图G中顶点的有限非空集：E（G）表示图G中顶点之间的关系（边）集合，如图1-1。
 
 
-电路的等效变换基于两端电路：两端电路即任何一个复杂的">
+注：
+线">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -30,7 +24,7 @@
 
     
 
-    <title>电路-电阻电路的等效变换 | LsWorld</title>
+    <title>数据结构-图 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -320,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">电路-电阻电路的等效变换</h1>
+                    <h1 class="description center-align post-title">数据结构-图</h1>
                 </div>
             </div>
         </div>
@@ -441,8 +435,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E7%94%B5%E8%B7%AF/">
-                                <span class="chip bg-color">电路</span>
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                                <span class="chip bg-color">数据结构</span>
                             </a>
                         
                     </div>
@@ -453,8 +447,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
-                                电路
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
+                                数据结构
                             </a>
                         
                     </div>
@@ -466,14 +460,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-10-10
+                    2023-10-17
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-15
+                    2023-10-17
                 </div>
                 
 
@@ -500,69 +494,57 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <meta name="referrer" content="no-referrer"/>
-
-<h3 id="电路的等效变换"><a href="#电路的等效变换" class="headerlink" title="电路的等效变换"></a>电路的等效变换</h3><blockquote>
-<p>在了解电路的等效变换前先了解什么是电阻电路。</p>
-<p>电阻电路就是仅由电源和线性电阻构成的电路。</p>
-<p>分析方法：</p>
+                <h3 id="图的基本概念"><a href="#图的基本概念" class="headerlink" title="图的基本概念"></a>图的基本概念</h3><h4 id="图的定义"><a href="#图的定义" class="headerlink" title="图的定义"></a>图的定义</h4><blockquote>
+<p>图G（Graph）由顶点集V（Vertex）和边集E（Edge）组成，记为$$G&#x3D;(V,E)$$，其中V(G)表示图G中顶点的有限非空集：E（G）表示图G中顶点之间的关系（边）集合，如图1-1。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/0a338af844154f359093b0e2f0da2120.png" alt="1-1"></p>
+<p><strong>注：</strong></p>
+<p>线性表可以是空表，树可以是空树，但图不能是空图。图可以没有边，但不能没有顶点。</p>
+<h5 id="有向图"><a href="#有向图" class="headerlink" title="有向图"></a>有向图</h5><p>有向图就是点与点之间相互有方向之间的关系，若设v,w为顶点，而&lt;v,w&gt;为从顶点v到顶点w，则有向图中$$&lt;v,w&gt;\neq&lt;w,v&gt;$$。</p>
+<p><img src="https://img-blog.csdnimg.cn/1bf9eed4f72f4fa0abf3c67e21fbe0c1.png" alt="1-2"></p>
+<h5 id="无向图"><a href="#无向图" class="headerlink" title="无向图"></a>无向图</h5><p>在无向图中，若设v,w为顶点，而&lt;v,w&gt;为从顶点v到顶点w，则有$$&lt;v,w&gt;&#x3D;&lt;w,v&gt;$$。</p>
+<h5 id="简单图、多重图"><a href="#简单图、多重图" class="headerlink" title="简单图、多重图"></a>简单图、多重图</h5><p>简单图就是满足以下条件的图：</p>
+<ol>
+<li>不存在重复边。</li>
+<li>不存在顶点到自身的边</li>
+</ol>
+<p>多重图就是图中某两个结点的边数多余一条，又允许顶点通过同一条边和自己关联，则G为多重图。</p>
+<p><img src="https://img-blog.csdnimg.cn/748889253e4c4db58cefb8fa4c02d076.png" alt="1-3"></p>
+<h5 id="顶点的度、入度、出度"><a href="#顶点的度、入度、出度" class="headerlink" title="顶点的度、入度、出度"></a>顶点的度、入度、出度</h5><p>对于无向图：顶点v的度是指依附于该顶点的边的条数，记为TD（v）。</p>
+<p>在具有n个顶点、e条边的无向图中，无向图的全部顶点度的和等于边数的2倍：<br>$$<br>\sum_{i&#x3D;1}^nTD(v_i)&#x3D;2e<br>$$<br>对于有向图：</p>
+<p>入度是以顶点v为终点的有向边的数目，记为ID(v)。</p>
+<p>出度是以顶点v为起点的有向边的数目，记为OD(v)。</p>
+<p>顶点v的度等于其入度和出度之和，即$$TD(v)&#x3D;ID(v)+OD(v)$$。</p>
+<p>在具有n个顶点、e条边的有向图中，<br>$$<br>\sum_{i&#x3D;1}^nID(v_i)&#x3D;\sum_{i&#x3D;1}^nOD(v_i)&#x3D;e<br>$$<br>即出度和入度的数量相等且等于边数。</p>
+<h5 id="路径、回路、距离"><a href="#路径、回路、距离" class="headerlink" title="路径、回路、距离"></a>路径、回路、距离</h5><p>路径：顶点$$v_p$$到顶点$$v_q$$之间的一条路径是指顶点序列，在<strong>有向图中的路径也是有向的</strong>。</p>
+<p>回路：第一个顶点和最后一个顶点相同的路径称为回路或环。</p>
+<p>简单路径：在路径序列中，顶点不重复出现的路径。</p>
+<p>简单回路：除第一个顶点和最后一个顶点外，其余顶点不重复出现的回路称为简单回路。</p>
+<p>路径长度：路径上边的数目。</p>
+<p>点到点距离：顶点u到到顶点v的<strong>最短路径</strong>称为u到v的距离，若不存在路径，则记路径为无穷。</p>
+<h5 id="连通、连通图、强连通图"><a href="#连通、连通图、强连通图" class="headerlink" title="连通、连通图、强连通图"></a>连通、连通图、强连通图</h5><p>连通：</p>
 <ul>
-<li>欧姆定律和基尔霍夫定律来分析。</li>
-<li>等效变换的方法，也称化简。</li>
+<li>无向图中若顶点v到w有路径存在，则v和w是<strong>连通</strong>。</li>
+<li>有向图中，若顶点v到w和从w到v都有路径，则v和w是<strong>强连通</strong>。</li>
 </ul>
-</blockquote>
-<p>电路的等效变换基于两端电路：两端电路即任何一个复杂的电路, 向外引出两个端钮，且从一个端子流入的电流等于从另一端子流出的电流，则称这一电路为二端网络 (或一端口网络)，如1-1所示。</p>
-<p><img src="https://img-blog.csdnimg.cn/f00da5bbf95c4482bccf96f81f5abcfd.png" alt="1-1"></p>
-<p><strong>两端电路等效的概念</strong></p>
-<p>两个两端电路，端口具有相同的电压、电流关系,则称它们是等效的电路，即对于两个两端电路，他们电压和电流大小相同，参考方向也相同，即可将两个电路互相进行交换，并<strong>对外等效</strong>，如1-2图所示。</p>
-<p><img src="https://img-blog.csdnimg.cn/6d0963c86d21419c9f5fad18a6bb6fe4.png" alt="1-2"></p>
-<p><strong>电路等效变换的条件</strong></p>
-<p>两电路具有相同的VCR，即电压电流电阻值相同即可等效变换。</p>
-<h3 id="电阻的串联与并联"><a href="#电阻的串联与并联" class="headerlink" title="电阻的串联与并联"></a>电阻的串联与并联</h3><h4 id="电阻的串联"><a href="#电阻的串联" class="headerlink" title="电阻的串联"></a>电阻的串联</h4><blockquote>
-<p>电阻串联的性质：</p>
-<ol>
-<li>电流相等，流过同一电流。</li>
-<li>总电压等于各串联电阻的电压之和。</li>
-<li>串联总电阻为电阻值相加。</li>
-<li>电压之比等于电阻之比（串联分压）。</li>
-</ol>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/ffb51e3bd9eb40ea8f1bf3b12950a78a.png" alt="2-1"></p>
-<h4 id="电阻的并联"><a href="#电阻的并联" class="headerlink" title="电阻的并联"></a>电阻的并联</h4><blockquote>
-<p>电阻并联的性质：</p>
-<ol>
-<li>并联电路电压相等。</li>
-<li>总电流等于各串联电阻的电流之和。</li>
-<li>电流之比等于电阻的反比比（并联分流）。</li>
-</ol>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/61febf459ce44850882c8d937a4d4388.png" alt="2-2"></p>
-<p>并联求总电阻公式：<br>$$<br>R_总 &#x3D;  \frac{1}{\frac{1}{R_1} + \frac{1}{R_2} + \dots + \frac{1}{R_n}}<br>$$</p>
-<h3 id="电阻的Y形连接和∆形连接的等效变换"><a href="#电阻的Y形连接和∆形连接的等效变换" class="headerlink" title="电阻的Y形连接和∆形连接的等效变换"></a>电阻的Y形连接和∆形连接的等效变换</h3><p>Y形和∆形如图3-1和图3-2所示。</p>
-<p><img src="https://img-blog.csdnimg.cn/7cdcbc5ba4e343559fe3b9b3e70f6937.png" alt="3-1"></p>
-<p><img src="https://img-blog.csdnimg.cn/62150131e36041f3b938b1673a4215c4.png" alt="3-2"></p>
-<h4 id="电阻的Y三角转换："><a href="#电阻的Y三角转换：" class="headerlink" title="电阻的Y三角转换："></a>电阻的Y三角转换：</h4><p><strong>从三角形变成Y形</strong></p>
-<p>由图3-2转图3-1，电阻的等效变换可以变成对外等效，所以可以获得对外等效电阻的公式：<br>$$<br>R_1 &#x3D; \frac{R_{12}R_{31}}{R_{12}+R_{23}+R_{31}}\<br>R_2 &#x3D; \frac{R_{12}R_{23}}{R_{12}+R_{23}+R_{31}}\<br>R_3 &#x3D; \frac{R_{23}R_{31}}{R_{12}+R_{23}+R_{31}}\<br>$$<br><strong>Y形变成三角形</strong></p>
-<p>由图3-1转图3-2，电阻的等效变换可以变成对外等效，所以可以获得对外等效电阻的公式：<br>$$<br>R_{12} &#x3D; \frac{R_{1}R_{2}+R_2R_3+R_3R_1}{R_3}\<br>R_{23} &#x3D; \frac{R_{1}R_{2}+R_2R_3+R_3R_1}{R_1}\<br>R_{31} &#x3D; \frac{R_{1}R_{2}+R_2R_3+R_3R_1}{R_2}\<br>$$</p>
-<h3 id="电压源、电流源的串联和并联"><a href="#电压源、电流源的串联和并联" class="headerlink" title="电压源、电流源的串联和并联"></a>电压源、电流源的串联和并联</h3><h4 id="理想电压源"><a href="#理想电压源" class="headerlink" title="理想电压源"></a>理想电压源</h4><h5 id="串联情况"><a href="#串联情况" class="headerlink" title="串联情况"></a>串联情况</h5><p><img src="https://img-blog.csdnimg.cn/04988be94eb048bdbe0d4956b6c471bf.png" alt="4-1"></p>
-<p>图4-1为n个电压源的串联（参考方向相同，若有些参考方向相反则前面为负号），可以用一个电压源等效替代，且这个等效电压源激励电压为：<br>$$<br>u_s &#x3D; u_{s1} + u_{s2} + \dots + u_{sn} &#x3D; \sum_{k&#x3D;1}^{n}{u_{sk}}<br>$$<br>理想电压源等效的电压源之值等于所有电压源的代数和。</p>
-<h5 id="并联情况（仅当每个电压源电压相同）"><a href="#并联情况（仅当每个电压源电压相同）" class="headerlink" title="并联情况（仅当每个电压源电压相同）"></a>并联情况（仅当每个电压源电压相同）</h5><p><img src="https://img-blog.csdnimg.cn/7ed30ae4d3c7454fa0b4d9ee1386e8ed.png" alt="img"></p>
-<h4 id="理想电流源"><a href="#理想电流源" class="headerlink" title="理想电流源"></a>理想电流源</h4><h5 id="并联情况"><a href="#并联情况" class="headerlink" title="并联情况"></a>并联情况</h5><p><img src="https://img-blog.csdnimg.cn/064f0552f2724f23888492a5fd04e759.png" alt="4-2"></p>
-<p>图4-2为n个电压源的并联（参考方向相同，若有些参考方向相反则前面为负号），可以用一个电压源等效替代，且这个等效电压源电流为：<br>$$<br>i_s &#x3D; i_{s1} + i_{s2} + \dots + i_{sn} &#x3D; \sum_{k&#x3D;1}^ni_{sk}<br>$$<br>理想电流源等效的电流源之值等于所有电流源的代数和。</p>
-<h5 id="串联情况-1"><a href="#串联情况-1" class="headerlink" title="串联情况"></a>串联情况</h5><p><img src="https://img-blog.csdnimg.cn/8f37b5748cb94722ba286a3859b64a66.png" alt="4-3"></p>
-<p>串联情况下电流处处相等，所以可以等效为电流为i的电流源。</p>
-<h4 id="实际电压源与电流源间的相互转换"><a href="#实际电压源与电流源间的相互转换" class="headerlink" title="实际电压源与电流源间的相互转换"></a>实际电压源与电流源间的相互转换</h4><blockquote>
-<p>仅当电压源和电流源及电阻满足以下条件可进行相互转换：</p>
-<ol>
-<li>两种实际电源的内阻相同，及下图4-4中$$R_S&#x3D;G_S$$</li>
-<li>电压源U与电流源I满足条件：$$U_S&#x3D;I_SR_S$$（电压源电压等于电流源电流及电流源的电阻）。</li>
-<li>两种电源模型流出电流的方向相同。</li>
-</ol>
-</blockquote>
-<h5 id="电压源变换为电流源"><a href="#电压源变换为电流源" class="headerlink" title="电压源变换为电流源"></a>电压源变换为电流源</h5><p><img src="https://img-blog.csdnimg.cn/49fdfbc4864146cf93ec9f2bf951d9fc.png" alt="4-4"></p>
-<p>转换公式为：<br>$$<br>i_S &#x3D; \frac{u_S}{R_S} \quad G_S &#x3D; R_S<br>$$</p>
-<h5 id="电流源变换为电压源"><a href="#电流源变换为电压源" class="headerlink" title="电流源变换为电压源"></a>电流源变换为电压源</h5><p><img src="https://img-blog.csdnimg.cn/dd4727e68a3645fe88c6c7f0590b944d.png" alt="4-5"></p>
-<p>转换公式为：<br>$$<br>u_S &#x3D;i_SG_S \quad R_S &#x3D; G_S<br>$$<br><strong>无论电流源转电压源还是电压源转电流源，转换过后电压或电流方向都与原先的相反，流出的方向相同！</strong></p>
+<p>连通图：若任意两个顶点都是连通的，则称为连通图，否则为非连通图。</p>
+<p>强连通图：若图中任意一对顶点都是强连通，则称图为强连通图。</p>
+<p><strong>注：</strong></p>
+<p>对于n个顶点的<strong>无向图</strong>G，</p>
+<p>若G是连通图，则<strong>最少有n-1条边</strong>。</p>
+<p>若G是非连通图，则<strong>最多</strong>可能有$$C_{n-1}^2$$条边。</p>
+<p>对于n个顶点<strong>有向图</strong>G，</p>
+<p>若G是强连通图，则<strong>最少</strong>有n条边（形成回路）。</p>
+<h5 id="子图"><a href="#子图" class="headerlink" title="子图"></a>子图</h5><p>如图1-4所示，右图的图是左图的子集，即称为子图。</p>
+<p><img src="https://img-blog.csdnimg.cn/73012102bf1b4223b52aebc393bfa115.png" alt="1-4"></p>
+<p>而若有满足V(G’)&#x3D;V(G)的子图G’，则称其为G的生成子图，图1-5即为生成子图，相比原图少了些边。</p>
+<p><img src="https://img-blog.csdnimg.cn/f975507e562d4152832726a575880aab.png" alt="1-5"></p>
+<h5 id="连通分量、强连通分量、生成树、生成森林"><a href="#连通分量、强连通分量、生成树、生成森林" class="headerlink" title="连通分量、强连通分量、生成树、生成森林"></a>连通分量、强连通分量、生成树、生成森林</h5><p>无向图中的极大连图子图（子图必须连通，同时保留尽可能多的边）称为连通分量。</p>
+<p>有向图中的极大强连通子图（子图必须强连通，同时保留尽可能多的边）称为有向图的强连通分量。</p>
+<p>连通图的<strong>生成树</strong>是包含图中全部顶点的极小连通子图。</p>
+<p>在<strong>非连通图</strong>中，连通分量的生成树构成了非连通图的生成森林。</p>
+<h5 id="边的权、带权图-x2F-网"><a href="#边的权、带权图-x2F-网" class="headerlink" title="边的权、带权图&#x2F;网"></a>边的权、带权图&#x2F;网</h5><p>边的权：在一个图中，每条边都可以标上具有某种含义的数值，该数值称为该边的权值。</p>
+<p>带权图&#x2F;网：边上带有权值的图称为带权图，也称网。</p>
 
                 
             </div>
@@ -589,7 +571,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/10/10/dian-lu-dian-zu-dian-lu-de-deng-xiao-bian-huan/">http://example.com/2023/10/10/dian-lu-dian-zu-dian-lu-de-deng-xiao-bian-huan/</a>
+                    <a href="http://example.com/2023/10/17/shu-ju-jie-gou-tu/">http://example.com/2023/10/17/shu-ju-jie-gou-tu/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -627,8 +609,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E7%94%B5%E8%B7%AF/">
-                                    <span class="chip bg-color">电路</span>
+                                <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                                    <span class="chip bg-color">数据结构</span>
                                 </a>
                             
                         </div>
@@ -942,9 +924,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/10/17/shu-ju-jie-gou-tu/">
                     <div class="card-image">
@@ -962,9 +945,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-10-17
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-17
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -977,6 +960,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -995,13 +979,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/10/07/shu-ju-jie-gou-shu-yu-er-cha-shu/">
+                <a href="/2023/10/10/dian-lu-dian-zu-dian-lu-de-deng-xiao-bian-huan/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="数据结构-树与二叉树">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="电路-电阻电路的等效变换">
                         
-                        <span class="card-title">数据结构-树与二叉树</span>
+                        <span class="card-title">电路-电阻电路的等效变换</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1012,14 +996,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-07
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-10
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
-                                    数据结构
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                    电路
                                 </a>
                             
                             
@@ -1029,8 +1013,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-                        <span class="chip bg-color">数据结构</span>
+                    <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                        <span class="chip bg-color">电路</span>
                     </a>
                     
                 </div>

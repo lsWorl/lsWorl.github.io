@@ -465,14 +465,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-15
+                    2023-10-17
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.3k
+                    6.5k
                 </div>
                 
 
@@ -924,6 +924,96 @@
 <blockquote>
 <p>在含有n个带权叶结点的二叉树中，其中带权路径长度(WPL)最小的二叉树称为哈夫曼树，也称最优二叉树。</p>
 </blockquote>
+<h5 id="哈夫曼树的构造"><a href="#哈夫曼树的构造" class="headerlink" title="哈夫曼树的构造"></a>哈夫曼树的构造</h5><p>给定n个权值的结点，构造哈夫曼树的算法如下：</p>
+<ol>
+<li>将这n个结点分别作为n棵仅含一个结点的二叉树，构成森林F。</li>
+<li>构造一个新结点，从F中选取两棵根结点权值最小的数作为新结点的左、右子树，并且将新结点的权值置为左、右子树上根节点的权值之和。</li>
+<li>从F中删除刚才选出的两棵树，同时将新得到的树加入F中。</li>
+<li>重复2、3步骤，直到F中只剩下一棵树为止。</li>
+</ol>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/b32d21fbd2c9444dbfb7f5ff6d802a0c.png" alt="6-2"></p>
+<p>将6-2中权值最小的两个结点（a和c或a和e）合成一个树，并将合成结点的权值相加作为根节点的权值，即到图6-3。</p>
+<p><img src="https://img-blog.csdnimg.cn/f45cedceab7148fdb410924085edb32f.png" alt="6-3"></p>
+<p>然后再将合成的树与新的权值最小的结点进行组合，获得一个新树。</p>
+<p><img src="https://img-blog.csdnimg.cn/60539023c61f45ed84873905a4d176ec.png" alt="6-4"></p>
+<p>如此往复即可合成一个哈夫曼树。</p>
+<p><img src="https://img-blog.csdnimg.cn/d505d8552e7642ab9d769ec77ac7749b.png" alt="6-5"></p>
+<p><strong>注：</strong></p>
+<ol>
+<li>每个初始结点最终都成为叶结点，且权值越小的结点到根结点的路径长度越大。</li>
+<li>哈夫曼树的结点总数为2n-1。</li>
+<li>哈夫曼树中不存在度为1的结点。</li>
+<li>哈夫曼树并不唯一，但带权路径长度WPL必然相同且最优。</li>
+</ol>
+<h5 id="哈夫曼编码"><a href="#哈夫曼编码" class="headerlink" title="哈夫曼编码"></a>哈夫曼编码</h5><blockquote>
+<p>在数据通信中为了更高效的传播数据，可使用<strong>可变长度编码</strong>来对频率高的字符赋以短编码，而对频率低的字符用长编码，起到压缩数据的效果。而在这中就可以使用哈夫曼树来进行编码。</p>
+</blockquote>
+<p>例：</p>
+<p>假设有1组A,B,C,D需要传播，且A出现10次，B出现8次，C出现80次，D出现2次。此时A的权值就是10，B的权值为8，C的权值为80，D的权值为2。就可以根据权值来构造哈夫曼树，来寻求WPL最优，由此可以构造出图6-6的哈夫曼树，并将左子树路径设为0，右子树设为1。</p>
+<p><img src="https://img-blog.csdnimg.cn/409d18ee528e44c2a850f05da03d85e0.png" alt="6-6"></p>
+<p>则若想要传播数据A、B、C、D相应的二进制为：</p>
+<p>A:10	B:111	C:0	D:110。</p>
+<p>即可完成数据传送，且$$WPL&#x3D;80<em>1+10</em>2+3<em>2+8</em>3&#x3D;130$$。</p>
+<h4 id="并查集"><a href="#并查集" class="headerlink" title="并查集"></a>并查集</h4><p>并查集是一种简单的集合表示。它支持以下三种操作：</p>
+<ol>
+<li><code>Initial(S)</code>：将集合S中的每个元素都初始化为只有一个单集合的子集合。</li>
+<li><code>Union(S,Root1,Root2)</code>：把集合S中的<code>Root2</code>并入子集合<code>Root1</code>。</li>
+<li><code>Find(S,x)</code>：查找集合S中单元素x所在的子集合，并返回集合的根结点。</li>
+</ol>
+<p>并查集可以使用树的双亲表示法，用双亲表示法可以很好的找到元素属于哪个集合和合并集合。并查集本身用一个<code>int[]</code>即可实现。</p>
+<p>并查集的结构定义如下：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">SIZE</span> <span class="token expression"><span class="token number">100</span></span></span>
+<span class="token keyword">int</span> UFSets<span class="token punctuation">[</span>SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span> </code></pre>
+
+<p>在<code>UFSets[SIZE]</code>集合中根节点和结点数通过负数来进行表示。</p>
+<p>例：$$S_1&#x3D;{0,6,7,8}\quad S_2&#x3D;{1,4,9}\quad S_3&#x3D;{2,3,5}\quad$$</p>
+<p>使用<code>UFSets[SIZE]</code>来表示则为<code>[-4,-3,-3,2,1,2,0,0,0,1]</code>。</p>
+<p>集合中的元素为数组的下标，而数组的实际内容为集合的双亲。<code>UFSETS[0]</code>的-4则代表集合1中有4个元素且为根结点，<code>UFSETS[1]</code>的-3代表集合2有3个元素且为根节点，以此可以推出所有结点所在的位置。</p>
+<p>Find操作：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 传入的x为元素，即并查集中的数组下标</span>
+<span class="token keyword">int</span> <span class="token function">Find</span><span class="token punctuation">(</span><span class="token keyword">int</span> S<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">int</span> x<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>S<span class="token punctuation">[</span>x<span class="token punctuation">]</span> <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    x <span class="token operator">=</span> S<span class="token punctuation">[</span>x<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>Union操作：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// 将两树合并，并横向合并不增加树的高度 root为数组下标</span>
+<span class="token keyword">void</span> <span class="token function">Union</span><span class="token punctuation">(</span><span class="token keyword">int</span> S<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">int</span> Root1<span class="token punctuation">,</span> <span class="token keyword">int</span> Root2<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>Root1<span class="token operator">==</span>Root2<span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>S<span class="token punctuation">[</span>Root2<span class="token punctuation">]</span> <span class="token operator">></span> S<span class="token punctuation">[</span>Root1<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">//Root2结点数更少</span>
+  <span class="token punctuation">&#123;</span>
+    S<span class="token punctuation">[</span>Root1<span class="token punctuation">]</span><span class="token operator">+=</span>S<span class="token punctuation">[</span>Root2<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//累加结点数</span>
+    S<span class="token punctuation">[</span>Root2<span class="token punctuation">]</span> <span class="token operator">=</span> Root1<span class="token punctuation">;</span> <span class="token comment">//小树合并到大树 将S数组中Root1的下标值赋值给S[Root2]</span>
+  <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
+    S<span class="token punctuation">[</span>Root2<span class="token punctuation">]</span><span class="token operator">+=</span>S<span class="token punctuation">[</span>Root1<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//累加结点数</span>
+    S<span class="token punctuation">[</span>Root1<span class="token punctuation">]</span> <span class="token operator">=</span> Root2<span class="token punctuation">;</span> <span class="token comment">//小树合并到大树 将S数组中Root2的下标值赋值给S[Root1]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="对Find操作进行优化"><a href="#对Find操作进行优化" class="headerlink" title="对Find操作进行优化"></a>对Find操作进行优化</h5><p>对于长度过长的树，可以进行压缩路径来使树的高度不超过<code>O(a(n))</code>。a(n)是一个增长很缓慢的函数。</p>
+<p>压缩路径具体实现：先通过循环找到根节点，后将所有搜索经过的结点都指向根节点即可。</p>
+<p><img src="https://img-blog.csdnimg.cn/a1da08d342a64c2a8b72c0299f9aa06a.png" alt="6-7"></p>
+<p>代码实现：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//x为数组下标 </span>
+<span class="token keyword">int</span> <span class="token function">Find</span><span class="token punctuation">(</span><span class="token keyword">int</span> S<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token keyword">int</span> x<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> root <span class="token operator">=</span> x<span class="token punctuation">;</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span>S<span class="token punctuation">[</span>root<span class="token punctuation">]</span><span class="token operator">>=</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment">//循环找到根</span>
+        root <span class="token operator">=</span> S<span class="token punctuation">[</span>root<span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token keyword">while</span><span class="token punctuation">(</span>x<span class="token operator">!=</span>root<span class="token punctuation">)</span><span class="token punctuation">&#123;</span> <span class="token comment">//压缩路径</span>
+       <span class="token keyword">int</span> t <span class="token operator">=</span> S<span class="token punctuation">[</span>x<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//保存x的父节点</span>
+       S<span class="token punctuation">[</span>x<span class="token punctuation">]</span> <span class="token operator">=</span> root<span class="token punctuation">;</span> <span class="token comment">//将x直接挂到根节点下</span>
+       x <span class="token operator">=</span> t<span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
 
                 
             </div>
