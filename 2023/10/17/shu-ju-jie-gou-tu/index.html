@@ -467,14 +467,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-17
+                    2023-10-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    2.3k
                 </div>
                 
 
@@ -546,6 +546,82 @@
 <h5 id="边的权、带权图-x2F-网"><a href="#边的权、带权图-x2F-网" class="headerlink" title="边的权、带权图&#x2F;网"></a>边的权、带权图&#x2F;网</h5><p>边的权：在一个图中，每条边都可以标上具有某种含义的数值，该数值称为该边的权值。</p>
 <p>带权图&#x2F;网：边上带有权值的图称为带权图，也称网。</p>
 <p>带权路径长度：当图是带权图时，一条路径上所有边的权值之和，称为该路径的带权路径长度。</p>
+<h3 id="图的存储及基本操作"><a href="#图的存储及基本操作" class="headerlink" title="图的存储及基本操作"></a>图的存储及基本操作</h3><h4 id="邻接矩阵法"><a href="#邻接矩阵法" class="headerlink" title="邻接矩阵法"></a>邻接矩阵法</h4><blockquote>
+<p>邻接矩阵存储就是用一个一维数组存储顶点的信息，用二维数组存储图中边的信息（即各顶点之间的邻接关系），存储顶点的邻接关系的二维数组称邻接矩阵。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/fe553480607345dba6623b7a0ea6171f.png" alt="2-1"></p>
+<p>图2-1右边的矩阵就是无向图使用邻接矩阵后所在内存中存储的结构。</p>
+<p>获取某个结点的度只需对所在<strong>行或列</strong>进行遍历，获取到的<strong>非零元素总和</strong>即为结点的度。</p>
+<p><img src="https://img-blog.csdnimg.cn/303960bab8c2422d90701c723c895a9b.png" alt="2-2"></p>
+<p>图2-2是有向图用邻接矩阵后所在内存中存储的结构。</p>
+<p>获取某个结点的<strong>出度</strong>是对所在<strong>行</strong>进行遍历获取非零元素总和，获取<strong>入度</strong>则是对所在<strong>列</strong>进行遍历获取非零元素总和。</p>
+<p>邻接矩阵存储结构定义：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MaxVertexNum</span> <span class="token expression"><span class="token number">100</span> </span><span class="token comment">//顶点数目最大值</span></span>
+<span class="token keyword">typedef</span> <span class="token keyword">char</span> VertexType<span class="token punctuation">;</span> <span class="token comment">//顶点的数据类型</span>
+<span class="token keyword">typedef</span> <span class="token keyword">int</span> EdgeType<span class="token punctuation">;</span> <span class="token comment">//带权图中边上权值的数据类型</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>
+  VertexType Vex<span class="token punctuation">[</span>MaxVertexNum<span class="token punctuation">]</span><span class="token punctuation">;</span>  <span class="token comment">//顶点表</span>
+  EdgeType Edge<span class="token punctuation">[</span>MaxVertexNum<span class="token punctuation">]</span><span class="token punctuation">[</span>MaxVertexNum<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//邻接矩阵，边表</span>
+  <span class="token keyword">int</span> vexnum<span class="token punctuation">,</span>arcnum<span class="token punctuation">;</span>  <span class="token comment">//图的当前顶点数和弧度</span>
+<span class="token punctuation">&#125;</span>MGraph<span class="token punctuation">;</span></code></pre>
+
+
+
+<h5 id="邻接矩阵存储法的特点"><a href="#邻接矩阵存储法的特点" class="headerlink" title="邻接矩阵存储法的特点"></a>邻接矩阵存储法的特点</h5><ol>
+<li>无向图的邻接矩阵一定是一个对称矩阵且唯一。因此，在实际存储邻接矩阵只需存储上（或下）三角矩阵的元素。</li>
+<li>对于无向图，邻接矩阵的第i行（或第i列）非零元素（或非∞元素）的个数正好是顶点i的度TD(v)。</li>
+<li>对于有向图，邻接矩阵的第i行非零元素（或非∞元素）的个数正好是顶点i的出度OD(v)；第i列非零元素（或非∞元素）的个数正好是顶点i的入度ID(v)。</li>
+<li>用邻接矩阵存储图，很容易确定图中任意两个顶点之间是否有边相连。但是，要确定图有多少条边，则必须按行、按列对每个元素进行检测。</li>
+<li>稠密图适合用邻接矩阵的存储表示。</li>
+<li>设图G的邻接矩阵为A，$$A^n$$的元素$$A^n[i][j]$$等于顶点i到顶点j的长度为n的路径数目。</li>
+</ol>
+<h4 id="邻接表法"><a href="#邻接表法" class="headerlink" title="邻接表法"></a>邻接表法</h4><p>邻接表法结合了顺序存储和链式存储，可以减少使用邻接矩阵对空间的浪费。</p>
+<p>邻接表法是将图中的每个顶点建立一个单链表，第i个单链表中的结点表示依附于顶点v的边（对于有向图则是以顶点v为尾的弧），这个单链表就称为顶点v的边表。</p>
+<p><img src="https://img-blog.csdnimg.cn/b1be519cd2ac4970bbb14a495b1951ea.png" alt="2-3"></p>
+<p>图邻接表的存储结构：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MaxVertexNum</span> <span class="token expression"><span class="token number">100</span> </span><span class="token comment">//顶点数目最大值</span></span>
+<span class="token keyword">typedef</span> <span class="token keyword">char</span> VertexType<span class="token punctuation">;</span> <span class="token comment">//顶点的数据类型</span>
+
+<span class="token comment">//边表的结构</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">ArcNode</span><span class="token punctuation">&#123;</span> <span class="token comment">//边表结点</span>
+  <span class="token keyword">int</span> adjvex<span class="token punctuation">;</span> <span class="token comment">//该弧所指向的顶点的位置</span>
+  <span class="token keyword">struct</span> <span class="token class-name">ArcNode</span> <span class="token operator">*</span>next<span class="token punctuation">;</span> <span class="token comment">//指向下一条弧的指针</span>
+  <span class="token comment">//InfoType info; //网的边权值</span>
+<span class="token punctuation">&#125;</span>ArcNode<span class="token punctuation">;</span>
+
+<span class="token comment">//图的各个结点的结构</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">VNode</span><span class="token punctuation">&#123;</span>  <span class="token comment">//顶点表结点</span>
+  VertexType data<span class="token punctuation">;</span>  <span class="token comment">//顶点信息</span>
+  ArcNode <span class="token operator">*</span>first<span class="token punctuation">;</span>  <span class="token comment">//指向第一条依附该顶点的弧的指针</span>
+<span class="token punctuation">&#125;</span>VNode<span class="token punctuation">,</span> AdjList<span class="token punctuation">[</span>MaxVertexNum<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment">//此为图创建</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>
+  AdjList vertices<span class="token punctuation">;</span>  <span class="token comment">//邻接表</span>
+  <span class="token keyword">int</span> vexnum<span class="token punctuation">,</span>arcnum<span class="token punctuation">;</span> <span class="token comment">//图的顶点数和弧数</span>
+<span class="token punctuation">&#125;</span>ALGraph<span class="token punctuation">;</span>  <span class="token comment">//是以邻接表存储的图类型</span></code></pre>
+
+
+
+<h5 id="邻接表法的特点"><a href="#邻接表法的特点" class="headerlink" title="邻接表法的特点"></a>邻接表法的特点</h5><ol>
+<li>若图为无向图，则所需存储空间为O(|V|+2|E|)；若G为有向图，则所需存储空间为O(|V|+|E|)。前者的倍数是2是由于每条边在邻接表中出现了两次。</li>
+<li>对于稀疏图，采用邻接表可以极大地节省存储空间。</li>
+<li>在邻接表中，给一顶点可以很容易找出它的邻边，因为只需读取它的邻接表即可。而对于有向图，邻接表查结点的入度不如邻接矩阵来的快。</li>
+<li>图的邻接表表示并不唯一，它取决于建立邻接表的算法及边的输入次序。</li>
+</ol>
+<h4 id="十字链表"><a href="#十字链表" class="headerlink" title="十字链表"></a>十字链表</h4><blockquote>
+<p>十字链表是有向图的一种链式存储结构。在十字链表中，对应于有向图中的每条弧有一个结点，对应于每个顶点也有一个结点，如图所示。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/2b369372ff5d4b04ab644f3ad5c3ab53.png" alt="2-4"></p>
+<p><img src="https://img-blog.csdnimg.cn/77578121c61a4679a037f2e9bb5da89b.png" alt="2-5"></p>
+<p>顺着<code>firstin</code>可以找到该结点所有的入边，顺着<code>firstout</code>可以找到该结点所有的出边。</p>
+<h4 id="邻接多重表"><a href="#邻接多重表" class="headerlink" title="邻接多重表"></a>邻接多重表</h4><blockquote>
+<p>邻接多重表是无向图的另一种链式存储结构。</p>
+<p>在邻接表中，容易求得顶点和边的各种信息，而执行删除和求两个顶点之间是否存在边等操作时效率较低。所以就采用邻接多重表来解决，结构如图所示。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/9b2445fc6e884f5490b851282bac5d67.png" alt="2-6"></p>
+<p><img src="https://img-blog.csdnimg.cn/bc41045d3f0c40c7b38fc280cabda8eb.png" alt="2-7"></p>
+<p>邻接多重表可以根据所对应的顶点编号很快的找到顶点所有对应的边。</p>
 
                 
             </div>
