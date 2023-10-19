@@ -467,14 +467,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-18
+                    2023-10-19
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.3k
+                    3.9k
                 </div>
                 
 
@@ -622,6 +622,104 @@
 <p><img src="https://img-blog.csdnimg.cn/9b2445fc6e884f5490b851282bac5d67.png" alt="2-6"></p>
 <p><img src="https://img-blog.csdnimg.cn/bc41045d3f0c40c7b38fc280cabda8eb.png" alt="2-7"></p>
 <p>邻接多重表可以根据所对应的顶点编号很快的找到顶点所有对应的边。</p>
+<h3 id="图的遍历"><a href="#图的遍历" class="headerlink" title="图的遍历"></a>图的遍历</h3><h4 id="广度优先遍历（BFS）"><a href="#广度优先遍历（BFS）" class="headerlink" title="广度优先遍历（BFS）"></a>广度优先遍历（BFS）</h4><blockquote>
+<p>广度优先的基本思想是：</p>
+<p>先访问起始顶点v,接着由v出发，依次访问v的各个未访问过的顶点，然后依次通过这些顶点去访问其他没有访问过的顶点，直到所有顶点都被访问过为止。若图中有顶点尚未被访问，则重新从未被访问的顶点重复上述过程。</p>
+</blockquote>
+<p>广度优先遍历算法实现：</p>
+<pre class="language-c" data-language="c"><code class="language-c">Queue Q<span class="token punctuation">;</span> <span class="token comment">//通过队列来安排访问顺序</span>
+bool visited<span class="token punctuation">[</span>MAX_VERTEX_NUM<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//访问标记数组</span>
+
+<span class="token keyword">void</span> <span class="token function">BFSTraverse</span><span class="token punctuation">(</span>Graph G<span class="token punctuation">)</span><span class="token punctuation">&#123;</span> <span class="token comment">//对图G进行广度优先遍历</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>G<span class="token punctuation">.</span>vexnum<span class="token punctuation">;</span><span class="token operator">++</span>i<span class="token punctuation">)</span>
+        visited<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> FALSE<span class="token punctuation">;</span> <span class="token comment">//将标记数组初始化，FALSE代表元素还未被访问</span>
+    <span class="token function">InitQueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//初始化辅助队列Q</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>G<span class="token punctuation">.</span>vexnum<span class="token punctuation">;</span><span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token comment">//从0号顶点开始遍历</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>visited<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">//查看顶点是否被访问过</span>
+            <span class="token function">BFS</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//将未被访问过的顶点进行遍历</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">BFS</span><span class="token punctuation">(</span>Graph G<span class="token punctuation">,</span><span class="token keyword">int</span> v<span class="token punctuation">)</span><span class="token punctuation">&#123;</span> <span class="token comment">//从顶点v出发，广度优先遍历图G</span>
+    <span class="token function">visit</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//访问初始顶点v  visit()是一个函数，主要就是包含访问顶点要做的事</span>
+    visited<span class="token punctuation">[</span>v<span class="token punctuation">]</span> <span class="token operator">=</span> TRUE<span class="token punctuation">;</span>  <span class="token comment">//将访问过的顶点做已访问标记</span>
+    <span class="token function">Enqueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//将顶点v入队列</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>Q<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//若队列中有元素说明有需要遍历的顶点</span>
+        <span class="token function">DeQueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//遍历过后将顶点v出列接下来来检查顶点v周围是否有未被访问过的顶点</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span> w <span class="token operator">=</span> <span class="token function">FirstNeighbor</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> w <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span> w <span class="token operator">=</span> <span class="token function">NextNeighbor</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">,</span>w<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">//FirstNeighbor(G,v)用于获取图G中顶点v的第一个邻接点 NextNeighbor(G,v,w)是返回除w外的顶点v的下一个邻接点的顶点号 以此for循环就能检查与顶点v连接的所有邻接点</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>visited<span class="token punctuation">[</span>w<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>	<span class="token comment">//w为v的邻接点中尚未访问过的顶点</span>
+                <span class="token function">visit</span><span class="token punctuation">(</span>w<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//进行访问</span>
+                visited<span class="token punctuation">[</span>w<span class="token punctuation">]</span><span class="token operator">=</span> TRUE<span class="token punctuation">;</span>	<span class="token comment">//访问过后进行标记</span>
+                <span class="token function">EnQueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">,</span>w<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//将顶点w入队，然后再次进行while循环时候就会访问w的邻接点相关信息</span>
+            <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><strong>辅助数组<code>visited[]</code>标志顶点是否被访问过，初始状态为<code>FALSE</code>，一旦有顶点被访问就设置为<code>TRUE</code>，防止被多次访问</strong>。</p>
+<h5 id="BFS算法性能分析"><a href="#BFS算法性能分析" class="headerlink" title="BFS算法性能分析"></a>BFS算法性能分析</h5><p>无论是邻接表还是邻接矩阵的存储方式，BFS算法都需要借助一个辅助队列Q，n个顶点均需入队一次，在最坏情况下，空间复杂度为O(|V|)。</p>
+<p><strong>采用邻接表存储方式：</strong></p>
+<p>每个顶点均需访问一次，所以时间复杂度为O(|V|)，而在访问任意顶点的邻接点时，每条边至少访问过一次，故时间复杂度为O(|E|)，总时间复杂度为O(|V|+|E|)。</p>
+<p><strong>采用邻接矩阵存储方式：</strong></p>
+<p>查找每个顶点的邻接点所需时间为O(|V|)，邻接点也是O(|V|)，所以总时间复杂度为$$O(|V|^2)$$。</p>
+<h5 id="BFS算法求解单源最短路径问题"><a href="#BFS算法求解单源最短路径问题" class="headerlink" title="BFS算法求解单源最短路径问题"></a>BFS算法求解单源最短路径问题</h5><p>若图为非带权图，定义从顶点u到顶点v的最短路径d(u,v)为从u到v的任何路径中最少的边数；若从u到v没有通路，则d(u,v)&#x3D;∞。</p>
+<p><strong>BFS算法求解单源最短路径问题：</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">BFS_MIN_Distance</span><span class="token punctuation">(</span>Graph G<span class="token punctuation">,</span><span class="token keyword">int</span> u<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//d[i]表示从u到i结点的最短路径</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>G<span class="token punctuation">.</span>vexnum<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
+        d<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>∞<span class="token punctuation">;</span>		<span class="token comment">//初始化路径长度</span>
+    visited<span class="token punctuation">[</span>u<span class="token punctuation">]</span> <span class="token operator">=</span> TRUE<span class="token punctuation">;</span> <span class="token comment">//对访问过的顶点进行标记 </span>
+    d<span class="token punctuation">[</span>u<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment">//设置路径长度为0</span>
+    <span class="token function">EnQueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">,</span>u<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//将顶点u进行入队</span>
+    <span class="token comment">//BFS算法主过程</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>Q<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//若队列中有元素说明有需要遍历的顶点</span>
+        <span class="token function">DeQueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//遍历过后将顶点v出列接下来来检查顶点v周围是否有未被访问过的顶点</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span> w <span class="token operator">=</span> <span class="token function">FirstNeighbor</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> w <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span> w <span class="token operator">=</span> <span class="token function">NextNeighbor</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">,</span>w<span class="token punctuation">)</span><span class="token punctuation">)</span> 
+            <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>visited<span class="token punctuation">[</span>w<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>	<span class="token comment">//w为v的邻接点中尚未访问过的顶点</span>
+                visited<span class="token punctuation">[</span>w<span class="token punctuation">]</span><span class="token operator">=</span> TRUE<span class="token punctuation">;</span>	<span class="token comment">//访问过后进行标记</span>
+                d<span class="token punctuation">[</span>w<span class="token punctuation">]</span><span class="token operator">=</span>d<span class="token punctuation">[</span>u<span class="token punctuation">]</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>	<span class="token comment">//路径长度加1后再进行遍历</span>
+                <span class="token function">EnQueue</span><span class="token punctuation">(</span>Q<span class="token punctuation">,</span>w<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//将顶点w入队，然后再次进行while循环时候就会访问w的邻接点相关信息</span>
+            <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="广度优先生成树"><a href="#广度优先生成树" class="headerlink" title="广度优先生成树"></a>广度优先生成树</h5><p>在广度遍历过程中，可以得到一颗遍历树，就称为广度优先生成树，此树用邻接矩阵生成是唯一的，而用邻接表则是不唯一的。</p>
+<p><img src="https://img-blog.csdnimg.cn/12dc169ca82a43cd91a5d52093a98cb7.png" alt="3-1"></p>
+<p>如图3-1，若用邻接矩阵从2号顶点开始遍历生成树则是图3-3。</p>
+<p><img src="https://img-blog.csdnimg.cn/ebbbd9e2456143298cca0b7f8959b0ca.png" alt="3-2"></p>
+<p><img src="https://img-blog.csdnimg.cn/70d2ea9a71684d9b8257f203ed00bd02.png" alt="3-3"></p>
+<p>而邻接表由于链表连接邻接点方式不唯一，所以生成树也是不唯一的。</p>
+<h4 id="深度优先遍历（DFS）"><a href="#深度优先遍历（DFS）" class="headerlink" title="深度优先遍历（DFS）"></a>深度优先遍历（DFS）</h4><blockquote>
+<p>深度优先遍历基本思想：</p>
+<p>首先访问图中某一起始顶点v，然后由v出发，访问与v邻接且未被访问的任一顶点w，再访问w邻接且未被访问的任一顶点，以此重复。当不能再继续向下访问时，依次退回到最近被访问的顶点，若它还有邻接顶点未被访问过，则从该点开始继续上述搜索过程，直至所有顶点均被访问过。</p>
+</blockquote>
+<p><strong>深度优先遍历算法实现：</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c">bool visited<span class="token punctuation">[</span>MAX_VERTEX_NUM<span class="token punctuation">]</span><span class="token punctuation">;</span> 	<span class="token comment">//标记访问数组</span>
+<span class="token keyword">void</span> <span class="token function">DFSTraverse</span><span class="token punctuation">(</span>Graph G<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//对图G进行深度优先遍历</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>v<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> v<span class="token operator">&lt;</span>G<span class="token punctuation">.</span>vexnum<span class="token punctuation">;</span> <span class="token operator">++</span>v<span class="token punctuation">)</span>
+        visited<span class="token punctuation">[</span>v<span class="token punctuation">]</span><span class="token operator">=</span>FALSE<span class="token punctuation">;</span>		<span class="token comment">//初始化已访问标记数组</span>
+    
+    <span class="token keyword">for</span><span class="token punctuation">(</span>v<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> v<span class="token operator">&lt;</span>G<span class="token punctuation">.</span>vexnum<span class="token punctuation">;</span> <span class="token operator">++</span>v<span class="token punctuation">)</span>	<span class="token comment">//进行图的深度优先遍历</span>
+    	<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>visited<span class="token punctuation">[</span>v<span class="token punctuation">]</span><span class="token punctuation">)</span>			<span class="token comment">//若没被访问则进行访问</span>
+            <span class="token function">DFS</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token function">DFS</span><span class="token punctuation">(</span>Graph G<span class="token punctuation">,</span><span class="token keyword">int</span> v<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//从顶点v出发，深度优先遍历图G</span>
+    <span class="token function">visit</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>					<span class="token comment">//访问顶点v</span>
+    visited<span class="token punctuation">[</span>v<span class="token punctuation">]</span><span class="token operator">=</span>TRUE<span class="token punctuation">;</span>			<span class="token comment">//将已访问顶点进行标记</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>w<span class="token operator">=</span><span class="token function">FistNeighbor</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> w<span class="token operator">>=</span><span class="token number">0</span><span class="token punctuation">;</span> w<span class="token operator">=</span><span class="token function">NextNeighbor</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>v<span class="token punctuation">,</span>w<span class="token punctuation">)</span><span class="token punctuation">)</span>	
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>visited<span class="token punctuation">[</span>w<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//w为v尚未访问的邻接顶点</span>
+            <span class="token function">DFS</span><span class="token punctuation">(</span>G<span class="token punctuation">,</span>w<span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//递归往深度遍历</span>
+        <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="DPS算法性能分析"><a href="#DPS算法性能分析" class="headerlink" title="DPS算法性能分析"></a>DPS算法性能分析</h5><p>DFS算法作为一个递归算法要借助递归工作栈，故其空间复杂度为O(|V|)。</p>
+<p><strong>邻接矩阵时间复杂度：</strong></p>
+<p>以邻接矩阵表示时，与广度优先遍历同样需要遍历查找邻接点，故总的时间复杂度和广度优先遍历同为$$O(|V|^2)$$。</p>
+<p><strong>邻接表时间复杂度：</strong></p>
+<p>与广度优先遍历同样的搜索方式，且同为O(|V|+|E|)。</p>
 
                 
             </div>
