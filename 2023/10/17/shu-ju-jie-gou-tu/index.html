@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-19
+                    2023-10-24
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.9k
+                    4.8k
                 </div>
                 
 
@@ -723,6 +723,39 @@ bool visited<span class="token punctuation">[</span>MAX_VERTEX_NUM<span class="t
 <p>以邻接矩阵表示时，与广度优先遍历同样需要遍历查找邻接点，故总的时间复杂度和广度优先遍历同为$$O(|V|^2)$$。</p>
 <p><strong>邻接表时间复杂度：</strong></p>
 <p>与广度优先遍历同样的搜索方式，且同为O(|V|+|E|)。</p>
+<h3 id="图的应用"><a href="#图的应用" class="headerlink" title="图的应用"></a>图的应用</h3><h4 id="最小生成树"><a href="#最小生成树" class="headerlink" title="最小生成树"></a>最小生成树</h4><blockquote>
+<p>对于一个带权连通无向图$G&#x3D;(V,E)$，生成树不同，每棵树的权（即树中所有边上的权值之和）也可能不同。设R为G的所有生成树的集合，若T为R中边的权值之和最小的生成树，则T称为G的最小生成树。</p>
+<ul>
+<li>最小生成树可能由多个，但边的权值之和是唯一且最小的</li>
+<li>最小生成树的边数&#x3D;顶点数-1</li>
+</ul>
+</blockquote>
+<h5 id="最小生成树算法"><a href="#最小生成树算法" class="headerlink" title="最小生成树算法"></a>最小生成树算法</h5><p><strong>Prim算法</strong>:</p>
+<p>从某一个顶点开始构建生成树；每次将代价最小的新顶点纳入生成树，直到所有顶点都纳入为止。</p>
+<p><strong>Kruskal算法</strong></p>
+<p>kruskal算法是一种按权值的递增次序选择合适的边来构造最小生成树的方法。</p>
+<h4 id="最短路径"><a href="#最短路径" class="headerlink" title="最短路径"></a>最短路径</h4><blockquote>
+<p>解决无权图可以使用哦个广度优先搜索来解决最短路径问题，而对于带权图则需要另寻他法，即可分为：单源最短路径，即求图中某一顶点导其他各顶点的最短路径，可通过Dijkstra算法求解；二是求每对顶点间的最短路径，可通过Floyd算法求解。</p>
+</blockquote>
+<h5 id="Dijkstra算法求单源最短路径问题"><a href="#Dijkstra算法求单源最短路径问题" class="headerlink" title="Dijkstra算法求单源最短路径问题"></a>Dijkstra算法求单源最短路径问题</h5><p>单源指的就是单独一个源头，在Dijkstra算法中设置了一个集合S来记录已求得的最短路径的顶点，初始时把源头$v_0$放入到S，集合S每并入一个新顶点，都要修改源点$v_0$到集合S中顶点当前的最短路径长度值。</p>
+<p>Dijkstra算法在构造的过程中还设置了两个辅助数组：</p>
+<ul>
+<li><code>dist[]</code>：记录从源头到其他各顶点的最短路径长度，若源头$v_0$到某个结点有路径，则<code>dist[i]</code>相应结点的位置标上路径长度，若源头到某个结点没有路径，则为∞。</li>
+<li><code>path[]</code>：表示从源头到其他各顶点的最短路径前驱结点。在算法结束后，可根据其值追溯得到源点到其他顶点的最短路径。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/16d50b061797473da55ac89190cf0216.png" alt="4-1"></p>
+<p>上图以$v_0$为源头，$v_0$到自身的权值为0，到$v_1$的权值为10，到$v_2,v_3$目前没有路径则设置为∞，到$v_4$的路径权值为5，以此初始化<code>dist[]</code>。</p>
+<p>路径前驱<code>path[]</code>则初始默认为-1，若与源头连接则设置为0。</p>
+<p>Dijkstra算法开始时根据<code>final[]</code>数组，根据<code>final[]</code>值中为<code>false</code>且<code>dist[]</code>中目前权值最小的值来进行遍历搜索当前顶点未连接的结点，并将当前结点<code>final[]</code>中的值设置为<code>true</code>。</p>
+<p><img src="https://img-blog.csdnimg.cn/a731219489f9435c97cf3fdcc2f5b5d3.png" alt="4-2"></p>
+<p>如图4-2所示，当遍历$v_4$顶点时候，可以获得到顶点$v_1$比原先更短的路径长度8，并将<code>path</code>中的结点前驱改为4，而且获取了到$v_2,v_3$的路径长度14，7，并且结点前驱都为4。</p>
+<p>后再进行遍历查询下一个除$v_4$以外<code>dist</code>中最短路径长度的$v_3$。并检查其他$v_1,v_2$这些尚未确定最短路径结点以$v_3$作为结点前驱会不会发生变化。</p>
+<p><img src="https://img-blog.csdnimg.cn/eaa2c0ac2ebb42568832e983a618ecec.png" alt="4-3"></p>
+<p>扫描$v_3$，显然到$v_2$经过$v_3$的路径长度13要小于从$v_4$直接到$v_2$的路径长度14，所以将$v_2$所对应的<code>dist</code>改为13，并将<code>path</code>直接前驱改为3。</p>
+<p><img src="https://img-blog.csdnimg.cn/8b522325d9d54e569380b199dcfa0411.png" alt="4-4"></p>
+<p>后再根据路径长度来扫描到$v_1$，而此时经过$v_1$到$v_2$的最短路径为5+3+1&#x3D;9，要小于原先的路径13，所以将$v_2$的<code>dist</code>设置为9，$path$为1。</p>
+<p>最后$v_2$已经没有其他为false的顶点就直接设置为true即可。</p>
+<p><strong>注：对于负权值带权图dijkstra算法可能失效！</strong></p>
 
                 
             </div>
