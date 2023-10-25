@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-24
+                    2023-10-25
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.8k
+                    6.5k
                 </div>
                 
 
@@ -756,6 +756,92 @@ bool visited<span class="token punctuation">[</span>MAX_VERTEX_NUM<span class="t
 <p>后再根据路径长度来扫描到$v_1$，而此时经过$v_1$到$v_2$的最短路径为5+3+1&#x3D;9，要小于原先的路径13，所以将$v_2$的<code>dist</code>设置为9，$path$为1。</p>
 <p>最后$v_2$已经没有其他为false的顶点就直接设置为true即可。</p>
 <p><strong>注：对于负权值带权图dijkstra算法可能失效！</strong></p>
+<p><strong>Floyd算法求各顶点之间最短路径问题</strong></p>
+<p>Floyd算法的基本思想是：递推产生一个n阶方阵序列$A^{(-1)},A^{(0)},\dots, A^{(n-1)}$，其中$A^{k}[i][j]$表示从顶点$v_i$到顶点$v_j$的路径长度，k表示绕行第k个顶点的运算步骤。</p>
+<p><img src="https://img-blog.csdnimg.cn/8b54c206b43542b492aed0b11aaccd5b.png" alt="4-5"></p>
+<p>若上图4-5允许在$v_0$中转，最短路径就是求$A^{(0)},path^{0}$，而所进行的就是对矩阵进行检查：<br>$$<br>若\quad A^{(-1)}[2][1]&gt;A^{(-1)}[2][0]+A^{(-1)}[0][1]&#x3D;11\<br>则\quad A^{(0)}[2][1]&#x3D;11\<br>\quad path^{(0))}[2][1]&#x3D;0<br>$$<br>进行以允许在$v_0$中转后，就可得到$v_2-&gt;v_1$的路径长度。</p>
+<p><img src="https://img-blog.csdnimg.cn/39579ef2f6fd4ecea7054437d7fb497b.png" alt="4-6"></p>
+<p>后再添加允许再$v_1$中转，此时对所有元素扫描后，只有$v_0-&gt;v_2$路径满足最短路径。由公式得：<br>$$<br>若\quad A^{(0)}[2][0]&gt;A^{(0)}[0][1]+A^{(0)}[1][2]&#x3D;10\<br>则\quad A^{(1)}[0][2]&#x3D;10\<br>\quad path^{(1))}[0][2]&#x3D;1<br>$$<br>即可得此时$v_0-&gt;v_2$的最短路径。</p>
+<p><img src="https://img-blog.csdnimg.cn/2d5645d44f31476d8460b562ab482455.png" alt="4-7"></p>
+<p>再允许$v_2$中转，此时对所有元素扫描后，只有$v_1-&gt;v_0$路径满足最短路径。由公式得：<br>$$<br>若\quad A^{(1)}[1][0]&gt;A^{(1)}[1][2]+A^{(1)}[2][0]&#x3D;9\<br>则\quad A^{(2)}[1][0]&#x3D;9\<br>\quad path^{(2))}[1][0]&#x3D;2<br>$$<br><img src="https://img-blog.csdnimg.cn/4900d86ad0fb47e58d724c20a6b56283.png" alt="4-8"></p>
+<p>经过n论递推后得到图4-8，获得所有路径间的最短路径。</p>
+<h4 id="有向无环图描述表达式"><a href="#有向无环图描述表达式" class="headerlink" title="有向无环图描述表达式"></a>有向无环图描述表达式</h4><blockquote>
+<p>若一个有向图中部存在环路，则称为有向无环图，简称DAG图。</p>
+</blockquote>
+<p>有向无环图是描述含有公共子式的表达式的有效工具，例表达式：<code>((a+b)*(b*(c))+(c+d)*e)*((c+d)*e)</code>可以用下图的二叉树形式来表示：</p>
+<p><img src="https://img-blog.csdnimg.cn/eb86fc4e43ae4e59a85fdd10ab7532c9.png" alt="4-9"></p>
+<p>观察树或表达式，可以发现表达式<code>(c+d)</code>和<code>(c+d)*e</code>在二叉树中重复出现，即可利用有向无环图来实现相同子式的共享，从而节省存储空间。</p>
+<p><img src="https://img-blog.csdnimg.cn/9a764df2543148f6916723af4c3f3d9c.png" alt="4-10"></p>
+<p>利用有向无环图即可将图4-9的二叉树转换为图4-10的有向无环图。</p>
+<h4 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h4><blockquote>
+<p>AOV网：若用DAG图（有向无环图）表示一个工程，其顶点表示活动，用有向边$&lt;V_i,V_j&gt;$表示活动$V_i$必须先于活动$V_j$进行的一种关系，则将这种有向图称为顶点表示活动的网络，记为AOV网。</p>
+<p>拓扑排序的概念：在图论中，由一个DAG图的顶点组成的序列且满足以下条件时，称为该图的拓扑排序：</p>
+<ol>
+<li>每个顶点出现且只出现一次。</li>
+<li>若顶点A在序列中排在顶点B的前面，则在图中不存在从顶点B到顶点A的路径。</li>
+</ol>
+<p>拓扑排序通俗的讲就是找到每个顶点的先后顺序，然后根据先后进行排序即可。</p>
+</blockquote>
+<p>拓扑排序的实现：</p>
+<ol>
+<li>从AOV网中选择一个没有前驱（<strong>入度为0</strong>）的顶点并输出。</li>
+<li>从网中删除该顶点和其他所有以它为起点的有向边。</li>
+<li>重复1和2直到<strong>AOV网为空</strong>或当前<strong>网中部存在无前驱的顶点</strong>为止。</li>
+</ol>
+<p>拓扑排序算法实现（基于邻接表结构）：</p>
+<pre class="language-c" data-language="c"><code class="language-c">bool <span class="token function">TopologicalSort</span><span class="token punctuation">(</span>Graph G<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">InitStack</span><span class="token punctuation">(</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span> 			<span class="token comment">//初始化栈，存储入度为0的顶点</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>G<span class="token punctuation">.</span>vexnum<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>	<span class="token comment">//遍历图中的每个顶点</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>indegree<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span>	<span class="token comment">//若入度为0则入栈	indegree[]用于记录每个顶点的入度为多少</span>
+            <span class="token function">Push</span><span class="token punctuation">(</span>S<span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> count<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>			<span class="token comment">//记录当前已经输出的顶点数</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">IsEmpty</span><span class="token punctuation">(</span>S<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//栈不空，则存在入度为0的顶点，就进行遍历</span>
+        <span class="token function">Pop</span><span class="token punctuation">(</span>S<span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//栈顶元素出栈</span>
+        print<span class="token punctuation">[</span>count<span class="token operator">++</span><span class="token punctuation">]</span><span class="token operator">=</span>i<span class="token punctuation">;</span>	<span class="token comment">//输出顶点i	print[]用于记录拓扑序列</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span>p<span class="token operator">=</span>G<span class="token punctuation">.</span>vertices<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>firstarc<span class="token punctuation">;</span> p<span class="token punctuation">;</span> p<span class="token operator">=</span>p<span class="token operator">-></span>nextarc<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//遍历该顶点邻接表相关的顶点</span>
+            v<span class="token operator">=</span>p<span class="token operator">-></span>adjvex<span class="token punctuation">;</span>
+        	<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span><span class="token operator">--</span>indegree<span class="token punctuation">[</span>v<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token function">Push</span><span class="token punctuation">(</span>S<span class="token punctuation">,</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//入度为0，则出栈</span>
+        <span class="token punctuation">&#125;</span>   
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>count <span class="token operator">&lt;</span> G<span class="token punctuation">.</span>vexnum<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> false<span class="token punctuation">;</span> 	<span class="token comment">//排序失败，有向图中有回路</span>
+    <span class="token keyword">else</span>
+        <span class="token keyword">return</span> true<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h4 id="关键路径"><a href="#关键路径" class="headerlink" title="关键路径"></a>关键路径</h4><blockquote>
+<p>在带权有向图中，以<strong>顶点表示事件</strong>，以<strong>有向边表示活动</strong>，以<strong>边上的权值表示完成该活动的开销</strong>（如完成活动所需的时间），称之为用边表示活动的网络，简称<strong>AOE网</strong>（Activity On Edge NetWork）。</p>
+<p>AOE网具有以下两个性质：</p>
+<ol>
+<li>只有在某顶点所代表的事件发生后，从该顶点出发的各有向边所代表的活动才能开始；</li>
+<li>只有在进入某顶点的各有向边所代表的活动都已结束时，该顶点所代表的事件才能发生。</li>
+</ol>
+<p>另外，有些活动是可以并行进行的。</p>
+</blockquote>
+<p>AOE网的概念：</p>
+<ul>
+<li>在AOE网中仅有一个入度为0的顶点，称为<strong>开始顶点（源点）</strong>。它表示整个工程的开始。</li>
+<li>网中只存在一个出度为0的点，称为<strong>结束顶点（汇点）</strong>，它表示整个工程的结束。</li>
+<li>从源点到汇点的有向路径可能有多条，而其中具有最大路径长度的路径称为<strong>关键路径</strong>，从而把关键路径上的活动称为<strong>关键活动</strong>。</li>
+<li>事件$v_k$的最早发生时间$ve(k)$：决定了所有从$v_k$开始的活动能开工的最早时间。</li>
+<li>活动$a_i$的最早开始时间$e(i)$：指该活动弧的起点所表示的事件的最早发生事件。</li>
+<li>事件$v_k$的最迟发生事件$vl(k)$：指在不推迟整个工程完成的前提下，该事件最迟必须发生的时间。</li>
+<li>活动$a_i$的最迟开始时间$l(i)$：指该活动弧的终点所表示事件的最迟发生时间与该活动所需时间之差。</li>
+<li>活动$a_i$的时间余量$d(i)&#x3D;l(i)-e(i)$：表示在不增加完成整个工程所需总时间的情况下，活动$a_i$可以拖延的时间。</li>
+<li>若一个活动的时间余量为零，则说明这活动$a_i$为<strong>关键活动</strong>。</li>
+</ul>
+<p>求关键路径的算法步骤：</p>
+<ol>
+<li>从源点出发，令$ve(源点)&#x3D;0$，按拓扑有序求所有时间的最早发生时间$ve()$。</li>
+<li>从汇点出发，令$vl(汇点)&#x3D;ve(汇点)$，按逆拓扑有序求所有事件的最迟发生时间$vl()$。</li>
+<li>求所有活动的最早发生时间$e()$。</li>
+<li>求所有活动的最迟发生时间$l()$。</li>
+<li>求所有活动的时间余量$d()$，而余量为0的就是关键活动，由关键活动可得关键路径。</li>
+</ol>
 
                 
             </div>
