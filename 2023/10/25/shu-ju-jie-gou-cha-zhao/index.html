@@ -5,7 +5,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="数据结构-查找, LsWorld">
-    <meta name="description" content="">
+    <meta name="description" content="
+
+
+
+查找表的基本概念
+查找：在数据集合中寻找满足某种条件的数据元素的过程叫查找。
+查找表（查找结构）：用于查找的数据集合称为查找表，由同一类型的数据元素组成。
+静态查找表：若查找表只涉及搜索和插入操作，无需动态的修改查找表，则称此类表为">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -428,9 +435,13 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                                <span class="chip bg-color">数据结构</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -449,14 +460,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-25
+                    2023-10-26
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    2.3k
                 </div>
                 
 
@@ -476,7 +487,93 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <meta name="referrer" content="no-referrer"/>
+
+
+
+<h4 id="查找表的基本概念"><a href="#查找表的基本概念" class="headerlink" title="查找表的基本概念"></a>查找表的基本概念</h4><ol>
+<li>查找：在数据集合中寻找满足某种条件的数据元素的过程叫查找。</li>
+<li>查找表（查找结构）：用于查找的数据集合称为查找表，由同一类型的数据元素组成。</li>
+<li>静态查找表：若查找表只涉及搜索和插入操作，无需动态的修改查找表，则称此类表为静态查找表。</li>
+<li>关键字：数据元素中唯一标识该元素的某个数据项的值。</li>
+<li>平均查找长度：在查找过程中，进行关键字比较次数的平均值，数学定义为：</li>
+</ol>
+<p>$$<br>ASL&#x3D;\sum_{i&#x3D;1}^{n}P_iC_i<br>$$</p>
+<p>n是查找表的长度；$P_i$是查找第i各数据元素的概率，一般认为每个数据元素的查找概率相等，即$P_i&#x3D;\frac{1}{n}$；$C_i$是找到第i各元素所需进行的比较次数。</p>
+<h3 id="顺序查找和折半查找"><a href="#顺序查找和折半查找" class="headerlink" title="顺序查找和折半查找"></a>顺序查找和折半查找</h3><h4 id="顺序查找"><a href="#顺序查找" class="headerlink" title="顺序查找"></a>顺序查找</h4><blockquote>
+<p>顺序查找又称线性查找，它对于顺序表和链表都适用。对于顺序表，可通过数组下标递增来顺序扫描每个元素；对于链表，可通过next来依次扫描每个元素。顺序查找通常分为对一般的无序线性表的顺序查找和对按关键字有序的线性表的顺序查找。</p>
+</blockquote>
+<h5 id="一般线性表的顺序查找"><a href="#一般线性表的顺序查找" class="headerlink" title="一般线性表的顺序查找"></a>一般线性表的顺序查找</h5><p>作为最直观的查找方法，基本思想就是从一端逐个检查关键字是否满足给定的条件。</p>
+<p>算法实现：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>			<span class="token comment">//查找表的数据结构</span>
+    ElemType <span class="token operator">*</span>elem<span class="token punctuation">;</span>		<span class="token comment">//动态数组基址</span>
+    <span class="token keyword">int</span> TableLen<span class="token punctuation">;</span>		<span class="token comment">//表的长度</span>
+<span class="token punctuation">&#125;</span>SSTable<span class="token punctuation">;</span>
+
+<span class="token comment">//顺序查找</span>
+<span class="token keyword">int</span> <span class="token function">Search_Seq</span><span class="token punctuation">(</span>SSTable ST<span class="token punctuation">,</span>ElemType key<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> ST<span class="token punctuation">.</span>TableLen <span class="token operator">&amp;&amp;</span> ST<span class="token punctuation">.</span>elem<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">!=</span>key<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">//查找成功返回元素下标</span>
+    <span class="token keyword">return</span> i<span class="token operator">==</span>ST<span class="token punctuation">.</span>TableLen <span class="token operator">?</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">:</span> i<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<p><strong>ASL计算</strong></p>
+<p>对于有n各元素的表，给定值key与表中的第i各元素相等，即定位第i各元素时，需进行$n-i+1$次关键字的比较，即$C_i&#x3D;n-i+1$。查找成功时，顺序查找的平均长度为<br>$$<br>ASL_{成功}&#x3D;\sum_{i&#x3D;1}^n P_i(n-i+1)<br>$$<br>当每个元素的查找概率相等，即$P_i&#x3D;\frac{1}{n}$时，有<br>$$<br>ASL_{成功}&#x3D;\sum_{i&#x3D;1}^n P_i(n-i+1)&#x3D;\frac{n+1}{2}<br>$$<br>上方式子实际也就是：<br>$$<br>ASL_{成功}&#x3D;\sum_{i&#x3D;1}^n P_i \frac{i}{n}&#x3D;\frac{n+1}{2}<br>$$<br>若查找不成功时，与表中关键字比较的次数显然是n+1次，**即$ASL_{不成功}&#x3D;n+1$**。</p>
+<h5 id="有序表的顺序查找"><a href="#有序表的顺序查找" class="headerlink" title="有序表的顺序查找"></a>有序表的顺序查找</h5><p>若在查找之前就知道表是有序的，则查找失败时可以不用再进行后序的遍历到表的另一端就能返回查找失败的信息，从而降低顺序查找失败的平均查找长度。</p>
+<p>设有一个表<code>L[6]=&#123;7,13,19,29,37,43&#125;</code>，若要查找的<code>key=21</code>，当顺序查找到29时，$key&#x3D;21&lt;29$，因为表是顺序递增，所以就可以终止查找从而来增加查找效率。</p>
+<p><img src="https://img-blog.csdnimg.cn/ce3840427e274bc789154fd9f2bb787a.png" alt="1-1"></p>
+<p>根据上方表即可绘制出图1-1的查找树。</p>
+<p>一个成功结点的查找长度&#x3D;自身所在层数。</p>
+<p>一个失败结点的查找长度&#x3D;其父结点所在层数。</p>
+<p><strong>ASL计算</strong></p>
+<p>对于有n各元素的表，给定值key与表中的第i各元素相等，即定位第i各元素时，需进行$n-i+1$次关键字的比较，即$C_i&#x3D;n-i+1$。查找成功时，顺序查找的平均长度为<br>$$<br>ASL_{成功}&#x3D;\sum_{i&#x3D;1}^n P_i \frac{i}{n}&#x3D;\frac{n+1}{2}<br>$$<br>而若查找失败，设每次查找的概率相同，即$P_i&#x3D;\frac{1}{n+1}$，则有<br>$$<br>ASL_{不成功}&#x3D;\frac{1+2+3+\dots +n+n}{n+1}&#x3D;\frac{n}{2}+\frac{n}{n+1}<br>$$</p>
+<h4 id="折半查找"><a href="#折半查找" class="headerlink" title="折半查找"></a>折半查找</h4><p>折半查找，又称二分查找，仅适用于有序的顺序表。</p>
+<p>折半查找的基本思想：首先将给定值key与表中中间位置的元素比较，若相等，则查找成功，返回该元素的存储位置；若不等，则所需查找的元素只能再中间元素以外的前半部分或后半部分。然后在缩小的范围内继续进行同样的查找，如此重复。</p>
+<p>算法实现：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">Binary_Search</span><span class="token punctuation">(</span>SSTable L<span class="token punctuation">,</span>ElemType key<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> low<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>high<span class="token operator">=</span>L<span class="token punctuation">.</span>TableLen<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> mid<span class="token punctuation">;</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span>low <span class="token operator">&lt;=</span> high<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        mid <span class="token operator">=</span> <span class="token punctuation">(</span>low <span class="token operator">+</span> high<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">//获取中间位置</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>L<span class="token punctuation">.</span>elem<span class="token punctuation">[</span>mid<span class="token punctuation">]</span> <span class="token operator">==</span> key<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> mid<span class="token punctuation">;</span>	<span class="token comment">//查找成功</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span><span class="token punctuation">(</span>L<span class="token punctuation">.</span>elem<span class="token punctuation">[</span>mid<span class="token punctuation">]</span> <span class="token operator">></span> key<span class="token punctuation">)</span>	<span class="token comment">//中间元素大于要查找的元素，所以要从前半部分继续查找</span>
+            high<span class="token operator">=</span>mid<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">else</span>
+            low<span class="token operator">=</span>mid<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>		<span class="token comment">//否则从后半部分进行查找</span>
+    <span class="token punctuation">&#125;</span>
+    
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>	<span class="token comment">//查找失败</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在<strong>折半查找判定树的构造</strong>中，如果当前<code>low</code>和<code>high</code>之间有<strong>奇数个</strong>元素，则<code>mid</code>分隔后，<strong>左右两部分元素个数相等。</strong></p>
+<p>如果当前<code>low</code>和<code>high</code>之间有<strong>偶数个</strong>元素，则<code>mid</code>分隔后，<strong>左半部分比右半部分少一个元素。</strong></p>
+<p>折半查找的判定树中，若<code>mid=[(low + high)/2]</code>，则对于任何一个结点，必有：<strong>右子树结点数-左子树结点数&#x3D;0或1</strong></p>
+<p><strong>ASL计算</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/ab28b500c87241c280e73d13b9ffc1c0.png"></p>
+<p>通过上方的折半查找判定树，设在等概率的情况下查找时，<strong>查找成功</strong>的查找平均长度为：<br>$$<br>ASL_{成功}&#x3D;\frac{1<em>1+2</em>2+3<em>4+4</em>4}{11}&#x3D;3<br>$$<br>树从上往下看，第一层元素进行一次对比，第二层元素进行两次对比，第三层元素进行四次对比，第四层元素也进行四次对比，从而再乘上概率得出ASL。</p>
+<p>若<strong>查找失败</strong>，则有<br>$$<br>ASL_{失败}&#x3D;\frac{3<em>4+4</em>8}{12}&#x3D;\frac{11}{3}<br>$$<br>同样地树从上往下看，第三层失败进行了四次对比，第四层失败进行了八次对比，从而再乘上概率得出ASL。</p>
+<p>折半查找的判定树中，<strong>只有最下面一层是不满的</strong>，因此可以通过平衡二叉树得元素个数为n时树高$h&#x3D;[\log_2(n+1)]$。</p>
+<p>从树高可得折半查找成功的$ASL\leqslant n$，同样的查找失败的$ASL\leqslant n$。</p>
+<p>从而在查找等概率情况下有查找成功的平均长度为<br>$$<br>ASL&#x3D;\frac{1}{n}(1\times 1 + 2\times 2 + \dots + h \times 2^{h-1})&#x3D; \frac{n+1}{2}\log_2(n+1)-1\approx \log_2(n+1)-1<br>$$</p>
+<h4 id="分块查找"><a href="#分块查找" class="headerlink" title="分块查找"></a>分块查找</h4><p>分块查找的基本思想：将查找表分为若干子块。块内的元素可以无序，但块间的元素是有序的，即第一块中的最大关键字小于第二块中的所有记录的关键字，第二个块中的最大关键字小于第三块中的所有记录的关键字，以此类推。再建立一个索引表，索引表中每个元素含有各块的最大关键字和各块中的第一个元素的地址，索引表按关键字有序排列。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/ccce657834a14b2eb4943e103ff2f4b9.png" alt="1-2"></p>
+<p>在图中将要查找的表进行分块，然后取出每个块中最大的元素。然后依次来将要查找的关键字和每个块中的最大元素进行比较。按顺序查找，若关键字大于当前块中最大的元素，则往后与下一个块的最大元素进行比较，直到关键字小于等于块的最大元素。</p>
+<p>然后再到分块中进行顺序查找，直到找到相匹配的关键字，若找不到则为查找失败。</p>
+<p><strong>若在分块查找中使用折半查找，有可能会出现<code>low&gt;high</code>，而当前查找元素却存在于分块的元素中，就有可能出现查找错误。</strong></p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/097f6ce55bfc42c3b7345baf352abc23.png" alt="1-3"></p>
+<p>此时上方折半查找<code>low==high==mid</code>，由于<code>key&lt;mid</code>，所以按照折半查找的规则会让<code>high--</code>，导致成图1-4的结果，此时就会判定为查找失败。</p>
+<p><img src="https://img-blog.csdnimg.cn/149c159a57a34c379796105bf26e6988.png" alt="1-4"></p>
+<p>然而查找元素就在20的分块中，所以需要而外的查找，每当索引表最终停在<code>low&gt;high</code>时，<strong>要在low所指分块中查找（因为此时只有low所指向的分块中<code>key&lt;mid</code>，所以要是能查找到必定是在low所指向的分块中）</strong>。</p>
+<p><img src="https://img-blog.csdnimg.cn/e8f88b864c7c433b9cf86633fd06418a.png" alt="1-5"></p>
+<p><strong>ASL计算</strong></p>
+<p>设索引查找和块内查找的平均查找长度分别为$L_1,L_S$，则分块查找的平均查找长度为<br>$$<br>ASL&#x3D;L_1+L_S<br>$$<br>将长度为n的查找表均匀地分为b块，每块有s个记录，在等概率情况下，若在块内和索引表中均用顺序查找，则平均查找长度为<br>$$<br>L_1&#x3D;\sum_{i&#x3D;1}^b \frac{i}{b}&#x3D; \frac{b+1}{2}\<br>L_1&#x3D;\sum_{i&#x3D;1}^s \frac{i}{s}&#x3D; \frac{s+1}{2}\<br>ASL&#x3D; \frac{b+1}{2} + \frac{s+1}{2}<br>$$<br>而基于查找表为b，每块记录为s，可得长度$n&#x3D;sb$，则有$b&#x3D;\frac{n}{s}$，带入到ASL的式子中，有<br>$$<br>ASL&#x3D;\frac{s^2+2s+n}{2s}<br>$$<br>当$s&#x3D;\sqrt{n}$（可用求导求最值证明），则平均查找长度取最小值$\sqrt{n}+1$。</p>
+
                 
             </div>
             <hr/>
@@ -539,7 +636,11 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                                    <span class="chip bg-color">数据结构</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -885,6 +986,14 @@
                 </div>
 
                 
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                        <span class="chip bg-color">数据结构</span>
+                    </a>
+                    
+                </div>
+                
             </div>
         </div>
         
@@ -1047,6 +1156,13 @@
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
