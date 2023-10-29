@@ -460,14 +460,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-27
+                    2023-10-29
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.8k
+                    4k
                 </div>
                 
 
@@ -670,7 +670,14 @@ BSTNode <span class="token operator">*</span><span class="token function">BST_Se
 <h5 id="平衡二叉树的插入"><a href="#平衡二叉树的插入" class="headerlink" title="平衡二叉树的插入"></a>平衡二叉树的插入</h5><p>二叉排序树保持平衡的基本思想是：每当在二叉排序树中插入（或删除）一个结点时，首先检查其插入路径上的结点是否会因此次操作导致不平衡。若导致不平衡，则先找到插入路径上离插入结点最近的平衡因子的绝对值大于1的结点A，再对以A为根的子树，在保持二叉排序树特性的前提下，调整各结点的位置关系，使之重新达到平衡。</p>
 <p><strong>注：每次调整的对象都是离插入结点最近的平衡因子的绝对值大于1的结点作为根的子树。</strong></p>
 <p>平衡二叉树在调整时可归纳为下列四种情况：</p>
-<p>*<em>LL平衡旋转（右单旋转）</em>：*</p>
+<p><strong>LL平衡旋转（右单旋转）</strong>：由于在结点A的左孩子（L）的左子树（L）上插入了新结点，导致A的平衡因子由1增长到2，导致以A为根的子树失去平衡，需要进行一次右转操作来重新保持平衡。</p>
+<p><img src="https://img-blog.csdnimg.cn/b03cc53cba0b4820b665f4d76c41aad0.png" alt="2-6"></p>
+<p>右旋即让图2-6中B称为根节点，A成B的右子结点，而B的原右子树则作为A结点的左子树。（$AR&gt;A&gt;BR&gt;B&gt;BL$）</p>
+<p><img src="https://img-blog.csdnimg.cn/cd25ffbb91e440a2ad25653873fb6d30.png" alt="2-7"></p>
+<p><strong>RR平衡旋转（左单旋转）</strong>：由于在结点A的右孩子（R）的右子树（R）上插入了新结点，A的平衡因子由-1减至-2。导致以A为根的子树失去平衡，需要进行一次向左旋转操作。</p>
+<p><img src="https://img-blog.csdnimg.cn/25f957fc31eb4ac68bb8930da6cf611e.png" alt="2-8"></p>
+<p>左旋即让B成为根结点，A结点成为B的左子树根节点，而B的原左子树则作为A结点的右子树。（$BR&gt;B&gt;BL&gt;A&gt;AL$）</p>
+<p><img src="https://img-blog.csdnimg.cn/c9e417702eb246ddad63192cd7a6de76.png" alt="2-9"></p>
 
                 
             </div>
