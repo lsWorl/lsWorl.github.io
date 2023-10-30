@@ -460,14 +460,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-29
+                    2023-10-30
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4k
+                    4.7k
                 </div>
                 
 
@@ -678,6 +678,31 @@ BSTNode <span class="token operator">*</span><span class="token function">BST_Se
 <p><img src="https://img-blog.csdnimg.cn/25f957fc31eb4ac68bb8930da6cf611e.png" alt="2-8"></p>
 <p>左旋即让B成为根结点，A结点成为B的左子树根节点，而B的原左子树则作为A结点的右子树。（$BR&gt;B&gt;BL&gt;A&gt;AL$）</p>
 <p><img src="https://img-blog.csdnimg.cn/c9e417702eb246ddad63192cd7a6de76.png" alt="2-9"></p>
+<p><strong>LR平衡旋转（先左后右双旋转）</strong>：由于在A的左孩子（L）的右子树（R）上插入新结点，A的平衡因子由1增至2，导致以A为根的子树失去平衡，需要进行两次旋转操作，先左旋转后右旋转。</p>
+<p><img src="https://img-blog.csdnimg.cn/c694add98b7f42789a2b0560a3993998.png" alt="2-10"></p>
+<p>假设BR为结点C，设新结点插入到C结点的右子树中，先将A结点的左孩子B的右子树的根结点C向左上旋转提升到B结点的位置，然后再把C结点向右上旋转提升到A的位置，如图2-11所示。（<strong>BL&lt;B&lt;CL&lt;C&lt;CR&lt;A&lt;AR</strong>）</p>
+<p><img src="https://img-blog.csdnimg.cn/5f0fe3e02b294ef98d8cc5cd02517aa8.png" alt="2-11"></p>
+<p><strong>RL平衡旋转（先右后左双旋转）</strong>：由于在A的右孩子（R）的左子树（L）上插入新结点，A的平衡因子由-1减至-2，导致以A为根的子树失去平衡，需要进行两次旋转操作，先右旋转后左旋转。</p>
+<p><img src="https://img-blog.csdnimg.cn/f1f0f0ede7cf423ab4d016197f9ac143.png" alt="2-12"></p>
+<p>假设BL为结点C，设新结点插入到C结点的左子树中（左右的结果都是相同），先将A结点的右孩子B的左子树的根结点C向右上旋转提升到B结点的位置，然后再把C结点向左上旋转提升到A的位置。（<strong>AL&lt;A&lt;CL&lt;C&lt;CR&lt;B&lt;BR</strong>）</p>
+<p><strong>查找效率分析</strong></p>
+<p>若树高为h，则最坏情况下，查找一个关键字最多需要对比h次，即查找插座的时间复杂度不可能超过O(h)。</p>
+<p>由于平衡二叉树的左子树和右子树高度之差不超过1。</p>
+<p>假设$n_h$表示深度为h平衡树中含有最少结点树。</p>
+<p>则高度为h的结点数量$n_h&#x3D;n_{h-1}+n_{h-2}+1$，基于这公式可得树最大高度$h_{max}&#x3D;O(\log_2n)$，即为平衡二叉树的平均查找长度。</p>
+<p>.</p>
+<h5 id="平衡二叉树的删除"><a href="#平衡二叉树的删除" class="headerlink" title="平衡二叉树的删除"></a>平衡二叉树的删除</h5><p>平衡二叉树的删除有以下几个步骤（以删除结点w为例）：</p>
+<ol>
+<li>用二叉排序树的方法对结点w执行删除操作。</li>
+<li>若导致了不平衡，则从结点w向上开始回溯，找到第一个不平衡的结点z（即最小不平衡子树）；y为结点z的高度最高的孩子结点；x是结点y的高度最高的孩子结点。</li>
+<li>然后对以z为根的子树进行平衡调整，其中x、y和z可能的位置有四种情况：</li>
+</ol>
+<ul>
+<li>y是z的左孩子，x是y的左孩子（LL，右单旋转）；</li>
+<li>y是z的左孩子，x是y的右孩子（LR，先左后右旋转）；</li>
+<li>y是z的右孩子，x是y的右孩子（RR，左单旋转）；</li>
+<li>y是z的右孩子，x是y的左孩子（RL，先右后左旋转）；</li>
+</ul>
 
                 
             </div>
