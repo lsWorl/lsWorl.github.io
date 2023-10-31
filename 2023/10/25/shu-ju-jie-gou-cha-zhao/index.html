@@ -460,14 +460,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-30
+                    2023-10-31
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.7k
+                    6.4k
                 </div>
                 
 
@@ -703,6 +703,77 @@ BSTNode <span class="token operator">*</span><span class="token function">BST_Se
 <li>y是z的右孩子，x是y的右孩子（RR，左单旋转）；</li>
 <li>y是z的右孩子，x是y的左孩子（RL，先右后左旋转）；</li>
 </ul>
+<p>四种情况操作基本和插入操作调整方式一样。<strong>不同之处</strong>在于，插入仅需要对z以根的子树进行平衡调整；则删除操作需要，先对以z为根的子树进行平衡调整，如果调整后以后上方二叉树中存在不平衡，则需要对z的祖先结点进行平衡调整。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/d19c74f47bcd409680d9bbdef8511cd6.png" alt="2-13"></p>
+<p>若要删除图2-13的第32位置的结点，会导致第44位置的结点成为最小不平衡子树，需要对44位置的结点进行平衡调整，将50结点先右旋到78结点位置再左旋到50位置即可成功调整会平衡二叉树。</p>
+<p><img src="https://img-blog.csdnimg.cn/d9c9f8cb6b64437da2e5be2f23f008dd.png" alt="2-14"></p>
+<p>而此时又导致了33结点出现的不平衡，所以需要再对33结点进行平衡调整。在33结点的子树中找到高度最高的孩子10结点，然后再找到高度最高的孙结点20。对20结点进行左旋后右旋就可以再次调整回平衡二叉树。</p>
+<p><img src="https://img-blog.csdnimg.cn/bd79a931a3da4f909d0cb1f5d5dba1b6.png" alt="2-15"></p>
+<h4 id="红黑树（Red-Black-Tree-RBT）"><a href="#红黑树（Red-Black-Tree-RBT）" class="headerlink" title="红黑树（Red-Black Tree,RBT）"></a>红黑树（Red-Black Tree,RBT）</h4><h5 id="红黑树的定义"><a href="#红黑树的定义" class="headerlink" title="红黑树的定义"></a>红黑树的定义</h5><p>为了保持AVL树的平衡性，插入和删除操作需要频繁地调整树的拓扑结构，代价较大，所以引入了红黑树。</p>
+<p>一棵红黑树，如图2-16，是满足如下红黑性质的二叉排序树（$左子树结点值\leqslant 根结点值 \leqslant 右子树结点值$）：</p>
+<ol>
+<li>每个结点是红色或黑色。</li>
+<li>根结点是黑色的。</li>
+<li>叶结点（虚构的外部结点、NULL结点）都是黑色的。</li>
+<li>不存在两个相邻的红结点（即红结点的父结点和孩子结点均是黑色的）。</li>
+<li>对每个结点，从该结点到任意一个叶结点的简单路径上，所含黑结点的数量相同。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/f2ffb6cab5ce4892a53c2170a9eff35a.png" alt="2-16"></p>
+<p>从某结点出发（不含该结点）到达一个叶结点的任意一个简单路径上的黑结点总数称为该结点的<strong>黑高（记为bh）</strong>，根节点的黑高称为红黑树的黑高。</p>
+<p>根据性质可得出结论：</p>
+<p><strong>结论1：从根到叶结点的最长路径不大于最短路径的2倍。</strong></p>
+<p><strong>结论2：有n个内部结点的红黑树的高度$h\leqslant 2\log_2(n+1)$，即查找操作时间复杂度为$O(log_2n)$</strong></p>
+<h5 id="红黑树的查找"><a href="#红黑树的查找" class="headerlink" title="红黑树的查找"></a>红黑树的查找</h5><p>与BST、AVL相同，从根出发，左小右大，若查找到空叶结点，则查找失败。</p>
+<h5 id="红黑树的插入"><a href="#红黑树的插入" class="headerlink" title="红黑树的插入"></a>红黑树的插入</h5><p>红黑树的插入过程和二叉查找树的过程基本类似，不同在于红黑树中插入新结点后需要调整（通过重新着色或旋转操作），以满足红黑树的性质。</p>
+<p>若新节点是<strong>根结点</strong>染为黑色，若是<strong>非根</strong>染为红色。</p>
+<p>设结点z为新插入的结点。插入过程如下：</p>
+<ol>
+<li>用二叉查找树插入法插入，并将结点z染为红色。若结点z的<strong>父节点是黑色</strong>，无须做任何调整，此时就是标准的红黑树。</li>
+<li>如果z结点的父节点z.p是红色，则分为三种情况，区别在于z的叔结点y（父节点的兄弟结点）的颜色不同，因父节点z.p为红色，所以爷结点z.p.p必然为黑色。所以分情况需要进行旋转或染色：</li>
+</ol>
+<p><strong>若叔结点为黑色</strong>，需要旋转加染色。</p>
+<ul>
+<li>LL型：右单旋，父换爷+染色。</li>
+<li>RR型：左单旋，父换爷+染色。</li>
+<li>LR型：左、右双旋，儿换爷+染色。</li>
+<li>RL型：右、左双旋，儿换爷+染色。</li>
+</ul>
+<p><strong>若叔结点为红色</strong>，需要把叔结点、父结点、爷结点都染色（即红变黑，黑变红），再把爷结点视为新结点，以新节点给规则再做判断。</p>
+<p>叔父爷染色，爷变为新结点。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/7d1bc00e00b243e3a49fb0228e609375.png" alt="2-14"></p>
+<p>在图2-14再插入结点5，先染为红色，再看父节点10的兄弟结点为黑色，且新插入的结点为LL型（即插入到爷结点的左孩子的左孩子中）。</p>
+<p><img src="https://img-blog.csdnimg.cn/0933271eec994122ac001b1fa19c2363.png" alt="2-15"></p>
+<p>对于LL型处理方法：需要进行右单旋，父结点和爷结点交换并染色。</p>
+<p><img src="https://img-blog.csdnimg.cn/ef00c6f6c38b4dd2b372c0feda0c340b.png" alt="2-16"></p>
+<p>然后最后再把10结点染为黑色，20结点染为红色，如图2-17。</p>
+<p><img src="https://img-blog.csdnimg.cn/b620ac59bdfc47baa8487b97df6e9465.png" alt="2-17"></p>
+<h5 id="红黑树的删除"><a href="#红黑树的删除" class="headerlink" title="红黑树的删除"></a>红黑树的删除</h5><p>红黑树的插入操作容易导致连续的两个红结点，会导致破环红黑树的性质。而删除操作容易造成子树黑高的变化，导致从一个结点到任意叶结点的简单路径上，黑结点数量不同。（<strong>后续再补充</strong>）</p>
+<h3 id="B树和B-树"><a href="#B树和B-树" class="headerlink" title="B树和B+树"></a>B树和B+树</h3><h4 id="B树及其基本操作"><a href="#B树及其基本操作" class="headerlink" title="B树及其基本操作"></a>B树及其基本操作</h4><p>所谓m阶B树是所有结点的平衡因子均等于0的<strong>m路平衡查找树</strong>。</p>
+<p>一颗m阶B树或为空树，或为满足如下特性的m叉树：</p>
+<ol>
+<li><p>树中每个结点至多有m棵子树，即至多含有m-1个关键字。</p>
+</li>
+<li><p>若根结点不是叶结点，则至少有两棵子树。</p>
+</li>
+<li><p>除根结点外的所有非叶结点至少有[m&#x2F;2]棵子树，即至少含有[m&#x2F;2]-1个关键字。</p>
+</li>
+<li><p>所有非叶结点的结构如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/50f25632244f4c56a45f9258d45ad694.png" alt="3-1"></p>
+<p>其中，Ki(i&#x3D;1,2,…,n)为结点关键字，且满足$K1&lt;K2&lt;\dots&lt;Kn$；Pi(i &#x3D; 0,1,…,n)为指向子树根结点的指针，且指针Pi-1所指子树中所有结点的关键字均小于Ki，Pi所指子树中所有结点的关键字均大于Ki，n（$[m&#x2F;2]-1\leqslant n\leqslant m-1$）为结点中关键字的个数。</p>
+</li>
+<li><p>所有的叶结点都出现再同一层次上，并且不带信息（可以视为外部结点或类似于折半查找判定树的查找失败结点）。</p>
+</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/10b3617a34234c979fa8d58a530c4a27.png" alt="3-2"></p>
+<h5 id="B树的高度（磁盘存取次数）"><a href="#B树的高度（磁盘存取次数）" class="headerlink" title="B树的高度（磁盘存取次数）"></a>B树的高度（磁盘存取次数）</h5><p>设B树的高度不包括最后的不带任何信息的叶结点所处的那一层，若$n\geqslant 1$，则对任何一棵包含n个关键字、高度为h、阶数为m的B树：</p>
+<ol>
+<li><p>因为B树种每个结点最多有m棵子树，m-1个关键字，所以在一棵高度为h的m阶B树中关键字的个数应满足$n\leq (m-1)(1+m+m^2+\dots +m^{h-1})&#x3D;m^h-1$，因此有<br>$$<br>h\geq \log_m(n+1)<br>$$</p>
+</li>
+<li><p>若让每个结点中的关键字个数最少，则容纳同样多关键字的B树的高度达到最大。第一层至少有1个结点；第二层至少有2个结点；除根节点外的每个非叶结点至少有[m&#x2F;2]棵子树，则第三层至少有2[m&#x2F;2]个结点……..第h+1层至少有$2([m&#x2F;2])^{h-1}$个结点，注意到第h+1层是不包含任何信息的叶结点。对于关键字个数为n的B树，叶结点的个数为n+1，由此有$n+1\geq 2([m-2])^{h-1}$，即$h\leq \log_{[m&#x2F;2]}((n+1)&#x2F;2)+1$。</p>
+</li>
+</ol>
 
                 
             </div>
