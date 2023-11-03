@@ -460,14 +460,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-01
+                    2023-11-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    9.1k
+                    9.7k
                 </div>
                 
 
@@ -883,6 +883,30 @@ BSTNode <span class="token operator">*</span><span class="token function">BST_Se
 <p>若以图4-5来查找27，则会先通过散列函数H（key） &#x3D; key % 13来搜寻到目标元素存储地址：<code>27%13=1</code>，后再通过链表来搜寻到目标元素。</p>
 <p><img src="https://img-blog.csdnimg.cn/f53c5aa4890747b28f923a11708cdf0a.png" alt="4-6"></p>
 <p>删除和查找操作几乎相同就不再赘述。</p>
+<h5 id="开放地址法"><a href="#开放地址法" class="headerlink" title="开放地址法"></a>开放地址法</h5><p>开放地址法是指可存放新表项的空闲地址既向它的同义词表项开放，又向它的非同义词表项开放。</p>
+<p>如果发生“冲突”，就给新元素找另一个空闲位置。发生第i次冲突时，数学递推公式：<br>$$<br>H_i&#x3D;(H(key)+d_i)%m<br>$$<br>$H_i$：发生第i次冲突时的散列地址；H(key)：初始散列地址；$d_i$：偏移量；m：散列表表长。（**注：$0\leq i \leq m-1 $**）</p>
+<p>四种常用构造探测序列$d_i$的方法：</p>
+<ol>
+<li><p><strong>线性探测法</strong></p>
+<p>线性探测法就是按从左到右的顺序进行探测，当个发生冲突时，顺序查看表中下一个单元（探测到表尾m-1时，下一个探测地址是表首0），直到找到一个空闲单元。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/b18311d524a2473bb8dbf9ac44cd90d0.png" alt="4-7"></p>
+<p>图4-7中若根据散列函数$H(key)&#x3D;key%13$，插入元素1为第地址1的位置，此时和14冲突，根据线性探测法从左往右查找到4号地址为空闲，则插入到4号地址中。</p>
+</li>
+<li><p><strong>平方探测法</strong></p>
+<p>当$d_i&#x3D;0^2,1^2,-1^2,\dots,k^2,-k^2$时，称为平方探测法，其中$k\leq m&#x2F;2$，散列表长度m必须是一个可以表示成4k+3的素数，又称二次探测法。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/d5c8e35b9cd94d39a107a8846255497f.png" alt="4-8"></p>
+<p>根据散列函数$H(key)&#x3D;key%13$，插入元素1为第地址1的位置，此时和14冲突，根据平方探测法（以此时要查找的单元为基准进行探测），先探测$1^2$位置，有元素2，则探测$-1^2$的位置，有元素13，后再探测$2^2$，为空单元，则将元素1放入其中。</p>
+</li>
+<li><p><strong>双散列法</strong></p>
+<p>当$d_i&#x3D;Hash_2(key)$时，称为双散列法。需要使用两个散列函数，当通过第一个散列函数$H(key)$发生冲突时，则利用第二个散列函数$Hash_2(key)$计算该关键字的地址增量。具体形式如下：<br>$$<br>H_i&#x3D;(H(key)+i\times Hash_2(key))% m<br>$$</p>
+</li>
+<li><p><strong>伪随机序列法</strong></p>
+</li>
+</ol>
+<p>​	当$d_i&#x3D;伪随机数序列$时，称为伪随机法，伪随机序列为人为设计的序列。</p>
+<p><strong>注：在开放定址的情况下，删除元素应该逻辑删除，而非物理删除，即删除一个元素可给flag来标记已经删除，而真实物理内存中并没有删除此元素，以至于下次查找不会出错。</strong></p>
 
                 
             </div>
@@ -1262,18 +1286,17 @@ BSTNode <span class="token operator">*</span><span class="token function">BST_Se
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/10/25/shu-ju-jie-gou-cha-zhao/">
+                <a href="/2023/11/03/shu-ju-jie-gou-pai-xu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="数据结构-查找">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="数据结构-排序">
                         
-                        <span class="card-title">数据结构-查找</span>
+                        <span class="card-title">数据结构-排序</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1283,18 +1306,21 @@ BSTNode <span class="token operator">*</span><span class="token function">BST_Se
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-25
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-11-03
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            LsWorld
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
+                                    数据结构
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
