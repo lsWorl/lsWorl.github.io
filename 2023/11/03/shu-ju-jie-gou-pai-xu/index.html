@@ -469,14 +469,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-05
+                    2023-11-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.3k
+                    3.3k
                 </div>
                 
 
@@ -643,6 +643,48 @@
     <span class="token keyword">return</span> low<span class="token punctuation">;</span>					<span class="token comment">//返回存放枢轴的最终位置</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
+
+
+<p><strong>快速排序算法性能分析</strong>：</p>
+<p>空间效率：快排需要借助一个递归工作栈来保存每层递归调用的必要信息，其容量与递归调用的深度一致。最好情况下为$O(log_2n)$；最坏情况下，因为要进行n-1次递归调用，所以栈的深度为O（n）；平均情况下，栈的深度为$O(log_2n)$。</p>
+<p>时间效率：快排的运行时间与划分是否对称有关，快排最坏情况下，对应区域基本不对称，时间复杂度为$O(n^2)$。快排的时间复杂度和递归深度息息相关，若<code>Partition()</code>可能做道最平衡的划分，得到两个子问题的大小都不可能大于n&#x2F;2，这种情况下，平均时间复杂度为$O(nlog_2n)$。</p>
+<p>稳定性：在划分算法中，有可能会将两个相同的值的相对位置发生变化，即快排是一种不稳定的排序算法。</p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><h4 id="简单选择排序"><a href="#简单选择排序" class="headerlink" title="简单选择排序"></a>简单选择排序</h4><p>简单选择排序的思想：假设排序表为$L[1\dots n]$，第i趟排序即从$L[i\dots n]$中选择关键字最小的元素与L(i)交换，每一趟排序可以确定一个元素的最终位置，这样经过n-1趟排序就可以使得整个排序表有序。</p>
+<p><strong>简单选择排序代码实现</strong>：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">SelectSort</span><span class="token punctuation">(</span>ElemType A<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token keyword">int</span> n<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//一共进行n-1趟</span>
+        <span class="token keyword">int</span> min <span class="token operator">=</span> i<span class="token punctuation">;</span>				<span class="token comment">//记录最小元素位置</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span> j<span class="token operator">&lt;</span>n<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span>	<span class="token comment">//在[i..n-1]中选择最小的元素</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>A<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">&lt;</span>A<span class="token punctuation">[</span>min<span class="token punctuation">]</span><span class="token punctuation">)</span> min<span class="token operator">=</span>j<span class="token punctuation">;</span>	<span class="token comment">//更新最小元素位置</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>min <span class="token operator">!=</span>i<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>				<span class="token comment">//若当前位置的元素和最小值不同就移动位置</span>
+            <span class="token keyword">int</span> temp <span class="token operator">=</span> A<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            A<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> A<span class="token punctuation">[</span>min<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            A<span class="token punctuation">[</span>min<span class="token punctuation">]</span> <span class="token operator">=</span> temp<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<p><strong>简单选择排序效率</strong>：</p>
+<p>空间效率：仅使用常熟个辅助单元，故空间效率为O(1)。</p>
+<p>时间效率：在简单排序过程中不会超过3(n-1)次。但元素间比较的次数与序列的初始状态无关，始终是n(n-1)&#x2F;2次，因此时间复杂度始终是$O(n^2)$。</p>
+<p>稳定性：在第i趟找到最小元素后，和第i个元素交换，可能会导致第i个元素与其含有相同关键字元素的相对位置发生改变。</p>
+<h4 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h4><p>堆的定义如下，n个关键字序列$L[1\dots n]$称为堆，当且仅当该序列满足：</p>
+<ol>
+<li>$L(i)\geq L(2i)且L(i)\geq L(2i+1)$  （大根堆）或</li>
+<li>$L(i)\leq L(2i)且L(i) \leq L(2i+1)$ （小根堆） $(1\leq i \leq [n&#x2F;2])$</li>
+</ol>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/8d0b9a7d3da948bd8a66a3bac5d4704f.png" alt="3-1"></p>
+<p>如图3-1，若大根堆中$i&#x3D;1，则L(1)&#x3D;87 \geq L(2)&#x3D;45且L(1)&#x3D;87 \geq L(2+1)&#x3D;78 $，小根堆同理。</p>
+<p>堆数据结构可以视为一棵完全二叉树用顺序存储后的结果，如图3-2所示</p>
+<p><img src="https://img-blog.csdnimg.cn/1bec03e5c49a452195f3795e8354dde5.png" alt="3-2"></p>
+<p>大根堆以完全二叉树视角来看，即$根\geq 左、右$。小根堆则相反，$根\leq 左、右$</p>
+<p><strong>堆排序的思路</strong>：</p>
+<p>首先将存放在L[1…n]中的n个元素建成初始堆，由于堆本身的特点（以大根堆为例），堆顶元素就是最大值。输出堆顶元素后，通常将堆低元素送入堆顶，此时根节点已不满足大顶堆的性质，堆被破坏，将堆顶元素向下调整使其继续保持大顶堆的性质，再继续输出堆顶元素。如此反复。</p>
+<p>而堆排序的关键就是构造初始堆。</p>
+<h5 id="堆构造"><a href="#堆构造" class="headerlink" title="堆构造"></a>堆构造</h5><p>以大根堆为例，</p>
 
                 
             </div>
