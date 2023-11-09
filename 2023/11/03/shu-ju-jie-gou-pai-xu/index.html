@@ -469,14 +469,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-07
+                    2023-11-09
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.2k
+                    6.9k
                 </div>
                 
 
@@ -802,6 +802,72 @@
 <p>空间效率：Merge()操作中，辅助单元为n个单元，所以空间复杂度为O(n)。</p>
 <p>时间效率：每趟归并的时间复杂度为O(n)，共需进行$[log_2n]$趟归并，所以算法时间复杂度为$O(nlog_2n)$。</p>
 <p>稳定性：由于Merge()操作不会改变相同元素的相对次序，所以归并排序是稳定的算法。</p>
+<h4 id="基数排序"><a href="#基数排序" class="headerlink" title="基数排序"></a>基数排序</h4><p>基数排序是一种借助多关键字排序思想对单逻辑关键字进行排序的方法。</p>
+<p>假设长度为n的线性表中每个结点$a_j$的关键字由d元组（$k_j^{d-1},k_j^{d-2},\dots,k_j^1,k_j^{0}$）组成，满足$0\leq k_j^i\leq r-1 \quad (0\leq j&lt;n,0\leq i\leq d-1)$。其中$k_j^{d-1}$为最主位关键字，$k_j^0$为最次位关键字，r为基数。</p>
+<p>以<strong>递减</strong>序列为例：</p>
+<p><img src="https://img-blog.csdnimg.cn/8de0cf9d779c421d951f3e5066ae7ca0.png" alt="4-4"></p>
+<p>此时该表的”个十百“均有十种不同的取值（即取0,1,2,3,4,5,6,7,8,9），则基数为10。最次位关键字为个位，最主位关键字为百位。</p>
+<p>若要对图4-4表进行基数排序，首先会新建队列，在第一趟排序中会将所有数按照”个位“进行”分配”。</p>
+<p><img src="https://img-blog.csdnimg.cn/d0b3685920d44680869f7a0a94e5d9ea.png" alt="4-5"></p>
+<p>如图4-5所示，从左往右按“个位”将每个关键字放到对应的队列中，后再根据队列最大的值进行收集，每个元素会从队头出队。</p>
+<p><img src="https://img-blog.csdnimg.cn/6f1e9b4166a44433a220f04271d6a528.png" alt="4-6"></p>
+<p>收集完成后会得到一个“个位”递减的序列。然后再从左往右根据”十位“进行第二趟排序。</p>
+<p><img src="https://img-blog.csdnimg.cn/1b23e471e8074ecd916584a87fa474d5.png" alt="4-7"></p>
+<p>再进行队头关键词出队收集。</p>
+<p><img src="https://img-blog.csdnimg.cn/14102c7b59e848f78b12bf2c6ee1cb28.png" alt="4-8"></p>
+<p>就可以获得”十位“递减的序列，后再根据”百位“，进行第三趟排序。</p>
+<p><img src="https://img-blog.csdnimg.cn/dd2b429af48c49ab8c286743a47bfe3d.png" alt="4-9"></p>
+<p>再对该队列进行收集。</p>
+<p><img src="https://img-blog.csdnimg.cn/40539d3b89ad413ba5ced1e50b935aee.png" alt="4-10"></p>
+<p>最后就可以得到一个”百位“递减的序列，同时若”百位“相等，则根据”十位“递减，同样的，”十位“相等，根据”个位“递减。就获得了一个递减的表。</p>
+<h5 id="基数排序算法性能分析"><a href="#基数排序算法性能分析" class="headerlink" title="基数排序算法性能分析"></a>基数排序算法性能分析</h5><p>空间效率：一趟排序需要的辅助存储空间为r（r个队列：r个队头指针和r个队尾指针），空间复杂度为O(r)。</p>
+<p>时间效率：基数排序需要进行d趟分配和收集，一趟分配需要O(n)，一趟收集需要O(r)（r为基数），所以基数排序的时间复杂度为O(d(n+r))。</p>
+<p>稳定性：对于基数排序算法而言，很重要一点就是按位排序时必须是稳定的。因此基数排序一定是稳定的。</p>
+<h3 id="外部排序"><a href="#外部排序" class="headerlink" title="外部排序"></a>外部排序</h3><blockquote>
+<p>文件通常是按块存储在磁盘上的，磁盘的读&#x2F;写以”块“为单位，数据读入内存后才能被修改，修改完成后还需写回磁盘，因此在外部排序过程中的时间代价主要考虑访问磁盘的次数，即I&#x2F;O数。</p>
+</blockquote>
+<p>外部排序通常采用归并排序法，与内部排序归并相似，先将每个文件块读入缓存，再将读入的记录进行排序，将排序完的有序子文件重新写回外存，最后再对这些文件块逐趟归并，使有序子文件逐渐由小到大，直至得到整个有序文件为止。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/6011a61925774801a9d2d2432a23f765.png" alt="5-1"></p>
+<p>若想将图5-1中文件块有序，需先读入部分文件块使先做到部分有序。</p>
+<p><img src="https://img-blog.csdnimg.cn/f99c88ff152845c4a79a3442958f618b.png" alt="5-2"></p>
+<p>此时读入了两块文件块，对其进行排序。</p>
+<p><img src="https://img-blog.csdnimg.cn/db8b2ce50e014db18d961518261834cb.png" alt="5-3"></p>
+<p>再依次放到输出缓冲区，写回磁盘中。</p>
+<p><img src="https://img-blog.csdnimg.cn/ee19efa7c87f4c4db1cd14b008dd2a74.png" alt="5-4"></p>
+<p>此时这两块文件块就是有序，即可将这两块文件块称为一个有序的”归并段“，然后依次再对剩下的文件块进行读入排序再写回。</p>
+<p><img src="https://img-blog.csdnimg.cn/51b5e6ee26314feea20b8f08c05eae75.png" alt="5-5"></p>
+<p>经过16次读和16次的写，就可以获得8个有序”归并段“，此时就可以根据”归并段“进行归并排序。</p>
+<p><img src="https://img-blog.csdnimg.cn/9bc4c7d8b8c44aa48096792a29d27db4.png" alt="5-6"></p>
+<p>此时将”归并段1“和”归并段2“中的两块子文件放入缓冲区进行排序，当凑满3个关键字就写回磁盘中。</p>
+<p><img src="https://img-blog.csdnimg.cn/acd86994f0b24a60bc4ed47f8d37e9f8.png" alt="5-7"></p>
+<p>此时就凑满3个最小关键字就写回到磁盘中，此时为了方便接下来继续使用二路归并，物理上会新建一个新文件块来存储要写回的关键字，将原先空间归还给系统。</p>
+<p><img src="https://img-blog.csdnimg.cn/678221d791a14bd397ef195624864949.png" alt="5-8"></p>
+<p>然后继续进行归并，而当输入缓冲区有一块为空时，就会立刻从磁盘中再读新的文件快来填补。</p>
+<p><img src="https://img-blog.csdnimg.cn/d9678fa445be42c4a9a2cd3872789363.png" alt="5-9"></p>
+<p>这样就能保证归并永远是从归并段中最小的记录开始。</p>
+<p><img src="https://img-blog.csdnimg.cn/296022b077b14c04aa866ac9fc6fb67e.png" alt="5-10"></p>
+<p>最后就能归并一个更长的“归并段”。</p>
+<p><img src="https://img-blog.csdnimg.cn/d7d9d4e61ea24536b054f2c526e0164e.png" alt="5-11"></p>
+<p>依次再将剩下的归并，可得：</p>
+<p><img src="https://img-blog.csdnimg.cn/78e7f66380f846dfbcee25f8b35978e0.png" alt="5-12"></p>
+<p>然后依据这个思路，扩充为8、16个文件块为以归并段进行归并，就能获得最终有序文件。</p>
+<p>一般情况下，外部排序中实现两两归并时，会进行大量数据读出、写入磁盘，而这会耗费大量的时间。一般<strong>外部排序的总时间 &#x3D; 内部排序所需的时间 + 外存信息读写的时间 + 内部归并所需的时间</strong>。</p>
+<p>由上二路归并所示，生成一个归并段就会进行了读、写外部信息，而读写的次数&#x3D;32 + 32*3 &#x3D;128（初始生成归并段进行读、写各16次，读、写各16次，共三趟归并）。</p>
+<p>若想进行优化，可采用4归并排序，仅需2趟归并，此时外部读、写次数减至32+ 32 *2 &#x3D; 96次。</p>
+<p><strong>结论</strong>：</p>
+<p>对用r个初始归并段，做k路归并，则归并书可用k叉树表示，若树高为h，则$归并趟数&#x3D;h-1&#x3D;[\log_kr]$，<strong>若k越大，r越小，归并趟数越少，读写磁盘次数越少</strong>。</p>
+<h4 id="败者树"><a href="#败者树" class="headerlink" title="败者树"></a>败者树</h4><p>败者树可视为一棵完全二叉树。k个叶结点分别是当前参加比较的元素，非叶子结点用来记忆左右子树中的“失败者”，而让胜者往上继续进行比较，一直到根结点。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/c20e026756ca4086a41f8e119cd7ca54.png" alt="5-13"></p>
+<p>败者树中会将每个归并段中第一个最小的关键字进行比较，更小的将继续上升继续下一轮比较。</p>
+<p><img src="https://img-blog.csdnimg.cn/d9834dab86a141b9bec30379e3da5882.png" alt="5-14"></p>
+<p>从左往右看27和12进行比较，12失败，记录失败者的归并段1，12进行下一场比拼。1和17比较，1失败，记录失败者的归并段4，1进入下一场比拼。2和9比较，2失败，记录失败者的归并段6，2进行下一场比拼。11和4比较，4失败，记录失败者的归并段7，4进入下一场比拼，每次都会进行最小关键字的比较，比较到最后可得最小关键字为1，来自归并段3（树中放的是关键字来自哪个归并段）。</p>
+<p><img src="https://img-blog.csdnimg.cn/3d7dc3d362ee444eac12a2a20646d849.png" alt="5-15"></p>
+<p>然后进行下一轮比较，直接可从归并段3中使6出队，与剩下的进行比较。</p>
+<p><img src="https://img-blog.csdnimg.cn/d56bdfd7769847f18e5e602b8cede7b7.png" alt="5-16"></p>
+<p>依次进行比较，后面就不再过多赘述。</p>
+<p><strong>对于k路归并，第一次构造败者树需要对比关键字k-1次，有了败者树，选出最小元素只需对比关键字$[\log_2k]$次</strong></p>
 
                 
             </div>
