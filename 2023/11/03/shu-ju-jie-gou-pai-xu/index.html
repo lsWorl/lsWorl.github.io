@@ -469,14 +469,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-09
+                    2023-11-11
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    6.9k
+                    8.1k
                 </div>
                 
 
@@ -857,7 +857,7 @@
 <p>若想进行优化，可采用4归并排序，仅需2趟归并，此时外部读、写次数减至32+ 32 *2 &#x3D; 96次。</p>
 <p><strong>结论</strong>：</p>
 <p>对用r个初始归并段，做k路归并，则归并书可用k叉树表示，若树高为h，则$归并趟数&#x3D;h-1&#x3D;[\log_kr]$，<strong>若k越大，r越小，归并趟数越少，读写磁盘次数越少</strong>。</p>
-<h4 id="败者树"><a href="#败者树" class="headerlink" title="败者树"></a>败者树</h4><p>败者树可视为一棵完全二叉树。k个叶结点分别是当前参加比较的元素，非叶子结点用来记忆左右子树中的“失败者”，而让胜者往上继续进行比较，一直到根结点。</p>
+<h4 id="败者树"><a href="#败者树" class="headerlink" title="败者树"></a>败者树</h4><p>败者树可视为一棵完全二叉树。k个叶结点分别是当前参加比较的元素，非叶子结点用来记忆左右子树中的“失败者”，而让胜者往上继续进行比较（即让更小的进行下一步比较，根节点为要比较的结点中最小的值），一直到根结点。</p>
 <p>例：</p>
 <p><img src="https://img-blog.csdnimg.cn/c20e026756ca4086a41f8e119cd7ca54.png" alt="5-13"></p>
 <p>败者树中会将每个归并段中第一个最小的关键字进行比较，更小的将继续上升继续下一轮比较。</p>
@@ -868,6 +868,56 @@
 <p><img src="https://img-blog.csdnimg.cn/d56bdfd7769847f18e5e602b8cede7b7.png" alt="5-16"></p>
 <p>依次进行比较，后面就不再过多赘述。</p>
 <p><strong>对于k路归并，第一次构造败者树需要对比关键字k-1次，有了败者树，选出最小元素只需对比关键字$[\log_2k]$次</strong></p>
+<h4 id="置换-选择排序（生成初始归并段）"><a href="#置换-选择排序（生成初始归并段）" class="headerlink" title="置换-选择排序（生成初始归并段）"></a>置换-选择排序（生成初始归并段）</h4><blockquote>
+<p>若磁盘要排序总的记录个数为n，每个归并段的长度为l，则初始归并段的个数$r&#x3D;[n&#x2F;l]$。若用内部排序方法得到各个初始归并段，它就依赖于内部排序时可用内存工作区的大小。因此，可用置换-选择算法来产生更长的初始归并段。</p>
+</blockquote>
+<p>设初始代排文件为FI，初始归并段输出文件为FO，内存工作区为WA，FO和WA的初始状态为空，WA可容纳w个记录。置换-选择排序步骤如下：</p>
+<ol>
+<li>从FI输入w个记录到工作区WA。</li>
+<li>从WA中选出其中关键字取最小值的记录，记为MINIMAX记录。</li>
+<li>将MINIMAX记录输出到FO中去。</li>
+<li>若FI不空，则从FI输入下一个记录到WA中。</li>
+<li>从WA中所有关键字比MINIMAX记录的关键字大的记录中选出最小关键字记录，作为新的MINIMAX记录。</li>
+<li>重复3和5的步骤，直至WA中选不出新的MINIMAX记录为止，由此得到一个初始归并段，输出一个归并段的结束标志到FO中。</li>
+<li>重复2和6的步骤，直至WA为空。</li>
+</ol>
+<p>例子（构造递增归并段）：</p>
+<p><img src="https://img-blog.csdnimg.cn/76e4fe19f05f4f988a3d852e0b957622.png" alt="5-17"></p>
+<p>如图5-17，有24个初始待排序记录，设内存工作区WA只能容纳3个记录，会先读取FI中开头的三个记录3、4、9，加入到WA中，然后选出最小的记录为MINIMAX记录并放到归并段1中。</p>
+<p><img src="https://img-blog.csdnimg.cn/7ac072b464164ef6adb739c633f66ae2.png" alt="5-18"></p>
+<p>此时WA中出现空位，就会从FI中再读入新的记录。</p>
+<p><img src="https://img-blog.csdnimg.cn/c4ecccb8057a48bbb53d177b073a9535.png" alt="5-19"></p>
+<p>此时WA中最小值为6，并且比$MINIMAX&#x3D;4$要大，所以将6放入到归并段1中，并且把MINIMAX修改为6，再从FI中读入13。</p>
+<p><img src="https://img-blog.csdnimg.cn/585a23d98d00490595b0b4e137063b9e.png" alt="5-20"></p>
+<p>不断重复上方步骤，直至读入10时：</p>
+<p><img src="https://img-blog.csdnimg.cn/30bacbf8543141048250ccfe5b71c7d5.png" alt="5-21"></p>
+<p>此时10要小于$MINIMAX&#x3D;13$，从而要将MINIMAX改成第二小的14（保证归并段1中递增），并将14放入放入归并段1中。</p>
+<p><img src="https://img-blog.csdnimg.cn/e063ffdd51e64747856acb27c773673d.png" alt="5-22"></p>
+<p>再继续进行上方步骤，直至WA中都比归并段1中末尾值要小。说明此时就应该截止。</p>
+<p><img src="https://img-blog.csdnimg.cn/add5f4fc027b4c288fb10dac4abd78aa.png" alt="5-23"></p>
+<p>后面剩下的记录和上方步骤一样，即可获得最终3个归并段。</p>
+<p><img src="https://img-blog.csdnimg.cn/1b2040ca9e05495296b78bf3f31852f9.png" alt="5-24"></p>
+<h4 id="最佳归并树"><a href="#最佳归并树" class="headerlink" title="最佳归并树"></a>最佳归并树</h4><p>最佳归并树是将长度不等的初始归并段来归并排序，并使I&#x2F;O次数最少。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/be1a611048f34f52801b6577cbf10102.png" alt="5-25"></p>
+<p>若有图5-25五个归并段R1,R2,R3,R4,R5，记录个数分别为2,5,1,6,2。此时使用二路归并，来生成归并树:</p>
+<p><img src="https://img-blog.csdnimg.cn/accd33c2703b42f2aec7da7d6568c502.png" alt="5-26"></p>
+<p>先将R2和R3进行二路归并，将R2中5个记录和R3中1个记录读入到内存，在内存中进行归并后再写回磁盘，来回就读、写各（5+1）次，R4和R5同理，读、写各（6+2）次，然后再将他们归并好的记录个数6和记录个数8进行归并成有14记录的归并段，最后再和R1归并，即最终的含有16个记录的归并段。</p>
+<p>此时上方<strong>读磁盘的次数&#x3D;写磁盘的次数&#x3D;6+8+14+16&#x3D;44次</strong>，而此时归并树的带权路径长度$WPL&#x3D;2<em>1+5</em>3+1<em>3+6</em>3+2*3&#x3D;44$，和读、写磁盘的次数相同。</p>
+<p><strong>由此可得$I&#x2F;O次数&#x3D;2\times WPL$。</strong></p>
+<p>若想让I&#x2F;O次数最少，即WPL最少，就可以使用哈夫曼树来构建，哈夫曼树（以二路归并为例）就是以两个结点权值最小的组成一个树，此时根节点为两个结点权值之和，后再根据权值最小的两个结点进行归并。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/f11efe61e6744c41ad6e465431a9d5e5.png" alt="5-27"></p>
+<p>图2-27中构建哈夫曼树先R3和R1构成一棵树，根节点的权值为3，根节点3再与R5构建树，根节点权值为5，再与R2构建树，根节点权值为10，再与R4构建树，根节点权值为16。</p>
+<p><img src="https://img-blog.csdnimg.cn/5f341abaf883454fad55f3b8e3a357eb.png" alt="5-28"></p>
+<p>此时树的$WPL&#x3D;1<em>4+2</em>4+2<em>3+5</em>2+6*1&#x3D;34$，而此时I&#x2F;O次数只需68次，先前图5-25进行归并则需I&#x2F;O88次，明显用哈夫曼树效率提高。</p>
+<p>而当进行k叉归并时，若<strong>初始归并段的数量无法构成严格的k叉归并树，则需要补充几个权值为0的“虚段”</strong>，再进行k叉哈夫曼树的构造。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/8ece6b66cca8402d93d54be5052407bd.png" alt="5-29"></p>
+<p>此时图2-29若想进行3路归并，显然会少一个结点，此时就可以填补一个虚段0，从而满足严格3叉归并树。</p>
+<p><img src="https://img-blog.csdnimg.cn/b4790fa1c7ef4ac99399bee9d2271985.png" alt="5-30"></p>
+<p>再构建3叉哈夫曼树：</p>
+<p><img src="https://img-blog.csdnimg.cn/df0646c468dc48f3a25f93bdbf558cf7.png" alt="5-31"></p>
 
                 
             </div>
