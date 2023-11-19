@@ -466,14 +466,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-04
+                    2023-11-19
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2k
+                    2.2k
                 </div>
                 
 
@@ -583,6 +583,18 @@
 <p>$cosy&#x3D;\frac{1}{2}(e^{iy}+e^{-iy}),$</p>
 <p>$siny&#x3D;\frac{1}{2i}(e^{iy}-e^{-iy}),$</p>
 <p>将实数y改成z即可的复数形式的三角函数。</p>
+<h3 id="复变函数的积分"><a href="#复变函数的积分" class="headerlink" title="复变函数的积分"></a>复变函数的积分</h3><p>复积分和第二类曲线积分有类似的性质<br>$$<br>\int_c f(z)dz&#x3D;-\int_c -f(z)dz \<br>\int_c kf(z)dz &#x3D; k\int_c f(z)dz\<br>\int_c [f(z)+g(z)]dz&#x3D;\int_c f(z)dz+\int_c g(z)dz\<br>c的长度为L,|f(z)|\leq M, 则|\int_c f(z)dz|\leq \int_c |f(z)|ds\leq M\int_c ds&#x3D;ML<br>$$</p>
+<p>积分计算方法：</p>
+<p>1.可以使用二元实变函数的线积分来计算：<br>$$<br>\int_c f(z)dz&#x3D;\int_c <a href="dx+idy">u(x,y)+ iv(x,y)</a>\&#x3D;\int_c (u(x,y)dx - v(x,y)dy) + i\int_c (u(x,y)dy+v(x,y)dx)<br>$$<br>令参数方程来进行计算：<br>$$<br>C&#x3D;\begin{cases}<br>x&#x3D;x(t) \<br>y&#x3D;t(t)<br>\end{cases} \quad 起点:t1 \quad 终点:t2\<br>$$<br>然后带入上方第一个式子中进行计算。</p>
+<p><strong>通过复平面的直线表示方法：</strong></p>
+<p>设$z_1&#x3D;x_1+iy_1\quad z_2&#x3D;x_2+iy_2$</p>
+<ol>
+<li><p>$z&#x3D;z_1+t(z_1-z_1)$</p>
+</li>
+<li><p>$$<br>C&#x3D;\begin{cases}<br>x&#x3D;x_1+t(x_2-x_1) \<br>y&#x3D;y_1+t(y_2-y_1)<br>\end{cases} \quad 起点:t_1 \quad 终点:t_2\<br>$$</p>
+</li>
+</ol>
+<p>重要结论：<br>$$<br>\oint_c \frac{1}{(z-z_0)^{n+1}}dz ,其中C:|z-z_0|&#x3D;r,正向路径\<br>则：<br>\begin{cases}<br>2\pi i &amp; n&#x3D;0 \<br>0 &amp; n\neq 0<br>\end{cases}<br>$$</p>
 
                 
             </div>
