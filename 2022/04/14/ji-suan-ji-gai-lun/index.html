@@ -470,14 +470,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-17
+                    2023-11-20
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.8k
+                    2.6k
                 </div>
                 
 
@@ -588,6 +588,51 @@
 <p>第4级汇编语言层，这一层由汇编语言支持和执行，为用户提供提供一种符号化的语言，借此可编写汇编语言源程序。</p>
 <p>第5级高级语言层，它是面向用户的，该层由各种高级语言编译程序支持和执行。</p>
 <p><strong>指令集体系结构（ISA）：</strong>软件和硬件之间的界面，设计计算机的系统的ISA，就是定义一台计算机可以支持哪些指令，以及每条指令的作用是什么、每条指令的用法是什么。</p>
+<h3 id="计算机的性能指标"><a href="#计算机的性能指标" class="headerlink" title="计算机的性能指标"></a>计算机的性能指标</h3><h4 id="字长"><a href="#字长" class="headerlink" title="字长"></a>字长</h4><p>字长是指计算机进行一次整数运算所能处理的二进制数据的位数，通常与CPU的寄存器位数、加法器有关。计算机字长通常选定为字节（8位）的整数倍。</p>
+<h4 id="数据通路带宽"><a href="#数据通路带宽" class="headerlink" title="数据通路带宽"></a>数据通路带宽</h4><p>数据通路带宽是指<strong>数据总线一次所能并行传送信息的位数</strong>。</p>
+<h4 id="主存容量"><a href="#主存容量" class="headerlink" title="主存容量"></a>主存容量</h4><p>主存容量是指<strong>主存储器所能存储信息的最大容量</strong>，通常以字节来衡量。</p>
+<p>由于主存储器中MAR（存储地址寄存器）位数反映<strong>存储单元的个数</strong>（最多支持多少个），MDR（存储数据寄存器）位数等于<strong>存储字长</strong>等于<strong>每个存储单元的大小</strong>。</p>
+<p>**总容量&#x3D;存储单元个数$\times$存储字长 **（单位为bit）。</p>
+<h4 id="运算速度"><a href="#运算速度" class="headerlink" title="运算速度"></a>运算速度</h4><ol>
+<li><p>吞吐量和响应时间。</p>
+<ul>
+<li>吞吐量：指系统再单位时间内处理请求的数量。<strong>系统吞吐量主要取决于主存的存取周期</strong>。</li>
+<li>响应时间：指用户从计算机发送一个请求，到<strong>系统对该请求做出响应并获得所需结果的等待时间</strong>。</li>
+</ul>
+</li>
+<li><p>主频和CPU时钟周期。</p>
+<ul>
+<li>CPU时钟周期。通常为节拍脉冲或T周期，即主频的倒数，是<strong>CPU的最小时间单位</strong>，执行指令的每个动作至少需要1个时钟周期。</li>
+<li>主频（CPU时钟频率）。是<strong>衡量机器速度的重要参数</strong>。主频越高，完成指令的一个执行步骤所用的时间越短，执行指令的速度越快。</li>
+</ul>
+<p><strong>注：CPU时钟周期&#x3D;1&#x2F;主频，主频通常以Hz（赫兹）为单位，1Hz表示每秒1次。</strong></p>
+</li>
+<li><p>CPI（Cycle Per Instruction）：即<strong>执行一条指令所需的时钟周期数</strong>。</p>
+</li>
+<li><p>CPU执行时间：指运行一个程序所花费的时间。、</p>
+<p><strong>CPU执行时间&#x3D;CPU时钟周期数&#x2F;主频&#x3D;（指令条数$\times$CPI）&#x2F;主频</strong></p>
+<p>CPU的性能主要取决于<strong>三个要素</strong>：</p>
+<ol>
+<li>主频</li>
+<li>每条指令执行所用的时钟周期数（CPI）</li>
+<li>指令条数</li>
+</ol>
+</li>
+<li><p>MIPS（Million Instructions Per Second），即每秒执行多少百万条指令。</p>
+<p>MIPS&#x3D;指令条数&#x2F;(执行时间$\times 10^6$)&#x3D;主频&#x2F;(CPI$\times 10^6$)</p>
+</li>
+</ol>
+<h4 id="基准程序"><a href="#基准程序" class="headerlink" title="基准程序"></a>基准程序</h4><p>基准程序是专门用来进行性能评价的一组程序。（例如跑分软件）</p>
+<h4 id="其他专业术语"><a href="#其他专业术语" class="headerlink" title="其他专业术语"></a>其他专业术语</h4><ol>
+<li>系列机：具有基本相同的体系结构，使用相同基本指令系统的多个不同型号的计算机组成的一个产品系列。</li>
+<li>兼容：指软件或硬件的通用性。</li>
+<li>软件可移植性：指把使用再某个系列计算机中的软件直接或进行很少修改就能运行在另一个计算机的可能性。</li>
+<li>固件：将程序固化在ROM中组成的部件称为固件。</li>
+</ol>
+<h4 id="常用数量单位"><a href="#常用数量单位" class="headerlink" title="常用数量单位"></a>常用数量单位</h4><h5 id="描述内存容量、文件大小时："><a href="#描述内存容量、文件大小时：" class="headerlink" title="描述内存容量、文件大小时："></a><strong>描述内存容量、文件大小时：</strong></h5><p>$1KB&#x3D;2^{10}B&#x3D;1024B,1MB&#x3D;2^{20}B,1GB&#x3D;2^{30}B, 1TB&#x3D;2^{40}B$</p>
+<h5 id="描述频率、速率时："><a href="#描述频率、速率时：" class="headerlink" title="描述频率、速率时："></a><strong>描述频率、速率时：</strong></h5><p><strong>大小以乘$10^3$递增</strong></p>
+<p>$K&#x3D;10^3,M&#x3D;10^6…$</p>
+<p>K-&gt;M-&gt;G-&gt;T-&gt;P-&gt;F-&gt;Z</p>
 
                 
             </div>
