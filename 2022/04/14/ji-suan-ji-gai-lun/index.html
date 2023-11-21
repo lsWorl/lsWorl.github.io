@@ -470,14 +470,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-20
+                    2023-11-21
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.6k
+                    3k
                 </div>
                 
 
@@ -589,6 +589,11 @@
 <p>第5级高级语言层，它是面向用户的，该层由各种高级语言编译程序支持和执行。</p>
 <p><strong>指令集体系结构（ISA）：</strong>软件和硬件之间的界面，设计计算机的系统的ISA，就是定义一台计算机可以支持哪些指令，以及每条指令的作用是什么、每条指令的用法是什么。</p>
 <h3 id="计算机的性能指标"><a href="#计算机的性能指标" class="headerlink" title="计算机的性能指标"></a>计算机的性能指标</h3><h4 id="字长"><a href="#字长" class="headerlink" title="字长"></a>字长</h4><p>字长是指计算机进行一次整数运算所能处理的二进制数据的位数，通常与CPU的寄存器位数、加法器有关。计算机字长通常选定为字节（8位）的整数倍。</p>
+<ul>
+<li><strong>数据字长</strong>：是数据总线一次能并行传送信息的位数。</li>
+<li><strong>存储字长</strong>：一个存储单元中的<strong>二进制代码的位数</strong>，存储字长等于MDR的位数。</li>
+<li><strong>机器字长</strong>：即计算机的位数，计算机一次能处理的二进制的长度。</li>
+</ul>
 <h4 id="数据通路带宽"><a href="#数据通路带宽" class="headerlink" title="数据通路带宽"></a>数据通路带宽</h4><p>数据通路带宽是指<strong>数据总线一次所能并行传送信息的位数</strong>。</p>
 <h4 id="主存容量"><a href="#主存容量" class="headerlink" title="主存容量"></a>主存容量</h4><p>主存容量是指<strong>主存储器所能存储信息的最大容量</strong>，通常以字节来衡量。</p>
 <p>由于主存储器中MAR（存储地址寄存器）位数反映<strong>存储单元的个数</strong>（最多支持多少个），MDR（存储数据寄存器）位数等于<strong>存储字长</strong>等于<strong>每个存储单元的大小</strong>。</p>
@@ -602,14 +607,17 @@
 </li>
 <li><p>主频和CPU时钟周期。</p>
 <ul>
-<li>CPU时钟周期。通常为节拍脉冲或T周期，即主频的倒数，是<strong>CPU的最小时间单位</strong>，执行指令的每个动作至少需要1个时钟周期。</li>
-<li>主频（CPU时钟频率）。是<strong>衡量机器速度的重要参数</strong>。主频越高，完成指令的一个执行步骤所用的时间越短，执行指令的速度越快。</li>
+<li><p>CPU时钟周期。通常为节拍脉冲或T周期，即主频的倒数，是<strong>CPU的最小时间单位</strong>，执行指令的每个动作至少需要1个时钟周期。</p>
+<p><strong>CPU时钟周期&#x3D;$\frac{1}{主频}$</strong></p>
+</li>
+<li><p>主频（CPU时钟频率）。是<strong>衡量机器速度的重要参数</strong>。主频越高，完成指令的一个执行步骤所用的时间越短，执行指令的速度越快。</p>
+</li>
 </ul>
 <p><strong>注：CPU时钟周期&#x3D;1&#x2F;主频，主频通常以Hz（赫兹）为单位，1Hz表示每秒1次。</strong></p>
 </li>
 <li><p>CPI（Cycle Per Instruction）：即<strong>执行一条指令所需的时钟周期数</strong>。</p>
 </li>
-<li><p>CPU执行时间：指运行一个程序所花费的时间。、</p>
+<li><p>CPU执行时间：指运行一个程序所花费的时间。</p>
 <p><strong>CPU执行时间&#x3D;CPU时钟周期数&#x2F;主频&#x3D;（指令条数$\times$CPI）&#x2F;主频</strong></p>
 <p>CPU的性能主要取决于<strong>三个要素</strong>：</p>
 <ol>
@@ -619,7 +627,7 @@
 </ol>
 </li>
 <li><p>MIPS（Million Instructions Per Second），即每秒执行多少百万条指令。</p>
-<p>MIPS&#x3D;指令条数&#x2F;(执行时间$\times 10^6$)&#x3D;主频&#x2F;(CPI$\times 10^6$)</p>
+<p><strong>MIPS&#x3D;指令条数&#x2F;(执行时间$\times 10^6$)&#x3D;主频&#x2F;(CPI$\times 10^6$)</strong></p>
 </li>
 </ol>
 <h4 id="基准程序"><a href="#基准程序" class="headerlink" title="基准程序"></a>基准程序</h4><p>基准程序是专门用来进行性能评价的一组程序。（例如跑分软件）</p>
@@ -633,6 +641,17 @@
 <h5 id="描述频率、速率时："><a href="#描述频率、速率时：" class="headerlink" title="描述频率、速率时："></a><strong>描述频率、速率时：</strong></h5><p><strong>大小以乘$10^3$递增</strong></p>
 <p>$K&#x3D;10^3,M&#x3D;10^6…$</p>
 <p>K-&gt;M-&gt;G-&gt;T-&gt;P-&gt;F-&gt;Z</p>
+<h3 id="常见问题与易混淆点"><a href="#常见问题与易混淆点" class="headerlink" title="常见问题与易混淆点"></a>常见问题与易混淆点</h3><h4 id="翻译程序、解释程序、汇编程序、编译程序的区别和联系"><a href="#翻译程序、解释程序、汇编程序、编译程序的区别和联系" class="headerlink" title="翻译程序、解释程序、汇编程序、编译程序的区别和联系"></a>翻译程序、解释程序、汇编程序、编译程序的区别和联系</h4><p>翻译程序有两种：</p>
+<p>​	一种是<strong>编译程序</strong>，将语言源程序<strong>一次性全翻译</strong>成目标程序。</p>
+<p>​	另一种是<strong>解释程序</strong>，将语言源程序<strong>逐句翻译</strong>成对应的机器目标代码，直至所有语句全部被翻译并执行完。</p>
+<p><strong>汇编程序</strong>也是一种语言翻译程序，它把<strong>汇编语言源程序翻译为机器语言程序</strong>。</p>
+<h4 id="透明性"><a href="#透明性" class="headerlink" title="透明性"></a>透明性</h4><p>在计算机领域种，所谓用户无法”看“到的某个事物或属性，称为”透明“。</p>
+<p>例如，<strong>对用高级语言程序员来说</strong>，浮点数格式。乘法指令等这些指令的格式和数据如何运行等都是<strong>透明</strong>的；</p>
+<p><strong>对于机器语言或汇编语言程序员来说</strong>，指令的格式、机器结构、数据格式等<strong>都不是透明的</strong>。</p>
+<p><strong>在CPU中</strong>，IR、MAR和MDR对各类程序员都是<strong>透明</strong>的。</p>
+<h4 id="字、字长、机器字长、指令字长、存储字长的区别和联系"><a href="#字、字长、机器字长、指令字长、存储字长的区别和联系" class="headerlink" title="字、字长、机器字长、指令字长、存储字长的区别和联系"></a>字、字长、机器字长、指令字长、存储字长的区别和联系</h4><p>通常说”某16位或32位机器“中，16、32指的是字长，<strong>也称机器字长</strong>。</p>
+<p>所谓<strong>字长</strong>，通常是指CPU内部用于整数运算的<strong>数据通路的宽度</strong>，反映了计算机处理信息的能力。</p>
+<p><strong>指令字长</strong>一般取<strong>存储字长</strong>的整数倍，若指令字长等于存储字长的2倍，则需要2访存周期来取出一条指令；</p>
 
                 
             </div>
