@@ -4,14 +4,14 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="数电-数字逻辑概论, LsWorld">
+    <meta name="keywords" content="电路-电阻电路的一般分析, LsWorld">
     <meta name="description" content="
 
-数制
-数制的概念就不过多赘述，这里主要描述十进制，二进制，八进制以及十六机制间的相互转换。
 
-十-二-八-十六进制之间的转换二进制转十进制按位权进行展开再求和。
-例：$$(101110.011)2 &amp;#x3D; 1 \times 2^5">
+
+网孔电流法网孔电流法是以沿网孔连续流动的假想电流为未知量列写电路方程分析电路的方法。仅适用于平面电路。
+基本思想：为减少未知量的个数，假想每个回路种有一个回路电流。各支路电流可用回路电流的线性组合表示，来求得电路的解。
+列写的方程：">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -25,7 +25,7 @@
 
     
 
-    <title>数电-数字逻辑概论 | LsWorld</title>
+    <title>电路-电阻电路的一般分析 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -315,12 +315,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">数电-数字逻辑概论</h1>
+                    <h1 class="description center-align post-title">电路-电阻电路的一般分析</h1>
                 </div>
             </div>
         </div>
@@ -436,8 +436,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E6%95%B0%E7%94%B5/">
-                                <span class="chip bg-color">数电</span>
+                            <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                                <span class="chip bg-color">电路</span>
                             </a>
                         
                     </div>
@@ -448,8 +448,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
-                                数电
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                电路
                             </a>
                         
                     </div>
@@ -461,21 +461,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-10-05
+                    2023-11-23
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-24
+                    2023-11-23
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.6k
+                    665
                 </div>
                 
 
@@ -497,132 +497,32 @@
             <div id="articleContent">
                 <meta name="referrer" content="no-referrer"/>
 
-<h3 id="数制"><a href="#数制" class="headerlink" title="数制"></a>数制</h3><blockquote>
-<p>数制的概念就不过多赘述，这里主要描述十进制，二进制，八进制以及十六机制间的相互转换。</p>
-</blockquote>
-<h4 id="十-二-八-十六进制之间的转换"><a href="#十-二-八-十六进制之间的转换" class="headerlink" title="十-二-八-十六进制之间的转换"></a>十-二-八-十六进制之间的转换</h4><h5 id="二进制转十进制"><a href="#二进制转十进制" class="headerlink" title="二进制转十进制"></a>二进制转十进制</h5><p>按位权进行展开再求和。</p>
-<p>例：<br>$$<br>(101110.011)<em>2 &#x3D; 1 \times 2^5 + 0 \times 2^4 + 1 \times 2^3 + 1 \times 2^2 + 1 \times 2^1 + 0 \times 2^0 + 0\times 2^{-1} + 1 \times 2^{-2} + 1 \times 2^{-3} &#x3D; (46.375)</em>{10}<br>$$</p>
-<h5 id="十进制转二进制"><a href="#十进制转二进制" class="headerlink" title="十进制转二进制"></a>十进制转二进制</h5><p>十进制通过除2即可将再将每次除过后的余数保存下来并倒序即可获得相应的二进制数。<strong>整数部分采用“除基取余，小鼠部分采用“乘基取整法”</strong></p>
-<p>例：$$(26.375)_{10}$$</p>
-<p>整数部分（%代表取余）：26%2 &#x3D; 0 ，后再将 13 % 2 &#x3D; 1 （13是通过26&#x2F;2算出），后 6 % 2 &#x3D; 0，再 3 % 2 &#x3D; 1，最后 1%2 &#x3D; 1，一直除到商为0为止。将取到的余倒序，则得整数二进制$$(11010)_2$$。</p>
-<p>小数部分：$$0.375\times 2 &#x3D; 0.750$$整数部分为0，后$$0.750 \times 2 &#x3D; 1.500$$整数部分为1，取出，后$$0.500 \times 2 &#x3D; 1.000$$整数部分为1取出。最后小数部分顺序得小数二进制$$(.011)_2$$。</p>
-<p>合在一起得：$$(26.375)_{10} &#x3D; (11010.011)_2$$</p>
-<p><strong>十进制转八进制或十六进制</strong>就是将除部分改为<strong>8</strong>或<strong>16</strong>。</p>
-<h5 id="二进制与八、十六进制相互转换"><a href="#二进制与八、十六进制相互转换" class="headerlink" title="二进制与八、十六进制相互转换"></a>二进制与八、十六进制相互转换</h5><p>二进制转八进制与十六进制：</p>
-<blockquote>
-<p>从小数点开始，整数部分向左、小数部分向右三位一组（十六进制以四位一组），不足三位（四位）的加0补足，再按顺序写出各组对应的八进制数（十六进制数）。</p>
-</blockquote>
-<p>以八进制为例：</p>
-<p>$$(11\quad 100\quad 101.\quad111\quad 010\quad 11)_2$$，整数部分以三位一组，得$$011\quad 100\quad 101$$（补了一位0）后将每三位换成八进制得$$(345)_8$$，小数部分则右补零得$$.111\quad 010\quad 110$$（补了一位0），后转为八进制$$(.726)_8$$，最后结果就位$$(345.726)_8$$，十六进制也是同理。</p>
-<p>八进制与十六进制转二进制：</p>
-<blockquote>
-<p>每位八进制数（十六进制数）用三位二进制（四位二进制）数来代替，再按原顺序排列。</p>
-</blockquote>
-<p>以八进制为例：</p>
-<p>$$(745.361)_8$$，将整数小数部分分为三位一组二进制即可得$$(111\quad 100\quad 101.\quad011\quad 110\quad 001)$$</p>
-<h3 id="码制"><a href="#码制" class="headerlink" title="码制"></a>码制</h3><blockquote>
-<p>码制就是一系列编码的格式，而将若干个二进制数码0和1按一定规则排列来表示某种特定含义的代码就是二进制代码。用数码的特定组合来表示特定信息的过程就称编码。常见的二进制代码有：自然（态序）二进制码，二-十进制码（BCD码）、格雷码、奇偶校验码、ASCII码</p>
-</blockquote>
-<h4 id="二-十进制码"><a href="#二-十进制码" class="headerlink" title="二-十进制码"></a>二-十进制码</h4><blockquote>
-<p>又称BCD码，就是用四位二进制数来表示十进制数中的0-9十个数码。</p>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/ef1806a307834cb69037ce14096d301f.png" alt="1-1"></p>
-<p>图1-1就是各种常见的BCD码。</p>
-<p>例：用BCD码表示十进制数举例（用BCD码，每位十进制数用四位二进制来表示）：</p>
-<p>$$(36)<em>{10}&#x3D;(0011\quad 0110)</em>{8421BCD}$$</p>
-<p>$$(4.79)<em>{10}&#x3D;(0100\quad.0111\quad 1001)</em>{8421BCD}$$</p>
-<p>$$(0101.0001)<em>{8421BCD}&#x3D;(5.1)</em>{10}$$</p>
-<p><strong>BCD码与数制的区别：</strong></p>
-<p>$$(150)<em>{10}&#x3D;(0001\quad 0101 \quad 0000)</em>{8421BCD} &#x3D; (10010110)_2&#x3D;(226)<em>8&#x3D;(96)</em>{16}$$</p>
-<h3 id="基本逻辑运算和复合逻辑运算"><a href="#基本逻辑运算和复合逻辑运算" class="headerlink" title="基本逻辑运算和复合逻辑运算"></a>基本逻辑运算和复合逻辑运算</h3><h4 id="与或非运算"><a href="#与或非运算" class="headerlink" title="与或非运算"></a>与或非运算</h4><p>与或运算与计算机语言中<code>&amp;&amp;</code>、<code>||</code>意思相同。</p>
-<p>与运算中，表达式A和B都为真（即都为1）时候才为真，或运算中，表达式A和B其中有一个为真（即其中一个为1）时候为真。例<code>A=1 &amp;&amp; B=1</code>则为<code>true</code>，<code>A=1 || B = 0</code>为<code>true</code>，而<code>A=1 &amp;&amp; B = 0</code>为<code>false</code></p>
-<p><strong>与运算逻辑表达式：</strong> $$Y&#x3D;A· B$$或$$Y&#x3D;AB$$</p>
-<p>逻辑符号：</p>
-<p><img src="https://img-blog.csdnimg.cn/2ca0e108095b4fcfb85836119437f46f.png" alt="AND gate"></p>
-<p><strong>或运算逻辑表达式：</strong> $$Y&#x3D;A+B$$</p>
-<p><img src="https://img-blog.csdnimg.cn/3d52d8220d754b1688b2c080c56dc3fb.png" alt="OR gate"></p>
-<p><strong>非运算表达式：</strong>$$Y&#x3D;\bar{A}$$，即$$\bar{0}&#x3D;1 \quad \bar{1}&#x3D;0$$</p>
-<p><img src="https://img-blog.csdnimg.cn/e52e504cf2d340e394c7b1d352b9d634.png" alt="NOT gate"></p>
-<h4 id="复合逻辑运算"><a href="#复合逻辑运算" class="headerlink" title="复合逻辑运算"></a>复合逻辑运算</h4><h5 id="与非运算（NAND）"><a href="#与非运算（NAND）" class="headerlink" title="与非运算（NAND）"></a>与非运算（NAND）</h5><p>与非运算表达式：$$Y&#x3D;\overline{AB}$$，即有0出1，全1出0；</p>
-<p><img src="https://img-blog.csdnimg.cn/dc32e1afbb5c438a8b97fb475cb2f5f4.png" alt="与非门"></p>
-<h5 id="或非运算（NOR）"><a href="#或非运算（NOR）" class="headerlink" title="或非运算（NOR）"></a>或非运算（NOR）</h5><p>或非运算表达式：$$Y&#x3D;\overline{A+B}$$，即有1出0，全0出1；</p>
-<p><img src="https://img-blog.csdnimg.cn/2861c4f3075a4dea977f0e6af45c20eb.png" alt="或非门"></p>
-<h5 id="异或运算（Exclusive-OR）"><a href="#异或运算（Exclusive-OR）" class="headerlink" title="异或运算（Exclusive-OR）"></a>异或运算（Exclusive-OR）</h5><p>异或运算表达式：$$Y&#x3D;A⊕B&#x3D;\bar{A}B+A\bar{B}$$，即相同为0，不同为1；</p>
-<p><img src="https://img-blog.csdnimg.cn/7e3c107979574548bb108a598f98f776.png" alt="异或门"></p>
-<p><strong>若有奇数个1，则异或结果为1；若有偶数个1，则异或结果为0</strong>.</p>
-<p>例：<br>$$<br>1⊕0⊕0⊕1⊕1⊕0⊕1&#x3D;0\<br>1⊕0⊕1⊕0⊕1⊕1⊕1&#x3D;1<br>$$</p>
-<h5 id="同或运算（Exclusive-NOR，即异或的非）"><a href="#同或运算（Exclusive-NOR，即异或的非）" class="headerlink" title="同或运算（Exclusive-NOR，即异或的非）"></a>同或运算（Exclusive-NOR，即异或的非）</h5><p>同或运算表达式：$$Y&#x3D;A⊙B$$，即相同为1，不同为0；</p>
-<p><img src="https://img-blog.csdnimg.cn/24e849767dd34be5b4781a1e9b8fda8f.png" alt="同或门"></p>
-<p><strong>若有奇数个1，则同或结果为0；若有偶数个1，则同或结果为1</strong>.</p>
-<h5 id="与或非运算（AND-OR-INVERT）"><a href="#与或非运算（AND-OR-INVERT）" class="headerlink" title="与或非运算（AND-OR-INVERT）"></a>与或非运算（AND-OR-INVERT）</h5><p>与或非运算表达式：$$Y&#x3D;\overline{AB+CD}$$，先与后或再非；</p>
-<p><img src="https://img-blog.csdnimg.cn/b05c1ec0687143eebe1a34ebb0edf9cd.png" alt="与或非门"></p>
-<h3 id="逻辑代数的基本定律"><a href="#逻辑代数的基本定律" class="headerlink" title="逻辑代数的基本定律"></a>逻辑代数的基本定律</h3><h4 id="常量间的计算"><a href="#常量间的计算" class="headerlink" title="常量间的计算"></a>常量间的计算</h4><p><img src="https://img-blog.csdnimg.cn/7c1351b892134689ace41fdb108f7333.png" alt="img"></p>
-<h4 id="逻辑变量与常量的计算"><a href="#逻辑变量与常量的计算" class="headerlink" title="逻辑变量与常量的计算"></a>逻辑变量与常量的计算</h4><h5 id="0-1律"><a href="#0-1律" class="headerlink" title="0-1律"></a>0-1律</h5><p>$$<br>0+A&#x3D;A\<br>1+A&#x3D;1\<br>0 \cdot A&#x3D;0\<br>1 \cdot A &#x3D; A<br>$$</p>
-<h5 id="同一律"><a href="#同一律" class="headerlink" title="同一律"></a>同一律</h5><p>$$<br>A+A&#x3D;A\<br>A\cdot A &#x3D; A<br>$$</p>
-<h5 id="互补律"><a href="#互补律" class="headerlink" title="互补律"></a>互补律</h5><p>$$<br>A+\bar{A} &#x3D; 1\<br>A \cdot \bar{A} &#x3D; 0<br>$$</p>
-<h5 id="还原律"><a href="#还原律" class="headerlink" title="还原律"></a>还原律</h5><p>$$<br>\bar{\bar{A}} &#x3D; A<br>$$</p>
-<h4 id="逻辑代数的基本定律-1"><a href="#逻辑代数的基本定律-1" class="headerlink" title="逻辑代数的基本定律"></a>逻辑代数的基本定律</h4><h5 id="交换律"><a href="#交换律" class="headerlink" title="交换律"></a>交换律</h5><p>$$<br>A+B&#x3D;B+A\quad A\cdot B&#x3D; B \cdot A<br>$$</p>
-<h5 id="结合律"><a href="#结合律" class="headerlink" title="结合律"></a>结合律</h5><p>$$<br>(A+C)+C &#x3D; A+(B+C)\quad (A\cdot B)\cdot C&#x3D; A \cdot (B\cdot C)<br>$$</p>
-<h5 id="分配律"><a href="#分配律" class="headerlink" title="分配律"></a>分配律</h5><p>$$<br>A(B+C) &#x3D; AB+AC \quad A+BC&#x3D;(A+B)(A+C)<br>$$</p>
-<h5 id="摩根定律（反演律）"><a href="#摩根定律（反演律）" class="headerlink" title="摩根定律（反演律）"></a>摩根定律（反演律）</h5><p>$$<br>\overline{A\cdot B} &#x3D; \bar{A} + \bar{B} \quad \overline{A+ B} &#x3D; \bar{A} \cdot \bar{B}<br>$$</p>
-<p>证明等式$$A+BC&#x3D;(A+B)(A+C)$$：<br>$$<br>(A+B)(A+C)&#x3D;AA+AC+AB+BC&#x3D;A(1+C)+AB+BC\quad 注：1+C&#x3D;1\<br>&#x3D;A+AB+BC\<br>&#x3D;A(1+B)+BC&#x3D;A+BC<br>$$<br>证毕。</p>
-<h4 id="逻辑代数的常用公式"><a href="#逻辑代数的常用公式" class="headerlink" title="逻辑代数的常用公式"></a>逻辑代数的常用公式</h4><p>$$<br>AB+A\bar{B} &#x3D; A \qquad A+AB&#x3D;A\<br>A+\bar{A}B &#x3D; A + B<br>$$</p>
-<h5 id="冗余律"><a href="#冗余律" class="headerlink" title="冗余律"></a>冗余律</h5><p>$$<br>AB+\bar{A}C+BC &#x3D; AB+\bar{A}C\<br>\overline{AB+\bar{A}C} &#x3D; A\bar{B}+\bar{A}\bar{C}<br>$$</p>
-<h5 id="关于异或运算的一些公式"><a href="#关于异或运算的一些公式" class="headerlink" title="关于异或运算的一些公式"></a>关于异或运算的一些公式</h5><p>$$A⊕B&#x3D;\bar{A}B+A\bar{B}$$<br>$$<br>A⊕B&#x3D;B⊕A\<br>(A⊕B)⊕C&#x3D;A⊕(B⊕C)\<br>A\cdot (B⊕C)&#x3D;AB⊕AC\<br>A⊕1&#x3D;\bar{A}\<br>A⊕0&#x3D;A\<br>A⊕A&#x3D;0\<br>A⊕\bar{A}&#x3D;1\<br>$$<br>如果$$A⊕B&#x3D;C$$则有$$\begin{cases} A⊕C&#x3D;B\ B⊕C&#x3D;A \end{cases} $$</p>
-<h3 id="逻辑代数的基本规则"><a href="#逻辑代数的基本规则" class="headerlink" title="逻辑代数的基本规则"></a>逻辑代数的基本规则</h3><h4 id="代入规则"><a href="#代入规则" class="headerlink" title="代入规则"></a>代入规则</h4><blockquote>
-<p>将逻辑等式两边的某一变量均用同一个逻辑函数替代，等式仍然成立。</p>
-</blockquote>
-<p>例：$$A+\bar{A}B&#x3D;A+B$$</p>
-<p>$$A$$均用$$\bar{A}$$代替得：$$\bar{A}+AB&#x3D;\bar{A}+B$$等式仍然成立。</p>
-<h4 id="反演规则"><a href="#反演规则" class="headerlink" title="反演规则"></a>反演规则</h4><blockquote>
-<p>对任一逻辑函数式Y，将式子中的所有的”$$\cdot$$“换成“+”，“+”换成”$$\cdot$$“，“0”换成“1”，“1”换成“0”，原变量换成反变量，则得到原逻辑函数的反函数$$\bar{Y}$$，并不改变运算顺序。</p>
-</blockquote>
-<p>例：$$Y_1&#x3D;A(B+C)+CD$$，取反得：$$\bar{Y_1}&#x3D;(\bar{A}+\bar{B}\bar{C})(\bar{C}+\bar{D})$$</p>
-<h4 id="对偶规则"><a href="#对偶规则" class="headerlink" title="对偶规则"></a>对偶规则</h4><blockquote>
-<p>对任一逻辑函数式Y，将式子中的所有的”$$\cdot$$“换成“+”，“+”换成”$$\cdot$$“，“0”换成“1”，“1”换成“0”，，则得到原逻辑函数的对偶式$$Y’$$。</p>
-</blockquote>
-<h3 id="逻辑表达式"><a href="#逻辑表达式" class="headerlink" title="逻辑表达式"></a>逻辑表达式</h3><blockquote>
-<p>表示输出函数和输入变量逻辑关系的表达式称逻辑表达式，逻辑表达式一般根据真值表、卡诺图或逻辑图写出。</p>
-</blockquote>
-<h4 id="常见表达式"><a href="#常见表达式" class="headerlink" title="常见表达式"></a>常见表达式</h4><p>$$Y&#x3D;A\bar{B}+BC$$（与—或表达式）。</p>
-<p>$$Y&#x3D;(A+B)(\bar{B}+C)$$（或—与表达式）。</p>
-<p>$$Y&#x3D;\overline{\overline{A\bar{B}}\overline{BC}}$$（与非—与非表达式）。</p>
-<p>$$Y&#x3D;\overline{\overline{A+B}+\overline{\overline{B}+C}}$$（或非—或非表达式）。</p>
-<h4 id="最小项"><a href="#最小项" class="headerlink" title="最小项"></a>最小项</h4><blockquote>
-<p>在逻辑函数中，如果一个与项包含该逻辑函数的全部变量，且每个变量只出现一次，则称与项的最小项。对于n个变量的逻辑函数共有$$2^n$$个最小项。</p>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/e388c1f33f034c3a8f2553fea3366447.png" alt="img"></p>
-<h5 id="最小项的基本性质"><a href="#最小项的基本性质" class="headerlink" title="最小项的基本性质"></a>最小项的基本性质</h5><ol>
-<li>对于变量的任一组取值，只有一个最小项的值为1。</li>
-<li>不同的最小项，使其值为1的那组变量取值也不同。</li>
-<li>对于变量的同一组取值，任意两个最小项<strong>与</strong>的结果为0.</li>
-<li>对于变量的同一组取值，全部最小项逻辑<strong>或</strong>的结果为1.</li>
-</ol>
-<h5 id="最小项编号"><a href="#最小项编号" class="headerlink" title="最小项编号"></a>最小项编号</h5><p>最小项用$$m_i$$表示，通常用十进制数作最小项的下标。</p>
-<p>编号方法是：将最小项中的<strong>原变量当作1，反变量当作0</strong>，从而得二进制，再将二进制转为对应的十进制数即为最小项的编号。</p>
+
+
+<h3 id="网孔电流法"><a href="#网孔电流法" class="headerlink" title="网孔电流法"></a>网孔电流法</h3><p>网孔电流法是以沿网孔连续流动的假想电流为未知量列写电路方程分析电路的方法。仅适用于平面电路。</p>
+<h4 id="基本思想："><a href="#基本思想：" class="headerlink" title="基本思想："></a>基本思想：</h4><p>为减少未知量的个数，假想每个回路种有一个回路电流。各支路电流可用回路电流的线性组合表示，来求得电路的解。</p>
+<h4 id="列写的方程："><a href="#列写的方程：" class="headerlink" title="列写的方程："></a>列写的方程：</h4><p>网孔电流在网孔中是闭合的，对每个相关节点均流进一次，流出一次，所以KCL自动满足。因此网孔电流法的<strong>方程个数即为网孔数</strong>。网孔方程是根据KVL进行列写。</p>
 <p>例：</p>
-<p>$$\overline{A}BC$$的二进制$${011}_2$$，转为十进制为3，则下标就为3，最小项就是$$m_3$$</p>
-<h5 id="最小项表达式（标准与或表达式）"><a href="#最小项表达式（标准与或表达式）" class="headerlink" title="最小项表达式（标准与或表达式）"></a>最小项表达式（标准与或表达式）</h5><blockquote>
-<p>任何逻辑函数都是由其变量的若干个最小项构成，都可以表示成为最小项之和的形式。</p>
-<p>在与或表达式中，有时与项并不是最小项，可利用$$\overline{A}+A&#x3D;1$$的形式补充缺少的变量，将逻辑函数变成最小项之和的形式。</p>
-</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/82dca3b0c41f4d4d865e39f63daae06d.png" alt="1-1"></p>
+<p>假想图1-1两个回路$l_1,l_2$的电流分别为$i_{l1},i_{l2}$，支路电流可表示为：<br>$$<br>i_1&#x3D;i_{l1}\qquad i_3&#x3D;i_{l2}\<br>i_2&#x3D;i_{l2} - i_{l1}<br>$$</p>
+<p>方程可列写为：<br>$$<br>\begin{cases}<br>\ l_1:R_1i_{l1}+R_2(i_{l1}-i_{l2})+u_{S2}-u_{S1}&#x3D;0\<br>\ l_2:R_2(i_{l2}-i_{l1})+R_3i_{l2}-u_{S2}&#x3D;0\</p>
+<p>\end{cases}<br>$$<br>整理得：<br>$$<br>\begin{cases}<br>\ l_1:(R_1+R_2)i_{l1}-R_2i_{l2}&#x3D;u_{S1}-u_{S2}\<br>\ l_2:-R_2i_{l1}+(R_2+R_3)i_{l2}&#x3D; u_{S2}\</p>
+<p>\end{cases}<br>$$</p>
+<p>若称回路自身所经过的电阻为自电阻，与其他回路共有的称为互电阻。</p>
+<p>由上方方程可得自身回路电流为自电阻之和，若<strong>支路方向相同时</strong>，互电阻取正号，相反时取负号并乘上对方的回路电流。</p>
+<h4 id="网孔电流法的一般步骤："><a href="#网孔电流法的一般步骤：" class="headerlink" title="网孔电流法的一般步骤："></a>网孔电流法的一般步骤：</h4><ol>
+<li>选网孔为独立回路，并确定其绕行方向；</li>
+<li>以网孔电流为未知量，自动满足KCL，列其KVL方程，且是独立的；</li>
+<li>求上诉方程，得到l个网孔电流；</li>
+<li>求各支路电流；</li>
+<li>其他分析；</li>
+</ol>
+<h3 id="回路电流法"><a href="#回路电流法" class="headerlink" title="回路电流法"></a>回路电流法</h3><p>回路电流法是网孔电流法的拓展，以基本回路中沿回路连续流动的假想电流为未知量列写电路方程分析电路的方法。适用于<strong>平面和非平面方程</strong>。</p>
 <p>例：</p>
-<p>$$Y&#x3D;F(A,B,C)&#x3D;AB+\overline{A}C$$，进行增项</p>
-<p>使$$AB+\overline{A}C&#x3D;AB(\overline{C}+C)+\overline{A}C(\overline{B}+B)$$，最后展开即可得最小项：</p>
-<p>$$AB\overline{C}+ABC+\overline{A}C\overline{B}+\overline{A}CB$$</p>
-<h3 id="逻辑函数的化简"><a href="#逻辑函数的化简" class="headerlink" title="逻辑函数的化简"></a>逻辑函数的化简</h3><p>不同形式逻辑式由不同的最简式，一般先求取最简与或式，然后通过变换得到所需最简式。</p>
-<h4 id="最简与或式"><a href="#最简与或式" class="headerlink" title="最简与或式"></a>最简与或式</h4><ol>
-<li>乘积项（即与项）的个数最少，使与门个数最少。</li>
-<li>每个乘积项中的变量数最少，使与门输入端数最少，</li>
-</ol>
-<h4 id="最简与非-与非式"><a href="#最简与非-与非式" class="headerlink" title="最简与非-与非式"></a>最简与非-与非式</h4><ol>
-<li>非号个数最少，使与非门个数最少。</li>
-<li>每个非号中的变量数最少，使与非门的输入端数最少。</li>
-</ol>
-<h4 id="公式化简法"><a href="#公式化简法" class="headerlink" title="公式化简法"></a>公式化简法</h4><h5 id="并项法"><a href="#并项法" class="headerlink" title="并项法"></a>并项法</h5><p>运用$$AB+A\overline{B}&#x3D;A(B+\overline{B})&#x3D;A$$，将两项合并为一项，并消去一个变量。</p>
-<h5 id="吸收法"><a href="#吸收法" class="headerlink" title="吸收法"></a>吸收法</h5><p>运用$$A+AB&#x3D;A(1+B)&#x3D;A$$和$$AB+\overline{AC}+BC&#x3D;AB+\overline{AC}$$，消去多余的与项。</p>
-<h5 id="消去法"><a href="#消去法" class="headerlink" title="消去法"></a>消去法</h5><p>运用$$A+\overline{A}B&#x3D;A+C$$or $$\overline{A}+AB &#x3D; \overline{A}+B$$，消去多余因子。</p>
-<h5 id="配项法"><a href="#配项法" class="headerlink" title="配项法"></a>配项法</h5><p>在函数某一项乘$$A+\overline{A}&#x3D;1$$，将一项展开两项，或用$$AB+\overline{A}C&#x3D;AB+\overline{A}C+BC$$，增加冗余项。</p>
+<p><img src="https://img-blog.csdnimg.cn/e11902fb480e46fd9b6fc3e197fc31c9.png" alt="1-2"></p>
+<p>如图1-2中选取回路电流为$i_1,i_2,i_3$，可根据网孔电流法列出相应的回路电流方程：<br>$$<br>\begin{cases}<br>\ l_1:(R_1+R_6+R_5+R_4)i_1+(R_5+R_4)i_2-(R_5+R_6)i_3&#x3D;-u_{S1}+u_{S5}\<br>\ l_2:(R_5+R_4)i_1+(R_2+R_5+R_4)i_2-R_5i_3&#x3D;U_{S5}\<br>\ l_3:-(R_5+R_6)i_1-R_5i_2+(R_3+R_5+R_6)i_3&#x3D;-u_{S5}<br>\end{cases}<br>$$</p>
+<h3 id="结点电压法"><a href="#结点电压法" class="headerlink" title="结点电压法"></a>结点电压法</h3><p>以结点电压为未知量列写电路方程分析电路的方程。<strong>适用于结点较少的电路</strong></p>
+<h4 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h4><p>选结点电压为未知量，则KVL自动满足，无需列写KVL方程。各支路电流、电压可视为结点电压的线性组合，求出结点电压后</p>
 
                 
             </div>
@@ -649,7 +549,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/10/05/shu-dian-shu-zi-luo-ji-gai-lun/">http://example.com/2023/10/05/shu-dian-shu-zi-luo-ji-gai-lun/</a>
+                    <a href="http://example.com/2023/11/23/dian-lu-dian-zu-dian-lu-de-yi-ban-fen-xi/">http://example.com/2023/11/23/dian-lu-dian-zu-dian-lu-de-yi-ban-fen-xi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -687,8 +587,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E6%95%B0%E7%94%B5/">
-                                    <span class="chip bg-color">数电</span>
+                                <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                                    <span class="chip bg-color">电路</span>
                                 </a>
                             
                         </div>
@@ -1002,17 +902,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2023/10/05/shu-ju-jie-gou-chuan/">
+                <a href="/2023/11/23/dian-lu-dian-zu-dian-lu-de-yi-ban-fen-xi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="数据结构-串">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="电路-电阻电路的一般分析">
                         
-                        <span class="card-title">数据结构-串</span>
+                        <span class="card-title">电路-电阻电路的一般分析</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1022,30 +923,27 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-10-05
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-23
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
-                                    数据结构
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                    电路
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-                        <span class="chip bg-color">数据结构</span>
-                    </a>
-                    
-                    <a href="/tags/%E4%B8%B2/">
-                        <span class="chip bg-color">串</span>
+                    <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                        <span class="chip bg-color">电路</span>
                     </a>
                     
                 </div>
@@ -1059,13 +957,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/09/29/zhong-zhui-biao-da-shi-zhuan-hou-zhui-biao-da-shi-bing-ji-suan/">
+                <a href="/2023/11/21/ji-suan-ji-zu-cheng-yuan-li-shu-ju-de-biao-shi-yu-yun-suan/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="中缀表达式转后缀表达式并计算">
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="计算机组成原理-数据的表示与运算">
                         
-                        <span class="card-title">中缀表达式转后缀表达式并计算</span>
+                        <span class="card-title">计算机组成原理-数据的表示与运算</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1076,14 +974,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-09-29
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-21
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
-                                    数据结构
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                    计算机组成原理
                                 </a>
                             
                             
@@ -1093,12 +991,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/C/">
-                        <span class="chip bg-color">C</span>
-                    </a>
-                    
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-                        <span class="chip bg-color">数据结构</span>
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                        <span class="chip bg-color">计算机组成原理</span>
                     </a>
                     
                 </div>

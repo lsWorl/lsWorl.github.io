@@ -469,14 +469,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-22
+                    2023-11-24
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.5k
+                    4k
                 </div>
                 
 
@@ -595,7 +595,65 @@
 <p><strong>补码小数的表示范围</strong>：$-1\leq x \leq 1-2^{-n} $。</p>
 <h5 id="移码表示法"><a href="#移码表示法" class="headerlink" title="移码表示法"></a>移码表示法</h5><p>移码是补码的基础上将符号位取反即可。<strong>注意：移码只能用于表示整数</strong><br>$$<br>x&#x3D;+19D \quad [x]_原&#x3D;0,0010011\<br>\qquad  [x]_反&#x3D;0,0010011\<br>\qquad [x]_补&#x3D;0,0010011\<br>\qquad [x]_移&#x3D;1,0010011\<br>x&#x3D;-19D \quad [x]_原&#x3D;1,0010011\<br>\qquad  [x]_反&#x3D;1,1101100\<br>\qquad [x]_补&#x3D;1,1101101\<br>\qquad [x]_移&#x3D;0,1101101\<br>$$<br>若机器字长n+1位，</p>
 <p><strong>移码整数的表示范围</strong>：$-2^n\leq x \leq 2^n-1 $（与补码相同）。</p>
-<p>使用移码表示的整数很方便的可以进行对比大小。</p>
+<p>使用移码表示的整数很方便的可以进行对比大小，<strong>移码通常用于表示阶码，不用来表示定点小数</strong>。</p>
+<h3 id="运算方法和运算电路"><a href="#运算方法和运算电路" class="headerlink" title="运算方法和运算电路"></a>运算方法和运算电路</h3><h4 id="基本运算部件"><a href="#基本运算部件" class="headerlink" title="基本运算部件"></a>基本运算部件</h4><h5 id="一位全加器"><a href="#一位全加器" class="headerlink" title="一位全加器"></a>一位全加器</h5><p>全加器（FA，Full Adder）是最基本的加法单元，有加数$A_i$、加数$B_i$与低位传来的进位$C_{i-1}$共三个输入，有本位和$S_i$与向高位进位$C_i$共两个输出。全加器的逻辑表达式如下：</p>
+<p><strong>和表达式</strong>：$S_i&#x3D;A_i⊕B_i⊕C_{i-1}$（$A_i、B_i、C_{i-1}$中有奇数个1时，$S_i&#x3D;1$；否则$S_i&#x3D;0$）</p>
+<p><strong>进位表达式</strong>：$C_i&#x3D;A_iB_i+(A_i⊕B_i)C_{i-1}$</p>
+<p>全加器逻辑结构图：</p>
+<p><img src="https://img-blog.csdnimg.cn/a3789f414d63498eaad52b5f65c5081f.png" alt="2-1"></p>
+<p>逻辑符号：</p>
+<p><img src="https://img-blog.csdnimg.cn/1a49308fbe3b4f70b39956338ff49755.png" alt="2-2"></p>
+<h5 id="n串行进位加法器"><a href="#n串行进位加法器" class="headerlink" title="n串行进位加法器"></a>n串行进位加法器</h5><p>把n各全加器相连可得到<strong>n位加法器</strong>，称为串行进位加法器，如图2-3所示。串行进位又称行波进位，每级进位直接依赖于前一位的进位。</p>
+<p><img src="https://img-blog.csdnimg.cn/dba291f080f0477ab43d3b0ef1c8602d.png" alt="2-3"></p>
+<p>将n位加法器进行封装，则可得到图2-4.</p>
+<p><img src="https://img-blog.csdnimg.cn/02806fa799114d90beba2ccbb7a553aa.png" alt="2-4"></p>
+<p>在串行进位加法器中，依赖前一位的进位导致计算速度取决于进位产生和传递的速度。位数越多，运算速度越慢。</p>
+<h5 id="并行进位加法器"><a href="#并行进位加法器" class="headerlink" title="并行进位加法器"></a>并行进位加法器</h5><p>由于串行进位加法器依赖前一位的进位会导致速度变慢，要解决就可以通过在产生进位时用CLA部件来接受进位信息，从而达到并行进位的效果。</p>
+<p><img src="https://img-blog.csdnimg.cn/bfc14b7d5f514a878a698986e0553c6f.png" alt="2-5"></p>
+<p>由于<strong>所有信息都是同时产生的</strong>，运行速度会比“串行进位加法器”更快。</p>
+<p>并行加法器可以通过串行加法器以下式子来推出：<br>$$<br>C_i&#x3D;A_iB_i+(A_i⊕B_i)C_{i-1}\<br>C_{i-1}&#x3D;A_{i-1}B_{i-1}+(A_{i-1}⊕B_{i-1})C_{i-2}\<br>C_{i-2}&#x3D;A_{i-2}B_{i-2}+(A_{i-2}⊕B_{i-2})C_{i-3}\<br>\dots \<br>C_1&#x3D;A_{1}B_{1}+(A_{1}⊕B_{1})C_{0}<br>$$<br>串行加法器中迟早会从$C_i$中展开到$C_0$。</p>
+<p>根据上方$C_i$就可以等于：<br>$$<br>C_i&#x3D;A_iB_i+(A_i⊕B_i)C_{i-1}（C_{i-1}用上方式子来替代）\<br>C_i&#x3D;A_iB_i+(A_i⊕B_i)(A_{i-1}B_{i-1}+(A_{i-1}⊕B_{i-1})C_{i-2})\<br>C_i&#x3D;A_iB_i+(A_i⊕B_i)(A_{i-1}B_{i-1}+(A_{i-1}⊕B_{i-1})(A_{i-2}B_{i-2}+(A_{i-2}⊕B_{i-2})C_{i-3}))\<br>\dots<br>$$<br>而$A_i、B_i、A_{i-1}、B_{i-1}\dots A_0,B_0$和$C_0$的数据在一开始就已经获取到了，因此就可以无需等算出进位在进行下一步，可以直接根据前方数据来算出相应的进位值。相应的要算越后面的进位则电路设计越复杂，一般实际应用中会算到第4位的进位值即可，如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/c066dce603e6461bb6d17f34d7e35610.png" alt="CLA"></p>
+<h5 id="带标志加法器"><a href="#带标志加法器" class="headerlink" title="带标志加法器"></a>带标志加法器</h5><p>无符号数加法器只能用于两个无符号数相加，不能进行带符号整数的加减运算。为了能进行带符号整数的加减运算，还需要在无符号数加法器的基础上增加相应的逻辑门电路，使得加法器不仅能进行加减运算，还能生成相应的标志信息。</p>
+<p><img src="https://img-blog.csdnimg.cn/dcd0f1066c4a4a4db35da9a739aad185.png" alt="2-6"></p>
+<p>在图2-4的基础上，增加标识位，这样就能实现带标志的加法器图2-6。</p>
+<p>各标志的意义为：</p>
+<ul>
+<li>OF(Overflow Flag)：溢出标志，用于判断<strong>带符号数</strong>加减运算是否溢出。<font color=#FF0000 size=3 face="微软雅黑">OF&#x3D;1 溢出； OF&#x3D;0 未溢出</font></li>
+<li>SF(Sign Flag)：符号标志，用于判断<strong>带符号数</strong>加减运算结果的正负性。<font color=#FF0000 size=3 face="微软雅黑">SF&#x3D;1 结果为负； SF&#x3D;0 结果为正</font></li>
+<li>ZF(Zero Flag)：零标志，用于判断加减运算结果是否为0。<font color=#FF0000 size=3 face="微软雅黑">ZF&#x3D;1 表示结果为0； ZF&#x3D;0 表示结果不为0</font></li>
+<li>CF(Carry Flag)：进位&#x2F;借位标志，用于判断<strong>无符号数</strong>加减运算是否溢出。<font color=#FF0000 size=3 face="微软雅黑">CF&#x3D;1 溢出； CF&#x3D;0 未溢出</font></li>
+</ul>
+<p>各标志的逻辑表达式：</p>
+<ul>
+<li><p>$OF&#x3D;C_n⊕C_{n-1}$——最高位的进位<strong>同或</strong>次高位的进位。反映<strong>带符号数</strong>加减运算是否溢出。</p>
+</li>
+<li><p>$SF&#x3D;S_n$——也就是取运算结果的最高位（符号位）。反映<strong>带符号数</strong>加减运算的正负性。</p>
+</li>
+<li><p>$ZF&#x3D;\overline{S_n+\dots+S_2+S_1}$——仅当运算结果所有bit全0时，ZF才为1，此时表示运算结果为0。</p>
+</li>
+<li><p>$CF&#x3D;C_{out}⊕C_{in}&#x3D;C_n⊕C_0$——反映<strong>无符号数</strong>加减运算是否溢出。</p>
+</li>
+</ul>
+<p>各标志的逻辑图：</p>
+<p><img src="https://img-blog.csdnimg.cn/98323020536b4f4084a127e766bf97e8.png" alt="2-7"></p>
+<h5 id="算数逻辑单元（ALU，Arithmetic-and-Logic-Unit）"><a href="#算数逻辑单元（ALU，Arithmetic-and-Logic-Unit）" class="headerlink" title="算数逻辑单元（ALU，Arithmetic and Logic Unit）"></a>算数逻辑单元（ALU，Arithmetic and Logic Unit）</h5><blockquote>
+<p>ALU是一种功能较强的组合逻辑电路，它能进行多种算数运算和逻辑运算。ALU的核心是带标志加法器，同时也能执行“与” “或” “非”等逻辑运算。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/7a9c6bd57ec744d298aab4c9a195f84f.png" alt="2-8"></p>
+<p>CPU想进行运算时，会通过控制器来解析指令，并根据指令功能发出相应的控制信号。然后运算器会对数据进行处理，此时就会通过ALU来进行运算，因此<strong>ALU是运算器的核心</strong>，而由于加减乘除等运算都基于“加法”来实现，因此<strong>加法器是ALU的核心</strong>。</p>
+<p><img src="https://img-blog.csdnimg.cn/d9bceb66654c427688bda6ebfe11d40a.png" alt="2-9"></p>
+<p>若将图2-9进行封装，不显示细节，并添加几个标志位，可得下图2-10.</p>
+<p><img src="https://img-blog.csdnimg.cn/d1990f91808c46e7a0bd85a4db99f6ef.png" alt="2-10"></p>
+<p><strong>ALU有以下几个需要注意点：</strong></p>
+<ul>
+<li>如果<font size="3" color="#ff0000">ALU支持k种功能</font>，则控制信号位数<font size="3" color="#ff0000">$m\geq [\log_2k]$</font></li>
+<li><font size="3" color="#96CDCD">ALU的运算数、运算结果位数</font>与计算机的<font size="3" color="#96CDCD">机器字长相同</font>。</li>
+<li><font size="3" color="#66CDAA">ZF&#x2F;OF&#x2F;SF&#x2F;CF 标志位</font>，用于表示本次运算结果的特征（ZF表示运算结果是否为零、OF表示有符号数运算结果是否溢出、SF表示有符号数运算结果的正负性、CF表示无符号数运算结果是否溢出）</li>
+<li>这些<font size="3" color="#66CDAA">标志信息通常会倍送入PSW程序状态寄存器中</font></li>
+<li>PSW寄存器也称为<font size="3" color="#66CDAA">“标志寄存器FR(Flag Register)”</font></li>
+<li>Cin是进位输入信号、Cout是进位输出信号（类似于带标志位的加法器）</li>
+</ul>
 
                 
             </div>
@@ -975,18 +1033,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/11/21/ji-suan-ji-zu-cheng-yuan-li-shu-ju-de-biao-shi-yu-yun-suan/">
+                <a href="/2023/11/23/dian-lu-dian-zu-dian-lu-de-yi-ban-fen-xi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="计算机组成原理-数据的表示与运算">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="电路-电阻电路的一般分析">
                         
-                        <span class="card-title">计算机组成原理-数据的表示与运算</span>
+                        <span class="card-title">电路-电阻电路的一般分析</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -996,27 +1053,26 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-21
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-11-23
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
-                                    计算机组成原理
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                    电路
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                        <span class="chip bg-color">计算机组成原理</span>
+                    <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                        <span class="chip bg-color">电路</span>
                     </a>
                     
                 </div>
@@ -1183,6 +1239,13 @@
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
