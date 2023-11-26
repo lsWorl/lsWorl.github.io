@@ -469,14 +469,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-25
+                    2023-11-26
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    6k
+                    8.8k
                 </div>
                 
 
@@ -753,6 +753,131 @@
 <li>无符号<strong>加法</strong>的溢出判断：最高位产生进位&#x3D;1时，发生溢出，否则未溢出。</li>
 <li>无符号<strong>减法</strong>的溢出判断：减法变加法，最高位产生的进位&#x3D;0时，发生溢出，否则未溢出</li>
 </ul>
+<h3 id="定点数的乘除运算"><a href="#定点数的乘除运算" class="headerlink" title="定点数的乘除运算"></a>定点数的乘除运算</h3><h4 id="原码的乘法运算"><a href="#原码的乘法运算" class="headerlink" title="原码的乘法运算"></a>原码的乘法运算</h4><p>乘法运算可以通过累加和右移的操作来实现。</p>
+<p><strong>手算二进制乘法：</strong>手算二进制乘法和十进制的乘法如出一辙，根据十进制乘法相乘并错位相加即可。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/4b192c2499d84f308418b778bbc89e14.png" alt="2-14"></p>
+<p>而拆分为2进制的运算，各位相乘并相加可得：<br>$$<br>0.1011&#x3D;1\times 2^{-1} +0\times 2^{-2}+1\times 2^{-3}+1\times 2^{-4}\<br>0.1101&#x3D;1101\times 2^{-4}(小数点左移四位)\<br>即:0.1101\times 0.1011 &#x3D;(1101\times 1\times 2^{-8})+(1101\times 1 \times 2^{-7})+(1101\times 0 \times 2^{-6})+(1101\times 1\times 2^{-5})<br>$$</p>
+<p>若考虑用机器实现则有以下几个问题需要思考：</p>
+<ul>
+<li>实际数字有正负，符号位如何处理？</li>
+<li>乘积的位数扩大一倍，如何处理？</li>
+<li>4个位积都要保存下来最后统一相加？</li>
+</ul>
+<p>由上面的问题我们就可以引出定点数的乘法运算：</p>
+<h5 id="原码一位乘法"><a href="#原码一位乘法" class="headerlink" title="原码一位乘法"></a>原码一位乘法</h5><p>原码一位乘法的特点是<strong>符号位与数值位是分开计算</strong>，乘积符号由两个数的符号位“异或”形成，而乘积的数值部分则是两个数的绝对值相乘之积。</p>
+<p>设$[x]_原&#x3D;x_sx_1x_2\dots x_n,[y]_原&#x3D;y_sy_1y_2\dots y_n$，运算规则如下：</p>
+<ol>
+<li>被乘数 x 和乘数 y 均<strong>取绝对值</strong>参与yu你算，看作无符号数，符号位$x_s⊕y_s$。</li>
+<li><strong>部分积</strong>是乘法过程的中间结果。乘数每一位$y_i$乘以被乘数得$X\times y_i$后，将该结果与前面所得的结果累加，就是部分积，初值为0。</li>
+<li>从乘数的最低为$y_n$开始判断：**若$y_n&#x3D;1$<strong>，则部分积加上被乘数x，然后右移一位；</strong>若$y_n&#x3D;0$**，则部分积加上0，然后右移一位。</li>
+<li>重复步骤 3 ，判断n次。</li>
+</ol>
+<p>例：</p>
+<p>设机器字长位n+1&#x3D;5（含一位符号位），$[x]_原&#x3D;1.1101,[y]_原&#x3D;0.1011$，采用原码一位乘法求xy。</p>
+<p>符号位进行单独处理，此时**符号位&#x3D;$x_s⊕y_s$**，而将x和y的数值位取绝对值，将被乘数x放入X（通用操作数寄存器）中，将乘数y放入MQ（乘商寄存器）中，并将ACC（累加器）清零，可得如下图2-15。</p>
+<p><img src="https://img-blog.csdnimg.cn/7e921a4adcc74cd48968b655a1828ab8.png" alt="2-15"></p>
+<p>此时会先从01011（乘数）的最低位开始计算，若<strong>最低位&#x3D;1</strong>，则ACC中会加上01101（被乘数），若<strong>最低位&#x3D;0</strong>，则ACC加上0（即什么都不加）。</p>
+<p>显然此时为1，因此ACC中会变乘01101，如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/d51b51267a4346a9b010aa8a82bd1d55.png" alt="2-16"></p>
+<p>此时要算第二个位积，因为算第二个位积和第一位位积会产生一个错位，就可以通过ACC和MQ同时逻辑右移1位实现。高位补0，超过范围的最低位则直接丢弃，如下图。</p>
+<p><img src="https://img-blog.csdnimg.cn/613d706ed16e4e469ca7e1fd06f0a544.png" alt="2-17"></p>
+<p>然后反复重复上方步骤，可得最终结果：</p>
+<p><img src="https://img-blog.csdnimg.cn/147c3f18fd204c7899e302a14ff36032.png" alt="2-18"></p>
+<p>结果为$0.10001111$，与手算的结果一致，最后再加上符号位就为$-0.10001111$</p>
+<h4 id="补码的一位乘法（booth-算法）"><a href="#补码的一位乘法（booth-算法）" class="headerlink" title="补码的一位乘法（booth 算法）"></a>补码的一位乘法（booth 算法）</h4><p>设$[x]_补&#x3D;x_sx_1x_2\dots x_n,[y]_补&#x3D;y_sy_1y_2\dots y_n$，运算规则如下：</p>
+<ol>
+<li>符号位参与运算，运算的数均以补码表示。</li>
+<li>被乘数一般取双符号位参与运算，部分积取双符号位，初值为0，乘数取单符号位。</li>
+<li>乘数末位增设附加位$y_{n+1}$，初值为0.</li>
+<li>根据$(y_n,y_{n+1})$的取值来确定操作。</li>
+<li>移位按补码右移规则进行。</li>
+<li>按照上述规则进行n+1步操作，但第n+1步不再移位（进行n+1次累加和n次右移），仅根据$y_n$与$y_{n+1}$的比较结果做相应的运算。</li>
+</ol>
+<p>可归纳为：</p>
+<p>进行n轮加法、移位，最后再多来一次加法，每次**加法可能$+0、+[x]_补、+[-x]_补$ **，最终加什么是根据当前MQ中的最低位（乘数y的最低位）、辅助位来确定加什么。</p>
+<ul>
+<li>辅助位 - MQ中最低位 &#x3D; 1 时， <strong>(ACC) + $[x]_补$</strong></li>
+<li>辅助位 - MQ中最低位 &#x3D; 0 时， <strong>(ACC) + 0</strong></li>
+<li>辅助位 - MQ中最低位 &#x3D; -1 时， <strong>(ACC) + $[-x]_补$</strong></li>
+</ul>
+<p>且每次右移的规则是<strong>补码的算数右移</strong>，并且<strong>符号位参与运算</strong>。</p>
+<p>设机器字长为5位（含1位符号位，n&#x3D;4），$x&#x3D;-0.1101,y&#x3D;+0.1011,[x]_补&#x3D;1.0011,[y]_补&#x3D;0.1011$，将x和y的补码放入运算器中，如下图：</p>
+<p><img src="https://img-blog.csdnimg.cn/99a51015caad402aafc6c0be8836cdf2.png" alt="2-19"></p>
+<p>由图可得除了MQ中均有双符号位参与运算。</p>
+<p><img src="https://img-blog.csdnimg.cn/9ecb0c31eb794742aeaee825248ab645.png" alt="2-20"></p>
+<p>在图中加和值都会存到ACC中，然后ACC和MQ每次加完会统一进行算术右移。</p>
+<h4 id="原码的除法运算"><a href="#原码的除法运算" class="headerlink" title="原码的除法运算"></a>原码的除法运算</h4><h5 id="符号拓展"><a href="#符号拓展" class="headerlink" title="符号拓展"></a>符号拓展</h5><blockquote>
+<p>在算数运算中，有时必须把带符号的定点数转换成具有不同位数的表示形式。例如，某个程序要将8位整数与32位整数相加，要想得到正确的结果，在8位和32位整数相加之前，必须将8位转换成32位整数形式，这称为“符号拓展”。</p>
+</blockquote>
+<h5 id="正数的符号扩展"><a href="#正数的符号扩展" class="headerlink" title="正数的符号扩展"></a>正数的符号扩展</h5><p>正数的符号扩展非常简单，即符号位不变，新表示形式的所有扩展位都用0进行填充。</p>
+<h5 id="负数的符号扩展"><a href="#负数的符号扩展" class="headerlink" title="负数的符号扩展"></a>负数的符号扩展</h5><p>原码表示的负数的符号拓展与正数相同，只不过此时符号位为1。</p>
+<p><strong>补码表示负数</strong>的符号拓展方法：<strong>新表示的所有附加位都用1（对于正数）或0（对于小数）进行补充</strong>。</p>
+<h5 id="手算除法（二进制）"><a href="#手算除法（二进制）" class="headerlink" title="手算除法（二进制）"></a>手算除法（二进制）</h5><p>设机器字长为5位（含1位符号位，n&#x3D;4），$x&#x3D;0.1011,y&#x3D;0.1101$求x&#x2F;y。</p>
+<p>模仿十进制除法规则，可得二进制除法：</p>
+<p><img src="https://img-blog.csdnimg.cn/9282371b98d1474793397af240453fc9.png" alt="2-21"></p>
+<p>最后算出的余数由于先前右移了4位所以要再左移4位，即为$0.00000111$，结果就为$x&#x2F;y&#x3D;0.1101$，余数$0.00000111$</p>
+<h5 id="恢复余数法"><a href="#恢复余数法" class="headerlink" title="恢复余数法"></a>恢复余数法</h5><p><strong>对于原码的正负性会单独用异或运算来进行处理，即$x_s⊕y_s$，数值位取绝对值进行除法计算。</strong></p>
+<p>设机器字长为5位（含1位符号位，n&#x3D;4），$x&#x3D;0.1011,y&#x3D;0.1101$求x&#x2F;y。</p>
+<p>此时$|x|&#x3D;0.1011,|y|&#x3D;0.1101,[|y|]_补&#x3D;0.1101,[-|y|]_补&#x3D;1.0011$，将x，y放入运算器中：</p>
+<p><img src="https://img-blog.csdnimg.cn/bbea071c1d734f2ba9eaf12a106d2d60.png" alt="2-22"></p>
+<p>由于计算机并不直到除数和被除数谁更大，所以规定<strong>默认先上商1，如果搞错了再改上商0，并“恢复余数”（恢复余数通过加上除数y来进行恢复）</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/14dfbf2a7f5d4ec0895d10e8072556fa.png" alt="2-23"></p>
+<p>第一次运算 ACC-除数（通用寄存器）-&gt; $|x|+[-|y|]_补&#x3D;01101+10011&#x3D;11110$，此时计算结果为负数，说明上商1为错误，所以需要恢复余数再重新该上商0.</p>
+<p><img src="https://img-blog.csdnimg.cn/e3496bb503d14c58909874f382ae4032.png" alt="2-24"></p>
+<p>此时图2-24就为商错，需要恢复余数后再重新商0.</p>
+<p><img src="https://img-blog.csdnimg.cn/f0a11fcfacce4f709c6556b4b6a0b63d.png" alt="2-25"></p>
+<p>由于余进行下一步运算要错位，所以ACC可以通过逻辑左移实现错位的功能，即将MQ的最高位移至ACC的最低位。</p>
+<p><img src="https://img-blog.csdnimg.cn/fa82b45a382b4928959b789200d49f5a.png" alt="2-26"></p>
+<p>进行下一次运算计算机还是会默认商1，若商错再恢复余数商0，如此循环可得到最终结果和余数：</p>
+<p><img src="https://img-blog.csdnimg.cn/59e5ca2e75ff43d1ac6d5ab4e0c25532.png" alt="2-27"></p>
+<p>此时MQ中就存放着商的结果，ACC中则存放着余数，与手算结果一致。</p>
+<h5 id="手算实现恢复余数法"><a href="#手算实现恢复余数法" class="headerlink" title="手算实现恢复余数法"></a>手算实现恢复余数法</h5><p><img src="https://img-blog.csdnimg.cn/caca2dc07db243019c7f0e824a13a7dd.png" alt="2-28"></p>
+<p>模仿计算机每次都先商1，若商错则通过$+[|y|]_补$恢复余数后再商0，如此往复可得到最终结果。</p>
+<h5 id="加减交替法"><a href="#加减交替法" class="headerlink" title="加减交替法"></a>加减交替法</h5><p>在恢复余数法的基础上，若商1为负时，可以通过直接将<strong>余左移一位，加上$[|y|]_补$可以直接实现得到恢复余数后的结果</strong>。<strong>符号位同样通过异或单独确定</strong>，即$x_s⊕y_s$。</p>
+<p><img src="https://img-blog.csdnimg.cn/26825a4b9d784e45be0dd72a2e64c25d.png" alt="2-29"></p>
+<p><strong>注：当最后一步余数为负时，需要商0，再加上$[|y|]_补$后才能获得正确余数</strong></p>
+<h4 id="补码的除法运算"><a href="#补码的除法运算" class="headerlink" title="补码的除法运算"></a>补码的除法运算</h4><p>补码的除法运算主要以加减交替法为主，因此和原码的加减交替法会有很多相似的地方。</p>
+<p>补码除法的特点是：</p>
+<ul>
+<li>符号位与数值位一起参加运算，商符自然形成。补码的被除数、余数、除数回采用双符号位。</li>
+<li>若<strong>被除数与除数同号</strong>，商<strong>1</strong>，<strong>余数左移一位减去除数</strong></li>
+<li>若<strong>被除数与除数异号</strong>，商<strong>0</strong>，<strong>余数左移一位加上除数</strong></li>
+</ul>
+<p>例：</p>
+<p>设机器字长为5位（含1位符号位，n&#x3D;4），$x&#x3D;+0.1000,y&#x3D;-0.1011$，采用补码加减交替法求x&#x2F;y，$[x]_补&#x3D;00.1000,[y]_补&#x3D;11.0101,[-y]_补&#x3D;00.1011$。</p>
+<p><img src="https://img-blog.csdnimg.cn/140acfa24dc24a39a46a1f68fb5cf08e.png" alt="2-30"></p>
+<p><strong>注：若对商的精度没有特殊要求，则一般采用“末位商恒置1”</strong></p>
+<h3 id="C语言中整数类型及类型转换"><a href="#C语言中整数类型及类型转换" class="headerlink" title="C语言中整数类型及类型转换"></a>C语言中整数类型及类型转换</h3><p><strong>注：C语言中定点整数都是用“补码”的形式进行存储</strong></p>
+<p>C语言中用<code>unsigned</code>关键字来修饰就代表是无符号类型。</p>
+<p>先观察以下代码：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">short</span> x <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">4321</span><span class="token punctuation">;</span>		<span class="token comment">//short型占用2个字节</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span> y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">short</span><span class="token punctuation">)</span>x<span class="token punctuation">;</span> <span class="token comment">//赋值会带符号位一起赋值给y。</span>
+    
+    <span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">165537</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">34991</span><span class="token punctuation">;</span>		<span class="token comment">//int型占用4个字节</span>
+    <span class="token keyword">short</span> c <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">short</span><span class="token punctuation">)</span>a<span class="token punctuation">,</span> d <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">short</span><span class="token punctuation">)</span>b<span class="token punctuation">;</span>	<span class="token comment">//short型占用2个字节  将长整数变短整数会高位截断，保留低位。</span>
+    
+    <span class="token keyword">short</span> x <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">4321</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> m <span class="token operator">=</span> x<span class="token punctuation">;</span>  <span class="token comment">//将短整形转长整形是直接符号拓展，若符号位1则全补1，符号位为0则全补0</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span> n <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">short</span><span class="token punctuation">)</span> x<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> p <span class="token operator">=</span> n<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h3 id="数据的存储和排列"><a href="#数据的存储和排列" class="headerlink" title="数据的存储和排列"></a>数据的存储和排列</h3><h4 id="数据的“大小端模式”"><a href="#数据的“大小端模式”" class="headerlink" title="数据的“大小端模式”"></a>数据的“大小端模式”</h4><blockquote>
+<p>在存储数据时，数据从低位到高位可以按从左往右排列，也可以按从右往左排列。因此，无法用最左和最右来表示数据的最高位和最低为，通常用<strong>最低有效字节（LSB）和最高有效字节（MSB）来表示数的低位和高位</strong>。例如，在32位计算机中，一个int型变量 i 的机器数位 01 23 45 67H，其最高有效字节MSB &#x3D; 01H， 最低有效字节 LSB &#x3D; 67H。</p>
+</blockquote>
+<p>多字节数据都存放在连续的字节序列中，根据数据中各字节在连续字节序列中的排列顺序不同，可以采用两种排列方式： 大端方式（big endian）、小端方式（little endian）。</p>
+<p>假设存4字节int: 01 23 45 67 H，</p>
+<p><img src="https://img-blog.csdnimg.cn/dd269471b4a04c30b0452d013cd0977f.png" alt="2-31"></p>
+<p><strong>大端模式</strong>是按从<strong>最高有效字节到最低有效字节</strong>的顺序存储数据，即最高有效字节放在前面；</p>
+<p><strong>小端方式</strong>是按从<strong>最低有效字节到最高有效字节</strong>的顺序存储数据，即最低有效字节放在前面；</p>
+<h4 id="边界对齐"><a href="#边界对齐" class="headerlink" title="边界对齐"></a>边界对齐</h4><p>现代计算机通常按字节编址，即每个字节对应1个地址</p>
+<p>通常也支持按字、按半字和字寻址。假设存储字长为32位，则1个字 &#x3D; 32bit，半字 &#x3D; 16 bit。每次访存只能读&#x2F;写1个字。</p>
+<p><img src="https://img-blog.csdnimg.cn/95429b73308a43f297c2b4e7bbe056d8.png" alt="2-32"></p>
+<p><strong>边界对齐就是用空间换时间的一种存储方式</strong></p>
 
                 
             </div>
