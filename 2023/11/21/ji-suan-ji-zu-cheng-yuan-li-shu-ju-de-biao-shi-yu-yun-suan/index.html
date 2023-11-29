@@ -441,6 +441,10 @@
                                 <span class="chip bg-color">计算机组成原理</span>
                             </a>
                         
+                            <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
+                                <span class="chip bg-color">数制与编码</span>
+                            </a>
+                        
                     </div>
                     
                 </div>
@@ -469,7 +473,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-26
+                    2023-11-29
                 </div>
                 
 
@@ -674,7 +678,9 @@
 <h5 id="反码的算数移位"><a href="#反码的算数移位" class="headerlink" title="反码的算数移位"></a>反码的算数移位</h5><p><strong>正数的反码表示和原码表示相同</strong>，所以正数的移位规则和原码相同。</p>
 <p>反码<font color="#FF6347">负数</font>的数值位与原码相反，因此<font color="#FF6347">负数反码的移位运算</font>规则下：</p>
 <p><strong>算数右移</strong>： 高位补1，低位舍弃。</p>
+<p>高位补1，低位超过小数点部分舍去。若当<strong>舍弃的位&#x3D;0</strong>，<font color="\#00CED1">则会丢失精度</font>。</p>
 <p><strong>算数左移</strong>： 低位补1，高位舍弃。</p>
+<p>低位补1，高位舍弃。若<strong>舍弃的位&#x3D;0</strong>，则会出现<font color="#FF6347">严重误差。</font></p>
 <h5 id="补码的算数移位"><a href="#补码的算数移位" class="headerlink" title="补码的算数移位"></a>补码的算数移位</h5><p><strong>正数的补码表示和原码表示相同</strong>，所以正数的移位规则和原码相同。</p>
 <p><font color="#FF6347">负数</font>补码&#x3D;反码末位+1导致反码最右边几个连续的1都因进位而变0，直到进位碰到第一个0为止。</p>
 <p><font color="#FF6347">规律——负数补码中，最右边的1及其最右边同原码。最右边的1的左边同反码</font></p>
@@ -823,7 +829,7 @@
 <p><img src="https://img-blog.csdnimg.cn/bbea071c1d734f2ba9eaf12a106d2d60.png" alt="2-22"></p>
 <p>由于计算机并不直到除数和被除数谁更大，所以规定<strong>默认先上商1，如果搞错了再改上商0，并“恢复余数”（恢复余数通过加上除数y来进行恢复）</strong></p>
 <p><img src="https://img-blog.csdnimg.cn/14dfbf2a7f5d4ec0895d10e8072556fa.png" alt="2-23"></p>
-<p>第一次运算 ACC-除数（通用寄存器）-&gt; $|x|+[-|y|]_补&#x3D;01101+10011&#x3D;11110$，此时计算结果为负数，说明上商1为错误，所以需要恢复余数再重新该上商0.</p>
+<p>第一次运算 ACC-除数（通用寄存器）-&gt; $|x|+[-|y|]_补&#x3D;01011+10011&#x3D;11110$，此时计算结果为负数，说明上商1为错误，所以需要恢复余数再重新该上商0.</p>
 <p><img src="https://img-blog.csdnimg.cn/e3496bb503d14c58909874f382ae4032.png" alt="2-24"></p>
 <p>此时图2-24就为商错，需要恢复余数后再重新商0.</p>
 <p><img src="https://img-blog.csdnimg.cn/f0a11fcfacce4f709c6556b4b6a0b63d.png" alt="2-25"></p>
@@ -944,6 +950,10 @@
                             
                                 <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
                                     <span class="chip bg-color">计算机组成原理</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
+                                    <span class="chip bg-color">数制与编码</span>
                                 </a>
                             
                         </div>

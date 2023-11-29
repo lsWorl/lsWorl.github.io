@@ -4,17 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="数电-门电路, LsWorld">
+    <meta name="keywords" content="计算机组成原理-补充知识点, LsWorld">
     <meta name="description" content="
 
 
 
-
-
-门电路（Gate Circuit）门电路是指以实现基本逻辑关系和复合逻辑关系的电子电路。
-高电平和低电平的含义高电平和低电平为某规定范围（由门电路的种类决定）的电位值，而非一固定值。
-
-若无特殊声明，在日常生活中均以正逻辑体制来">
+C语言数据转换时应注意的问题：
+有符号数和无符号数之间的转换。例，由signed型转等长unsigned型数据时，符号位成为数据的一部分，即负数转换位无符号数时，数值将发生变化。同理，由unsigned转换为signed时最高位为符">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -28,7 +24,7 @@
 
     
 
-    <title>数电-门电路 | LsWorld</title>
+    <title>计算机组成原理-补充知识点 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -318,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">数电-门电路</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-补充知识点</h1>
                 </div>
             </div>
         </div>
@@ -439,8 +435,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E6%95%B0%E7%94%B5/">
-                                <span class="chip bg-color">数电</span>
+                            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                                <span class="chip bg-color">计算机组成原理</span>
                             </a>
                         
                     </div>
@@ -451,8 +447,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
-                                数电
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                计算机组成原理
                             </a>
                         
                     </div>
@@ -464,21 +460,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-11-04
+                    2023-11-29
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-04
+                    2023-11-29
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1k
+                    339
                 </div>
                 
 
@@ -502,57 +498,25 @@
 
 
 
+<h4 id="C语言数据转换时应注意的问题："><a href="#C语言数据转换时应注意的问题：" class="headerlink" title="C语言数据转换时应注意的问题："></a>C语言数据转换时应注意的问题：</h4><ol>
+<li><p><strong>有符号数和无符号数之间的转换</strong>。例，由<code>signed</code>型转等长<code>unsigned</code>型数据时，<strong>符号位成为数据的一部分</strong>，即负数转换位无符号数时，数值将发生变化。同理，由<code>unsigned</code>转换为<code>signed</code>时最高位为符号位，也可能会发生数值变化。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">short</span> a <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment">//二进制形式 1111 1111 1111 0110</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// -10</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">short</span> b <span class="token operator">=</span> a<span class="token punctuation">;</span> <span class="token comment">//二进制形式 1111 1111 1111 0110</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//65526</span></code></pre>
+</li>
+<li><p><strong>数据的截取与保留</strong>。当一个<strong>浮点数转换为整数</strong>时，浮点数的小数部分全部舍去，并按整数形式存储。但浮点数的整数部分不能超过整形数允许的最大范围，否则溢出。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">float</span> f <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">10.120</span><span class="token punctuation">;</span>
+<span class="token keyword">short</span> s <span class="token operator">=</span> f<span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//-10</span></code></pre>
 
 
-<h4 id="门电路（Gate-Circuit）"><a href="#门电路（Gate-Circuit）" class="headerlink" title="门电路（Gate Circuit）"></a>门电路（Gate Circuit）</h4><p>门电路是指以实现基本逻辑关系和复合逻辑关系的电子电路。</p>
-<h5 id="高电平和低电平的含义"><a href="#高电平和低电平的含义" class="headerlink" title="高电平和低电平的含义"></a>高电平和低电平的含义</h5><p>高电平和低电平为某规定范围（由门电路的种类决定）的电位值，而非一固定值。</p>
-<p><img src="https://img-blog.csdnimg.cn/72a394d94cb343d5ac32675166318806.png" alt="1-1"></p>
-<p>若无特殊声明，在日常生活中均以正逻辑体制来表示高低电平。</p>
-<h3 id="二极管的开关特性"><a href="#二极管的开关特性" class="headerlink" title="二极管的开关特性"></a>二极管的开关特性</h3><h4 id="本征半导体"><a href="#本征半导体" class="headerlink" title="本征半导体"></a>本征半导体</h4><p><strong>导体基本概念：</strong></p>
-<p>导体：自然界中容易导电的物质。</p>
-<p>绝缘体：电阻率很高的物质，几乎不导电。</p>
-<p>半导体：导电特性处于导体和绝缘体之间的物质。</p>
-<p>现代电子学中，用的最多的半导体是硅和锗，最外层电子（价电子）都是4个。</p>
-<p>本征半导体：完全纯净的、结构完整的半导体晶体。</p>
-<blockquote>
-<p>在硅和锗晶体中，原子按四角形系统组成晶体点阵，每个原子都处在正四面体的中心，而四个其他原子位于四面体的顶点，每个原子与其相邻的原子之间形成<strong>共价键</strong>，共用一对价电子。</p>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/c583473eaf5445fcb352a2b1d3885aa8.png" alt="1-2"></p>
-<blockquote>
-<p>共价键中的两个电子被紧紧束缚在共价键中，称为束缚电子，常温下束缚电子很难脱离共价键成为自由电子，因此本征半导体中的自由电子很少，导电能力很弱。</p>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/4640ca406f0647a5a1b5777e4c09b2b6.png" alt="1-3"></p>
-<h5 id="本征半导体的导电机理"><a href="#本征半导体的导电机理" class="headerlink" title="本征半导体的导电机理"></a>本征半导体的导电机理</h5><ol>
-<li><p>载流子、自由电子和空穴</p>
-<p>在绝对0度（T&#x3D;0K）和没有外界激发时，价电子完全被共价键束缚着，本征半导体中没有可以运动的带点粒子（即<strong>载流子</strong>），它的导电能力为0，相当于绝缘体。</p>
-<p>在常温下，由于热激发（<strong>本征激发</strong>），使一些价电子获得足够的能量而脱离共价键的束缚，成为<strong>自由电子</strong>，同时共价键上留下一个空位，称为<strong>空穴</strong>。</p>
-<p><img src="https://img-blog.csdnimg.cn/55b0a895f5d6452eb265b42a091ed1fa.png" alt="1-4"></p>
 </li>
-<li><p>导电机理</p>
-<p>本征半导体中存在数量相等的两种载流子，即自由电子和空穴。</p>
-<p>本征半导体中电流由两部分组成：</p>
-<ol>
-<li>自由电子移动产生的电流。</li>
-<li>空穴移动产生的电流。</li>
-</ol>
-<blockquote>
-<p>温度越高，载流子的浓度越高。因此本征半导体的导电能力越强，温度使影响半导体性能的一个重要的外部因素，这是半导体的一大特点—<strong>温敏特性</strong>。</p>
-</blockquote>
-<p>本征半导体的导电能力取决于载流子的浓度。</p>
+<li><p><strong>数据转换中的精度丢失</strong>。四舍五入会丢失一些精度，截去小数也会丢失一些精度。此外，数据由long型转换为flaot型或double型时，有可能在存储时不能准确地表示该长整数的有效数字，精度也会受到影响。</p>
+</li>
+<li><p><strong>精度转换结果的不确定性</strong>。当较长的整数转换为较短的整数时，要将高位截去。例，<strong>long型转换为short型，只将低16位送去</strong>，这就会产生很大的误差。</p>
 </li>
 </ol>
-<h4 id="N型、P型半导体"><a href="#N型、P型半导体" class="headerlink" title="N型、P型半导体"></a>N型、P型半导体</h4><p>在本征半导体中掺入微量的杂质（某种元素），形成杂志半导体—<strong>掺杂特性</strong>。</p>
-<p>掺杂后自由电子数目大量增加，自由电子导电称为这种半导体的主要导电方式，称为电子半导体或<strong>N型半导体</strong>。</p>
-<p>在N型半导体中<strong>自由电子是多数载流子，空穴是少数载流子</strong>。</p>
-<p>而掺杂后空穴数目大量增加就称为空穴半导体或<strong>P型半导体</strong>。</p>
-<p>在P型半导体中<strong>空穴是多数载流子，自由电子是少数载流子</strong>。</p>
-<p><strong>无论N型和P型半导体都是中性的，对外不显电性。</strong></p>
-<p>将PN结与管壳和引线所结合就形成了二极管，符号如图1-5所示。</p>
-<p><img src="https://img-blog.csdnimg.cn/75d40811160b4542b08adb99641d13bb.png" alt="1-5"></p>
-<h4 id="二极管的静态开关特性"><a href="#二极管的静态开关特性" class="headerlink" title="二极管的静态开关特性"></a>二极管的静态开关特性</h4><p><img src="https://img-blog.csdnimg.cn/50c8a902cef24716af4461527647f282.png" alt="1-6"></p>
-<p><img src="https://img-blog.csdnimg.cn/69be8a2abe5749fcbc6f9e1855fbe1fb.png" alt="1-7"></p>
-<p>当输入电流为低电平时，二极管反向截至，相当于开关断开。而输入电流为高电平时，二极管正向导通，可等效于具有0.7V压降的闭合开关（相当于越过0.7V死区电压）。</p>
-<h3 id="MOS管的开关特性"><a href="#MOS管的开关特性" class="headerlink" title="MOS管的开关特性"></a>MOS管的开关特性</h3><p>场效应晶体管只有一个载流子（多数载流子）参与导电，又称为单极型三极管。场效应晶体管是利用<strong>电场（电压）控制</strong>半导体中载流子运动的一种有源器件。目前场效应管应用最多是以二氧化硅作为绝缘介质的金属—氧化物—半导体绝缘栅型场效应管（Metal-Oxide-Semiconductor-Field-Effect Transistor），简称MOS管。</p>
 
                 
             </div>
@@ -579,7 +543,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/11/04/shu-dian-men-dian-lu/">http://example.com/2023/11/04/shu-dian-men-dian-lu/</a>
+                    <a href="http://example.com/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-bu-chong-zhi-shi-dian/">http://example.com/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-bu-chong-zhi-shi-dian/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -617,8 +581,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E6%95%B0%E7%94%B5/">
-                                    <span class="chip bg-color">数电</span>
+                                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                                    <span class="chip bg-color">计算机组成原理</span>
                                 </a>
                             
                         </div>
@@ -936,13 +900,13 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/11/21/ji-suan-ji-zu-cheng-yuan-li-shu-ju-de-biao-shi-yu-yun-suan/">
+                <a href="/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="计算机组成原理-数据的表示与运算">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="计算机组成原理-浮点数的表示与运算">
                         
-                        <span class="card-title">计算机组成原理-数据的表示与运算</span>
+                        <span class="card-title">计算机组成原理-浮点数的表示与运算</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -953,16 +917,12 @@
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-11-21
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-11-29
                         </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
-                                    计算机组成原理
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            LsWorld
                             
                         </span>
                     </div>
@@ -989,13 +949,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/11/03/shu-ju-jie-gou-pai-xu/">
+                <a href="/2023/11/23/dian-lu-dian-zu-dian-lu-de-yi-ban-fen-xi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="数据结构-排序">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="电路-电阻电路的一般分析">
                         
-                        <span class="card-title">数据结构-排序</span>
+                        <span class="card-title">电路-电阻电路的一般分析</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1006,14 +966,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-03
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-23
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-category">
-                                    数据结构
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                    电路
                                 </a>
                             
                             
@@ -1023,8 +983,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-                        <span class="chip bg-color">数据结构</span>
+                    <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                        <span class="chip bg-color">电路</span>
                     </a>
                     
                 </div>
