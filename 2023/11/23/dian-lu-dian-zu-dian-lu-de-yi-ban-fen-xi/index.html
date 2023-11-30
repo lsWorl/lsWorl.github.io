@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-23
+                    2023-11-30
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    665
+                    1k
                 </div>
                 
 
@@ -522,7 +522,19 @@
 <p><img src="https://img-blog.csdnimg.cn/e11902fb480e46fd9b6fc3e197fc31c9.png" alt="1-2"></p>
 <p>如图1-2中选取回路电流为$i_1,i_2,i_3$，可根据网孔电流法列出相应的回路电流方程：<br>$$<br>\begin{cases}<br>\ l_1:(R_1+R_6+R_5+R_4)i_1+(R_5+R_4)i_2-(R_5+R_6)i_3&#x3D;-u_{S1}+u_{S5}\<br>\ l_2:(R_5+R_4)i_1+(R_2+R_5+R_4)i_2-R_5i_3&#x3D;U_{S5}\<br>\ l_3:-(R_5+R_6)i_1-R_5i_2+(R_3+R_5+R_6)i_3&#x3D;-u_{S5}<br>\end{cases}<br>$$</p>
 <h3 id="结点电压法"><a href="#结点电压法" class="headerlink" title="结点电压法"></a>结点电压法</h3><p>以结点电压为未知量列写电路方程分析电路的方程。<strong>适用于结点较少的电路</strong></p>
-<h4 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h4><p>选结点电压为未知量，则KVL自动满足，无需列写KVL方程。各支路电流、电压可视为结点电压的线性组合，求出结点电压后</p>
+<h4 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h4><p>选结点电压为未知量，则KVL自动满足，无需列写KVL方程。各支路电流、电压可视为结点电压的线性组合，求出结点电压后，便可得到各支路电压、电流。</p>
+<h4 id="方程的列写"><a href="#方程的列写" class="headerlink" title="方程的列写"></a>方程的列写</h4><p>结点电压列写的是结点上KCL方程。</p>
+<ol>
+<li>选定参考结点，表明其余n-1个独立结点的电压。</li>
+<li>列写KCL方程：$\sum i_{R出}&#x3D;\sum i_{S入}$</li>
+<li></li>
+</ol>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c55ce3be6556478fa40c331163d09043.png" alt="1-3"></p>
+<p>将最下方接地，1 2 3号结点电压为$u_{n1}u_{n2}u_{n3}$列1 2 3号结点的KCL方程：<br>$$<br>1 :i_1+i_2&#x3D;i_{s1}+i_{s2}\<br>2 :-i_2+i_3+i_4&#x3D;0\<br>3 :-i_3+i_5&#x3D;-i_{s2}<br>$$<br>然后把支路电流用结点电压表示：<br>$$<br>\frac{u_{n1}}{R_1}+\frac{u_{n1}-u_{n2}}{R_2}&#x3D;i_{s1}+i_{s2}\<br>-\frac{u_{n1}-u_{n2}}{R_2}+\frac{u_{n2}-u_{n3}}{R_3}+\frac{u_{n2}}{R_4}&#x3D;0\<br>-\frac{u_{n2}-u_{n3}}{R_3}+\frac{u_{n3}-u_s}{R_5}&#x3D;-i_{s2}<br>$$<br>最后整理得：<br>$$<br>\begin{cases}<br>(\frac{1}{R_1}+\frac{1}{R_2})u_{n1}-(\frac{1}{R_2})u_{n2}&#x3D;i_{s1}+i_{s2}\<br>\ -(\frac{1}{R_2})u_{n1} +(\frac{1}{R_2}+\frac{1}{R_3}+\frac{1}{R_4})u_{n2}-(\frac{1}{R_3})u_{n3}&#x3D;0\</p>
+<p>\ -(\frac{1}{R_3})u_{n2}+(\frac{1}{R_3}+\frac{1}{R_5})u_{n3}&#x3D;-i_{s2}+\frac{u_s}{R_5}<br>\end{cases}<br>$$<br>即为结点电压的最终方程表达式（或者用电导的形式）</p>
+<p><strong>根据上方例子可总结出结点电压法的特性</strong>：</p>
+<p>设$\frac{1}{R_i}&#x3D;G_i$（电阻的倒数等于电导），那么该结点的自电导（即与该结点相邻的电导）之和与该结点电压相乘，互电导（互电导为接在结点与结点之间的电导之和）<strong>总为负值</strong></p>
 
                 
             </div>

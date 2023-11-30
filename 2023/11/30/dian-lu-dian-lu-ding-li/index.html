@@ -4,13 +4,14 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="计算机组成原理-浮点数的表示与运算, LsWorld">
+    <meta name="keywords" content="电路-电路定理, LsWorld">
     <meta name="description" content="
 
 
 
-浮点数的表示由于定点数可表示的数字范围有限，而又不能无限制的增加数据的长度，就得考虑在位数不变的情况下增加数据的表示范围，以此拓展了浮点数。例，用定点数表示电子的质量($9 \times 10^{-28}g$)。
-浮点数的表示格式通">
+叠加定理在线性电路中，任一支路的电流（或电压）可以看成是电路中每一个独立电源单独作用于电路时，在该支路产生的电流（或电压）的代数和。
+结点电压和支路电流均为各电源的一次函数，均可看成各独立电源单独作用时，产生的响应之叠加。
+使用叠加">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -24,7 +25,7 @@
 
     
 
-    <title>计算机组成原理-浮点数的表示与运算 | LsWorld</title>
+    <title>电路-电路定理 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +315,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">计算机组成原理-浮点数的表示与运算</h1>
+                    <h1 class="description center-align post-title">电路-电路定理</h1>
                 </div>
             </div>
         </div>
@@ -435,18 +436,23 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                                <span class="chip bg-color">计算机组成原理</span>
-                            </a>
-                        
-                            <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
-                                <span class="chip bg-color">数制与编码</span>
+                            <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                                <span class="chip bg-color">电路</span>
                             </a>
                         
                     </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E7%94%B5%E8%B7%AF/" class="post-category">
+                                电路
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -455,21 +461,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-11-29
+                    2023-11-30
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-29
+                    2023-11-30
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    289
                 </div>
                 
 
@@ -493,45 +499,22 @@
 
 
 
-<h3 id="浮点数的表示"><a href="#浮点数的表示" class="headerlink" title="浮点数的表示"></a>浮点数的表示</h3><p>由于定点数可表示的数字范围有限，而又不能无限制的增加数据的长度，就得考虑在位数不变的情况下增加数据的表示范围，以此拓展了浮点数。例，用定点数表示电子的质量($9 \times 10^{-28}g$)。</p>
-<h4 id="浮点数的表示格式"><a href="#浮点数的表示格式" class="headerlink" title="浮点数的表示格式"></a>浮点数的表示格式</h4><p>通常，浮点数表示为<br>$$<br>N&#x3D;(-1)^S\times M \times R^E<br>$$<br>其中，<strong>S取值0或1，用来决定浮点数的符号</strong>；M是一个二进制定点小数，称为尾数，一般用定点原码小数表示，称为<strong>阶码或指数</strong>，用<strong>移码</strong>表示。R是基数（隐含），可以约定为2、4、16，基本为2等。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/22de4b88dee5435194ecb5dedd369146.png" alt="1-1"></p>
-<p><strong>尾数的位数反映浮点数的精度</strong>。</p>
-<p>例：阶码、尾数均用补码表示，求a、b的真值</p>
-<p>$a&#x3D;0,01;1.1001$，$b&#x3D;0,10;0.01001$(阶码<code>,</code>前为符号位，尾数<code>.</code>前为符号位)</p>
-<p>a:  阶码0,01 对应真值 +1  尾数 1.1001 对应原码 1.0111，对应真值为 -0.0111，所以a的真值$&#x3D;2^1\times (-0.0111)&#x3D;-0.111$</p>
-<p>b: 阶码0,10 对应真值 +2  尾数 0.01001 对应真值 +0.01001 ，所以b的真值$&#x3D;2^2\times (+0.01001)&#x3D;+1.001$</p>
-<h4 id="浮点数的规格化"><a href="#浮点数的规格化" class="headerlink" title="浮点数的规格化"></a>浮点数的规格化</h4><p>尾数的尾数决定浮点数的有效数位，有效数位越多，数据的精度越高。为了在浮点数运算过程中尽可能多的保留有效数字的位数，所以才需进行规格化操作。所谓<strong>规格化</strong>，是指通过调整一个非规格化浮点数的<strong>尾数和阶码的大小</strong>，使非零的浮点数在尾数的最高数位商保证是一个有效值。</p>
-<ul>
-<li><strong>左规</strong>：当浮点数运算的结果为非规格化要进行规格化处理，将<font color="#ff0000">尾数算数左移一位，阶码减1</font>.</li>
-<li><strong>右规</strong>：当浮点数运算的结果尾数出现溢出（双符号位为01或10）时，<font color="#ff0000">尾数算数右移一位，阶码加1</font>.</li>
-</ul>
-<p>例： a &#x3D; 010; 00.1100 ,  b &#x3D; 010; 00.1000 ,  求a+b</p>
-<p>可得 a $&#x3D; 2^2\times 00.1100$， b &#x3D; $2^2 \times 00.1000$， a+b &#x3D; $2^2\times(00.1100 + 00.1000)&#x3D;2^2\times 01.0100$，此时就导致了溢出，可以通过<strong>右规</strong>得：a + b&#x3D; $2^2\times 01.0100&#x3D; 2^3\times 00.1010$</p>
-<h5 id="浮点数规格化的特点"><a href="#浮点数规格化的特点" class="headerlink" title="浮点数规格化的特点"></a>浮点数规格化的特点</h5><ol>
-<li><p>用原码表示的尾数进行规格化：</p>
+<h3 id="叠加定理"><a href="#叠加定理" class="headerlink" title="叠加定理"></a>叠加定理</h3><p>在线性电路中，任一支路的电流（或电压）可以看成是电路中<strong>每一个独立电源单独作用于电路时</strong>，在该支路产生的电流（或电压）的代数和。</p>
+<p>结点电压和支路电流均为各电源的一次函数，均可看成各独立电源单独作用时，产生的响应之叠加。</p>
+<p><strong>使用叠加定理注意事项：</strong></p>
 <ol>
-<li>正数为$0.1\times \times \dots \times$的形式（0为符号位，最高位为1），其最大值表示为$0.1111\dots 1$；最小值表示为$0.100\dots 0$。尾数的表示范围$\frac{1}{2} \leq M \leq (1-2^{-n})$</li>
-<li>负数为$1.1\times \times \dots \times$的形式，其最大值表示为$1.1000\dots0$；最小值表示为$1.1111\dots1$。尾数的表示范围为$-(1-2^{-n})\leq M \leq -\frac{1}{2}$</li>
+<li>叠加定理只适用于线性电路。</li>
+<li>一个电源作用，其余电源为零。电压源为零——短路，电流源为零——开路。</li>
+<li>功率不能叠加。</li>
+<li>u ,i 叠加时要注意各分量的参考方向。</li>
+<li>含受控源（线性）电路亦可用叠加，但受控源应始终保留。</li>
 </ol>
-</li>
-<li><p>用补码表示的尾数进行规格化：</p>
-<ol>
-<li>正数为$0.1\times \times \dots \times$的形式（0为符号位，最高位为1），其最大值表示为$0.1111\dots 1$；最小值表示为$0.100\dots 0$。尾数的表示范围$\frac{1}{2} \leq M \leq (1-2^{-n})$</li>
-<li>负数为$1.0\times \times \dots \times$的形式，其最大值表示为$1.0111\dots 1$；最小值表示为$1.000\dots0$。尾数的表示范围为$-1\leq M \leq -(1&#x2F;2 +2^{-n})$</li>
-</ol>
-<p><strong>总结</strong>：</p>
-<p>规格化的原码尾数，<strong>最高数值位一定是1</strong>，规格化的补码尾数，<strong>符号位与最高数值位一定相反</strong>。</p>
-</li>
-</ol>
-<p>例：若某浮点数的阶码、尾数用补码表示，共4+8位；   0.110; 1.1110100，进行规格化：</p>
-<p>由于补码负数的最高位和符号位要相反，所以要进行左规进行规格化，$2^6\times -(1110100)&#x3D;2^3 \times -(01000000)$，就规格化完毕。</p>
-<p><strong>基数不同，浮点数的规格化形式也不同。</strong></p>
-<h3 id="浮点数-IEEE-754标准"><a href="#浮点数-IEEE-754标准" class="headerlink" title="浮点数 IEEE 754标准"></a>浮点数 IEEE 754标准</h3><p>在了解IEEE 754标准前，先回忆下移码的概念，移码实际就是补码的符号位取反获得。移码的定义是：<strong>移码&#x3D;真值+偏置值</strong>（偏置值一般是$2^{n-1}$，此时<strong>移码&#x3D;补码符号位取反</strong>）。</p>
-<p>例：设8位机器来表示移码，此处8位移码的<strong>偏置值&#x3D;128D&#x3D;1000 0000B</strong>。</p>
-<p>真值 -127D &#x3D; -1111 111B，移码 &#x3D; -111 1111 + 1000 0000&#x3D; 0000 000 </p>
-<p><strong>在IEEE 754标准中，通常会将偏置值&#x3D;$2^{n-1}-1$</strong></p>
-<p><img src="https://img-blog.csdnimg.cn/direct/9668425212434179b64d28215e271651.png" alt="1-2"></p>
+<p><img src="https://img-blog.csdnimg.cn/direct/8b7bb80d7f9a4075a1ccd28e3dd673a2.png" alt="1-1"></p>
+<p>例：求电压源的电流及功率</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/077748e6a4a944b7b4badb8e1ec79539.png" alt="1-2"></p>
+<p>将上方电路进行拆分，拆分成两个简单电路的单独作用：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/e0322890403d42cea3b0fcc72fc99099.png" alt="1-3"></p>
+<p>显然左边的图为电桥平衡状态，此时$I(1)&#x3D;0$，右图在4Ω和2Ω间的结点列写KCL得$I(2)&#x3D;70&#x2F;14+70&#x2F;7&#x3D;15A$。所以原电路$I&#x3D;I(1)+I(2)&#x3D;15A,P_发&#x3D;15\times 70&#x3D;1050W$</p>
 
                 
             </div>
@@ -558,7 +541,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/">http://example.com/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/</a>
+                    <a href="http://example.com/2023/11/30/dian-lu-dian-lu-ding-li/">http://example.com/2023/11/30/dian-lu-dian-lu-ding-li/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -596,12 +579,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                                    <span class="chip bg-color">计算机组成原理</span>
-                                </a>
-                            
-                                <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
-                                    <span class="chip bg-color">数制与编码</span>
+                                <a href="/tags/%E7%94%B5%E8%B7%AF/">
+                                    <span class="chip bg-color">电路</span>
                                 </a>
                             
                         </div>
@@ -915,9 +894,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/11/30/dian-lu-dian-lu-ding-li/">
                     <div class="card-image">
@@ -935,9 +915,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-11-30
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-30
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -950,6 +930,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -968,13 +949,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-bu-chong-zhi-shi-dian/">
+                <a href="/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="计算机组成原理-补充知识点">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="计算机组成原理-浮点数的表示与运算">
                         
-                        <span class="card-title">计算机组成原理-补充知识点</span>
+                        <span class="card-title">计算机组成原理-浮点数的表示与运算</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -989,12 +970,8 @@
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
-                                    计算机组成原理
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            LsWorld
                             
                         </span>
                     </div>
@@ -1004,6 +981,10 @@
                     
                     <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
                         <span class="chip bg-color">计算机组成原理</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
+                        <span class="chip bg-color">数制与编码</span>
                     </a>
                     
                 </div>
@@ -1121,6 +1102,13 @@
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
