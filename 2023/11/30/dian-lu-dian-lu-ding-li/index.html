@@ -468,14 +468,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-30
+                    2023-12-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    289
+                    1.1k
                 </div>
                 
 
@@ -515,6 +515,51 @@
 <p>将上方电路进行拆分，拆分成两个简单电路的单独作用：</p>
 <p><img src="https://img-blog.csdnimg.cn/direct/e0322890403d42cea3b0fcc72fc99099.png" alt="1-3"></p>
 <p>显然左边的图为电桥平衡状态，此时$I(1)&#x3D;0$，右图在4Ω和2Ω间的结点列写KCL得$I(2)&#x3D;70&#x2F;14+70&#x2F;7&#x3D;15A$。所以原电路$I&#x3D;I(1)+I(2)&#x3D;15A,P_发&#x3D;15\times 70&#x3D;1050W$</p>
+<h3 id="齐性原理"><a href="#齐性原理" class="headerlink" title="齐性原理"></a>齐性原理</h3><p>线性电路中，所有激励（独立源）都增大（或减少）同样的倍数，则电路中响应（电压或电流）也增大（或减小）同样的倍数。</p>
+<p><strong>注：</strong></p>
+<ol>
+<li>当<strong>激励只有一个</strong>时，则响应与激励成正比。</li>
+<li>具有可加性。</li>
+</ol>
+<p>例：</p>
+<p>$R_L&#x3D;2Ω,R_1&#x3D;1Ω,R_2&#x3D;1Ω,u_s&#x3D;51V$，求电流i。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/0c6d89bbc9824ac1939ee50ccbda43dd.png" alt="1-4"></p>
+<p>采用倒推法：设$i’&#x3D;1A$</p>
+<p>由齐性原理，则$\frac{i}{i’}&#x3D;\frac{u_s}{u_s’}$，即<br>$$<br>i&#x3D;\frac{u_s}{u_s’}i’&#x3D;\frac{51}{34}\times 1 &#x3D;1.5A<br>$$</p>
+<h3 id="替代定理"><a href="#替代定理" class="headerlink" title="替代定理"></a>替代定理</h3><p>对于给定的任意一个电路，若某一支路电压为u，电流为i，那么这条支路就可以用一个电压等于u的独立电压源，或者用一个电流等于i的独立电流源，或用R&#x3D;u&#x2F;i的电阻来替代，<strong>替代后电路中全部电压和电流均保持原有值</strong></p>
+<p>例：</p>
+<p>求图中电路的支路电压和电流</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f7759faa2ff94af6a5dd145ad1b6106d.png" alt="1-5"></p>
+<p>先用电阻等效算:<br>$$<br>i_1&#x3D;\frac{110}{5+(5+10)&#x2F;&#x2F;10}&#x3D;10A<br>$$<br>并联分流算得$i_2&#x3D;(15\times i_1)&#x2F;10+15&#x3D;6A,i_3&#x3D;i_1-i_2&#x3D;4A$，欧姆定律再得$u&#x3D;6\times 10&#x3D;60V$</p>
+<p>用将上图用替代定理验证，可得</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/dc327e092f2c415cbc6c5d6cd380b3d2.png" alt="1-6"></p>
+<p>此时上方已经算得$V_u&#x3D;60V$，则$i_1&#x3D;(110-60)&#x2F;5&#x3D;10A,i_3&#x3D;60&#x2F;(10+15)&#x3D;4A$</p>
+<p><strong>替代后各支路电压和电流完全不变。</strong></p>
+<h3 id="戴维宁定理和诺顿定理"><a href="#戴维宁定理和诺顿定理" class="headerlink" title="戴维宁定理和诺顿定理"></a>戴维宁定理和诺顿定理</h3><p>戴维宁定理和诺顿定理就是将要求部分的外端等效成电阻和电压源串联的形式，以此来求出要求部分的电压或电流。</p>
+<h5 id="定理的应用"><a href="#定理的应用" class="headerlink" title="定理的应用"></a>定理的应用</h5><ol>
+<li><p>开路电压$U_{oc}$的计算</p>
+<p>戴维宁等效电路中电压源电压等于将<strong>外电路断开时的开路电压</strong>$U_{oc}$，电压源方向与所求开路电压方向有关。</p>
+</li>
+<li><p>等效电阻的计算</p>
+<p>等效电阻将一端口网络<strong>内部独立源全部置零（电压源短路，电流源开路）</strong>后，所得无源一端口网络的输入电阻。（若有受控源可使用外加电源法，加电压求电流或加电流求电压）</p>
+</li>
+</ol>
+<p>通过戴维宁定理可将外部有源端口网络等效成如下图</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/215201a1c85f46f9a8d70f934d0ff878.png" alt="1-7"></p>
+<p>例：</p>
+<p>求开路电压$U_{oc}$</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/bd46281c769a46839cda36ed35c609c4.png"><br>$$<br>I&#x3D;\frac{20-10}{10+10}&#x3D;0.5A\<br>U_{oc}&#x3D;10+0.5\times 10 &#x3D; 15V<br>$$<br>再求输入电阻$R_{eq}$，将电源都置零得$R_{eq}&#x3D;10&#x2F;&#x2F;10&#x3D;5Ω$，所以可以等效为：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/9c409a6d9a8441009cb2fe2f4277e568.png"></p>
+<p>诺顿定理则是换成电流源，方向从电压源负到正。</p>
+<p><strong>注</strong></p>
+<ol>
+<li>外电路可以是<strong>任意的线性或非线性电路</strong>，外电路发生改变时，含源一端口网络的等效电路不变。</li>
+<li>当一端口内部含有受控源时，<strong>控制电路与受控源必须包含在被化简的同一部分电路中</strong></li>
+</ol>
+<h3 id="最大功率传输定理"><a href="#最大功率传输定理" class="headerlink" title="最大功率传输定理"></a>最大功率传输定理</h3><p>一个含源线性一端口电路，当所接负载不同时，一端口网络传输给负载的功率就不同，讨论负载为何值时能从电路中获取最大功率。</p>
+<p>最大功率传输定理就是用戴维宁来等效后再根据负载来算最大功率</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/8ffa864badab49c8ab7afd618a719f4a.png"></p>
+<p>根据$P&#x3D;R_L(\frac{u_{oc}}{R_{eq}+R_L})^2$（$R_L$为未知量）可最后算得最大功率：<br>$$<br>R_L&#x3D;R_{eq}时,P_{max}&#x3D;\frac{u_{oc}^2}{4R_{eq}}<br>$$</p>
 
                 
             </div>
