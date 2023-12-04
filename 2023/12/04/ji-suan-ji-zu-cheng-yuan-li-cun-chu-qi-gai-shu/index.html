@@ -4,13 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="计算机组成原理-浮点数的表示与运算, LsWorld">
+    <meta name="keywords" content="计算机组成原理-存储器概述, LsWorld">
     <meta name="description" content="
 
 
 
-浮点数的表示由于定点数可表示的数字范围有限，而又不能无限制的增加数据的长度，就得考虑在位数不变的情况下增加数据的表示范围，以此拓展了浮点数。例，用定点数表示电子的质量($9 \times 10^{-28}g$)。
-浮点数的表示格式通">
+存储器的分类存储器种类繁多，可从不同角度对存储器进行分类。
+按在计算机中的作用（层次）分类
+
+主存储器。简称主存，又称内存储器（内存），用来存放计算机运行期间所需的程序和数据，CPU可以直接随机地对其进行访问，也可以和Cache及辅">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -24,7 +26,7 @@
 
     
 
-    <title>计算机组成原理-浮点数的表示与运算 | LsWorld</title>
+    <title>计算机组成原理-存储器概述 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +316,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">计算机组成原理-浮点数的表示与运算</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-存储器概述</h1>
                 </div>
             </div>
         </div>
@@ -439,14 +441,23 @@
                                 <span class="chip bg-color">计算机组成原理</span>
                             </a>
                         
-                            <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
-                                <span class="chip bg-color">数制与编码</span>
+                            <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                                <span class="chip bg-color">存储系统</span>
                             </a>
                         
                     </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                计算机组成原理
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -455,7 +466,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-11-29
+                    2023-12-04
                 </div>
                 
 
@@ -469,7 +480,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.5k
+                    1k
                 </div>
                 
 
@@ -493,119 +504,41 @@
 
 
 
-<h3 id="浮点数的表示"><a href="#浮点数的表示" class="headerlink" title="浮点数的表示"></a>浮点数的表示</h3><p>由于定点数可表示的数字范围有限，而又不能无限制的增加数据的长度，就得考虑在位数不变的情况下增加数据的表示范围，以此拓展了浮点数。例，用定点数表示电子的质量($9 \times 10^{-28}g$)。</p>
-<h4 id="浮点数的表示格式"><a href="#浮点数的表示格式" class="headerlink" title="浮点数的表示格式"></a>浮点数的表示格式</h4><p>通常，浮点数表示为<br>$$<br>N&#x3D;(-1)^S\times M \times R^E<br>$$<br>其中，<strong>S取值0或1，用来决定浮点数的符号</strong>；M是一个二进制定点小数，称为尾数，一般用定点原码小数表示，称为<strong>阶码或指数</strong>，用<strong>移码</strong>表示。R是基数（隐含），可以约定为2、4、16，基本为2等。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/22de4b88dee5435194ecb5dedd369146.png" alt="1-1"></p>
-<p><strong>尾数的位数反映浮点数的精度</strong>。</p>
-<p>例：阶码、尾数均用补码表示，求a、b的真值</p>
-<p>$a&#x3D;0,01;1.1001$，$b&#x3D;0,10;0.01001$(阶码<code>,</code>前为符号位，尾数<code>.</code>前为符号位)</p>
-<p>a:  阶码0,01 对应真值 +1  尾数 1.1001 对应原码 1.0111，对应真值为 -0.0111，所以a的真值$&#x3D;2^1\times (-0.0111)&#x3D;-0.111$</p>
-<p>b: 阶码0,10 对应真值 +2  尾数 0.01001 对应真值 +0.01001 ，所以b的真值$&#x3D;2^2\times (+0.01001)&#x3D;+1.001$</p>
-<h4 id="浮点数的规格化"><a href="#浮点数的规格化" class="headerlink" title="浮点数的规格化"></a>浮点数的规格化</h4><p>尾数的尾数决定浮点数的有效数位，有效数位越多，数据的精度越高。为了在浮点数运算过程中尽可能多的保留有效数字的位数，所以才需进行规格化操作。所谓<strong>规格化</strong>，是指通过调整一个非规格化浮点数的<strong>尾数和阶码的大小</strong>，使非零的浮点数在尾数的最高数位商保证是一个有效值。</p>
+<h3 id="存储器的分类"><a href="#存储器的分类" class="headerlink" title="存储器的分类"></a>存储器的分类</h3><p>存储器种类繁多，可从不同角度对存储器进行分类。</p>
+<h4 id="按在计算机中的作用（层次）分类"><a href="#按在计算机中的作用（层次）分类" class="headerlink" title="按在计算机中的作用（层次）分类"></a>按在计算机中的作用（层次）分类</h4><p><img src="https://img-blog.csdnimg.cn/direct/e89803cd178e4f2993c34d3a6f75309c.png"></p>
+<ol>
+<li>主存储器。简称主存，又称内存储器（内存），用来存放计算机运行期间所需的程序和数据，<strong>CPU可以直接随机地对其进行访问</strong>，也可以和Cache及辅存交换数据。<strong>特点是容量较小、存取速度较快，每位价格较高</strong>。</li>
+<li>辅助存储器。简称辅存，用来存放需要永久性保存的信息。<strong>辅存的内容需要调入主存后才能被CPU访问</strong>。特点是<strong>容量大、存取速度较慢、单位成本低</strong>。</li>
+<li>高速缓冲存储器。简称Cache，位于主存和CPU之间，用来存放CPU经常使用的指令和数据，以便CPU能高速地访问它们。<strong>Cache的存取速度可与CPU速度相匹配，但存储容量小、价格高。</strong>现代计算机通常集成在CPU中。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/direct/3fc3df264a9c413ba22a9443c006d1bd.png"></p>
+<h4 id="按存储介质分类"><a href="#按存储介质分类" class="headerlink" title="按存储介质分类"></a>按存储介质分类</h4><p>按存储介质，存储器可分为磁表面（磁盘、磁带）、磁芯存储器、半导体存储器（MOS型存储器、双极型存储器，主存和Cache也属于这部分）和光存储器（光盘）。</p>
+<h4 id="按存取方式分类"><a href="#按存取方式分类" class="headerlink" title="按存取方式分类"></a>按存取方式分类</h4><ol>
+<li>随机存储器（RAM，Random Access Memory）。存储器的任何一个存储单元都可以随机存取，而且存取时间与存储单元的物理地址无关。<strong>优点是读写方便、使用灵活</strong>，用于主存和Cache。</li>
+<li>只读存储器（ROM）。<strong>存储器的内容只能随机读出不能写入</strong>。信息一旦写入就固定不会，断电内容也不会丢失。因此，通常用它存放固定不变的程序、常数和汉字库字库等。</li>
+<li>串行访问存储器。对存储单元进行读&#x2F;写操作时，需按物理地址的先后顺序寻址，<strong>包括顺序存取存储器（SAM，如磁带）与直接存取存储器（DAM，如磁盘、光盘）</strong>。</li>
+<li>相联存储器（CAM），即可以按内容访问的存储器，可以按照内容检索到存储位置进行读写。</li>
+</ol>
+<h4 id="按信息的可更改性分类"><a href="#按信息的可更改性分类" class="headerlink" title="按信息的可更改性分类"></a>按信息的可更改性分类</h4><ol>
+<li>读写存储器（Read&#x2F;Write Memory）—即可读可写（如：磁盘、内存、Cache）</li>
+<li>只读存储器（Read Only Memory）—只能读，不能写（如：实体音乐专辑通常采用CD-ROM，BIOS通常写在ROM中）</li>
+</ol>
+<h4 id="按信息的可保存性分类"><a href="#按信息的可保存性分类" class="headerlink" title="按信息的可保存性分类"></a>按信息的可保存性分类</h4><p>断电后，存储信息消失的存储器称为<strong>易失性存储器</strong>，如RAM。</p>
+<p>断电后，存储信息依然保存的存储器称为<strong>非易失性存储器</strong>，如磁盘，光盘。</p>
+<p>信息读出后，原存储信息被破坏称为<strong>破坏性读出</strong>，如DRAM芯片。</p>
+<p>信息读出后，原存储信息不被破坏称为<strong>非破坏性读出</strong>，如SRAM芯片、磁盘、光盘。</p>
+<h3 id="存储器的性能指标"><a href="#存储器的性能指标" class="headerlink" title="存储器的性能指标"></a>存储器的性能指标</h3><p>存储器由3个主要性能指标，即存储容量、单位成本和存储速度。</p>
+<ol>
+<li>存储容量 &#x3D; 存储字数 $\times$ 字长（如 1M $\times$ 8位）。单位换算：1B（Byte，字节）&#x3D;8b（bit,位）。</li>
+<li>单位成本：每位价格 &#x3D; 总成本 &#x2F; 总容量。</li>
+<li>存储速度： <strong>数据传输率</strong> &#x3D; 数据的宽度（数据宽度即是存储的字长）&#x2F; 存取周期（或称存储周期）。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/direct/2d0acb369a544629acafa006a23dc5bd.png"></p>
 <ul>
-<li><strong>左规</strong>：当浮点数运算的结果为非规格化要进行规格化处理，将<font color="#ff0000">尾数算数左移一位，阶码减1</font>.</li>
-<li><strong>右规</strong>：当浮点数运算的结果尾数出现溢出（双符号位为01或10）时，<font color="#ff0000">尾数算数右移一位，阶码加1</font>.</li>
+<li>存取时间（$T_a$）：存取时间是指从启动一次存储器操作到完成该操作所经历的时间，<strong>分为读出时间和写入时间</strong>。</li>
+<li>存取周期（$T_m$）：存取周期又称读写周期或访问周期。是指存储器进行一次完整的读写操作所需的全部时间，即连续两次独立访问存储器操作之间所需的最小时间间隔。</li>
+<li>主存带宽（$B_m$）：<strong>主存带宽又称数据传输率</strong>，表示每秒从主存进出信息的最大数量，单位位字&#x2F;秒、字节&#x2F;秒（B&#x2F;s）、位节&#x2F;秒（b&#x2F;s）。</li>
 </ul>
-<p>例： a &#x3D; 010; 00.1100 ,  b &#x3D; 010; 00.1000 ,  求a+b</p>
-<p>可得 a $&#x3D; 2^2\times 00.1100$， b &#x3D; $2^2 \times 00.1000$， a+b &#x3D; $2^2\times(00.1100 + 00.1000)&#x3D;2^2\times 01.0100$，此时就导致了溢出，可以通过<strong>右规</strong>得：a + b&#x3D; $2^2\times 01.0100&#x3D; 2^3\times 00.1010$</p>
-<h5 id="浮点数规格化的特点"><a href="#浮点数规格化的特点" class="headerlink" title="浮点数规格化的特点"></a>浮点数规格化的特点</h5><ol>
-<li><p>用原码表示的尾数进行规格化：</p>
-<ol>
-<li>正数为$0.1\times \times \dots \times$的形式（0为符号位，最高位为1），其最大值表示为$0.1111\dots 1$；最小值表示为$0.100\dots 0$。尾数的表示范围$\frac{1}{2} \leq M \leq (1-2^{-n})$</li>
-<li>负数为$1.1\times \times \dots \times$的形式，其最大值表示为$1.1000\dots0$；最小值表示为$1.1111\dots1$。尾数的表示范围为$-(1-2^{-n})\leq M \leq -\frac{1}{2}$</li>
-</ol>
-</li>
-<li><p>用补码表示的尾数进行规格化：</p>
-<ol>
-<li>正数为$0.1\times \times \dots \times$的形式（0为符号位，最高位为1），其最大值表示为$0.1111\dots 1$；最小值表示为$0.100\dots 0$。尾数的表示范围$\frac{1}{2} \leq M \leq (1-2^{-n})$</li>
-<li>负数为$1.0\times \times \dots \times$的形式，其最大值表示为$1.0111\dots 1$；最小值表示为$1.000\dots0$。尾数的表示范围为$-1\leq M \leq -(1&#x2F;2 +2^{-n})$</li>
-</ol>
-<p><strong>总结</strong>：</p>
-<p>规格化的原码尾数，<strong>最高数值位一定是1</strong>，规格化的补码尾数，<strong>符号位与最高数值位一定相反</strong>。</p>
-</li>
-</ol>
-<p>例：若某浮点数的阶码、尾数用补码表示，共4+8位；   0.110; 1.1110100，进行规格化：</p>
-<p>由于补码负数的最高位和符号位要相反，所以要进行左规进行规格化，$2^6\times -(1110100)&#x3D;2^3 \times -(01000000)$，就规格化完毕。</p>
-<p><strong>基数不同，浮点数的规格化形式也不同。</strong></p>
-<h3 id="浮点数-IEEE-754标准"><a href="#浮点数-IEEE-754标准" class="headerlink" title="浮点数 IEEE 754标准"></a>浮点数 IEEE 754标准</h3><p>在了解IEEE 754标准前，先回忆下移码的概念，移码实际就是补码的符号位取反获得。移码的定义是：<strong>移码&#x3D;真值+偏置值</strong>（偏置值一般是$2^{n-1}$，此时<strong>移码&#x3D;补码符号位取反</strong>）。</p>
-<p>例：设8位机器来表示移码，此处8位移码的<strong>偏置值&#x3D;128D&#x3D;1000 0000B</strong>。</p>
-<p>真值 -127D &#x3D; -1111 111B，移码 &#x3D; -111 1111 + 1000 0000&#x3D; 0000 000 </p>
-<p><strong>在IEEE 754标准中，通常会将偏置值&#x3D;$2^{n-1}-1$</strong></p>
-<p><img src="https://img-blog.csdnimg.cn/direct/9668425212434179b64d28215e271651.png" alt="1-2"></p>
-<p>IEEE754标准规定常用的浮点数格式有短浮点数（单精度、float型）、长浮点数（双精度、double型）、临时浮点数，其基数隐含为2。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/770c3a5b227b4df9afd2ee09655e9c5f.png" alt="1-3"></p>
-<p>由于移码&#x3D;真值+偏置值，由此可以得出<strong>阶码真值&#x3D;移码-偏移量</strong></p>
-<p><strong>规格化的短浮点数的真值</strong>为：$(-1)^s\times 1.M\times 2^{E-127}$</p>
-<p><strong>规格化长浮点数的真值</strong>为：$(-1)^s\times 1.M\times 2^{E-1023}$</p>
-<p>例：将十进制数-0.75转换为IEEE754的单精度浮点数格式表示</p>
-<p>由于是负数，所以<strong>数符&#x3D;1</strong>，<strong>尾数部分&#x3D;.100000….（共23位，隐含最高位1）</strong>，<strong>移码</strong>&#x3D;真值+偏置值&#x3D;-1+127&#x3D;-1 + 111 1111 &#x3D; 0111 1110（凑足8位）</p>
-<p>最后可得IEEE 754标准规定浮点数为：<font color="#ff0000">1</font><font color="#AEEEEE">011 1111 0</font>100 0000 0000 0000 0000 0000</p>
-<p>例2：IEEE 754的单精度浮点数 C0 A0 00 00 H的值是多少</p>
-<p>C0 A0 00 00 -&gt; <font color="#ff0000">1</font><font color="#AEEEEE">100 0000 1</font>010 0000 0000 0000 0000 0000，可得<strong>数符&#x3D;1</strong>，所以为负数，<strong>尾数部分&#x3D;1.01</strong>，<strong>真值</strong>&#x3D;移码 - 偏置值&#x3D; 1000 0001 - 0111 1111 &#x3D; 0000 0010 &#x3D; 2D，所以最终值为$(-1.01)_2\times2^2&#x3D;(-1.25)\times2^2&#x3D;-5.0$</p>
-<h5 id="IEEE-754单精度浮点型能表示的最小绝对值、最大绝对值"><a href="#IEEE-754单精度浮点型能表示的最小绝对值、最大绝对值" class="headerlink" title="IEEE 754单精度浮点型能表示的最小绝对值、最大绝对值"></a>IEEE 754单精度浮点型能表示的最小绝对值、最大绝对值</h5><p><strong>最小绝对值</strong>：尾数全为0，阶码真值最小 -126（**-128全1和-127全0有其他用途**），对应移码机器数 0000 0001 此时整体的真值为$(1.0)_2\times 2^{-126}$。</p>
-<p><strong>最大绝对值</strong>：尾数全为1，阶码真值最大 127，对应移码机器数 1111 1110 此时整体的真值为$(1.111..11)_2\times 2^{127}$。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/1d2b46ba21594081af93534eeb7258da.png" alt="1-4"></p>
-<p><strong>只有$1\leq E \leq 254 $时，真值&#x3D;$(-1)^s\times 1.M \times 2^{E-127} $</strong></p>
-<p>当<font color="#ff0000">阶码全为0，尾数M不全为0时</font>，表示<strong>非规格小数</strong>，则真值表示形式为$±(0.xxx…x)_2 \times 2^{-126}$</p>
-<p>阶码真值固定为-126。</p>
-<p>当<font color="#ff0000">阶码全为0，尾数M全为0时</font>，表示真值±0</p>
-<p>当<font color="#ff0000">阶码全为1，尾数M全为0时</font>，表示真值无穷大$±\infin$</p>
-<p>当<font color="#ff0000">阶码全为1，尾数M不全为0时</font>，表示真值非数值“NaN”（Not a Number）</p>
-<h5 id="定点、浮点表示的区别"><a href="#定点、浮点表示的区别" class="headerlink" title="定点、浮点表示的区别"></a>定点、浮点表示的区别</h5><ol>
-<li><p>数值的表示范围</p>
-<p>若定点数和浮点数的字长相同，则浮点表示法所能表示的数值范围<strong>远大于</strong>定点表示法。</p>
-</li>
-<li><p>精度</p>
-<p>对于字长相同的定点数和浮点数来说，虽然浮点数扩大了表示范围，但<strong>精度降低</strong>了。</p>
-</li>
-<li><p>数的运算</p>
-<p>浮点数包括阶码和尾数两部分，运算时不仅要左尾数的运算，还要做阶码的运算，而且运算结果要求规格化。</p>
-</li>
-<li><p>溢出问题</p>
-<p>在定点数运算中，当运算结果超出数的表示范围时，发生溢出；浮点运算中，运算结果超出尾数表示范围却不一定溢出，只有规格化后<strong>阶码超出所能表示的范围</strong>时，才发生溢出。</p>
-</li>
-</ol>
-<h3 id="浮点数的加减运算"><a href="#浮点数的加减运算" class="headerlink" title="浮点数的加减运算"></a>浮点数的加减运算</h3><p>浮点数加减运算分为以下几步：</p>
-<ol>
-<li>对阶</li>
-<li>尾数加减</li>
-<li>规格化</li>
-<li>舍入</li>
-<li>判溢出</li>
-</ol>
-<p>例：已知十进制数$X&#x3D;-5&#x2F;256$、$Y&#x3D;+59&#x2F;1024$，按机器补码浮点运算规则计算 X - Y，结果用二进制表示，浮点数格式如下：阶符取2位，阶码取3位，数符取2位。尾数取9位。</p>
-<p>将X，Y用二进制表示$X&#x3D;(-101)_2\times2^{-8}&#x3D;(-0.101)_2\times2^{-5}$</p>
-<p>$Y&#x3D;(+111011)_2\times 2^{-10}&#x3D;(0.111011)_2\times 2^{-4}$</p>
-<p>由题目用<strong>补码</strong>表示X和Y，且阶乘也用二进制补码形式，则有（阶符取2位，阶码3位）：</p>
-<p>X&#x3D;$(11.011000000)_{补}\times 2^{11011}$</p>
-<p>Y&#x3D;$(00.111011000)_补\times 2^{11100}$</p>
-<p>最后进行组合则有</p>
-<p>X&#x3D;$11011,11.011000000$</p>
-<p>Y&#x3D;$11100,00.111011000$</p>
-<ol>
-<li><p>对阶</p>
-<p>首先要将阶码对齐，阶数小的对阶数大的对阶，尾数每右移一位，阶码加1。</p>
-<p>计算机判断哪个阶数大，通过<strong>求阶差：$[ΔE]_补&#x3D;11011 + 00100&#x3D;11111$ ，得ΔE&#x3D;-1</strong>，说明X比Y阶数小，且小1，需要让X尾数右移。得$X&#x3D;11100,11.101100000$</p>
-</li>
-<li><p>尾数加减</p>
-<p>将对阶后的值尾数进行相减：</p>
-<p>$X-Y&#x3D;11100,11.101100000 + 11100,11.000101000&#x3D;11100,10.110001000$</p>
-</li>
-<li><p>规格化</p>
-<p>$X-Y:11100,10.110001000$ -&gt; $X-Y:11101,11.011000100$</p>
-</li>
-<li><p>舍入</p>
-<p>无舍入</p>
-</li>
-<li><p>判溢出</p>
-<p>常阶码，无溢出，结果真值为$2^{-3} \times (-0.1001111)_2$（<strong>若阶码上溢，直接抛出异常终端，阶码下溢出，则按机器0处理</strong>）</p>
-</li>
-</ol>
-<h4 id="舍入方法"><a href="#舍入方法" class="headerlink" title="舍入方法"></a>舍入方法</h4><h5 id="“0”舍“1”入法"><a href="#“0”舍“1”入法" class="headerlink" title="“0”舍“1”入法"></a>“0”舍“1”入法</h5><p>类似于十进制数中的“四舍五入”，即在尾数右移时，被移去的最高数位为0，则舍去；若为1，则在尾数的末位加1。这可能会使<strong>尾数又溢出</strong>，此时需要再做以此右规。</p>
-<h5 id="恒置“1”法"><a href="#恒置“1”法" class="headerlink" title="恒置“1”法"></a>恒置“1”法</h5><p>尾数右移时，不论丢掉的最高数值位是“1”还是“0”，都使右移后的<strong>尾数末位恒置“1”</strong>。这种方法同样有使尾数变大或变小的可能。</p>
-<h4 id="强制类型转换"><a href="#强制类型转换" class="headerlink" title="强制类型转换"></a>强制类型转换</h4><p><img src="https://img-blog.csdnimg.cn/direct/a423d91ce4d54b8fa6896cabea2691dc.png" alt="2-1"></p>
-<p>上表为C语言在各机器中所占大小，当强制类型转换以 <code>char -&gt; int -&gt; long -&gt; double</code>和 <code>float -&gt; double</code>时，范围都由小到大，精度不会丢失。（<code>long-&gt;double</code>是以32位机器位标准，64位会出现精度损失）</p>
-<p><code>int</code>可以表示32位，<code>float</code>表示为 1 + 8 + 23 &#x3D; 32，实际能表示的数为24位（23+1包含隐含的1）。所以<code>int</code>转<code>float</code>会产生精度损失，但不会溢出。 而<code>float</code>-&gt;<code>int</code>，可能溢出及损失精度。</p>
 
                 
             </div>
@@ -632,7 +565,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/">http://example.com/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/</a>
+                    <a href="http://example.com/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/">http://example.com/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -674,8 +607,8 @@
                                     <span class="chip bg-color">计算机组成原理</span>
                                 </a>
                             
-                                <a href="/tags/%E6%95%B0%E5%88%B6%E4%B8%8E%E7%BC%96%E7%A0%81/">
-                                    <span class="chip bg-color">数制与编码</span>
+                                <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                                    <span class="chip bg-color">存储系统</span>
                                 </a>
                             
                         </div>
@@ -989,9 +922,64 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="计算机组成原理-存储器概述">
+                        
+                        <span class="card-title">计算机组成原理-存储器概述</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-04
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                    计算机组成原理
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                        <span class="chip bg-color">计算机组成原理</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                        <span class="chip bg-color">存储系统</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2023/11/30/dian-lu-dian-lu-ding-li/">
                     <div class="card-image">
@@ -1009,9 +997,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-11-30
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-30
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1029,55 +1017,6 @@
                     
                     <a href="/tags/%E7%94%B5%E8%B7%AF/">
                         <span class="chip bg-color">电路</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-bu-chong-zhi-shi-dian/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="计算机组成原理-补充知识点">
-                        
-                        <span class="card-title">计算机组成原理-补充知识点</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-29
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
-                                    计算机组成原理
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                        <span class="chip bg-color">计算机组成原理</span>
                     </a>
                     
                 </div>

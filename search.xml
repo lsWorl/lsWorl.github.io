@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>计算机组成原理-存储器概述</title>
+      <link href="/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/"/>
+      <url>/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="存储器的分类"><a href="#存储器的分类" class="headerlink" title="存储器的分类"></a>存储器的分类</h3><p>存储器种类繁多，可从不同角度对存储器进行分类。</p><h4 id="按在计算机中的作用（层次）分类"><a href="#按在计算机中的作用（层次）分类" class="headerlink" title="按在计算机中的作用（层次）分类"></a>按在计算机中的作用（层次）分类</h4><p><img src="https://img-blog.csdnimg.cn/direct/e89803cd178e4f2993c34d3a6f75309c.png"></p><ol><li>主存储器。简称主存，又称内存储器（内存），用来存放计算机运行期间所需的程序和数据，<strong>CPU可以直接随机地对其进行访问</strong>，也可以和Cache及辅存交换数据。<strong>特点是容量较小、存取速度较快，每位价格较高</strong>。</li><li>辅助存储器。简称辅存，用来存放需要永久性保存的信息。<strong>辅存的内容需要调入主存后才能被CPU访问</strong>。特点是<strong>容量大、存取速度较慢、单位成本低</strong>。</li><li>高速缓冲存储器。简称Cache，位于主存和CPU之间，用来存放CPU经常使用的指令和数据，以便CPU能高速地访问它们。<strong>Cache的存取速度可与CPU速度相匹配，但存储容量小、价格高。</strong>现代计算机通常集成在CPU中。</li></ol><p><img src="https://img-blog.csdnimg.cn/direct/3fc3df264a9c413ba22a9443c006d1bd.png"></p><h4 id="按存储介质分类"><a href="#按存储介质分类" class="headerlink" title="按存储介质分类"></a>按存储介质分类</h4><p>按存储介质，存储器可分为磁表面（磁盘、磁带）、磁芯存储器、半导体存储器（MOS型存储器、双极型存储器，主存和Cache也属于这部分）和光存储器（光盘）。</p><h4 id="按存取方式分类"><a href="#按存取方式分类" class="headerlink" title="按存取方式分类"></a>按存取方式分类</h4><ol><li>随机存储器（RAM，Random Access Memory）。存储器的任何一个存储单元都可以随机存取，而且存取时间与存储单元的物理地址无关。<strong>优点是读写方便、使用灵活</strong>，用于主存和Cache。</li><li>只读存储器（ROM）。<strong>存储器的内容只能随机读出不能写入</strong>。信息一旦写入就固定不会，断电内容也不会丢失。因此，通常用它存放固定不变的程序、常数和汉字库字库等。</li><li>串行访问存储器。对存储单元进行读&#x2F;写操作时，需按物理地址的先后顺序寻址，<strong>包括顺序存取存储器（SAM，如磁带）与直接存取存储器（DAM，如磁盘、光盘）</strong>。</li><li>相联存储器（CAM），即可以按内容访问的存储器，可以按照内容检索到存储位置进行读写。</li></ol><h4 id="按信息的可更改性分类"><a href="#按信息的可更改性分类" class="headerlink" title="按信息的可更改性分类"></a>按信息的可更改性分类</h4><ol><li>读写存储器（Read&#x2F;Write Memory）—即可读可写（如：磁盘、内存、Cache）</li><li>只读存储器（Read Only Memory）—只能读，不能写（如：实体音乐专辑通常采用CD-ROM，BIOS通常写在ROM中）</li></ol><h4 id="按信息的可保存性分类"><a href="#按信息的可保存性分类" class="headerlink" title="按信息的可保存性分类"></a>按信息的可保存性分类</h4><p>断电后，存储信息消失的存储器称为<strong>易失性存储器</strong>，如RAM。</p><p>断电后，存储信息依然保存的存储器称为<strong>非易失性存储器</strong>，如磁盘，光盘。</p><p>信息读出后，原存储信息被破坏称为<strong>破坏性读出</strong>，如DRAM芯片。</p><p>信息读出后，原存储信息不被破坏称为<strong>非破坏性读出</strong>，如SRAM芯片、磁盘、光盘。</p><h3 id="存储器的性能指标"><a href="#存储器的性能指标" class="headerlink" title="存储器的性能指标"></a>存储器的性能指标</h3><p>存储器由3个主要性能指标，即存储容量、单位成本和存储速度。</p><ol><li>存储容量 &#x3D; 存储字数 $\times$ 字长（如 1M $\times$ 8位）。单位换算：1B（Byte，字节）&#x3D;8b（bit,位）。</li><li>单位成本：每位价格 &#x3D; 总成本 &#x2F; 总容量。</li><li>存储速度： <strong>数据传输率</strong> &#x3D; 数据的宽度（数据宽度即是存储的字长）&#x2F; 存取周期（或称存储周期）。</li></ol><p><img src="https://img-blog.csdnimg.cn/direct/2d0acb369a544629acafa006a23dc5bd.png"></p><ul><li>存取时间（$T_a$）：存取时间是指从启动一次存储器操作到完成该操作所经历的时间，<strong>分为读出时间和写入时间</strong>。</li><li>存取周期（$T_m$）：存取周期又称读写周期或访问周期。是指存储器进行一次完整的读写操作所需的全部时间，即连续两次独立访问存储器操作之间所需的最小时间间隔。</li><li>主存带宽（$B_m$）：<strong>主存带宽又称数据传输率</strong>，表示每秒从主存进出信息的最大数量，单位位字&#x2F;秒、字节&#x2F;秒（B&#x2F;s）、位节&#x2F;秒（b&#x2F;s）。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 存储系统 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>电路-电路定理</title>
       <link href="/2023/11/30/dian-lu-dian-lu-ding-li/"/>
       <url>/2023/11/30/dian-lu-dian-lu-ding-li/</url>
@@ -676,9 +703,9 @@
       
         <tags>
             
-            <tag> nestjs </tag>
-            
             <tag> node.js </tag>
+            
+            <tag> nestjs </tag>
             
             <tag> typeorm </tag>
             
@@ -705,9 +732,9 @@
       
         <tags>
             
-            <tag> nestjs </tag>
-            
             <tag> node.js </tag>
+            
+            <tag> nestjs </tag>
             
         </tags>
       
