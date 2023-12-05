@@ -462,7 +462,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-04
+                    2023-12-05
                 </div>
                 
 
@@ -532,7 +532,7 @@
 <p>真值 -127D &#x3D; -1111 111B，移码 &#x3D; -111 1111 + 1000 0000&#x3D; 0000 000 </p>
 <p><strong>在IEEE 754标准中，通常会将偏置值&#x3D;$2^{n-1}-1$</strong></p>
 <p><img src="https://img-blog.csdnimg.cn/direct/9668425212434179b64d28215e271651.png" alt="1-2"></p>
-<p>IEEE754标准规定常用的浮点数格式有短浮点数（单精度、float型）、长浮点数（双精度、double型）、临时浮点数，其基数隐含为2。</p>
+<p>IEEE754标准规定常用的浮点数格式有短浮点数（单精度、float型）、长浮点数（双精度、double型）、临时浮点数，其基数隐含为2，<strong>在IEEE754中，尾数采用原码表示</strong>。</p>
 <p><img src="https://img-blog.csdnimg.cn/direct/770c3a5b227b4df9afd2ee09655e9c5f.png" alt="1-3"></p>
 <p>由于移码&#x3D;真值+偏置值，由此可以得出<strong>阶码真值&#x3D;移码-偏移量</strong></p>
 <p><strong>规格化的短浮点数的真值</strong>为：$(-1)^s\times 1.M\times 2^{E-127}$</p>
@@ -605,7 +605,7 @@
 <h5 id="恒置“1”法"><a href="#恒置“1”法" class="headerlink" title="恒置“1”法"></a>恒置“1”法</h5><p>尾数右移时，不论丢掉的最高数值位是“1”还是“0”，都使右移后的<strong>尾数末位恒置“1”</strong>。这种方法同样有使尾数变大或变小的可能。</p>
 <h4 id="强制类型转换"><a href="#强制类型转换" class="headerlink" title="强制类型转换"></a>强制类型转换</h4><p><img src="https://img-blog.csdnimg.cn/direct/a423d91ce4d54b8fa6896cabea2691dc.png" alt="2-1"></p>
 <p>上表为C语言在各机器中所占大小，当强制类型转换以 <code>char -&gt; int -&gt; long -&gt; double</code>和 <code>float -&gt; double</code>时，范围都由小到大，精度不会丢失。（<code>long-&gt;double</code>是以32位机器位标准，64位会出现精度损失）</p>
-<p><code>int</code>可以表示32位，<code>float</code>表示为 1 + 8 + 23 &#x3D; 32，实际能表示的数为24位（23+1包含隐含的1）。所以<code>int</code>转<code>float</code>会产生精度损失，但不会溢出。 而<code>float</code>-&gt;<code>int</code>，可能溢出及损失精度。</p>
+<p><code>int</code>可以表示32位，<code>float</code>表示为 1 + 8 + 23 &#x3D; 32，实际能表示的数为24位（23+1包含隐含的1）。<strong>所以<code>int</code>转<code>float</code>会产生精度损失，但不会溢出。 而<code>float</code>-&gt;<code>int</code>，可能溢出及损失精度。</strong></p>
 
                 
             </div>

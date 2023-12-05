@@ -4,8 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="typeorm使用distinct并有传入值时才进行where搜索, LsWorld">
-    <meta name="description" content="TypeOrm介绍typeorm是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用typeorm可能有时候不如直接sql语法查询，但是使用orm框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少">
+    <meta name="keywords" content="计算机组成原理-主存储器, LsWorld">
+    <meta name="description" content="
+
+
+
+主存储器的基本组成基本的半导体元件及原理存储器基本是由半导体元件组成，半导体可以根据供电的大小来输出高电平或低电平。
+一个存储元包括MOS管（半导体，MOS管可以理解为一种电控开关，当输入电压到达某个阈值就可以接通）和电容，根据接入">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -19,7 +24,7 @@
 
     
 
-    <title>typeorm使用distinct并有传入值时才进行where搜索 | LsWorld</title>
+    <title>计算机组成原理-主存储器 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -309,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">typeorm使用distinct并有传入值时才进行where搜索</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-主存储器</h1>
                 </div>
             </div>
         </div>
@@ -430,31 +435,18 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/nestjs/">
-                                <span class="chip bg-color">nestjs</span>
+                            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                                <span class="chip bg-color">计算机组成原理</span>
                             </a>
                         
-                            <a href="/tags/node-js/">
-                                <span class="chip bg-color">node.js</span>
-                            </a>
-                        
-                            <a href="/tags/typeorm/">
-                                <span class="chip bg-color">typeorm</span>
+                            <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                                <span class="chip bg-color">存储系统</span>
                             </a>
                         
                     </div>
                     
                 </div>
                 <div class="col s5 right-align">
-                    
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/node-js/" class="post-category">
-                                node.js
-                            </a>
-                        
-                    </div>
                     
                 </div>
             </div>
@@ -463,21 +455,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-11-05
+                    2023-12-05
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-05
+                    2023-12-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    771
+                    1.4k
                 </div>
                 
 
@@ -497,68 +489,61 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="TypeOrm介绍"><a href="#TypeOrm介绍" class="headerlink" title="TypeOrm介绍"></a>TypeOrm介绍</h3><p><code>typeorm</code>是一个对象关系映射模式，主要就是为了解决面向对象与关系数据库存在的互不匹配的技术。当然使用<code>typeorm</code>可能有时候不如直接<code>sql</code>语法查询，但是使用<code>orm</code>框架可以更容易写出高内聚低耦合的代码来，主要就是为了减少重复代码的书写。</p>
-<h3 id="使用distinct与where配合搜索"><a href="#使用distinct与where配合搜索" class="headerlink" title="使用distinct与where配合搜索"></a>使用distinct与where配合搜索</h3><p>在一些场景中，<code>typeorm</code>所提供的<code>Repository API</code>并不能满足我们查询的需求，这时候就只有两种方案，一种是直接使用<code>typeorm</code>提供的<code>query()</code>方法直接使用<code>sql</code>语句来进行复杂查询，还有就是使用查询构造器<code>Query Builder</code>来进行查询。</p>
-<p>当然，既然我们都用<code>orm</code>框架了，当然是要减少使用<code>sql</code>语句的场景的。</p>
-<p>此时这就有个需求，当我们需要查询数据有多条，但我们只需要其中一条，并且他的<code>where</code>的值可能是不存在的，这种场景单纯使用<code>find()</code>是解决不了的，就需要使用<code>Query Builder</code>。</p>
-<h4 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h4><p>就如这有个<code>User</code>表，结构为：</p>
-<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
-  <span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
-  <span class="token identifier"><span class="token punctuation">`</span>name<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-  <span class="token identifier"><span class="token punctuation">`</span>phone<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+                <meta name="referrer" content="no-referrer"/>
 
-<p>这时为这张表添加三个用户，让名字和手机号各有两个为相同。</p>
-<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'2'</span><span class="token punctuation">,</span> <span class="token string">'李四'</span><span class="token punctuation">,</span> <span class="token string">'12345678910'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'3'</span><span class="token punctuation">,</span> <span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token string">'09876543210'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
-<p>此时我们要是只是想单纯查出名字叫张三的人用<code>find()</code>就能实现。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">this</span><span class="token punctuation">.</span>Repository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-    where<span class="token operator">:</span><span class="token punctuation">&#123;</span>name<span class="token operator">:</span><span class="token string">'张三'</span><span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token comment">//转换成的sql语句：SELECT * FROM user WHERE name = '张三'</span></code></pre>
 
-<p>此时再加一个需求，要是查询的时候没有name这个<code>name</code>字段并且还需要对手机号进行去重后要求返回所有数据。（这里业务可能不太清晰，主要为了实现功能…）此时可能就需要使用<code>distinct</code>并且来判断<code>name</code>字段是否为空。</p>
-<p>很显然<code>find()</code>方法中没有这个<code>distinct</code>方法，此时就得使用<code>Query Builder</code>来协助我们完成这个需求。</p>
-<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">//因为要是直接使用where(&#123;phone:xxx&#125;)来进行查询，当传入值为null的时候就会生成WHERE phone = null这样的sql语句，显然是不符合我们的需求的，就需要动态来添加</span>
-
-<span class="token comment">// 条件对象</span>
-<span class="token keyword">const</span> whereInfo <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span><span class="token punctuation">(</span>phone <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token comment">//如果传入的手机不为空，我们就动态为对象添加一个key 只有当phone有值的时候才会添加，否则默认全查询</span>
-    whereInfo<span class="token punctuation">[</span><span class="token string">'phone'</span><span class="token punctuation">]</span> <span class="token operator">=</span> phone
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">this</span><span class="token punctuation">.</span>Repository
-      <span class="token punctuation">.</span><span class="token function">createQueryBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
-        <span class="token string">'user.phone as phone'</span><span class="token punctuation">,</span>
-      <span class="token punctuation">]</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>User<span class="token punctuation">,</span> <span class="token string">'user'</span><span class="token punctuation">)</span> <span class="token comment">//这里的User是实体Entity的User，别名为user</span>
-      <span class="token punctuation">.</span><span class="token function">distinct</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token comment">//开启distinct</span>
-      <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span>whereInfo<span class="token punctuation">)</span><span class="token comment">//使用where，里面传入数组</span>
-      <span class="token punctuation">.</span><span class="token function">getRawMany</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//获取数据</span></code></pre>
-
-<p>使用上方语句，要是没传参应该是默认会获取到：</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
-    <span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">09876543210</span>
-    <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>如上两条数据，当我们传入<code>phone</code>参数为：12345678910时，获取到：</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token punctuation">[</span>
-    	<span class="token property">"phone"</span><span class="token operator">:</span><span class="token number">12345678910</span>
-    <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>这样就完美符合我们的业务需求了，使用<code>distinct</code>来去除相同数据并使用<code>where</code>动态进行搜索。</p>
-
+<h3 id="主存储器的基本组成"><a href="#主存储器的基本组成" class="headerlink" title="主存储器的基本组成"></a>主存储器的基本组成</h3><h4 id="基本的半导体元件及原理"><a href="#基本的半导体元件及原理" class="headerlink" title="基本的半导体元件及原理"></a>基本的半导体元件及原理</h4><p>存储器基本是由半导体元件组成，半导体可以根据供电的大小来输出高电平或低电平。</p>
+<p>一个存储元包括MOS管（半导体，MOS管可以理解为一种电控开关，当输入电压到达某个阈值就可以接通）和电容，根据接入的高低电平由半导体来控制，假设电容中有保存电荷导致MOS管变成1，以至于可以接通，此时外部就可以接受到高电平信号1，若电容中没有保存电荷，那么MOS管无法接通外部就会接受到低电平0。以此就可以构成一个存储元。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/4563247d987b4ae39c225953fd627b0d.png"></p>
+<p>而若通过一条总线来连接所有存储元，就可以组成一个<strong>存储单元（也称为存储字）</strong>，当总线接入一个高电平就会让所有存储元的MOS管都导通，从而电容中存储的0或1就会通过绿色的线进行导出。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/b10758329f8e4889bbd67de47fc5d6b1.png"></p>
+<h4 id="存储器芯片的基本原理"><a href="#存储器芯片的基本原理" class="headerlink" title="存储器芯片的基本原理"></a>存储器芯片的基本原理</h4><p>存储器为了实现读写，需要通过译码器来进行统一的读写操作，会有地址总线来输入要读取那一部分的存储单元，然后通过译码器来进行相应的读取，再通过控制电路来控制译码器是否工作。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/9b99dc3b27dd48c889645966e092c528.png"></p>
+<p>将上方图各个功能进行封装则有下图：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/83464cb3a08a459da50f9a5a05f52a70.png"></p>
+<p>就有存储器的基本框架，地址线来接受外界的地址信息，通过数据线来进行数据的传输，片选线来用于读取某一块特定的存储芯片（一般有多块存储芯片），读&#x2F;写控制线来控制是读还是写（有可能一条或两条）</p>
+<p><strong>存储芯片常见描述</strong></p>
+<p>例：8K$\times$8位，指有8K个存储单元，存储字长为8位（有8个存储元）。即$2^{10+3}\times 8bit$。</p>
+<p>8K$\times$1位，指有8K个存储单元，存储字长为1位。即$2^{10+3}\times 1bit$</p>
+<p>64K$\times$16位，指有64K个存储单元，存储字长为16位。即$2^{10+6}\times 16bit$</p>
+<h3 id="SRAM芯片和DRAM芯片"><a href="#SRAM芯片和DRAM芯片" class="headerlink" title="SRAM芯片和DRAM芯片"></a>SRAM芯片和DRAM芯片</h3><blockquote>
+<p>Dynamic Random Access Memory，即动态RAM，通常用于主存</p>
+<p>Static Random Access Memory，即静态RAM，通常用于Cache</p>
+</blockquote>
+<h4 id="SRAM的工作原理"><a href="#SRAM的工作原理" class="headerlink" title="SRAM的工作原理"></a>SRAM的工作原理</h4><p>通常把存放一个二进制位的物理器件称为存储元，是存储器的最基本的构建。静态随机存储器（SRAM）的存储元是用双稳态触发器（六晶体管MOS）来记忆信息的，因此即使信息被读取后，它仍保持其原状态而不需要再生（非破坏性读出）。</p>
+<p>双稳态触发器只要不断供电就不会导致信息流失，触发器的状态就不会改变。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/2cbbcfdf8b044c9886a85c4b20234c35.png"></p>
+<h4 id="DRAM的工作原理"><a href="#DRAM的工作原理" class="headerlink" title="DRAM的工作原理"></a>DRAM的工作原理</h4><p>与SRAM的存储原理不同，动态随机存储器（DRAM）是利用存储元电路中栅极电容上的电荷来存储信息，DRAM的基本存储单元通常只用一个晶体管，所以它比SRAM的密度要高很多。并且集成高、价格低、容量大和功耗低等优点。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/97b1d5cede4a4ab296ff53eba1c1a837.png"></p>
+<p>DRAM电容上的<strong>电荷一般只能维持1~2ms</strong>，因此即使电源不断电，信息也会自动消失。为此需要每隔一段时间必须刷新，通常取2ms，称为<strong>刷新周期</strong>。</p>
+<h5 id="DRAM刷新"><a href="#DRAM刷新" class="headerlink" title="DRAM刷新"></a>DRAM刷新</h5><p>若以行为单位进行刷新，若有n位的地址，则需要$2^n$根选通线，显然在工程上难度较大，由此拆分出了行列地址，将存储元从一维的行，延申成二维的行列，通过行地址译码器和列地址译码器来实现，当行列选中同个单元即读取这个单元的信息。</p>
+<p>从此可将n位地址拆分成n&#x2F;2位地址从而达到减少选通线的目的。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/22220bbf15994e4bbc5be05653767fda.png"></p>
+<p>将存储单元分为行列后就可以进行行或列刷新，常用的刷新方式有3种。</p>
+<ol>
+<li><p>集中刷新。</p>
+<p>指在一个刷新周期内，<strong>利用一段固定的时间，依次对存储器的所有行进行逐一再生，在此期间停止对存储器的读写操作，称为“死时间”，又称访存“死区”</strong>。<strong>优点</strong>是读写操作时不受刷新工作的影响；缺点是在集中刷新（死区）不能访问存储器。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c8ae3df502ef4843a75fee70fdcf70af.png"></p>
+</li>
+<li><p>分散刷新。</p>
+<p>把对每行的刷新分散到各个工作周期中。这样，存储器的系统工作周期分为<strong>前半部分用于正常读、写或保持；后半部分用于刷新</strong>。如存储芯片的存取周期为5μs，则系统的存取周期为1μs。<strong>优点是没有死区；缺点是加长了系统的存取周期，降低了速度</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/direct/6f22e6620fdc473895ae984447a6f037.png"></p>
+</li>
+<li><p>异步刷新。</p>
+<p>异步刷新既可缩短“死时间”，又能充分利用最大刷新间隔2ms的特点。具体做法是将<strong>刷新周期➗行数</strong>，得到<strong>两次刷新操作之间的时间间隔t</strong>，利用逻辑电路每隔时间t产生一次刷新。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c310b772d3064c77994ff2ce6b15d665.png"></p>
+<p><strong>注：DRAM刷新需要注意以下问题</strong></p>
+<ol>
+<li>刷新对CPU是透明的，即刷新不依赖外部的访问；</li>
+<li>动态RAM的刷新单位是行，由芯片内部自行生成行地址；</li>
+<li>刷新操作类类似于读操作。另外，刷新时不需要选片，即整个存储器中的所有芯片同时被刷新。</li>
+</ol>
+</li>
+</ol>
+<p><strong>注：现在的主存通常采用SDRAM芯片</strong></p>
+<h4 id="SRAM和DRAM的比较"><a href="#SRAM和DRAM的比较" class="headerlink" title="SRAM和DRAM的比较"></a>SRAM和DRAM的比较</h4><p><img src="https://img-blog.csdnimg.cn/direct/d2534420a5634cf89924c043d2e5dcba.png"></p>
+<h3 id="只读存储器"><a href="#只读存储器" class="headerlink" title="只读存储器"></a>只读存储器</h3>
                 
             </div>
             <hr/>
@@ -584,7 +569,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/">http://example.com/2022/11/05/typeorm-shi-yong-distinct-bing-you-chuan-ru-zhi-shi-cai-jin-xing-where-sou-suo/</a>
+                    <a href="http://example.com/2023/12/05/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi/">http://example.com/2023/12/05/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -622,16 +607,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/nestjs/">
-                                    <span class="chip bg-color">nestjs</span>
+                                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                                    <span class="chip bg-color">计算机组成原理</span>
                                 </a>
                             
-                                <a href="/tags/node-js/">
-                                    <span class="chip bg-color">node.js</span>
-                                </a>
-                            
-                                <a href="/tags/typeorm/">
-                                    <span class="chip bg-color">typeorm</span>
+                                <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                                    <span class="chip bg-color">存储系统</span>
                                 </a>
                             
                         </div>
@@ -945,17 +926,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/11/09/ru-he-dui-hou-duan-chuan-lai-de-shu-ju-jin-xing-json-xu-lie-hua/">
+                <a href="/2023/12/05/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="如何对后端传来的数据进行JSON序列化">
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="计算机组成原理-主存储器">
                         
-                        <span class="card-title">如何对后端传来的数据进行JSON序列化</span>
+                        <span class="card-title">计算机组成原理-主存储器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -965,30 +947,27 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-11-09
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-05
+                            </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Flutter/" class="post-category">
-                                    Flutter
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            LsWorld
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Flutter/">
-                        <span class="chip bg-color">Flutter</span>
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                        <span class="chip bg-color">计算机组成原理</span>
                     </a>
                     
-                    <a href="/tags/JSON/">
-                        <span class="chip bg-color">JSON</span>
+                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                        <span class="chip bg-color">存储系统</span>
                     </a>
                     
                 </div>
@@ -1002,13 +981,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/10/15/nestjs-de-shi-yong/">
+                <a href="/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="nestjs的模块，控制器，提供者介绍">
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="计算机组成原理-存储器概述">
                         
-                        <span class="card-title">nestjs的模块，控制器，提供者介绍</span>
+                        <span class="card-title">计算机组成原理-存储器概述</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1019,14 +998,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-15
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-04
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/node-js/" class="post-category">
-                                    node.js
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                    计算机组成原理
                                 </a>
                             
                             
@@ -1036,12 +1015,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/nestjs/">
-                        <span class="chip bg-color">nestjs</span>
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                        <span class="chip bg-color">计算机组成原理</span>
                     </a>
                     
-                    <a href="/tags/node-js/">
-                        <span class="chip bg-color">node.js</span>
+                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                        <span class="chip bg-color">存储系统</span>
                     </a>
                     
                 </div>
