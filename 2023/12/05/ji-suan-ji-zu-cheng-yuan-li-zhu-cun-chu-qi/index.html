@@ -462,14 +462,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-05
+                    2023-12-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.4k
+                    2.9k
                 </div>
                 
 
@@ -543,7 +543,57 @@
 </ol>
 <p><strong>注：现在的主存通常采用SDRAM芯片</strong></p>
 <h4 id="SRAM和DRAM的比较"><a href="#SRAM和DRAM的比较" class="headerlink" title="SRAM和DRAM的比较"></a>SRAM和DRAM的比较</h4><p><img src="https://img-blog.csdnimg.cn/direct/d2534420a5634cf89924c043d2e5dcba.png"></p>
-<h3 id="只读存储器"><a href="#只读存储器" class="headerlink" title="只读存储器"></a>只读存储器</h3>
+<h3 id="只读存储器"><a href="#只读存储器" class="headerlink" title="只读存储器"></a>只读存储器</h3><p>ROM和RAM都是支持随机访问的存储器，其中SRAM和DRAM均为易失性半导体存储器。而ROM中一旦有了信息，就不能轻易改变，即使掉电也不会丢失，它在计算机系统中是只供读出的。ROM器件有两个显著的有点：</p>
+<ol>
+<li>结构简单，所以位密度比可读写存储器的高。</li>
+<li>具有非易失性，所以可靠性高。</li>
+</ol>
+<h4 id="ROM的类型"><a href="#ROM的类型" class="headerlink" title="ROM的类型"></a>ROM的类型</h4><p>ROM可分为掩模式只读存储器（MROM）、一次可编程只读存储器（PROM）、可擦除可编码只读存储器（EPROM）、Flash存储器和固态硬盘（SSD）。</p>
+<ol>
+<li><p>掩模式只读存储器（MROM，Mask Read Only Memory）</p>
+<p>由半导体制造厂按用户提出的要求在芯片的<strong>生成过程中</strong>直接写入，写入后任何人都无法改变其内容。<strong>优点是可靠性高，集成度高，价格便宜；缺点是灵活性差。</strong></p>
+</li>
+<li><p>一次性可编程只读存储器（PROM，Programmable Read Only Memory）</p>
+<p>PROM可以实现一次性编程的只读存储器。允许用户写入自己的程序，<strong>一旦写入，内容就无法改变</strong>。</p>
+</li>
+<li><p>可擦除可编程只读存储器（ EPROM，Erasable Programmable Read-Only Memory）</p>
+<p>EPROM允许用户写入信息，之后用某种方法擦除数据，<font color="#ff0000">可进行多次重写</font>。</p>
+<p>UVEPROM（ultraviolet rays）——用紫外线照射8~20分钟，擦除<strong>所有信息</strong>。</p>
+<p>EEPROM（也记为$E^2PROM$），可用“电擦除”的方式，擦除<strong>特点的字</strong>。</p>
+</li>
+<li><p>Flash存储器，闪速存储器（注：U盘、SD卡就是闪存）</p>
+<p>Flash存储器在EEPROM的基础上发展而来，断电后也能保存信息，且<font color="#ff0000">可进行多次快速擦除重写</font>，由于闪存要先擦除后写入，因此<strong>闪存的“写”速度要比“读”速度更慢</strong>。每个存储元只需单个MOS管，位密度比RAM高。</p>
+</li>
+<li><p>SSD（Solid State Drives）——固态硬盘</p>
+<p>由控制单元+存储单元（Flash芯片）构成，与闪速存储器的核心区别在于控制单元不一样，但存储介质都类似，<font color="#ff0000">可进行多次快速擦除重写</font>。SSD速度快、功耗低、价格高。目前个人电脑上常用SSD取代传统的机械硬盘。</p>
+</li>
+</ol>
+<h3 id="多模块存储器"><a href="#多模块存储器" class="headerlink" title="多模块存储器"></a>多模块存储器</h3><p>多模块存储器是一种空间并行技术，利用多个结构完全相同的存储模块的并行工作来提高存储器的吞吐量。常用的由单体多字存储器和多体低位交叉存储器。</p>
+<h4 id="单体多字存储器"><a href="#单体多字存储器" class="headerlink" title="单体多字存储器"></a>单体多字存储器</h4><p>单体多字系统的特点使存储体中只有一个存储体，每个存储单元存储m个字，总线宽度也为m个字。一次并行读入m个字，地址必须顺序排列并处于同一存储单元。</p>
+<p>单体多字系统在<strong>一个存取周期内，从同一地址取出m条指令</strong>，然后将指令逐条送至CPU执行，每个1&#x2F;m存取周期，CPU向主存取一条指令。这显然提高了单体存储器的工作速度。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/8575dbbb9c9940a6b5c5fa23c84646cb.png"></p>
+<h4 id="多体并行存储器"><a href="#多体并行存储器" class="headerlink" title="多体并行存储器"></a>多体并行存储器</h4><p>多体并行存储器由多体模块组成。每个模块都有相同的容量和存取速度，各模块都有独立的读写控制电路、地址寄存器和数据寄存器。它们既能并行工作，又能交叉工作。</p>
+<p>多体并行存储器分为高位交叉编址和低位交叉编址两种。</p>
+<ol>
+<li><p>高位交叉编址（顺序方式）</p>
+<p>高位地址表示体号，低位地址为体内地址。如下图所示，存储体共有4个模块$M_0$~$M_3$，每个存储体有8个存储单元，因此总共大小为$4\times 8 &#x3D; 32&#x3D;2^5$，可以用5bit来做存储体的地址。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/2a61cdcdbf4240c4a4029dca198324bb.png"></p>
+<p>由于是高位交叉编址，图上的<strong>蓝色部分为体号地址，黑色部分为体内地址（体号一致，体内地址不同）</strong>。高位交叉方式下，总是把<strong>低位的体内地址</strong>送到由<strong>高位体号</strong>确定的模块内进行译码。访问一个连续主存块时，总是先在一个模块内访问，等访问完该模块才能转到下一个模块访问。<strong>CPU总是按顺序访问存储模块，各模块不能被并行访问（按列进行访问）</strong>，因此不能提高存储器的吞吐率。</p>
+</li>
+<li><p>低位交叉编址（交叉方式）</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/62e5dc6e6b31416d868af7ada9bae1ed.png"></p>
+<p>图上的<strong>蓝色部分为体号地址，黑色部分为体内地址（体号不同，体内地址一致）</strong>。低位交叉方式下，总是把<strong>高位的体内地址</strong>送到由<strong>低位体号</strong>确定的模块内进行译码。<strong>CPU总是按行进行访问，地址按行进行编号</strong>。</p>
+<p>若通过低位交叉编址按顺序进行访问存储单元，只需$T+(n-1)r$时间即可。</p>
+</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/direct/e37772bf19ea4cbaac40b5dcf268c8c9.png"></p>
+<p>若通过高位交叉编址，访问连续存储单元地址需要等该存储体恢复后才能进行再次访问，因此则需要4T的时间开销。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/8045c72dd1e44f3f9a31c9152bc40261.png"></p>
+<h5 id="低位交叉编址下存储体的取的数量"><a href="#低位交叉编址下存储体的取的数量" class="headerlink" title="低位交叉编址下存储体的取的数量"></a>低位交叉编址下存储体的取的数量</h5><p>由于低位交叉方式下是采用“流水线”的方式进行并行存取（宏观上并行，微观上串行）。</p>
+<p>宏观上，一个存储周期内，m体交叉存储器可以<strong>提供数据量为单个模块的m倍</strong>。</p>
+<p>设存取周期为T，<strong>存取时间为r</strong>，为了使流水线不间断，应保证<strong>模块数</strong>$m\geq T&#x2F;r$，当m&#x3D;T&#x2F;r时，效率最佳。</p>
+<p>设存取周期为T，<strong>总线传输周期为r</strong>，为了使流水线不间断，应保证<strong>模块数</strong>$m\geq T&#x2F;r$，当m&#x3D;T&#x2F;r时，效率最佳。</p>
+
                 
             </div>
             <hr/>
@@ -926,18 +976,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2023/12/05/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi/">
+                <a href="/2023/12/06/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi-yu-cpu-de-lian-jie/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="计算机组成原理-主存储器">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="主存储器与CPU的连接">
                         
-                        <span class="card-title">计算机组成原理-主存储器</span>
+                        <span class="card-title">主存储器与CPU的连接</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -947,18 +996,21 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-05
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-12-06
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            LsWorld
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/true/" class="post-category">
+                                    true
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
