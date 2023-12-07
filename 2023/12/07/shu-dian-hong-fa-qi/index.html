@@ -4,13 +4,16 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="计算机组成原理_存储器, LsWorld">
-    <meta name="description" content="概述存储器分类
-​	按存储介质分类
-(1)半导体存储器：TTL、MOS 
-​	如果半导体中没有电流，存储器中的信息将会消失，称这种情况为易失
-(2)磁表面存储器：磁头载磁体   非易失（不通电其中的存储信息也是保存的）
-(3)磁芯存储器：硬">
+    <meta name="keywords" content="数电-触发器, LsWorld">
+    <meta name="description" content="
+
+
+
+触发器的基本特点和作用Flip-Flop，简称为FF，又称双稳态触发器。
+触发器基本特点
+具有两个能自保持的稳定状态（稳态）
+通常用输出端Q的状态来表示触发器的状态。
+如$Q&amp;#x3D;0、\overline{Q}&amp;#x3D;1$时">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -24,7 +27,7 @@
 
     
 
-    <title>计算机组成原理_存储器 | LsWorld</title>
+    <title>数电-触发器 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -314,12 +317,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">计算机组成原理_存储器</h1>
+                    <h1 class="description center-align post-title">数电-触发器</h1>
                 </div>
             </div>
         </div>
@@ -435,12 +438,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                                <span class="chip bg-color">计算机组成原理</span>
-                            </a>
-                        
-                            <a href="/tags/%E5%AD%98%E5%82%A8%E5%99%A8/">
-                                <span class="chip bg-color">存储器</span>
+                            <a href="/tags/%E6%95%B0%E7%94%B5/">
+                                <span class="chip bg-color">数电</span>
                             </a>
                         
                     </div>
@@ -451,8 +450,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
-                                计算机组成原理
+                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
+                                数电
                             </a>
                         
                     </div>
@@ -464,21 +463,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-04-17
+                    2023-12-07
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-04-18
+                    2023-12-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    623
                 </div>
                 
 
@@ -498,72 +497,36 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><h4 id="存储器分类"><a href="#存储器分类" class="headerlink" title="存储器分类"></a>存储器分类</h4><ol>
-<li><p>​	按存储介质分类</p>
-<p>(1)半导体存储器：TTL、MOS </p>
-<p>​	如果半导体中没有电流，存储器中的信息将会消失，称这种情况为<strong>易失</strong></p>
-<p>(2)磁表面存储器：磁头载磁体   非易失（不通电其中的存储信息也是保存的）</p>
-<p>(3)磁芯存储器：硬磁材料、环状元件  非易失</p>
-<p>(4)光盘存储器：激光、激光材料  非易失</p>
+                <meta name="referrer" content="no-referrer"/>
+
+
+
+<h3 id="触发器的基本特点和作用"><a href="#触发器的基本特点和作用" class="headerlink" title="触发器的基本特点和作用"></a>触发器的基本特点和作用</h3><p>Flip-Flop，简称为FF，又称双稳态触发器。</p>
+<h4 id="触发器基本特点"><a href="#触发器基本特点" class="headerlink" title="触发器基本特点"></a>触发器基本特点</h4><ol>
+<li><p>具有两个能自保持的稳定状态（稳态）</p>
+<p>通常用输出端Q的状态来表示触发器的状态。</p>
+<p>如$Q&#x3D;0、\overline{Q}&#x3D;1$时，表示<font color="#ff0000">0状态</font>；$Q&#x3D;1、\overline{Q}&#x3D;0$时，表示<font color="#ff0000">1状态</font></p>
 </li>
-<li><p>​    按存取方式分类</p>
-<p>(1)存取时间与物理地址无关（随机访问）</p>
-<p>​	随机存储器   在程序的执行过程中 可读可写</p>
-<p>​	只读存储器    在程序的执行过程中  只读</p>
-<p>(2)存取时间与物理地址有关（串行访问）</p>
-<p>​    顺序存取存储器   磁带</p>
-<p>​    直接存取存储器   磁盘</p>
+<li><p>在输入信号作用下，触发器的两个稳定状态可相互转换（状态的翻转）。</p>
 </li>
-<li><p>按在计算机中的作用分类</p>
-<p>主存储器： </p>
-<p>RAM（可读可写）：可分为静态RAM、动态RAM</p>
-<p>ROM（只读）：可分为MROM、PROM、EPROM、EEPROM</p>
-<p>Flash Memory（SSD核心存储材料就是这个）</p>
-<p>高速缓冲存储器（Cache，通过静态RAM来制作）</p>
-<p>辅助存储器：磁盘、磁带、光盘等</p>
+<li><p>输入信号消失后，新状态可长期保持下来，具有<strong>记忆功能</strong>，可存储二进制信息。、</p>
 </li>
 </ol>
-<hr>
-<h4 id="存储器的层次结构"><a href="#存储器的层次结构" class="headerlink" title="存储器的层次结构"></a>存储器的层次结构</h4><ol>
-<li><p>存储器三个主要特性的关系</p>
-<img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/ComputerCharacter.png" class="">
+<h4 id="触发器的作用"><a href="#触发器的作用" class="headerlink" title="触发器的作用"></a>触发器的作用</h4><p><strong>触发器和门电路是构成数字电路的基本单元</strong>。</p>
+<p>触发器具有记忆功能，由它构成的电路在某时刻的输出不仅取决于该时刻的输入，还与电路原来状态有关（时序逻辑电路）。而<strong>门电路无记忆功能</strong>，由它构成的电路在某时刻的输出完全取决于该时刻的输入，与电路原来状态无关（组合逻辑电路）。</p>
+<h3 id="基本触发器"><a href="#基本触发器" class="headerlink" title="基本触发器"></a>基本触发器</h3><h4 id="由与非门构成的基本RS触发器"><a href="#由与非门构成的基本RS触发器" class="headerlink" title="由与非门构成的基本RS触发器"></a>由与非门构成的基本RS触发器</h4><p><img src="https://img-blog.csdnimg.cn/direct/588f08bb599746058ad5897b5b2183a5.png" alt="1-1"></p>
+<p>图中$\overline{S_D}$ 为置1端，也称<strong>置位端</strong>，$\overline{R_D}$为置0端，也称<strong>复位端</strong>。</p>
+<p>$Q&#x3D;0、\overline{Q}&#x3D;1$时，表示<font color="#ff0000">触发器的0状态</font>；$Q&#x3D;1、\overline{Q}&#x3D;0$时，表示<font color="#ff0000">触发器的1状态</font></p>
+<p><strong>RS触发器的逻辑图</strong>如下图：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f38ba07c02e149da96f8f8ed7fee43c7.png" alt="1-2"></p>
+<h5 id="逻辑功能"><a href="#逻辑功能" class="headerlink" title="逻辑功能"></a>逻辑功能</h5><p>在图1-1中，若$\overline{R_D}&#x3D;0,\overline{S_D}&#x3D;1$，由于$\overline{R_D}&#x3D;0$，先与后非，无论什么和0相与都是0再非得1，所以可得$\overline{Q}&#x3D;1$，再通过$\overline{Q}&#x3D;1$和$\overline{S_D}&#x3D;1$进行与非运算，得$Q&#x3D;0$，得下图，此时触发器被置0。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/3f9d99e1b5af446d9cc39f61935dc9bb.png"></p>
+<p>而若$\overline{R_D}&#x3D;1,\overline{S_D}&#x3D;0$，正好与上方情况相反，可得$\overline{Q}&#x3D;0,Q&#x3D;1$，此时触发器置1。</p>
+<p>若$\overline{R_D}&#x3D;1,\overline{S_D}&#x3D;1$，可根据输出结果$G_1$和$G_2$门电路逻辑函数来推出相应值，$G_1$ output：Q&#x3D;$\overline{\overline{S_D}\cdot \overline{Q}}&#x3D;\overline{1\cdot \overline{Q}}&#x3D;Q$, $G_2$ output：$\overline{Q}&#x3D;\overline{\overline{R_D}\cdot Q}&#x3D;\overline{1\cdot Q}&#x3D;\overline{Q}$，由此可得最后触发器的状态保持不变。</p>
+<p>若$\overline{R_D}&#x3D;0,\overline{S_D}&#x3D;0$，无论怎么样Q和$\overline{Q}$的值都是1，输出的既非0状态，也非1状态。这种情况是<strong>禁用</strong>的。</p>
+<p>最后可根据上方列出真值表功能图：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/567a460e644d49a6b83f2256e550cb74.png"></p>
 
-<p>寄存器不仅CPU当中有IO端口也有寄存器。</p>
-<p>不透明且提供给机器语言程序员的寄存器称为体系结构寄存器</p>
-<p>透明且不提供给机器语言程序员的寄存器称为非体系结构寄存器，不能直接进行操作</p>
-<p>随着半导体技术的发展，部分缓存就被集成到了CPU当中。</p>
-<p>金字塔顶端向下，速度便随高到底，容量便小到大，价格为高到底。</p>
-</li>
-<li><p>缓存-主存层次和主存-辅存层次</p>
-<img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/saveData.png" class="">
-
-<p>通过软硬件相结合的方式来调用程序，应用程序员不需要关心应用是如何在缓存中实现的。</p>
-<p>程序员要执行程序需要考虑将程序分为多个模块，有些模块放在主存当中，有些放在辅存中。</p>
-<p>因为辅存的容量在不断提升，而主存的容量提升微乎其微，为了增加速度在主存与CPU之间添加<strong>缓存</strong>作为缓冲空间。缓存速度要比主存快的多。CPU可以通过缓存来访问主存。</p>
-<p>主存和缓存之间主要解决速度问题，因此用硬件相连接。</p>
-<p>主存和辅存之间主要解决容量问题，因此用软硬件相连接。</p>
-<p>主存和辅存构成的整体一般我们把他叫做<strong>虚拟存储器</strong>。</p>
-<p>虚拟存储器的地址空间用虚地址和逻辑地址。</p>
-<p>主存和缓存就是使用主存储器的实地址。</p>
-</li>
-</ol>
-<hr>
-<h4 id="主存储器"><a href="#主存储器" class="headerlink" title="主存储器"></a>主存储器</h4><h5 id="主存的中存储单元地址的分配"><a href="#主存的中存储单元地址的分配" class="headerlink" title="主存的中存储单元地址的分配"></a>主存的中存储单元地址的分配</h5><p>​	12345678H这个数据如何在主存储器中进行存储？</p>
-<p>​	<img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/address.png" class=""></p>
-<h5 id="主存的技术指标"><a href="#主存的技术指标" class="headerlink" title="主存的技术指标"></a>主存的技术指标</h5><p>​	存储容量： 主存 存放二进制代码的个位数</p>
-<p>​	存储速度：</p>
-<p>​		存取时间：存储器的访问时间   读出时间  写入时间</p>
-<p>​		存取周期：  连续两次独立的存储器操作（读或写）所需的最小间隔时间</p>
-<p>​	存储器的带宽 单位（位&#x2F;秒）</p>
-<h5 id="半导体存储芯片的基本结构"><a href="#半导体存储芯片的基本结构" class="headerlink" title="半导体存储芯片的基本结构"></a>半导体存储芯片的基本结构</h5><img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/contain.png" class="">
-
-<p>地址线是单向传输，数据线是双向传输。<br>$$<br>芯片容量 &#x3D; 2^{地址线}(K) × 数据线(位)<br>$$<br>片选线：包括CS（芯片选择）和CE（使能信号）（上面有一表示低电平有效）</p>
-<p>读&#x2F;写控制线： WE（低电平写 高电平读）。也可以使用两条控制线OE（允许读）WE（允许写）</p>
-<h5 id="存储芯片片选线的作用"><a href="#存储芯片片选线的作用" class="headerlink" title="存储芯片片选线的作用"></a>存储芯片片选线的作用</h5><p>如何用16K×1位的存储芯片组成64K×8位的存储器：</p>
-<img src="/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/chip.png" class="">
-
-<p>可以将用8个16K×1位的芯片组成一个芯片组，此时就变成了16K×8位，再添加3组同样的芯片组。就成了64K×8位。每个芯片组要同时工作才能保证同时的读写。总共32片，每一组都保证是16K×8位。第一组的地址为0K<del>16K-1。第二组的地址为16K</del>32K-1以此类推分配完地址。</p>
-<h5 id="随机存储存储器（RAM）"><a href="#随机存储存储器（RAM）" class="headerlink" title="随机存储存储器（RAM）"></a>随机存储存储器（RAM）</h5>
                 
             </div>
             <hr/>
@@ -589,7 +552,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/">http://example.com/2022/04/17/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi/</a>
+                    <a href="http://example.com/2023/12/07/shu-dian-hong-fa-qi/">http://example.com/2023/12/07/shu-dian-hong-fa-qi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -627,12 +590,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                                    <span class="chip bg-color">计算机组成原理</span>
-                                </a>
-                            
-                                <a href="/tags/%E5%AD%98%E5%82%A8%E5%99%A8/">
-                                    <span class="chip bg-color">存储器</span>
+                                <a href="/tags/%E6%95%B0%E7%94%B5/">
+                                    <span class="chip bg-color">数电</span>
                                 </a>
                             
                         </div>
@@ -946,17 +905,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/04/17/ecmascript6-yu-zhi-hou-de-yu-fa/">
+                <a href="/2023/12/07/shu-dian-hong-fa-qi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="ECMAScript6与之后的语法">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="数电-触发器">
                         
-                        <span class="card-title">ECMAScript6与之后的语法</span>
+                        <span class="card-title">数电-触发器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -966,30 +926,27 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-04-17
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-07
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/javascript/" class="post-category">
-                                    javascript
+                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
+                                    数电
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/es6/">
-                        <span class="chip bg-color">es6</span>
-                    </a>
-                    
-                    <a href="/tags/javascript/">
-                        <span class="chip bg-color">javascript</span>
+                    <a href="/tags/%E6%95%B0%E7%94%B5/">
+                        <span class="chip bg-color">数电</span>
                     </a>
                     
                 </div>
@@ -1003,13 +960,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/04/16/ji-suan-ji-wang-luo-ying-yong-ceng/">
+                <a href="/2023/12/06/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi-yu-cpu-de-lian-jie/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="计算机网络_应用层">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="主存储器与CPU的连接">
                         
-                        <span class="card-title">计算机网络_应用层</span>
+                        <span class="card-title">主存储器与CPU的连接</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1020,14 +977,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-04-16
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-06
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="post-category">
-                                    计算机网络
+                            <a href="/categories/true/" class="post-category">
+                                    true
                                 </a>
                             
                             
@@ -1037,12 +994,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
-                        <span class="chip bg-color">计算机网络</span>
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                        <span class="chip bg-color">计算机组成原理</span>
                     </a>
                     
-                    <a href="/tags/%E5%BA%94%E7%94%A8%E5%B1%82/">
-                        <span class="chip bg-color">应用层</span>
+                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                        <span class="chip bg-color">存储系统</span>
                     </a>
                     
                 </div>
@@ -1160,6 +1117,13 @@
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    });
+</script>
 
 
 
