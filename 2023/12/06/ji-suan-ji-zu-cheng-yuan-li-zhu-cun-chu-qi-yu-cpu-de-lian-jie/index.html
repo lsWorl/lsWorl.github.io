@@ -474,14 +474,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-06
+                    2023-12-10
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    113
+                    948
                 </div>
                 
 
@@ -512,6 +512,29 @@
 <li>控制总线（读&#x2F;写）指出总线周期的类型和本次输入&#x2F;输出操作完成的时刻。</li>
 </ol>
 <p><img src="https://img-blog.csdnimg.cn/direct/f7cbef172297476196f302a3cd56d60a.png"></p>
+<p>上图是一块8$\times$8的单块存储芯片，单个芯片的容量不可能很大，往往需要通过拓展技术来将多个芯片集成在内存条上，若想扩展主存字数则需通过<strong>字扩展</strong>，当<strong>数据总线宽度 &gt; 存储芯片字长</strong>，则需要进行位扩展。</p>
+<p>现在的计算机MDR（主存数据寄存器）和MAR（主存地址寄存器）都是集成在CPU中</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c82dffc2b5cc4f01ae3d803e7a81ca89.png"></p>
+<h3 id="主存容量的拓展"><a href="#主存容量的拓展" class="headerlink" title="主存容量的拓展"></a>主存容量的拓展</h3><p>由于单个存储芯片容量优先，因此需要在字或位两方面进行扩充才能满足实际存储器的容量要求。</p>
+<h4 id="位拓展法"><a href="#位拓展法" class="headerlink" title="位拓展法"></a>位拓展法</h4><p>CPU的数据线数与存储芯片的数据位数不一定相等，因此必须对存储芯片扩位，使其数据位数与CPU的数据线数相等。</p>
+<p>例：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/61835be20ec04d8ab5e8203b7148f677.png"></p>
+<p>上图用8K$\times$1位的存储芯片与CPU连接$8K&#x3D;2^{13}$，所以共需要13根地址总线和1根数据总线，显然CPU数据利用的不够充分，因此可以通过增加芯片的方式，来让数据总线得到充分的利用，如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/00fcc79acfe14001b1bd378bec41c6c7.png"></p>
+<p>此时除了数据总线连接不一致其他都为同个地址总线以及读写总线，因此称为位拓展法。</p>
+<p>最终通过8个存储芯片就可以将位数拓展为8位。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/bbee2fc2eb7a4d87983759814399d2c6.png"></p>
+<p>**注意：仅采用位拓展时，各芯片连接地址线的方式相同，但连接数据线的方式不同，在某一时刻选中所有的芯片，所以片选信号$\overline{CS}$要连接到所有芯片 **</p>
+<h4 id="字拓展法"><a href="#字拓展法" class="headerlink" title="字拓展法"></a>字拓展法</h4><p>字拓展是指增加存储器中字的数量，而位数不变。</p>
+<p>例：</p>
+<p>将下图一块8K$\times$8位的芯片与CPU连接，显然数据线已经可以发挥最大功效，然后地址线还有3条空出，因此可以通过再添加一片8K$\times$8位同型号芯片来与CPU连接，而片选信号$CS$分别连接到CPU地址线上，从而实现CPU地址线的充分利用，这种方法称为<strong>线选法</strong>。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/885fc8dc33884792b65aec6652ddf6e9.png"></p>
+<p>然而这种方法是有瑕疵的，若上图$A_{13} A_{14}$全为0或全为1时候，工作就会产生冲突。第一块芯片地址所能表示的范围为010 0000 0000 0000 ~ 011 1111 1111 11111（以01x xxxx xxxx xxxx作为地址），第二块芯片所能表示的地址范围为 100 0000 0000 0000 ~ 101 1111 1111 1111（以10x xxxx xxxx xxxx作为地址），在这存储器中，以00和11开头的地址都不可用，因此可以通过译码器来进行改良。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/14d471e2e491467f9910ec530d08f02b.png"></p>
+<p>如上图，通过一个2-4译码器来充分利用地址线，此时00和11都可以被用作为地址，可以<strong>使地址空间连续，相应的电路会比线选法更发杂</strong>。</p>
+<h4 id="字位同时扩展法"><a href="#字位同时扩展法" class="headerlink" title="字位同时扩展法"></a>字位同时扩展法</h4><p>实际上，存储器往往需要同时扩充字和位。</p>
+<p>如下图所示，通过两块8K$\times$4位组成一组来连接到地址线中，这样就实现位拓展，再增至4组，通过字拓展将2-4译码器将剩下$A_{14}A_{15}$地址线充分利用，实现了字位同时拓展，且此时地址空间也是连续的。 </p>
+<p><img src="https://img-blog.csdnimg.cn/direct/dbd705f7ef0e45afb3c23ea0ea310c82.png"></p>
 
                 
             </div>

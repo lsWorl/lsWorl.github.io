@@ -4,16 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="数电-触发器, LsWorld">
+    <meta name="keywords" content="计算机组成原理-外部存储器, LsWorld">
     <meta name="description" content="
 
-
-
-触发器的基本特点和作用Flip-Flop，简称为FF，又称双稳态触发器。
-触发器基本特点
-具有两个能自保持的稳定状态（稳态）
-通常用输出端Q的状态来表示触发器的状态。
-如$Q&amp;#x3D;0、\overline{Q}&amp;#x3D;1$时">
+计算机的外存储器又称为辅助存储器，目前主要使用磁表面存储器。
+所谓“磁表面存储”，是指把某些磁性材料薄薄地涂在金属铝或塑料表面上作为载磁体来存储信息。磁盘存储器、磁带存储器和磁鼓存储器均属于磁表面存储器。
+磁盘存储器磁盘存储器的优点有：">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -27,7 +23,7 @@
 
     
 
-    <title>数电-触发器 | LsWorld</title>
+    <title>计算机组成原理-外部存储器 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -317,12 +313,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">数电-触发器</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-外部存储器</h1>
                 </div>
             </div>
         </div>
@@ -438,8 +434,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E6%95%B0%E7%94%B5/">
-                                <span class="chip bg-color">数电</span>
+                            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                                <span class="chip bg-color">计算机组成原理</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                                <span class="chip bg-color">存储系统</span>
                             </a>
                         
                     </div>
@@ -450,8 +450,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
-                                数电
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                计算机组成原理
                             </a>
                         
                     </div>
@@ -463,21 +463,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-12-07
+                    2023-12-10
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-07
+                    2023-12-10
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    623
+                    1.2k
                 </div>
                 
 
@@ -499,33 +499,56 @@
             <div id="articleContent">
                 <meta name="referrer" content="no-referrer"/>
 
-
-
-<h3 id="触发器的基本特点和作用"><a href="#触发器的基本特点和作用" class="headerlink" title="触发器的基本特点和作用"></a>触发器的基本特点和作用</h3><p>Flip-Flop，简称为FF，又称双稳态触发器。</p>
-<h4 id="触发器基本特点"><a href="#触发器基本特点" class="headerlink" title="触发器基本特点"></a>触发器基本特点</h4><ol>
-<li><p>具有两个能自保持的稳定状态（稳态）</p>
-<p>通常用输出端Q的状态来表示触发器的状态。</p>
-<p>如$Q&#x3D;0、\overline{Q}&#x3D;1$时，表示<font color="#ff0000">0状态</font>；$Q&#x3D;1、\overline{Q}&#x3D;0$时，表示<font color="#ff0000">1状态</font></p>
-</li>
-<li><p>在输入信号作用下，触发器的两个稳定状态可相互转换（状态的翻转）。</p>
-</li>
-<li><p>输入信号消失后，新状态可长期保持下来，具有<strong>记忆功能</strong>，可存储二进制信息。、</p>
-</li>
+<p>计算机的外存储器又称为辅助存储器，目前主要使用磁表面存储器。</p>
+<p>所谓“磁表面存储”，是指把某些磁性材料薄薄地涂在金属铝或塑料表面上作为载磁体来存储信息。<strong>磁盘存储器、磁带存储器和磁鼓存储器均属于磁表面存储器</strong>。</p>
+<h3 id="磁盘存储器"><a href="#磁盘存储器" class="headerlink" title="磁盘存储器"></a>磁盘存储器</h3><p>磁盘存储器的优点有：</p>
+<ol>
+<li>存储容量大，位价格低；</li>
+<li>记录介质可重复使用；</li>
+<li>记录信息可长期保存而不丢失，甚至可脱机存档；</li>
+<li>非破坏性读出，读出时不需要再生</li>
 </ol>
-<h4 id="触发器的作用"><a href="#触发器的作用" class="headerlink" title="触发器的作用"></a>触发器的作用</h4><p><strong>触发器和门电路是构成数字电路的基本单元</strong>。</p>
-<p>触发器具有记忆功能，由它构成的电路在某时刻的输出不仅取决于该时刻的输入，还与电路原来状态有关（时序逻辑电路）。而<strong>门电路无记忆功能</strong>，由它构成的电路在某时刻的输出完全取决于该时刻的输入，与电路原来状态无关（组合逻辑电路）。</p>
-<h3 id="基本触发器"><a href="#基本触发器" class="headerlink" title="基本触发器"></a>基本触发器</h3><h4 id="由与非门构成的基本RS触发器"><a href="#由与非门构成的基本RS触发器" class="headerlink" title="由与非门构成的基本RS触发器"></a>由与非门构成的基本RS触发器</h4><p><img src="https://img-blog.csdnimg.cn/direct/588f08bb599746058ad5897b5b2183a5.png" alt="1-1"></p>
-<p>图中$\overline{S_D}$ 为置1端，也称<strong>置位端</strong>，$\overline{R_D}$为置0端，也称<strong>复位端</strong>。</p>
-<p>$Q&#x3D;0、\overline{Q}&#x3D;1$时，表示<font color="#ff0000">触发器的0状态</font>；$Q&#x3D;1、\overline{Q}&#x3D;0$时，表示<font color="#ff0000">触发器的1状态</font></p>
-<p><strong>RS触发器的逻辑图</strong>如下图：</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/f38ba07c02e149da96f8f8ed7fee43c7.png" alt="1-2"></p>
-<h5 id="逻辑功能"><a href="#逻辑功能" class="headerlink" title="逻辑功能"></a>逻辑功能</h5><p>在图1-1中，若$\overline{R_D}&#x3D;0,\overline{S_D}&#x3D;1$，由于$\overline{R_D}&#x3D;0$，先与后非，无论什么和0相与都是0再非得1，所以可得$\overline{Q}&#x3D;1$，再通过$\overline{Q}&#x3D;1$和$\overline{S_D}&#x3D;1$进行与非运算，得$Q&#x3D;0$，得下图，此时触发器被置0。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/3f9d99e1b5af446d9cc39f61935dc9bb.png"></p>
-<p>而若$\overline{R_D}&#x3D;1,\overline{S_D}&#x3D;0$，正好与上方情况相反，可得$\overline{Q}&#x3D;0,Q&#x3D;1$，此时触发器置1。</p>
-<p>若$\overline{R_D}&#x3D;1,\overline{S_D}&#x3D;1$，可根据输出结果$G_1$和$G_2$门电路逻辑函数来推出相应值，$G_1$ output：Q&#x3D;$\overline{\overline{S_D}\cdot \overline{Q}}&#x3D;\overline{1\cdot \overline{Q}}&#x3D;Q$, $G_2$ output：$\overline{Q}&#x3D;\overline{\overline{R_D}\cdot Q}&#x3D;\overline{1\cdot Q}&#x3D;\overline{Q}$，由此可得最后触发器的状态保持不变。</p>
-<p>若$\overline{R_D}&#x3D;0,\overline{S_D}&#x3D;0$，无论怎么样Q和$\overline{Q}$的值都是1，输出的既非0状态，也非1状态。这种情况是<strong>禁用</strong>的。</p>
-<p>最后可根据上方列出真值表功能图：</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/567a460e644d49a6b83f2256e550cb74.png"></p>
+<p><strong>缺点</strong>：读取速度慢，机械结构复杂，对工作环境要求较高。</p>
+<p>外存储器既可以<strong>作为输入设备也可以作为输出设备</strong>。</p>
+<h4 id="磁盘存储器的组成"><a href="#磁盘存储器的组成" class="headerlink" title="磁盘存储器的组成"></a>磁盘存储器的组成</h4><p>磁盘存储器是由磁盘驱动器、磁盘控制器和盘片组成。</p>
+<ul>
+<li>磁盘驱动器。核心部件是磁头组件和盘片组件，温彻斯特盘是一种可移动磁头固定盘片的硬件存储器。</li>
+<li>磁盘控制器。硬盘存储器和主机的接口，主流的标准有IDE、SCSI、SATA等。</li>
+</ul>
+<p>磁盘的存储区域。一块硬盘含有若干纪录面，每个记录面划分为若干磁道，而每条磁道又划分为若干扇区，<strong>扇区（也称块），是磁盘读写的最小单位，即磁盘按块存取</strong>。</p>
+<ul>
+<li>磁头数（Heads），即记录面数，表示硬盘总共又多少个磁头。磁头用于读取&#x2F;写入盘片上记录面的信息，一个记录面对应一个磁头。</li>
+<li>柱面数（Cylinders），表示硬盘每面盘片上又多少条磁道。</li>
+<li>扇区数（Sectors），表示每条磁道上有多少个扇区。</li>
+</ul>
+<h4 id="磁盘的性能指标"><a href="#磁盘的性能指标" class="headerlink" title="磁盘的性能指标"></a>磁盘的性能指标</h4><ul>
+<li>记录密度：记录密度是指盘片单位面积上记录的二进制的信息栏，<strong>通常以道密度、位密度和面密度表示</strong>。道密度是沿磁盘半径方向单位长度上磁道数，位密度是磁道单位长度上能记录的二进制代码位数，面密度是位密度和道密度的乘积。</li>
+<li>磁盘的容量：一个磁盘所能存储的字节总数称为磁盘容量。磁盘容量有非格式化容量和格式化容量之分。</li>
+<li>平均存取时间。由寻道时间（磁头移动到目的磁道的时间）、旋转延迟时间（磁头定位到要读写扇区的时间）和传输时间（传输数据所花费的时间）三部分构成，如下图所示。</li>
+<li><img src="https://img-blog.csdnimg.cn/direct/315cacb3376e494491060f035a69abdf.png"></li>
+<li>数据传输率。磁盘存储器在单位时间内向主机传送数据的字节数，称为数据传输率。假设磁盘旋转数位r转&#x2F;秒，每条磁道容量为N字节，则数据传输率为</li>
+</ul>
+<p>$$<br>D_r&#x3D;rN<br>$$</p>
+<h4 id="磁盘地址"><a href="#磁盘地址" class="headerlink" title="磁盘地址"></a>磁盘地址</h4><p>主机向磁盘控制器发送寻址信息，磁盘的地址一般如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f18226cad4b54be8bcf2ff7dc9f11925.png"></p>
+<p>例：若系统中有4个驱动器，每个驱动器带一个磁盘，每个磁盘有256个磁道、16个盘面，每个盘面划分为16个扇区，则每个扇区地址要18位二进制代码：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c8e258d8b2cf41e78434752acbb5ddb4.png"></p>
+<p>通过2位表示0~3范围，可以覆盖4个驱动器，磁道可以用8位进行表示，4位可以表示16个盘面号，同样16个扇区也只需4比特即可表示。</p>
+<h4 id="磁盘的工作过程"><a href="#磁盘的工作过程" class="headerlink" title="磁盘的工作过程"></a>磁盘的工作过程</h4><p>磁盘的主要操作就是寻址、读盘、写盘。每个操作都对应一个控制字，硬盘工作时，第一步是取控制字，第二部是执行控制字。</p>
+<p>硬盘属于机械式部件，其<strong>读写操作时串行的</strong>，不可能在同一时刻既读又写，也不可能在同一时刻读两组数据或写两组数据。</p>
+<h3 id="磁盘阵列"><a href="#磁盘阵列" class="headerlink" title="磁盘阵列"></a>磁盘阵列</h3><blockquote>
+<p>RAID（Redundant Array of Inexpensive Disks，廉价冗余磁盘阵列）是将多个独立的物理磁盘组成一个独立的逻辑盘，数据在多个物理盘上分割交叉存储，并行访问，具有更好的存储性能、可靠性和安全性。</p>
+</blockquote>
+<p>RAID的分级如下所示。在RAID1~RAID5几种方案中，无论何时有磁盘损坏，都可随时拔出受损的磁盘再插入好的磁盘，而数据不会损坏，提高了系统的可靠性。</p>
+<ul>
+<li>RAID0：无冗余和无校验的磁盘阵列（没有容错能力）。</li>
+<li>RAID1：镜像磁盘阵列（有容错能力，但存储容量会减少一半）。</li>
+<li>RAID2：采用纠错的海明码的磁盘阵列。</li>
+<li>RAID3：位交叉奇偶校验的磁盘阵列。</li>
+<li>RAID4：块交叉奇偶校验的磁盘阵列。</li>
+<li>RAID5：无独立校验的奇偶校验磁盘阵列。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/direct/522b85dea99647d8ae78bcc42b4fe3ea.png"></p>
 
                 
             </div>
@@ -552,7 +575,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/12/07/shu-dian-hong-fa-qi/">http://example.com/2023/12/07/shu-dian-hong-fa-qi/</a>
+                    <a href="http://example.com/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/">http://example.com/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -590,8 +613,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E6%95%B0%E7%94%B5/">
-                                    <span class="chip bg-color">数电</span>
+                                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                                    <span class="chip bg-color">计算机组成原理</span>
+                                </a>
+                            
+                                <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                                    <span class="chip bg-color">存储系统</span>
                                 </a>
                             
                         </div>
@@ -905,9 +932,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/">
                     <div class="card-image">
@@ -925,9 +953,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-12-10
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-10
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -940,6 +968,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -962,13 +991,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/12/06/ji-suan-ji-zu-cheng-yuan-li-zhu-cun-chu-qi-yu-cpu-de-lian-jie/">
+                <a href="/2023/12/07/shu-dian-hong-fa-qi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="主存储器与CPU的连接">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="数电-触发器">
                         
-                        <span class="card-title">主存储器与CPU的连接</span>
+                        <span class="card-title">数电-触发器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -979,14 +1008,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-06
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-07
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/true/" class="post-category">
-                                    true
+                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
+                                    数电
                                 </a>
                             
                             
@@ -996,12 +1025,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
-                        <span class="chip bg-color">计算机组成原理</span>
-                    </a>
-                    
-                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
-                        <span class="chip bg-color">存储系统</span>
+                    <a href="/tags/%E6%95%B0%E7%94%B5/">
+                        <span class="chip bg-color">数电</span>
                     </a>
                     
                 </div>

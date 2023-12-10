@@ -462,14 +462,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-06
+                    2023-12-08
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.9k
+                    3.2k
                 </div>
                 
 
@@ -502,7 +502,10 @@
 <p><img src="https://img-blog.csdnimg.cn/direct/9b99dc3b27dd48c889645966e092c528.png"></p>
 <p>将上方图各个功能进行封装则有下图：</p>
 <p><img src="https://img-blog.csdnimg.cn/direct/83464cb3a08a459da50f9a5a05f52a70.png"></p>
-<p>就有存储器的基本框架，地址线来接受外界的地址信息，通过数据线来进行数据的传输，片选线来用于读取某一块特定的存储芯片（一般有多块存储芯片），读&#x2F;写控制线来控制是读还是写（有可能一条或两条）</p>
+<p>就有存储器的基本框架，地址线来接受外界的地址信息，通过数据线来进行数据的传输，片选线来用于读取某一块特定的存储芯片（一般有多块存储芯片），读&#x2F;写控制线来控制是读还是写（有可能一条或两条）。</p>
+<p><strong>地址线数量&#x3D;$\log_2(寻址范围)$ ，数据线数量&#x3D;数据位数</strong>。</p>
+<p>例：容量1024$\times$8位的SRAM芯片，除电源和接地线外，该芯片的引脚（要接入的线）的最小数目是多少？</p>
+<p>由上图得片选线有一根，读写控制线最少1根，地址线的数量&#x3D; $\log_2(1024)&#x3D;10$（DRAM存在复用情况，可以减半，下方有DRAM中介绍）。数据位数为8位，所以数据线8根，结果最少的引脚数&#x3D; 1 + 1（或 2 ） + 10 + 8 &#x3D;20（或 21）.</p>
 <p><strong>存储芯片常见描述</strong></p>
 <p>例：8K$\times$8位，指有8K个存储单元，存储字长为8位（有8个存储元）。即$2^{10+3}\times 8bit$。</p>
 <p>8K$\times$1位，指有8K个存储单元，存储字长为1位。即$2^{10+3}\times 1bit$</p>
@@ -517,9 +520,11 @@
 <h4 id="DRAM的工作原理"><a href="#DRAM的工作原理" class="headerlink" title="DRAM的工作原理"></a>DRAM的工作原理</h4><p>与SRAM的存储原理不同，动态随机存储器（DRAM）是利用存储元电路中栅极电容上的电荷来存储信息，DRAM的基本存储单元通常只用一个晶体管，所以它比SRAM的密度要高很多。并且集成高、价格低、容量大和功耗低等优点。</p>
 <p><img src="https://img-blog.csdnimg.cn/direct/97b1d5cede4a4ab296ff53eba1c1a837.png"></p>
 <p>DRAM电容上的<strong>电荷一般只能维持1~2ms</strong>，因此即使电源不断电，信息也会自动消失。为此需要每隔一段时间必须刷新，通常取2ms，称为<strong>刷新周期</strong>。</p>
-<h5 id="DRAM刷新"><a href="#DRAM刷新" class="headerlink" title="DRAM刷新"></a>DRAM刷新</h5><p>若以行为单位进行刷新，若有n位的地址，则需要$2^n$根选通线，显然在工程上难度较大，由此拆分出了行列地址，将存储元从一维的行，延申成二维的行列，通过行地址译码器和列地址译码器来实现，当行列选中同个单元即读取这个单元的信息。</p>
+<h5 id="DRAM刷新"><a href="#DRAM刷新" class="headerlink" title="DRAM刷新"></a>DRAM刷新</h5><p>若以行为单位进行刷新，若有n位的地址，则需要$2^n$根选通线，显然在工程上难度较大，由此拆分出了行列地址，将存储元从一维的行，延申成二维的行列，通过行地址译码器和列地址译码器来实现，当行列选中同个单元即读取这个单元的信息。<font color="#ff0000">注：DRAM以行进行刷新</font></p>
 <p>从此可将n位地址拆分成n&#x2F;2位地址从而达到减少选通线的目的。</p>
 <p><img src="https://img-blog.csdnimg.cn/direct/22220bbf15994e4bbc5be05653767fda.png"></p>
+<p>例： 某一DRAM芯片，采用地址复用技术，其容量为 1024$\times$8 位，除电源和接地端外，该芯片的引脚数最少是多少（读写控制线为2根）。</p>
+<p>根据题描述，可得寻址范围为1024$&#x3D;2^{10}$，所以地址线为10根，采用地址复用技术地址线减半为5根，数据线仍为8根，加上<strong>行选通线和列选通线</strong>两根及读写控制线两根（<strong>片选线用行通选来代替</strong>），结果总共为 5 + 8 + 2 + 2 &#x3D;17根。</p>
 <p>将存储单元分为行列后就可以进行行或列刷新，常用的刷新方式有3种。</p>
 <ol>
 <li><p>集中刷新。</p>
@@ -557,7 +562,7 @@
 <p>PROM可以实现一次性编程的只读存储器。允许用户写入自己的程序，<strong>一旦写入，内容就无法改变</strong>。</p>
 </li>
 <li><p>可擦除可编程只读存储器（ EPROM，Erasable Programmable Read-Only Memory）</p>
-<p>EPROM允许用户写入信息，之后用某种方法擦除数据，<font color="#ff0000">可进行多次重写</font>。</p>
+<p>EPROM允许用户写入信息，之后用某种方法擦除数据，<font color="#ff0000">可进行多次重写，由于改写较为繁琐，速度较慢，不能作为需要频繁读写的RAM使用</font>。</p>
 <p>UVEPROM（ultraviolet rays）——用紫外线照射8~20分钟，擦除<strong>所有信息</strong>。</p>
 <p>EEPROM（也记为$E^2PROM$），可用“电擦除”的方式，擦除<strong>特点的字</strong>。</p>
 </li>
