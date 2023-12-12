@@ -4,12 +4,14 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="计算机组成原理-外部存储器, LsWorld">
+    <meta name="keywords" content="计算机组成原理-高速缓冲存储器, LsWorld">
     <meta name="description" content="
 
-计算机的外存储器又称为辅助存储器，目前主要使用磁表面存储器。
-所谓“磁表面存储”，是指把某些磁性材料薄薄地涂在金属铝或塑料表面上作为载磁体来存储信息。磁盘存储器、磁带存储器和磁鼓存储器均属于磁表面存储器。
-磁盘存储器磁盘存储器的优点有：">
+
+
+Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度快，成本高
+当cache要运行时，会将主存的存储空间进行“分块”，cache与主存之间的数据交换以cache块为单位。
+例：设每1KB为一块，主存共4MB，">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -23,7 +25,7 @@
 
     
 
-    <title>计算机组成原理-外部存储器 | LsWorld</title>
+    <title>计算机组成原理-高速缓冲存储器 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -313,12 +315,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">计算机组成原理-外部存储器</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-高速缓冲存储器</h1>
                 </div>
             </div>
         </div>
@@ -463,21 +465,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-12-10
+                    2023-12-12
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-11
+                    2023-12-12
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.8k
+                    1.1k
                 </div>
                 
 
@@ -499,69 +501,65 @@
             <div id="articleContent">
                 <meta name="referrer" content="no-referrer"/>
 
-<p>计算机的外存储器又称为辅助存储器，目前主要使用磁表面存储器。</p>
-<p>所谓“磁表面存储”，是指把某些磁性材料薄薄地涂在金属铝或塑料表面上作为载磁体来存储信息。<strong>磁盘存储器、磁带存储器和磁鼓存储器均属于磁表面存储器</strong>。</p>
-<h3 id="磁盘存储器"><a href="#磁盘存储器" class="headerlink" title="磁盘存储器"></a>磁盘存储器</h3><p>磁盘存储器的优点有：</p>
-<ol>
-<li>存储容量大，位价格低；</li>
-<li>记录介质可重复使用；</li>
-<li>记录信息可长期保存而不丢失，甚至可脱机存档；</li>
-<li>非破坏性读出，读出时不需要再生</li>
-</ol>
-<p><strong>缺点</strong>：读取速度慢，机械结构复杂，对工作环境要求较高。</p>
-<p>外存储器既可以<strong>作为输入设备也可以作为输出设备</strong>。</p>
-<h4 id="磁盘存储器的组成"><a href="#磁盘存储器的组成" class="headerlink" title="磁盘存储器的组成"></a>磁盘存储器的组成</h4><p>磁盘存储器是由磁盘驱动器、磁盘控制器和盘片组成。</p>
-<ul>
-<li>磁盘驱动器。核心部件是磁头组件和盘片组件，温彻斯特盘是一种可移动磁头固定盘片的硬件存储器。</li>
-<li>磁盘控制器。硬盘存储器和主机的接口，主流的标准有IDE、SCSI、SATA等。</li>
-</ul>
-<p>磁盘的存储区域。一块硬盘含有若干纪录面，每个记录面划分为若干磁道，而每条磁道又划分为若干扇区，<strong>扇区（也称块），是磁盘读写的最小单位，即磁盘按块存取</strong>。</p>
-<ul>
-<li>磁头数（Heads），即记录面数，表示硬盘总共又多少个磁头。磁头用于读取&#x2F;写入盘片上记录面的信息，一个记录面对应一个磁头。</li>
-<li>柱面数（Cylinders），表示硬盘每面盘片上又多少条磁道。</li>
-<li>扇区数（Sectors），表示每条磁道上有多少个扇区。</li>
-</ul>
-<h4 id="磁盘的性能指标"><a href="#磁盘的性能指标" class="headerlink" title="磁盘的性能指标"></a>磁盘的性能指标</h4><ul>
-<li>记录密度：记录密度是指盘片单位面积上记录的二进制的信息栏，<strong>通常以道密度、位密度和面密度表示</strong>。道密度是沿磁盘半径方向单位长度上磁道数，位密度是磁道单位长度上能记录的二进制代码位数，面密度是位密度和道密度的乘积。</li>
-<li>磁盘的容量：一个磁盘所能存储的字节总数称为磁盘容量。磁盘容量有非格式化容量和格式化容量之分。</li>
-<li>平均存取时间。由寻道时间（磁头移动到目的磁道的时间）、旋转延迟时间（磁头定位到要读写扇区的时间）和传输时间（传输数据所花费的时间）三部分构成，如下图所示。</li>
-<li><img src="https://img-blog.csdnimg.cn/direct/315cacb3376e494491060f035a69abdf.png"></li>
-<li>数据传输率。磁盘存储器在单位时间内向主机传送数据的字节数，称为数据传输率。假设磁盘旋转数位r转&#x2F;秒，每条磁道容量为N字节，则数据传输率为</li>
-</ul>
-<p>$$<br>D_r&#x3D;rN<br>$$</p>
-<h4 id="磁盘地址"><a href="#磁盘地址" class="headerlink" title="磁盘地址"></a>磁盘地址</h4><p>主机向磁盘控制器发送寻址信息，磁盘的地址一般如下图所示。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/f18226cad4b54be8bcf2ff7dc9f11925.png"></p>
-<p>例：若系统中有4个驱动器，每个驱动器带一个磁盘，每个磁盘有256个磁道、16个盘面，每个盘面划分为16个扇区，则每个扇区地址要18位二进制代码：</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/c8e258d8b2cf41e78434752acbb5ddb4.png"></p>
-<p>通过2位表示0~3范围，可以覆盖4个驱动器，磁道可以用8位进行表示，4位可以表示16个盘面号，同样16个扇区也只需4比特即可表示。</p>
-<h4 id="磁盘的工作过程"><a href="#磁盘的工作过程" class="headerlink" title="磁盘的工作过程"></a>磁盘的工作过程</h4><p>磁盘的主要操作就是寻址、读盘、写盘。每个操作都对应一个控制字，硬盘工作时，第一步是取控制字，第二部是执行控制字。</p>
-<p>硬盘属于机械式部件，其<strong>读写操作时串行的</strong>，不可能在同一时刻既读又写，也不可能在同一时刻读两组数据或写两组数据。</p>
-<h3 id="磁盘阵列"><a href="#磁盘阵列" class="headerlink" title="磁盘阵列"></a>磁盘阵列</h3><blockquote>
-<p>RAID（Redundant Array of Inexpensive Disks，廉价冗余磁盘阵列）是将多个独立的物理磁盘组成一个独立的逻辑盘，数据在多个物理盘上分割交叉存储，并行访问，具有更好的存储性能、可靠性和安全性。</p>
-</blockquote>
-<p>RAID的分级如下所示。在RAID1~RAID5几种方案中，无论何时有磁盘损坏，都可随时拔出受损的磁盘再插入好的磁盘，而数据不会损坏，提高了系统的可靠性。</p>
-<ul>
-<li>RAID0：无冗余和无校验的磁盘阵列（没有容错能力）。</li>
-<li>RAID1：镜像磁盘阵列（有容错能力，但存储容量会减少一半）。</li>
-<li>RAID2：采用纠错的海明码的磁盘阵列。</li>
-<li>RAID3：位交叉奇偶校验的磁盘阵列。</li>
-<li>RAID4：块交叉奇偶校验的磁盘阵列。</li>
-<li>RAID5：无独立校验的奇偶校验磁盘阵列。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/direct/522b85dea99647d8ae78bcc42b4fe3ea.png"></p>
-<h3 id="固态硬盘（SSD）"><a href="#固态硬盘（SSD）" class="headerlink" title="固态硬盘（SSD）"></a>固态硬盘（SSD）</h3><p>固态硬盘是一种<strong>基于闪存技术的存储器</strong>。它与U盘并没有本质上的差别，只是容量更大，存取性能更好。一个SSD由多个闪存芯片和闪存翻译层组成，闪存芯片替代机械硬盘的机械驱动器，而闪存翻译层将来自CPU的逻辑块读写请求翻译成对底层物理设备的读写控制信号，因此<strong>闪存翻译层相当于扮演了磁盘控制器的角色</strong>，下图就是固态硬盘的结构。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/82f1271d2a144f77b4a228e08a718410.png"></p>
-<p>一块闪存通常由m块（相当于机械硬盘的磁道）组成，每块由P页（相当于机械硬盘的块&#x2F;扇区）组成。通常，<strong>页的大小是512B<del>4KB，每块由32</del>128页组成，块的大小为16KB~512KB</strong>。数据是<strong>以页为单位读写</strong>的。只有在一页所属的块整个被擦除后，才能写这一页。某个块进行了<strong>约10万次</strong>重复写之后，就会磨损坏，不能再使用（而机械硬盘的扇区不会因读写次数过多而损坏）。</p>
-<p>SSD的<strong>读的速度要比写的速度快</strong>，写前若页中有数据需要对当前所属块进行擦除。</p>
-<p>SSD由半导体存储器构成，没有移动的部件，因而随机访问时间比机械硬盘快的多。</p>
-<p>SSD目前通常会采用磨损均衡技术（将“擦除”平均分布在各个块上，以提升使用寿命），逻辑块号可以通过闪存翻译层映射到其他物理地址上。</p>
-<p>磨损均衡技术一般包括：</p>
-<ol>
-<li>动态磨损均衡：写入数据时，优先选择累计擦除次数少的新闪存块。</li>
-<li>静态磨损均衡：SSD监测并自动进行数据分配、迁移，让老旧的闪存块承担以读为主的储存任务，让较新的闪存块承担更多的写任务。</li>
-</ol>
-<h4 id="SSD解决数据丢失问题"><a href="#SSD解决数据丢失问题" class="headerlink" title="SSD解决数据丢失问题"></a>SSD解决数据丢失问题</h4><p>由于SSD以块为单位进行擦除，而读写又以页为单位，因此可能要进行写之前需要擦除当前块页的元素，因此可以通过将要写入的页所在的块中的所有元素复制到其他块中，并在复制块中在要写入的页位置上写入新数据，然后等擦除完块中元素后再重新复制回去。</p>
 
+
+<h3 id="Cache的基本原理"><a href="#Cache的基本原理" class="headerlink" title="Cache的基本原理"></a>Cache的基本原理</h3><p>目前Cache被集成在CPU内部，且用SRAM实现，速度快，成本高</p>
+<p>当cache要运行时，会将主存的存储空间进行“分块”，cache与主存之间的数据交换以cache块为单位。</p>
+<p>例：设每1KB为一块，主存共4MB，cache为8KB，<strong>主存与cache间以“块”为单位进行数据交换</strong>。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/6f9d1bb76873444b83853b38196d2cef.png"></p>
+<p>4MB&#x3D;$2^{22}bit$，1K&#x3D;$2^{10}$，因此主存可以被分为$2^{12}&#x3D;4096$块，cache分为8块。</p>
+<p>然后因主存的地址共22位，所以可以将12位用来表示块号，剩下10位表示块内地址。</p>
+<h4 id="局部性原理"><a href="#局部性原理" class="headerlink" title="局部性原理"></a>局部性原理</h4><ul>
+<li>空间局部性：在最近的未来要用到的信息（指令和数据），很可能与现在正在使用的信息在存储空间上是邻近的</li>
+<li>时间局部性：在最近的未来要用到的信息，很可能是现在正在使用的信息（指一段代码可能在邻近时间很快再被调用）。</li>
+</ul>
+<p>Cache就是用局部性原理，把程序中正在使用的部分数据存在cache中，使CPU的访存操作大多数针对cache进行，从而提高程序的执行速度。</p>
+<p>例：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//程序A：按行访问</span>
+<span class="token keyword">int</span> <span class="token function">sumarrayrows</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> M<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span> j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> j<span class="token operator">&lt;</span>N<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+            sum <span class="token operator">+=</span> a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//程序B：按列访问</span>
+<span class="token keyword">int</span> <span class="token function">sumarrayrows</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> N<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>M<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+            sum <span class="token operator">+=</span> a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>由于数组是按行进行存放在内存中，因此按行访问会有空间连接性，程序A的空间局部性会比程序B的空间局部性更好。cache执行程序A会更快。</p>
+<h4 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h4><p>在之前要先了解一些概念，</p>
+<p><strong>命中率H</strong>：CPU欲访问的信息已在Cache中的比率。</p>
+<p><strong>缺失（未命中）率</strong>： M &#x3D; 1 - H。</p>
+<p>设一个程序执行期间，cache的总命中次数位$N_c$，访问主存的总次数为$N_m$，则命中H：<br>$$<br>H&#x3D;N_c&#x2F;(N_c+N_m)<br>$$<br>设$t_c$为访问一次cache所需时间，$t_m$为访问一次主存所需时间。则cache主存系统的<strong>平均访问时间t</strong>（以先访问cache，若cache未命中再访问主存）为：<br>$$<br>t&#x3D;Ht_c+(1-H)(t_c+t_m)<br>$$<br>若同时访问cache和主存，若cache命中则立即停止访问主存，<strong>平均访问时间t</strong>：<br>$$<br>t&#x3D;Ht_c+(1-H)t_m<br>$$</p>
+<h3 id="cache和主存的映射方式"><a href="#cache和主存的映射方式" class="headerlink" title="cache和主存的映射方式"></a>cache和主存的映射方式</h3><p>cache行中的信息是主存中某个块的副本，地址映射就是指把主存地址空间映射到cache地址空间。并且cache中每块要加一个<strong>标记</strong>，指明它是主存中的哪一块副本。<strong>为了说明cache行中的信息是否有效，每个cache行需要一个有效位</strong>。</p>
+<p>地址映射的方法有三种：</p>
+<h4 id="全相连映射"><a href="#全相连映射" class="headerlink" title="全相连映射"></a>全相连映射</h4><p>主存的每一块可以装入cache中的<strong>任何位置</strong>，每行的标记用于指出该行取自主存的哪一块，所以<strong>CPU访存时需要与所有cache行的标记进行比较</strong>。</p>
+<p>优点是比较灵活，cache块的冲突概率低，空间利用率搞，命中率也高；</p>
+<p>缺点是标记的比较速度较慢，实现成本较高，通常需要采用昂贵的按内容寻址的相联存储器进行地址映射。</p>
+<p>例：</p>
+<p>假设某个计算机的主存地址空间大小为256MB，按字节编址，其数据cache有8个cache行（即cache块，与主存块的大小相等），行长为64B。</p>
+<p>主存256MB&#x3D;$2^{28}$bit，主存的地址共28位，由于块大小为64B&#x3D;$2^6$， 所以主存块内地址为6位，主存块号22位。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f9d30ab4316542b0a0e9d3ad2edfa1c9.png"></p>
+<p>使用全相联映射，先初始所有有效位为0，主存的块可以放到cache中的任意位置。假设将主存块号0放到cache3中，此时会将有效位置为1，并标记上当前主存的主存块号。</p>
+<p>同样若将$2^{22}-3$的主存块放入到cache1中，标记会变为$2^{22}-3$的主存块号。如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/a60ae3bd2f3f473ba161df3c532d9cfe.png"></p>
+<p>当使用“全相联映射”进行访问主存地址$1…1101 \quad 001110$时，会根据主存地址的前22位对比cache 中所有块的标记；</p>
+<p>若标记匹配且有效位&#x3D;1，则cache 命中，访问cache块内地址为001110的单元。</p>
+<p>若未命中或有效位&#x3D;0，则正常访问主存。</p>
+<h4 id="直接映射（只能放固定位置）"><a href="#直接映射（只能放固定位置）" class="headerlink" title="直接映射（只能放固定位置）"></a>直接映射（只能放固定位置）</h4>
                 
             </div>
             <hr/>
@@ -587,7 +585,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/">http://example.com/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/</a>
+                    <a href="http://example.com/2023/12/12/ji-suan-ji-zu-cheng-yuan-li-gao-su-huan-chong-cun-chu-qi/">http://example.com/2023/12/12/ji-suan-ji-zu-cheng-yuan-li-gao-su-huan-chong-cun-chu-qi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -944,9 +942,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/12/12/ji-suan-ji-zu-cheng-yuan-li-gao-su-huan-chong-cun-chu-qi/">
                     <div class="card-image">
@@ -964,9 +963,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-12-12
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-12
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -979,6 +978,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1001,13 +1001,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/12/07/shu-dian-hong-fa-qi/">
+                <a href="/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="数电-触发器">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="计算机组成原理-外部存储器">
                         
-                        <span class="card-title">数电-触发器</span>
+                        <span class="card-title">计算机组成原理-外部存储器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1018,14 +1018,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-07
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-10
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%95%B0%E7%94%B5/" class="post-category">
-                                    数电
+                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
+                                    计算机组成原理
                                 </a>
                             
                             
@@ -1035,8 +1035,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%95%B0%E7%94%B5/">
-                        <span class="chip bg-color">数电</span>
+                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">
+                        <span class="chip bg-color">计算机组成原理</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
+                        <span class="chip bg-color">存储系统</span>
                     </a>
                     
                 </div>
