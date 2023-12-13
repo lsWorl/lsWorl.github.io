@@ -4,14 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="计算机组成原理-高速缓冲存储器, LsWorld">
+    <meta name="keywords" content="计算机组成原理-虚拟存储器, LsWorld">
     <meta name="description" content="
 
 
 
-Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度快，成本高
-当cache要运行时，会将主存的存储空间进行“分块”，cache与主存之间的数据交换以cache块为单位。
-例：设每1KB为一块，主存共4MB，">
+虚拟存储器的基本概念虚拟存储器就是基于主存和辅存（类似于cache在CPU和主存一样），在通过系统软件和硬件实现了主存的速度和辅存的容量。主要是为了解决主存容量不足的问题。
+虚拟存储器会将主存或辅存的地址空间统一编址，这些地址称为虚">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -25,7 +24,7 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
 
     
 
-    <title>计算机组成原理-高速缓冲存储器 | LsWorld</title>
+    <title>计算机组成原理-虚拟存储器 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -315,12 +314,12 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">计算机组成原理-高速缓冲存储器</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-虚拟存储器</h1>
                 </div>
             </div>
         </div>
@@ -465,7 +464,7 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-12-12
+                    2023-12-13
                 </div>
                 
 
@@ -479,7 +478,7 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.2k
+                    479
                 </div>
                 
 
@@ -503,135 +502,19 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
 
 
 
-<h3 id="Cache的基本原理"><a href="#Cache的基本原理" class="headerlink" title="Cache的基本原理"></a>Cache的基本原理</h3><p>目前Cache被集成在CPU内部，且用SRAM实现，速度快，成本高</p>
-<p>当cache要运行时，会将主存的存储空间进行“分块”，cache与主存之间的数据交换以cache块为单位。</p>
-<p>例：设每1KB为一块，主存共4MB，cache为8KB，<strong>主存与cache间以“块”为单位进行数据交换</strong>。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/6f9d1bb76873444b83853b38196d2cef.png"></p>
-<p>4MB&#x3D;$2^{22}bit$，1K&#x3D;$2^{10}$，因此主存可以被分为$2^{12}&#x3D;4096$块，cache分为8块。</p>
-<p>然后因主存的地址共22位，所以可以将12位用来表示块号，剩下10位表示块内地址。</p>
-<h4 id="局部性原理"><a href="#局部性原理" class="headerlink" title="局部性原理"></a>局部性原理</h4><ul>
-<li>空间局部性：在最近的未来要用到的信息（指令和数据），很可能与现在正在使用的信息在存储空间上是邻近的</li>
-<li>时间局部性：在最近的未来要用到的信息，很可能是现在正在使用的信息（指一段代码可能在邻近时间很快再被调用）。</li>
-</ul>
-<p>Cache就是用局部性原理，把程序中正在使用的部分数据存在cache中，使CPU的访存操作大多数针对cache进行，从而提高程序的执行速度。</p>
-<p>例：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//程序A：按行访问</span>
-<span class="token keyword">int</span> <span class="token function">sumarrayrows</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> M<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">for</span><span class="token punctuation">(</span> j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> j<span class="token operator">&lt;</span>N<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-            sum <span class="token operator">+=</span> a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-
-
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//程序B：按列访问</span>
-<span class="token keyword">int</span> <span class="token function">sumarrayrows</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">[</span>M<span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> N<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        <span class="token keyword">for</span><span class="token punctuation">(</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>M<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-            sum <span class="token operator">+=</span> a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>由于数组是按行进行存放在内存中，因此按行访问会有空间连接性，程序A的空间局部性会比程序B的空间局部性更好。cache执行程序A会更快。</p>
-<h4 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h4><p>在之前要先了解一些概念，</p>
-<p><strong>命中率H</strong>：CPU欲访问的信息已在Cache中的比率。</p>
-<p><strong>缺失（未命中）率</strong>： M &#x3D; 1 - H。</p>
-<p>设一个程序执行期间，cache的总命中次数位$N_c$，访问主存的总次数为$N_m$，则命中H：<br>$$<br>H&#x3D;N_c&#x2F;(N_c+N_m)<br>$$<br>设$t_c$为访问一次cache所需时间，$t_m$为访问一次主存所需时间。则cache主存系统的<strong>平均访问时间t</strong>（以先访问cache，若cache未命中再访问主存）为：<br>$$<br>t&#x3D;Ht_c+(1-H)(t_c+t_m)<br>$$<br>若同时访问cache和主存，若cache命中则立即停止访问主存，<strong>平均访问时间t</strong>：<br>$$<br>t&#x3D;Ht_c+(1-H)t_m<br>$$</p>
-<h3 id="cache和主存的映射方式"><a href="#cache和主存的映射方式" class="headerlink" title="cache和主存的映射方式"></a>cache和主存的映射方式</h3><p>cache行中的信息是主存中某个块的副本，地址映射就是指把主存地址空间映射到cache地址空间。并且cache中每块要加一个<strong>标记</strong>，指明它是主存中的哪一块副本。<strong>为了说明cache行中的信息是否有效，每个cache行需要一个有效位</strong>。</p>
-<p>地址映射的方法有三种：</p>
-<h4 id="全相连映射"><a href="#全相连映射" class="headerlink" title="全相连映射"></a>全相连映射</h4><p>主存的每一块可以装入cache中的<strong>任何位置</strong>，每行的标记用于指出该行取自主存的哪一块，所以<strong>CPU访存时需要与所有cache行的标记进行比较</strong>。</p>
-<p>优点是比较灵活，cache块的冲突概率低，空间利用率搞，命中率也高；</p>
-<p>缺点是标记的比较速度较慢，实现成本较高，通常需要采用昂贵的按内容寻址的相联存储器进行地址映射。</p>
-<p>例：</p>
-<p>假设某个计算机的主存地址空间大小为256MB，按字节编址，其数据cache有8个cache行（即cache块，与主存块的大小相等），行长为64B。</p>
-<p>主存256MB&#x3D;$2^{28}$bit，主存的地址共28位，由于块大小为64B&#x3D;$2^6$， 所以主存块内地址为6位，主存块号22位。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/f9d30ab4316542b0a0e9d3ad2edfa1c9.png"></p>
-<p>使用全相联映射，先初始所有有效位为0，主存的块可以放到cache中的任意位置。假设将主存块号0放到cache3中，此时会将有效位置为1，并标记上当前主存的主存块号。</p>
-<p>同样若将$2^{22}-3$的主存块放入到cache1中，标记会变为$2^{22}-3$的主存块号。如下图所示。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/a60ae3bd2f3f473ba161df3c532d9cfe.png"></p>
-<p>当使用“全相联映射”进行访问主存地址$1…1101 \quad 001110$时，会根据主存地址的前22位对比cache 中所有块的标记；</p>
-<p>若标记匹配且有效位&#x3D;1，则cache 命中，访问cache块内地址为001110的单元。</p>
-<p>若未命中或有效位&#x3D;0，则正常访问主存。</p>
-<h4 id="直接映射（只能放固定位置）"><a href="#直接映射（只能放固定位置）" class="headerlink" title="直接映射（只能放固定位置）"></a>直接映射（只能放固定位置）</h4><p>主存中的<strong>每一块只能装入cache中的唯一位置</strong>。若这个位置已有内容，则产生块冲突，<strong>原来的块</strong>将无条件被替换出去（无需使用替换算法）。直接映射实现简单，但不够灵活，即使cache的其他许多地址空着也不能占用，<strong>空间利用率低</strong>。</p>
-<p>直接映射的关系可定义为：<br>$$<br>cache行号&#x3D;主存块号 % cache总行数<br>$$<br>例：</p>
-<p>假设某个计算机的主存地址空间大小为256MB，按字节编址，其数据cache有8个cache行（即cache块，与主存块的大小相等），行长为64B。</p>
-<p>主存256MB&#x3D;$2^{28}$bit，主存的地址共28位，由于块大小为64B&#x3D;$2^6$， 所以主存块内地址为6位，主存块号22位。</p>
-<p>若将0块号主存放入到cache中，此时0%8&#x3D;0，所以会放到cache0中。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/47b37bdec5004842a1403bcff7657a9f.png"></p>
-<p>若想再将8块号主存放到cache中，由于8%8&#x3D;0，所以会直接覆盖原先cache存放的信息。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/0923dc5100954b75a272c9ab25aacb47.png"></p>
-<p>使用直接直接映射由于是对cache总行数取模，因此可以只取$\log_2总行数$来得到应映射到cache哪一行，该例题中$log_28&#x3D;3$，因此只需19位标记即可，3位作于cache的行号，就可以直接根据主存块地址的后三位来确定应该放在cache的哪一行。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/580425a1ec6c46ce9a7f34712bb53e72.png"></p>
-<h4 id="组相联映射（可放到特定分组）"><a href="#组相联映射（可放到特定分组）" class="headerlink" title="组相联映射（可放到特定分组）"></a>组相联映射（可放到特定分组）</h4><p>将cache分成Q个大小相等的组，每个主存块可以装入固定组中的任意一行，即<strong>组间采用直接映射、组内采用全相联映射</strong>的方式。</p>
-<p>组相联映射的关系可以定义为：<br>$$<br>cache组号&#x3D;主存块号 % cache组数（Q）<br>$$<br>例：</p>
-<p>假设某个计算机的主存地址空间大小为256MB，按字节编址，其数据cache有8个cache行（即cache块，与主存块的大小相等），行长为64B，采用二路组相联映射（2块为一组，分四组）。</p>
-<p>主存256MB&#x3D;$2^{28}$bit，主存的地址共28位，由于块大小为64B&#x3D;$2^6$， 所以主存块内地址为6位，主存块号22位。</p>
-<p>若想将块号1主存放入cache中，此时分组数&#x3D;4，1%4&#x3D;1，所以会放入到第1组中任意位置。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/8f1c8480044046d2a2480a329bd84394.png"></p>
-<p>同样的，和直接映射类似，可以通过$\log_2分组数$来直接判断应该留几位作为判断放入cache的哪一个分组。在这例子中$\log_24&#x3D;2$，2位作为cache行号，剩下20位作为标记位。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/452a78bbdf2e4f3293db2af9b640e496.png"></p>
-<h3 id="Cache中主存块的替换算法"><a href="#Cache中主存块的替换算法" class="headerlink" title="Cache中主存块的替换算法"></a>Cache中主存块的替换算法</h3><p>在采用全相联映射或组相联映射方式时，从主存向cache传送一个新块，当cache或cache组中的空间已被占满时，就需要使用替换算法置换cache行。</p>
-<h4 id="随机算法（RAND）"><a href="#随机算法（RAND）" class="headerlink" title="随机算法（RAND）"></a>随机算法（RAND）</h4><p>若cache已满，则随机选择一块替换。</p>
-<p>例：</p>
-<p>设总共有4个cache块，初始整个cache为空。采用全相联映射，依次访问主存块 {1，2，3，4，1，2，5，1，2，3，4，5}</p>
-<p>由题第一次调用1，2，3，4会依次将主存块放入cache中，此时cache都未命中（因为原先cache中没有内容）。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/112db0e861c246f09c3f7f9d5988b802.png"></p>
-<p>再进行访问 1，2，此时cache中有1，2，就算命中，当访问5时，由于cache中没有5，根据随机算法cache会随机替换一个，假设这里随机替换了cache2中的3。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/eab191ce86864df48b334472c615b2da.png"></p>
-<p>而后面的步骤就与前面几乎相同，若cache中有则命中，没有则进行替换。</p>
-<p>随机算法实现简单，但没考虑局部性原理，实际效果很不稳定。</p>
-<h4 id="先进先出算法（FIFO）"><a href="#先进先出算法（FIFO）" class="headerlink" title="先进先出算法（FIFO）"></a>先进先出算法（FIFO）</h4><p>选择最早调入的行进行替换。</p>
-<p>例：</p>
-<p>设总共有4个cache块，初始整个cache为空。采用全相联映射，依次访问主存块 {1，2，3，4，1，2，5，1，2，3，4，5}</p>
-<p>前面与上个随机算法图相似，依次访问到5的时候，根据先进先出的原则，会将cache0块中的1替换为5.</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/fff7c0f3dbc4489496d261b2fdbbee1e.png"></p>
-<p>后面都是同样的步骤。</p>
-<p>先进先出算法实现简单，也没考虑局部性原理，最先被调入cache的块也有可能是被频繁访问的，同时也会出现<strong>抖动现象</strong>（频繁的换入换出）。</p>
-<h4 id="近期最少使用算法（LRU）"><a href="#近期最少使用算法（LRU）" class="headerlink" title="近期最少使用算法（LRU）"></a>近期最少使用算法（LRU）</h4><p>依据程序访问的局部性原理，选择近期内长久未访问过cache行进行替换，是堆栈类算法。</p>
-<p>LRU会为每一个cache块设置一个“计数器”，用于<strong>记录每个cache块有多久没被访问</strong>，<strong>当cache满后替换“计数器”最大的</strong>。</p>
-<p>计数器的变化规则为：</p>
-<ol>
-<li>命中时，所命中的行的计数器清零，比其低的计数器加1，其余不变。</li>
-<li>未命中且还有空闲行时，新装入的行的计数器置0，其余全加1；</li>
-<li>未命中且无空闲行时，计数器最大的行的信息块被淘汰，新装行的块的计数器置0，其余全加1。</li>
-</ol>
-<p>例：</p>
-<p>设总共有4个cache块，初始整个cache为空。采用全相联映射，依次访问主存块 {1，2，3，4，1，2，5，1，2，3，4，5}</p>
-<p>前面与先前的算法都一样，依次访问到5的时候，由于此时cache已满，根据访问时间来看，3是最久没被访问的，所以会用5来替换3的位置，后面的处理方法类似。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/8b3171ebfe4c4a779bcf339153392f32.png"></p>
-<p>cache块的总数&#x3D;$2^n$，则计数器只需n位。且cache装满后所有计数器的值一定不重复。</p>
-<h4 id="最不经常使用算法（LFU）"><a href="#最不经常使用算法（LFU）" class="headerlink" title="最不经常使用算法（LFU）"></a>最不经常使用算法（LFU）</h4><p>为每一个cache块设置一个“计数器”，用于记录每个cache块被访问过几次。<strong>当cache满后替换“计数器”最小的</strong>。</p>
-<p>例：</p>
-<p>设总共有4个cache块，初始整个cache为空。采用全相联映射，依次访问主存块 {1，2，3，4，1，2，5，1，2，3，4，5}</p>
-<p>前面与先前的算法都一样，新调入的块计数器置0，之后每个被访问过后计数器都会加1，依次访问到5的时候，需要替换，会选择计数器最小的行（若有多个最小的行，可按行号递增或FIFO策略进行选择），此时5就会替换3的位置，后面的步骤就与前面一致。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/011078c724864d9e877e72d22fbece7c.png"></p>
-<p>LFU算法，曾经被经常访问的主存块在未来不一定会用到，并没有很好的遵循局部性原理，实际运行效果不如LRU。</p>
-<h3 id="Cache写策略"><a href="#Cache写策略" class="headerlink" title="Cache写策略"></a>Cache写策略</h3><p>因为cache中的内容是主存块副本，当对cache中的内容进行更新时，就需选用写操作策略使cache内容和主存内容保持一致。</p>
-<h4 id="写命中"><a href="#写命中" class="headerlink" title="写命中"></a>写命中</h4><p>对应cache写命中（write hit），有两种处理方法。</p>
-<h5 id="全写法（写直通法，-write-through）"><a href="#全写法（写直通法，-write-through）" class="headerlink" title="全写法（写直通法， write-through）"></a>全写法（写直通法， write-through）</h5><p>当CPU对cache写命中时，必须把数据同时写入cache和主存。这种方法实现简单，保证主存数据的正确性。缺点使增加访存次数，降低了cache 的效率。</p>
-<p>使用全写法需要借助一个写缓冲（SRAM实现的FIFO队列）：为减少全写法直接写入主存的时间损耗。</p>
-<p>每当对cache块进行写入时，同样也会对写缓冲进行写入，然后会在专门的控制电路下逐一写回。</p>
-<p>当出现频繁写时，会使写缓冲饱和溢出。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/bd52763055314e638faad117e724c120.png"></p>
-<h5 id="回写法（write-back）"><a href="#回写法（write-back）" class="headerlink" title="回写法（write-back）"></a>回写法（write-back）</h5><p>当CPU对cache写命中时，只把数据写入cache，而不立即写入内存，只有当此块被换出时才写回主存。</p>
-<p>并且会给每个cache行设置一个修改位（脏位）。若修改位为1，则说明对应cache行中的块被修改过，替换时需写回主存；若&#x3D;0，则说明未被修改。</p>
-<p>如下图所示，cache3被修改过，仅当cache3被换出时候写回主存0块号。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/e689077197744b8a8159d632db877cb7.png"></p>
-<h4 id="写不命中"><a href="#写不命中" class="headerlink" title="写不命中"></a>写不命中</h4><p>对于cache写不命中，也有两种处理方法。</p>
-<h5 id="写分配法（write-allocate）"><a href="#写分配法（write-allocate）" class="headerlink" title="写分配法（write-allocate）"></a>写分配法（write-allocate）</h5><p>加载主存中的块到cahe中，然后更新这个cache块。</p>
-<p>通常搭配写回法使用。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/d2db380b14524811b4c24cc84a0248fc.png"></p>
-<h5 id="非写分配法（not-write-allocate）"><a href="#非写分配法（not-write-allocate）" class="headerlink" title="非写分配法（not-write-allocate）"></a>非写分配法（not-write-allocate）</h5><p>只写入主存，不进行调块。 非写分配法通常搭配全写法使用。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/6faa2d1fabcb4ce1a2432937bc026769.png"></p>
-<p>现代计算机一般都会采用多级cache。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/6db976739d464755a04710a613053ac7.png"></p>
+<h3 id="虚拟存储器的基本概念"><a href="#虚拟存储器的基本概念" class="headerlink" title="虚拟存储器的基本概念"></a>虚拟存储器的基本概念</h3><p>虚拟存储器就是基于主存和辅存（类似于cache在CPU和主存一样），在通过<strong>系统软件和硬件</strong>实现了主存的速度和辅存的容量。主要是为了解决主存容量不足的问题。</p>
+<p>虚拟存储器会将主存或辅存的地址空间统一编址，这些地址称为<strong>虚地址或逻辑地址</strong>，虚地址对应的存储空间称为<strong>虚拟空间或程序空间</strong>。实际的主存单元地址称为实地址或物理地址。</p>
+<p><strong>虚地址&#x3D;虚存页号+页内字地址</strong></p>
+<p><strong>实地址&#x3D;主存页号+页内字地址</strong></p>
+<p><strong>辅存地址&#x3D;磁盘号+盘面号+磁道号+扇区号</strong></p>
+<p>虚拟存储器的地址空间如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/33356981bce14235a801e11486341218.jpeg"></p>
+<p>CPU使用虚地址时会通过辅助硬件来找出虚地址和实地址之间的对应关系。</p>
+<p>若虚地址对应存储单元内容<strong>已经在</strong>主存中，可以通过地址变换使CPU能直接访问主存指示的实际单元；</p>
+<p>若虚地址对应存储单元内容<strong>不在</strong>主存中，则要把包含的字一页或一段调入主存后再由CPU访问。</p>
+<p>若<strong>主存已满</strong>，则采用替换算法置换主存中的交换块（即页面）。</p>
+<p>虚拟存储机制采用的使全相联映射，每个虚页面可以存放到对应主存区域的任何一个空闲页位置。此外，当进行写操作时，不能每次写操作都同时写回磁盘，因而，在<strong>处理一致性问题采用回写法</strong>。</p>
+<h3 id="页式虚拟存储器"><a href="#页式虚拟存储器" class="headerlink" title="页式虚拟存储器"></a>页式虚拟存储器</h3><p>页式虚拟存储器以页为单位，将主存空间和虚拟空间都划分成同样大小的页，<strong>主存的页称为实页、页框</strong>，虚存的页称为<strong>虚页</strong>。</p>
 
                 
             </div>
@@ -658,7 +541,7 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/12/12/ji-suan-ji-zu-cheng-yuan-li-gao-su-huan-chong-cun-chu-qi/">http://example.com/2023/12/12/ji-suan-ji-zu-cheng-yuan-li-gao-su-huan-chong-cun-chu-qi/</a>
+                    <a href="http://example.com/2023/12/13/ji-suan-ji-zu-cheng-yuan-li-xu-ni-cun-chu-qi/">http://example.com/2023/12/13/ji-suan-ji-zu-cheng-yuan-li-xu-ni-cun-chu-qi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1015,9 +898,10 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/12/13/ji-suan-ji-zu-cheng-yuan-li-xu-ni-cun-chu-qi/">
                     <div class="card-image">
@@ -1035,9 +919,9 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-12-13
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-13
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1050,6 +934,7 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1072,13 +957,13 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/">
+                <a href="/2023/12/12/ji-suan-ji-zu-cheng-yuan-li-gao-su-huan-chong-cun-chu-qi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="计算机组成原理-外部存储器">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="计算机组成原理-高速缓冲存储器">
                         
-                        <span class="card-title">计算机组成原理-外部存储器</span>
+                        <span class="card-title">计算机组成原理-高速缓冲存储器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1089,7 +974,7 @@ Cache的基本原理目前Cache被集成在CPU内部，且用SRAM实现，速度
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-12
                             </span>
                         <span class="publish-author">
                             
