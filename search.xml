@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>计算机组成原理-指令的寻址方式</title>
+      <link href="/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/"/>
+      <url>/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="指令寻址"><a href="#指令寻址" class="headerlink" title="指令寻址"></a>指令寻址</h3><p>寻址方式分为指令寻址和数据寻址两大类。寻找下一条将要执行的指令地址称为指令寻址；寻址本条指令的数据地址称为数据寻址。</p><h4 id="指令寻址-1"><a href="#指令寻址-1" class="headerlink" title="指令寻址"></a>指令寻址</h4>]]></content>
+      
+      
+      <categories>
+          
+          <category> true </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 指令系统 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>计算机组成原理-指令系统</title>
       <link href="/2023/12/17/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-xi-tong/"/>
       <url>/2023/12/17/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-xi-tong/</url>

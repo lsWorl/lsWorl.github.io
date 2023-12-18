@@ -4,18 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="计算机组成原理-指令系统, LsWorld">
+    <meta name="keywords" content="计算机组成原理-指令的寻址方式, LsWorld">
     <meta name="description" content="
 
 
 
-
-
-指令的基本格式一条指令就是机器语言的一个语句，是一组有意义的二进制代码。一条指令通常包括操作码字段和地址码字段两部分：
-
-零地址指令只给出操作码OP，没有显式地址，这种地址有两种可能：
-
-不需要操作数的指令，如空操作指令、停机指">
+指令寻址寻址方式分为指令寻址和数据寻址两大类。寻找下一条将要执行的指令地址称为指令寻址；寻址本条指令的数据地址称为数据寻址。
+指令寻址">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -29,7 +24,7 @@
 
     
 
-    <title>计算机组成原理-指令系统 | LsWorld</title>
+    <title>计算机组成原理-指令的寻址方式 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -319,12 +314,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">计算机组成原理-指令系统</h1>
+                    <h1 class="description center-align post-title">计算机组成原理-指令的寻址方式</h1>
                 </div>
             </div>
         </div>
@@ -456,8 +451,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" class="post-category">
-                                计算机组成原理
+                            <a href="/categories/true/" class="post-category">
+                                true
                             </a>
                         
                     </div>
@@ -469,21 +464,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-12-17
+                    2023-12-18
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-17
+                    2023-12-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    922
+                    63
                 </div>
                 
 
@@ -507,77 +502,8 @@
 
 
 
-
-
-<h3 id="指令的基本格式"><a href="#指令的基本格式" class="headerlink" title="指令的基本格式"></a>指令的基本格式</h3><p>一条指令就是机器语言的一个语句，是一组有意义的二进制代码。一条指令通常包括操作码字段和地址码字段两部分：</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/8f4ba22e153b4a7c8c8e0fdd1be0192c.png"></p>
-<h4 id="零地址指令"><a href="#零地址指令" class="headerlink" title="零地址指令"></a>零地址指令</h4><p>只给出操作码OP，没有显式地址，这种地址有两种可能：</p>
-<ol>
-<li>不需要操作数的指令，如空操作指令、停机指令、关中断指令等。</li>
-<li>零地址的运算类指令<strong>仅用在堆栈计算机</strong>（例如后缀表达式）中。</li>
-</ol>
-<h4 id="一地址指令"><a href="#一地址指令" class="headerlink" title="一地址指令"></a>一地址指令</h4><p><img src="https://img-blog.csdnimg.cn/direct/d7b94bc4a7924d8984cead9dc8cf2c62.png"></p>
-<ol>
-<li><p>只有目的操作数的单操作数指令，按$A_1$地址读取操作数，进行OP操作后，结果存回原地址。</p>
-<p>指令含义：$OP（A_1）-&gt;A_1$</p>
-<p>如操作码含义是加1、减1、求反、求补等。</p>
-</li>
-<li><p>隐含约定目的地址的双操作数指令，</p>
-<p>例ACC，</p>
-<p>指令函数：(ACC)OP$(A_1)$-&gt;ACC</p>
-<p>若指令字长为32位，操作码占8位，1个地址码字段占24位，则指令操作数的直接寻址范围位$2^{24}&#x3D;16M$。</p>
-</li>
-</ol>
-<h4 id="二地址指令"><a href="#二地址指令" class="headerlink" title="二地址指令"></a>二地址指令</h4><p><img src="https://img-blog.csdnimg.cn/direct/8e059c801e9b4da99e3945c65a4eb656.png"></p>
-<p>常用于两个操作数的算数运算、逻辑运算相关指令</p>
-<p>指令含义：$(A_1)OP(A_2)-&gt;A_1$</p>
-<h4 id="三地址指令"><a href="#三地址指令" class="headerlink" title="三地址指令"></a>三地址指令</h4><p><img src="https://img-blog.csdnimg.cn/direct/98948468ee194470b8b5604f3d6d295b.png"></p>
-<p>常用于序列两个操作数的算数运算、逻辑运算相关指令，结果用地址保存。</p>
-<p>指令含义：$(A_1)OP(A_2)-&gt;A_3$</p>
-<h4 id="四地址指令"><a href="#四地址指令" class="headerlink" title="四地址指令"></a>四地址指令</h4><p><img src="https://img-blog.csdnimg.cn/direct/d068f43ffa2a4c73866ba1cde4e389dc.png"></p>
-<p>指令含义$(A_1)OP(A_2)-&gt;A_3, A_4&#x3D;$下一条将要执行指令的地址。</p>
-<p>完成指令需要访存4次，取指-&gt;读A1-&gt;读A2 -&gt;写A3</p>
-<h4 id="指令长度分类"><a href="#指令长度分类" class="headerlink" title="指令长度分类"></a>指令长度分类</h4><p>指令字长：一条指令的总长度。</p>
-<p>机器字长：CPU进行依次整数运算所能处理的二进制数据的位数（通常与ALU有关）。</p>
-<p>存储字长：一个存储单元中二进制代码位数（通常和MDR位数相同）。</p>
-<p>半字长指令、单字长指令、双字长指令——通常指指令长度是机器字长的多少倍。</p>
-<p><strong>定长指令字结构</strong>：指令系统所有指令长度<strong>都相等</strong>。</p>
-<p><strong>变长指令字结构</strong>：指令系统中指令长度<strong>不等</strong>。</p>
-<h4 id="操作类型分类"><a href="#操作类型分类" class="headerlink" title="操作类型分类"></a>操作类型分类</h4><ol>
-<li><p>数据传送</p>
-<p>LOAD ：把<strong>存储器</strong>中的数据放到<strong>寄存器</strong>中。</p>
-<p>STORE ：把<strong>寄存器</strong>中的数据放到<strong>存储器</strong>中。</p>
-</li>
-<li><p>算数逻辑操作</p>
-<p>加减乘除，逻辑就是与或非等运算。</p>
-</li>
-<li><p>移位操作</p>
-<p>算术移位、逻辑移位、循环移位等。</p>
-</li>
-<li><p>转移操作</p>
-<p>有无条件转移（JMP）、条件转移(BRANCH)、调用（CALL）、返回（SET）等。</p>
-</li>
-<li><p>输入输出操作</p>
-<p>CPU寄存器与IO端口之间的数据传达。</p>
-</li>
-</ol>
-<h3 id="拓展操作码指令格式"><a href="#拓展操作码指令格式" class="headerlink" title="拓展操作码指令格式"></a>拓展操作码指令格式</h3><p>例：</p>
-<p>设指令字长为16位，每个地址码占4位；</p>
-<p>前4位位基本操作码字段OP，另外3个4位长做地址字段。</p>
-<p>4位基本操作码全用于三地址指令，则有16条。</p>
-<p>但至少需将1111留作拓展操作码用，即三指令为15条、</p>
-<p>而1111 1111也需留作拓展操作码用，二指令条为15条、</p>
-<p>1111 1111 1111也需留作拓展操作码用，一指令条为15条、</p>
-<p>零地址指令为16条。</p>
-<p><img src="https://img-blog.csdnimg.cn/direct/3eb57de83cc2495e8108a6262120f5f7.png"></p>
-<p>在设计拓展操作码<strong>需注意</strong>：</p>
-<ol>
-<li>不允许短码是长码的前缀，即短操作码不能与长操作码的前面部分的代码相同。</li>
-<li>各指令的操作码一定不能重复。</li>
-</ol>
-<p>通常情况下，对使用频率较高的指令分配较短的操作码，对使用频率较低的指令分配较长的操作码。</p>
-<p><em>设地址长度为n，上一层流出m种状态，下一层可拓展出$m \times 2^n$种状态。</em></p>
-
+<h3 id="指令寻址"><a href="#指令寻址" class="headerlink" title="指令寻址"></a>指令寻址</h3><p>寻址方式分为指令寻址和数据寻址两大类。寻找下一条将要执行的指令地址称为指令寻址；寻址本条指令的数据地址称为数据寻址。</p>
+<h4 id="指令寻址-1"><a href="#指令寻址-1" class="headerlink" title="指令寻址"></a>指令寻址</h4>
                 
             </div>
             <hr/>
@@ -603,7 +529,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2023/12/17/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-xi-tong/">http://example.com/2023/12/17/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-xi-tong/</a>
+                    <a href="http://example.com/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/">http://example.com/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -960,9 +886,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/">
                     <div class="card-image">
@@ -980,9 +907,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-12-18
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-18
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -995,6 +922,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1017,13 +945,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/12/13/ji-suan-ji-zu-cheng-yuan-li-xu-ni-cun-chu-qi/">
+                <a href="/2023/12/17/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-xi-tong/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="计算机组成原理-虚拟存储器">
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="计算机组成原理-指令系统">
                         
-                        <span class="card-title">计算机组成原理-虚拟存储器</span>
+                        <span class="card-title">计算机组成原理-指令系统</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1034,7 +962,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-13
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-12-17
                             </span>
                         <span class="publish-author">
                             
@@ -1055,8 +983,8 @@
                         <span class="chip bg-color">计算机组成原理</span>
                     </a>
                     
-                    <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/">
-                        <span class="chip bg-color">存储系统</span>
+                    <a href="/tags/%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F/">
+                        <span class="chip bg-color">指令系统</span>
                     </a>
                     
                 </div>
