@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>计算机组成原理-程序的机器代码表示</title>
+      <link href="/2023/12/23/ji-suan-ji-zu-cheng-yuan-li-cheng-xu-de-ji-qi-dai-ma-biao-shi/"/>
+      <url>/2023/12/23/ji-suan-ji-zu-cheng-yuan-li-cheng-xu-de-ji-qi-dai-ma-biao-shi/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="x86汇编语言指令基础"><a href="#x86汇编语言指令基础" class="headerlink" title="x86汇编语言指令基础"></a>x86汇编语言指令基础</h3><p>x86汇编语言是指所有结尾为86型号的cpu所能解析的语言。</p><p>指令的格式为：操作码 + 地址码。</p><p>以mov操作（mov指令功能，将源操作数s复制到目的操作数d所指的位置）为例：</p><p>mov eax,ebx：意思是将<strong>寄存器ebx的值</strong>复制到<strong>寄存器eax</strong>中。</p><p>mov eax,5: 意思是将<strong>立即数5</strong>复制到<strong>寄存器eax</strong>中。</p><p>mov eax, dword ptr [af996h]：意思是将<strong>内存地址 af996h</strong>所指的<strong>32bit值</strong>复制到<strong>寄存器eax</strong>中。</p><p>mov byte ptr [af996h], 5：意思是将立即数5复制到<strong>内存地址 af996h</strong>所指的<strong>一字节中</strong>。</p><p>内存读写长度的指明：</p><p><strong>dword ptr</strong>——双字， 32bit</p><p><strong>word ptr</strong>——单字，16bit</p><p><strong>byte ptr</strong>——字节，8bit</p><h4 id="x86架构相关寄存器"><a href="#x86架构相关寄存器" class="headerlink" title="x86架构相关寄存器"></a>x86架构相关寄存器</h4><p><img src="https://img-blog.csdnimg.cn/direct/e76ccc256a844bf7bdc6271a1102bf07.png"></p><p>若通用寄存器去掉开头的英文字母E，即AX,BX,CX,DX，此时<strong>大小为低16bit</strong>。</p><p>若未指明主存读写长度时，<strong>默认32bit</strong>。</p><p>例： mov eax, [ebx] 等价于 mov eax, dword ptr [ebx]</p><h4 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h4><p>以下的s均为源操作数（source），d为目的操作数（destination）。且目的操作数不可为常量，x86中两操作数<strong>不允许同时来自内存中</strong>。</p><h5 id="常见的算术运算指令"><a href="#常见的算术运算指令" class="headerlink" title="常见的算术运算指令"></a>常见的算术运算指令</h5><p>add d,s：add，加，把s加到d中。</p><p>sub d,s：subtract，减，d中减去s。</p><p>mul d,s：multiply，乘，无符号数d*s，乘积存入d。</p><p>imul d,s：有符号数d*s，乘积存入d。</p><p>div s：divide，除，无符号数除法，被除数会隐含放入到edx:eax（将被除数位扩展）中，然后edx:eax &#x2F; s，商存入eax，余数存入edx。</p><p>idiv s：有符号数除法，被除数会隐含放入到edx:eax中，然后edx:eax &#x2F; s，商存入eax，余数存入edx。</p><p>neg d：negative，将d取负数，结果存入d。</p><p>inc d：increase，d++。</p><p>dec d：decrease，d–。</p><h5 id="常见的逻辑运算指令"><a href="#常见的逻辑运算指令" class="headerlink" title="常见的逻辑运算指令"></a>常见的逻辑运算指令</h5><p>and d,s：and，将d、s逐位相与，结果放回d。</p><p>or d,s：or，将d、s逐位相或，结果放回d</p><p>not d：not，将d逐位取反，结果放回d</p><p>xor d,s：exclusive or，将d、s逐位异或，结果放回d</p><p>shl d,s：shift left，将d逻辑左移s位，结果放回d（通常s是常量）</p><p>shr d,s：shift right，将d逻辑右移s位，结果放回d（通常s是常量）</p><h5 id="其他指令"><a href="#其他指令" class="headerlink" title="其他指令"></a>其他指令</h5><p>用于实现<strong>分支结构、循环结构</strong>的指令：cmp、test、jmp、jxxx</p><p>用于<strong>实现函数调用</strong>的指令：push、pop、call、ret</p><p>用于<strong>实现数据转移</strong>的指令：mov</p><h3 id="AT-amp-T格式和Intel格式"><a href="#AT-amp-T格式和Intel格式" class="headerlink" title="AT&amp;T格式和Intel格式"></a>AT&amp;T格式和Intel格式</h3><p>AT&amp;T制定的汇编语言格式通常用于Unix、linux</p><p>Intel制定的汇编语言格式通常用于windows</p><p><img src="https://img-blog.csdnimg.cn/direct/fd57bf2fd85b49d393ed45c3485f157e.png"></p><h3 id="选择语句的机器级表示"><a href="#选择语句的机器级表示" class="headerlink" title="选择语句的机器级表示"></a>选择语句的机器级表示</h3><p><strong>注：在Intel x86处理器中，程序计数器PC（Program Counter）通常被称为IP（Instruction Pointer）。</strong></p><h4 id="无条件转移指令——jmp"><a href="#无条件转移指令——jmp" class="headerlink" title="无条件转移指令——jmp"></a>无条件转移指令——jmp</h4><p>无条件转移指令格式： jmp &lt;地址&gt;</p><p>使用jmp会让PC无条件转移至&lt;地址&gt;，地址可以是常量、寄存器或来自主存。</p><p>例：</p><p>jmp 128：跳转到地址为128的位置</p><p>jmp eax：跳转到eax寄存器中所指的位置</p><p>jmp [999]：跳转到主存地址999中所指的位置</p><p><img src="https://img-blog.csdnimg.cn/direct/88a3f65c772943bdbc7c26f8c02aecd2.png"></p><p>除了以上方法使用jmp，也可以<strong>使用“标号”锚定位置</strong>（用冒号结尾，名字可以自己取）。</p><p><img src="https://img-blog.csdnimg.cn/direct/20bdf0a4515a47bcaa93585eff75ef25.png"></p><h4 id="条件转移指令——jxxx"><a href="#条件转移指令——jxxx" class="headerlink" title="条件转移指令——jxxx"></a>条件转移指令——jxxx</h4><p>条件转移指令一般要和<code>cmp</code>指令一起使用</p><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">cmp</span> a,b   <span class="token comment">#比较a和b两个数</span></code></pre><pre class="language-bash" data-language="bash"><code class="language-bash">je <span class="token operator">&lt;</span>地址<span class="token operator">></span>   <span class="token comment">#jump when equal，若a==b跳转</span>jne <span class="token operator">&lt;</span>地址<span class="token operator">></span>  <span class="token comment">#jump when not equal，若a!=b跳转</span>jg <span class="token operator">&lt;</span>地址<span class="token operator">></span>   <span class="token comment">#jump when greater than，若a>b跳转</span>jl <span class="token operator">&lt;</span>地址<span class="token operator">></span>   <span class="token comment">#jump when less than, 若a>=b跳转</span>jle <span class="token operator">&lt;</span>地址<span class="token operator">></span>  <span class="token comment">#jump when less than or equal to,若a&lt;=b跳转</span></code></pre><p>例：</p><p>若有这么一段C语言代码</p><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>a<span class="token operator">></span>b<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>    c<span class="token operator">=</span>a<span class="token punctuation">;</span><span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>    c <span class="token operator">=</span> b<span class="token punctuation">;</span><span class="token punctuation">&#125;</span></code></pre><p>则用汇编表示</p><pre class="language-bash" data-language="bash"><code class="language-bash">mov eax,a   <span class="token comment">#将变量a存入eax</span>mov ebx,b   <span class="token comment">#将变量b存入ebx</span><span class="token function">cmp</span> eax,ebx <span class="token comment">#比较a和b的值</span>jg NEXT     <span class="token comment">#若a>b，转移到NEXT:</span>mov ecx,ebx <span class="token comment">#假设ecx存储变量c，令c=b</span>jmp END     <span class="token comment">#无条件转移到END:</span>NEXT:mov ecx,eax <span class="token comment">#假设ecx存储变量c，令 c=a</span>END:</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 指令系统 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>计算机组成原理-指令的寻址方式</title>
       <link href="/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/"/>
       <url>/2023/12/18/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-de-xun-zhi-fang-shi/</url>
