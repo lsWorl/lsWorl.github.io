@@ -466,14 +466,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-11-19
+                    2023-12-24
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.2k
+                    3.8k
                 </div>
                 
 
@@ -558,6 +558,7 @@
 <p>若函数$f(z)&#x3D;u(x,y)+iv(x,y)$在区域D内<strong>解析</strong>，则$f(z)$的实部$u(x,y)$和虚部$v(x,y)$都是区域D内的调和函数。</p>
 <h5 id="共轭调和函数"><a href="#共轭调和函数" class="headerlink" title="共轭调和函数"></a>共轭调和函数</h5><p>设函数$\varphi(x,y)$及$\psi(x,y)$均为区域D内的调和函数，且函数C-R方程<br>$$<br>\frac{\partial \varphi}{\partial x} &#x3D; \frac{\partial \psi}{\partial y}\<br>\frac{\partial \varphi}{\partial y} &#x3D; -\frac{\partial \psi}{\partial x}<br>$$<br>则称$\psi$是$\varphi$的共轭调和函数。</p>
 <p>复变函数$f(z)&#x3D;u(x,y)+iv(x,y)$在区域D内<strong>解析的充要条件</strong>是在区域D内，$f(z)$的虚部$v(x,y)$是实部$u(x,y)$的共轭调和函数。</p>
+<p>注：<strong>u(x,y)不一定是v(x,y)的共轭调和函数</strong>。</p>
 <h4 id="初等函数"><a href="#初等函数" class="headerlink" title="初等函数"></a>初等函数</h4><h5 id="指数函数"><a href="#指数函数" class="headerlink" title="指数函数"></a>指数函数</h5><p>对于复数$z&#x3D;x+iy$，称$w&#x3D;e^z&#x3D;e^{x+iy}&#x3D;e^xe^{iy}&#x3D;e^x(cosy+isiny)$为指数函数。对于任意的实数y有$e^{iy}&#x3D;cosy+isiny$这个式子即为欧拉公式。</p>
 <p><strong>指数函数的性质</strong></p>
 <ol>
@@ -595,6 +596,46 @@
 </li>
 </ol>
 <p>重要结论：<br>$$<br>\oint_c \frac{1}{(z-z_0)^{n+1}}dz ,其中C:|z-z_0|&#x3D;r,正向路径\<br>则：<br>\begin{cases}<br>2\pi i &amp; n&#x3D;0 \<br>0 &amp; n\neq 0<br>\end{cases}<br>$$</p>
+<h4 id="柯西-古萨定理"><a href="#柯西-古萨定理" class="headerlink" title="柯西-古萨定理"></a>柯西-古萨定理</h4><p>若f(z)在<strong>单连通区域</strong>内处处解析，f(z)沿着区域内任一条封闭曲线C的积分为0，即：<br>$$<br>\oint_c f(z)dz&#x3D;0<br>$$</p>
+<h4 id="复合闭路定理"><a href="#复合闭路定理" class="headerlink" title="复合闭路定理"></a>复合闭路定理</h4><h5 id="闭路变形定理"><a href="#闭路变形定理" class="headerlink" title="闭路变形定理"></a>闭路变形定理</h5><p>设f(z)在<strong>多联通区域D</strong>内解析，$C_1,C_2$为D内任意两边正向简单闭曲线，以C1与C2为边界的D2包含在D内，则<br>$$<br>\int_{C_1}f(z)dz&#x3D;\int_{c_2}f(z)dz<br>$$<br>解析函数沿着曲线的积分<strong>不因闭曲线的连续变化而变化</strong>。</p>
+<h5 id="复合闭路定理-1"><a href="#复合闭路定理-1" class="headerlink" title="复合闭路定理"></a>复合闭路定理</h5><p>设C为多联通区域D内的简单闭曲线，$C_1,C_2\dots C_n$是C内的简单闭曲线，如下图所示，各个互不包含也互不相交，且以$C_1,C_2\dots C_n$为边界的区域都含与D。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f4aa679815b7402595e89f776b4652c5.png"></p>
+<p>如果f(z)在D内解析，那么<br>$$<br>\oint_cf(z)dz&#x3D;\oint_{c_1}+\oint_{c_2}+\dots+\oint_{c_n}f(z)dz<br>$$</p>
+<h3 id="原函数与不定积分"><a href="#原函数与不定积分" class="headerlink" title="原函数与不定积分"></a>原函数与不定积分</h3><p>两个主要定理：</p>
+<ol>
+<li><p>如果f(z)在单连通区域D内处处解析，那么积分$\int_cf(z)dz$与起点、终点有关，与连接起点、终点的路径C无关。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/ddc23bd515124a268626dbdfdf5059fe.png"><br>$$<br>\int_{C_1}f(z)dz&#x3D;\int{C_2}f(z)dz&#x3D;\int^{z_1}<em>{z_0}f(z)dz<br>$$<br>此时上方式子可以写为（类似于高数的变上限积分）<br>$$<br>F(z)&#x3D;\int^{z}</em>{z_0}f(z)dz<br>$$</p>
+</li>
+<li><p>如果f(z)在单连通区域D内处处解析，$F(z)&#x3D;\int^{z}_{z_0}f(z)dz$必为D中的解析函数，且$F’(z)&#x3D;f(z)$</p>
+</li>
+</ol>
+<p><strong>复变函数中原函数定义和实变函数相同</strong></p>
+<h4 id="不变积分的定义"><a href="#不变积分的定义" class="headerlink" title="不变积分的定义"></a>不变积分的定义</h4><p>f(z)的原函数的一般表达式F(z)+C为f(z)的不定积分，记为<br>$$<br>\int f(z)dz&#x3D;F(z)+C<br>$$</p>
+<p>如果f(z)在单连通区域D内处处解析，G(z)为f(z)的一个原函数，则有<br>$$<br>\int_{z_0}^{z_1}f(z)dz&#x3D;G(z_1)-G(z_0)<br>$$</p>
+<h3 id="柯西积分公式"><a href="#柯西积分公式" class="headerlink" title="柯西积分公式"></a>柯西积分公式</h3><p>如果f(z)在D内处处解析，C为D内任一条正向简单闭曲线，且C的内部全含于D中，$z_0$为C内任一点，则<br>$$<br>f(z_0)&#x3D;\frac{1}{2\pi i}\oint_c\frac{f(z)}{z-z_0}dz<br>$$</p>
+<h3 id="解析函数的高阶导数"><a href="#解析函数的高阶导数" class="headerlink" title="解析函数的高阶导数"></a>解析函数的高阶导数</h3><p>解析函数有高阶导数，其导数仍为解析函数。</p>
+<p>其定义上与实变函数相同，且n阶导$f^{(n)}(z)$的可能形式是<br>$$<br>f^{(n)}(z)&#x3D;\frac{n!}{2\pi i} \oint_c\frac{f(\zeta)}{(\zeta-z)^{n+1}}d\zeta<br>$$<br>由上方又可变形得<br>$$<br>\oint_c\frac{f(\zeta)}{(\zeta-z)^{n+1}}d\zeta&#x3D;\frac{2\pi i}{n!}f^{(n)}(z)<br>$$</p>
+<h3 id="复数项级数"><a href="#复数项级数" class="headerlink" title="复数项级数"></a>复数项级数</h3><h4 id="复数序列的极限"><a href="#复数序列的极限" class="headerlink" title="复数序列的极限"></a>复数序列的极限</h4><p>若任意给定的$\varepsilon&gt;0$，存在正整数N，使当n&gt;N时，总有$|z_n-z_0|&lt;\varepsilon$成立，则称复数序列${z_n}$收敛于复数z0，记作<br>$$<br>\lim_{n\rightarrow\infty}z_n&#x3D;z_0<br>$$<br>若${z_n}$不收敛于z0，则称级数发散。</p>
+<p>设$z_0&#x3D;x_0+iy_0,z_n&#x3D;x_n+iy_n(n&#x3D;1,2,\dots)$，则<br>$$<br>\lim_{n\rightarrow\infty}z_n&#x3D;z_0<br>$$<br>的充要条件是<br>$$<br>\lim_{n\rightarrow\infty}x_n&#x3D;x_0,\lim_{n\rightarrow\infty}y_n&#x3D;y_0<br>$$</p>
+<p>复数项级数中正项级数敛散性的判别法和高等数学基本一致就不再赘述。</p>
+<h3 id="幂级数"><a href="#幂级数" class="headerlink" title="幂级数"></a>幂级数</h3><p>设$f_n{z}(n&#x3D;1,2,\dots)$为区域D内的函数，则称<br>$$<br>\sum^{\infty}_{n&#x3D;1}f_n(z)&#x3D;f_1(z)+f_2(z)+\dots f_n(z)+ \dots<br>$$<br>为区域D内复变函数项级数，前n项的和称为级数的部分和。</p>
+<p>而形如<br>$$<br>\sum^{\infty}_{n&#x3D;0}C_n(z-z_0)^n<br>$$<br>的复函数项级数称为幂级数，其中$C_n(n&#x3D;0,1,2,\dots)$及$z_0$均为复常数。</p>
+<p>幂级数收敛等公式定理与高数一致就不再赘述。</p>
+<h3 id="泰勒级数"><a href="#泰勒级数" class="headerlink" title="泰勒级数"></a>泰勒级数</h3><p>复变函数展开成泰勒级数需在D内解析，若f(z)在D内有奇点，则<strong>d到最近一个奇点之间的距离d&#x3D;|a-z_0|内解析</strong></p>
+<p>当<br>$$<br>z_0&#x3D;0,f(z)&#x3D;\sum^{\infty}_{n&#x3D;0}\frac{f^{(n)}(0)}{n!}z^n<br>$$<br>则就称为麦克劳林级数（麦克劳林级数和高数的内容一致）。</p>
+<p>任何解析函数在一点的泰勒级数都唯一，就是幂级数。</p>
+<h3 id="洛朗级数"><a href="#洛朗级数" class="headerlink" title="洛朗级数"></a>洛朗级数</h3><h4 id="双边幂级数"><a href="#双边幂级数" class="headerlink" title="双边幂级数"></a>双边幂级数</h4><p>将<br>$$<br>\sum^{+\infty}<em>{-\infty}C_nz^n&#x3D;\sum</em>{n&#x3D;-1}^{-\infty}C_nz^n+\sum^{+\infty}_{n&#x3D;0}<br>$$<br>称为双边幂级数，左边部分称为负幂级数，右边部分称为正幂级数。</p>
+<p>仅当负幂级数和正幂级数同时收敛时双边幂级数才收敛。</p>
+<p>设函数f(z)在圆环域$R_1&lt;|z-z_0|&lt;R_2$内处处解析，则f(z)一定能在此圆环域中展开为<br>$$<br>f(z)&#x3D;\sum^{+\infty}_{n&#x3D;-\infty}C_n(z-z_0)^n<br>$$<br>其中<br>$$<br>C_n&#x3D;\frac{1}{2\pi i}\oint_c\frac{f(\zeta)}{(\zeta-z_0)^{n+1}}d\zeta<br>$$<br>C为此圆环域内绕$z_0$的任一简单闭曲线。</p>
+<p>若$C_n$中$z_0$是奇点，则$f^{(n)}(z_0)$不存在，</p>
+<p>$C_n$中$z_0$不是奇点，则n为负数时，柯西积分定理不存在，所以$C_n$不能表示为$\frac{f^{(n)}(z_0)}{n!}$</p>
+<p>洛朗级数在同一收敛环内唯一，单同一函数f(z)在不同的收敛环中有不同的洛朗级数。</p>
+<h3 id="孤立奇点"><a href="#孤立奇点" class="headerlink" title="孤立奇点"></a>孤立奇点</h3><p>f(z)在$z_0$处不解析，但在$z_0$的某一个去心邻域0&lt;$|z-z_0|&lt;\delta$内处处解析，则称z0为f(z)的孤立奇点。</p>
+<p>例：z&#x3D;0是函数$e^{\frac{1}{z}},\frac{sinz}{z}的孤立奇点。$</p>
+<h4 id="可取奇点"><a href="#可取奇点" class="headerlink" title="可取奇点"></a>可取奇点</h4><p>若对一切n&lt;0有Cn&#x3D;0，则称z0是函数f(z)的可去奇点。若令$f(z_0)&#x3D;C_0$，就能得到在整个圆盘$|z-z_0|&lt;\delta$内解析的函数f(z)。</p>
+<h3 id="留数"><a href="#留数" class="headerlink" title="留数"></a>留数</h3><p>若$z_0$为f(z)的孤立奇点，C为$z_0$去心邻域内一条绕C的封闭正向简单曲线，则称$\frac{1}{2\pi i}\oint_cf(z)dz$为f(z)在点$z_0$处的留数，记为$Res[f(z),z_0]$，即<br>$$<br>Res[f(z),z_0]&#x3D;C_{-1}<br>$$</p>
+<h4 id="留数定理"><a href="#留数定理" class="headerlink" title="留数定理"></a>留数定理</h4><p>设函数f(z)在区域D内除有限个孤立奇点外处处解析，C是D内包围各奇点的一条正向简单闭曲线，那么<br>$$<br>\oint_cf(z)dz&#x3D;2\pi i\sum^n_{k&#x3D;1}Res[f(z),z_k]<br>$$</p>
+<h4 id="留数的求法"><a href="#留数的求法" class="headerlink" title="留数的求法"></a>留数的求法</h4><p>若$z_0$为f(z)的一级极点，则<br>$$<br>Res[f(z),z_0] &#x3D; \lim_{z\rightarrow z_0}(z-z_0)f(z)<br>$$</p>
 
                 
             </div>

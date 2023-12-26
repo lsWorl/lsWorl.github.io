@@ -473,14 +473,14 @@ mov eax,ebx：意思是将">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-23
+                    2023-12-26
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1k
+                    2.2k
                 </div>
                 
 
@@ -581,6 +581,134 @@ NEXT:
 mov ecx,eax <span class="token comment">#假设ecx存储变量c，令 c=a</span>
 END:</code></pre>
 
+
+
+<h3 id="循环语句的机器级表示"><a href="#循环语句的机器级表示" class="headerlink" title="循环语句的机器级表示"></a>循环语句的机器级表示</h3><p>例</p>
+<p>有这么一段循环代码</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> result <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>i<span class="token operator">&lt;=</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    result <span class="token operator">+=</span> i<span class="token punctuation">;</span>
+    i<span class="token operator">++</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span class="token comment">//求 1+2+3+...+100</span></code></pre>
+
+<p>上方代码用汇编实现，即</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">mov eax,0   <span class="token comment">#用eax保存result,初始值为0</span>
+mov edx,1   <span class="token comment">#用edx保存 i,初始值为1</span>
+<span class="token function">cmp</span> edx,100 <span class="token comment">#比较 i和100</span>
+jg L2       <span class="token comment">#若i>100,转跳到L2执行</span>
+L1:         <span class="token comment">#循环主体</span>
+<span class="token function">add</span> eax,edx <span class="token comment">#实现 result +=i</span>
+inc edx     <span class="token comment">#inc 自增指令，实现i++</span>
+<span class="token function">cmp</span> edx,100 <span class="token comment">#比较 i和100</span>
+jle L1      <span class="token comment">#若 i&lt;=100，则转跳到L1执行</span>
+L2:         <span class="token comment">#跳出循环主体</span></code></pre>
+
+
+
+<h4 id="用loop指令实现循环"><a href="#用loop指令实现循环" class="headerlink" title="用loop指令实现循环"></a>用loop指令实现循环</h4><p>x86中还提供了<code>loop</code>指令来实现循环</p>
+<p>例：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">500</span><span class="token punctuation">;</span> i<span class="token operator">></span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//coding...</span>
+<span class="token punctuation">&#125;</span> </code></pre>
+
+<p>用汇编实现</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">mov ecx,500     <span class="token comment">#用ecx作为循环计数器</span>
+Looptop:        <span class="token comment">#循环的开始</span>
+<span class="token punctuation">..</span>.
+coding<span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>.
+loop Looptop   <span class="token comment">#ecx--，若ecx!=0,跳转到Looptop</span></code></pre>
+
+<p>上方<code>loop Looptop</code>指令等价于<code>dec ecx   cmp ecx,0   jne Looptop</code>三条指令。</p>
+<p><strong>注：loop是默认对ecx进行操作，用loop通用寄存器只能用ecx作为循环计数器</strong></p>
+<h3 id="函数调用的机器级表示"><a href="#函数调用的机器级表示" class="headerlink" title="函数调用的机器级表示"></a>函数调用的机器级表示</h3><p>在高级语言中，每个函数都有自己的栈区，称为栈帧，一个栈由若干个栈帧组成。目前正在执行的函数栈帧是一定位于栈顶。</p>
+<p>函数调用x86汇编语言一般会通过<code>call/ret</code>指令来实现。</p>
+<h4 id="call-x2F-ret指令"><a href="#call-x2F-ret指令" class="headerlink" title="call&#x2F;ret指令"></a>call&#x2F;ret指令</h4><p>用于实现子程序的调用及返回。</p>
+<p>例：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//coding...</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>x86汇编实现</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">main:
+ <span class="token punctuation">..</span>.
+ coding<span class="token punctuation">..</span>.
+ <span class="token punctuation">..</span>.
+ call <span class="token function">add</span>  <span class="token comment">#这里调用了call函数</span>
+ <span class="token punctuation">..</span>.
+ 
+ret       <span class="token comment">#main函数结束</span></code></pre>
+
+<p><strong>call指令</strong>的作用：</p>
+<ul>
+<li>将IP旧值压栈保存（效果相对于push IP）</li>
+<li>设置IP新值，无条件转移至被调用函数的第一条指令（效果相对于 jmp xxx）。</li>
+</ul>
+<h4 id="函数调用栈在内存中的位置"><a href="#函数调用栈在内存中的位置" class="headerlink" title="函数调用栈在内存中的位置"></a>函数调用栈在内存中的位置</h4><p>若有一台32位x86系统（<strong>x86系统默认以4字节为栈的操作单位</strong>），进程虚拟地址空间位4GB，高地址的1GB为操作系统内核区，低地址3GB为用户区，函数调用栈在用户区的高地址部分，具体如图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/425042383e12452b8ac82cb2778672b4.png"></p>
+<p>若想使用栈，则需要用到EBP（堆栈基指针）,ESP（堆栈顶指针）通用寄存器，<strong>EBP指向当前栈帧的“底部”，ESP指向当前栈帧的“顶部”</strong>。</p>
+<h4 id="访问栈帧数据"><a href="#访问栈帧数据" class="headerlink" title="访问栈帧数据"></a>访问栈帧数据</h4><h5 id="使用push和pop指令访问"><a href="#使用push和pop指令访问" class="headerlink" title="使用push和pop指令访问"></a>使用push和pop指令访问</h5><p>若要操作栈，则需使用<code>push</code>和<code>pop</code>指令，<code>push</code>会先让esp减4（即指向低地址的数据），后可以将立即数、寄存器或主存地址压入到栈顶，<code>pop</code>则是将栈顶元素出栈，然后放到寄存器或主存地址中，再让esp加4（指向高地址的数据）。</p>
+<p>例：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">push eax     <span class="token comment">#将寄存器eax的值压栈</span>
+push <span class="token number">985</span>     <span class="token comment">#将立即数985压栈</span>
+push <span class="token punctuation">[</span>ebp+8<span class="token punctuation">]</span> <span class="token comment">#将主存地址[ebp+8]里的数据压栈</span>
+
+pop eax      <span class="token comment">#栈顶元素出栈，写入寄存器eax</span>
+pop <span class="token punctuation">[</span>ebp+8<span class="token punctuation">]</span>  <span class="token comment">#栈顶元素出栈，写入主存地址[ebp+8]</span></code></pre>
+
+
+
+<h5 id="使用mov指令访问"><a href="#使用mov指令访问" class="headerlink" title="使用mov指令访问"></a>使用mov指令访问</h5><p>例：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">sub esp,12       <span class="token comment">#栈顶指针-12</span>
+mov <span class="token punctuation">[</span>esp+8<span class="token punctuation">]</span>,eax  <span class="token comment">#将eax的值复制到主存[esp+8]中</span>
+
+<span class="token function">add</span> esp,8        <span class="token comment">#栈顶指针+8</span></code></pre>
+
+<p><img src="https://img-blog.csdnimg.cn/direct/45238dbe37ee4b05997603babea92a7d.png"></p>
+<p>即可以用mov指令，结合esp、ebp指针访问栈帧数据，用加法&#x2F;减法指令，即sub&#x2F;add修改栈顶指针esp的值。</p>
+<h4 id="函数调用时，切换栈帧"><a href="#函数调用时，切换栈帧" class="headerlink" title="函数调用时，切换栈帧"></a>函数调用时，切换栈帧</h4><p>当函数调用时，可以通过<code>push ebp</code>和<code>mov ebp,esp</code>来切换栈帧。</p>
+<p>例：</p>
+<p>有这么一段汇编代码</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">caller:
+push ebp
+mov ebp,esp
+<span class="token punctuation">..</span>.
+call <span class="token function">add</span>
+<span class="token punctuation">..</span>.
+leave
+ret
+<span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>.
+add:
+push ebp
+mov ebp,esp
+<span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>.
+leave
+ret</code></pre>
+
+<p>当上方代码运行到<code>call add</code>时，就会调用add函数，此时就需要切换栈帧，call指令一使用就会将IP旧值压栈，然后将新的IP值指向函数内的第一条指令，即<code>push ebp</code>，将栈低地址压入栈顶中，此时就是进行切换栈帧。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f429955c40364cdeb39ee5adc4f3459e.png"></p>
+<p>执行<code>mov ebp,esp</code>，将<code>ebp</code>栈底寄存器指向栈顶，就实现了切换。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/80e2f5b661e44a68a0d1cadde1628385.png"></p>
+<p><strong>注：<code>push ebp</code>和<code>mov ebp,esp</code>可以精简为<code>enter</code>一条指令，效果相同</strong></p>
+<p>若想<strong>恢复原先的栈帧</strong>，使用<code>mov esp,ebp</code>和<code>pop ebp</code>即可实现，这两条也等价于<code>leave</code>指令。</p>
+<h4 id="栈帧中可能包含的内容"><a href="#栈帧中可能包含的内容" class="headerlink" title="栈帧中可能包含的内容"></a>栈帧中可能包含的内容</h4><ul>
+<li><p>通常会将<strong>局部变量</strong>集中存储在<strong>栈帧底部区域</strong>。</p>
+</li>
+<li><p>通常将<strong>调用参数</strong>集中存储在<strong>栈帧顶部区域</strong>。</p>
+</li>
+<li><p><strong>栈帧最底部</strong>一定是<strong>上一层栈帧基址</strong>（ebp旧值）</p>
+</li>
+<li><p><strong>栈帧最顶部</strong>一定是<strong>返回地址</strong>（当前函数的栈帧除外）</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/direct/da107479656c4e63b438d28341003f3b.png"></p>
+<p>使用<code>ebp-4</code>或<code>ebp-8</code>等就可以访问局部变量，用<code>esp+4</code>或<code>esp+8</code>等就可以访问调用参数</p>
+<p>gcc编译器将每个栈帧大小设置为<strong>16B的整数倍</strong>（当前函数的栈帧除外），所以可能会出现中间空闲区域。</p>
 
                 
             </div>
