@@ -4,6 +4,114 @@
   
     
     <entry>
+      <title>计算机组成原理-数据通路的功能和基本结构</title>
+      <link href="/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-shu-ju-tong-lu-de-gong-neng-he-ji-ben-jie-gou/"/>
+      <url>/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-shu-ju-tong-lu-de-gong-neng-he-ji-ben-jie-gou/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="数据通路的基本结构"><a href="#数据通路的基本结构" class="headerlink" title="数据通路的基本结构"></a>数据通路的基本结构</h3><p>数据通路的基本概念：</p><ul><li>内部总线。使指同一部件，如CPU内部连接各个寄存器及运算部件之间的总线；</li><li>系统总线。是指同一台计算机系统的各部件，如CPU、内存、通道和各类IO接口间互相连接的总线。</li></ul><p>数据通路的结构可以分为以下三种：</p><h4 id="CPU内部单总线方式"><a href="#CPU内部单总线方式" class="headerlink" title="CPU内部单总线方式"></a>CPU内部单总线方式</h4><p>单总线模式就是将所有寄存器的输入和输出端都连接到一条公共通路上，这种结构简单，但数据传输存在较多冲突现象，性能较低。</p><p><img src="https://img-blog.csdnimg.cn/direct/dcee86e9816d4c3f84359908255b1260.png"></p><h5 id="单总线模式下寄存器之间数据传送"><a href="#单总线模式下寄存器之间数据传送" class="headerlink" title="单总线模式下寄存器之间数据传送"></a>单总线模式下寄存器之间数据传送</h5><p>若想把PC内容送至MAR，实现传送操作的流程及控制信号为：</p><p>(PC)-&gt;Bus，即PC先把信号发送给CU，然后CU给PCout高电平，使PC的值可以传送到总线中。</p><p>Bus-&gt;MAR，然后CU给MARIN高电平，总线内容传入MAR中。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 中央处理器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>计算机组成原理-指令执行过程</title>
+      <link href="/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-zhi-xing-guo-cheng/"/>
+      <url>/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-zhi-xing-guo-cheng/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><p>了解指令执行过程之前，需要了解指令的一些基本概念。</p><h4 id="指令周期"><a href="#指令周期" class="headerlink" title="指令周期"></a>指令周期</h4><p>指令周期是CPU从主存中每取出并执行一条指令所需的全部时间。</p><p>指令周期常常用若干<strong>机器周期</strong>来表示，机器周期又叫<strong>CPU周期</strong>。</p><p>而一个机器周期又包含若干<strong>时钟周期</strong>（也成为节拍、T周期或CPU时钟周期，它是CPU操作的<strong>最基本单位</strong>）</p><p><img src="https://img-blog.csdnimg.cn/direct/13609ceb2afc47e0b0c92a72cee39763.png"></p><p>由上图可得每个指令周期内机器周期数可以不等，每个机器周期内的节拍数也可以不等。</p><p>指令工作周期总共可以区分为四个阶段：取值周期、间址周期、执行周期和中断周期，而为了区别不同的工作周期，在CPU内设置4个标志触发器FE（对应取值）、IND（对应间址）、EX（对应执行）、INT（对应中断）来区别为哪个工作周期。</p><h4 id="指令周期的数据流"><a href="#指令周期的数据流" class="headerlink" title="指令周期的数据流"></a>指令周期的数据流</h4><h5 id="取指周期"><a href="#取指周期" class="headerlink" title="取指周期"></a>取指周期</h5><p>若想进行取指，首先PC会想MAR发送当前指令地址，然后CU会发出控制信号，经控制总线传到主存，同时MAR中地址信息也会通过地址总线发送到主存中，此时主存中所读出的数据会通过数据总线传到MDR中，最后将MDR中获取到的数据放到IR中，就完成了一次取指操作。</p><p><img src="https://img-blog.csdnimg.cn/direct/220441749bc645ac8a54c98ebfa70b42.png"></p><h5 id="间指周期"><a href="#间指周期" class="headerlink" title="间指周期"></a>间指周期</h5><p>有些指令取完后会进入间指周期，此时IR中已经放着数据的地址，要再通过取指操作来进行间接寻址。</p><h4 id="指令执行方案"><a href="#指令执行方案" class="headerlink" title="指令执行方案"></a>指令执行方案</h4><h5 id="单指令周期"><a href="#单指令周期" class="headerlink" title="单指令周期"></a>单指令周期</h5><p>将所有指令都选用相同的执行时间（即最长的那条指令）来完成。</p><p>指令之间串行执行，每条指令只能等前一条指令执行结束后才能启动。</p><p>缺点：对于本来可以在短时间完成的指令需要使用较长的周期来完成。</p><h5 id="多指令周期"><a href="#多指令周期" class="headerlink" title="多指令周期"></a>多指令周期</h5><p>对不同类型的指令选用不同的执行步骤，指令间串行执行，在前一条执行结束后才能执行下一条，可以用不同个数的时钟周期完成不同指令的执行过程。</p><p>缺点：需要设计更复杂的硬件设计。</p><h5 id="流水线方案"><a href="#流水线方案" class="headerlink" title="流水线方案"></a>流水线方案</h5><p>指令之间可以并行执行的方案，其追求是在每个时钟脉冲周期完成一条指令的执行过程。可以使尽量让多条指令同时运行。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 中央处理器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>计算机组成原理-CPU的功能和基本结构</title>
+      <link href="/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-cpu-de-gong-neng-he-ji-ben-jie-gou/"/>
+      <url>/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-cpu-de-gong-neng-he-ji-ben-jie-gou/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="CPU的功能"><a href="#CPU的功能" class="headerlink" title="CPU的功能"></a>CPU的功能</h3><p>中央处理器CPU由控制器和运算器组成。</p><p>CPU的具体功能包括：</p><ol><li>指令控制。完成取指令、分析指令和执行指令的操作，即程序的顺序控制。</li><li>操作控制。一条指令的功能往往由若干操作信号的组合来实现。CPU管理并产生由内存取出的每条指令的操作信号，把各种操作信号送往相应的部件，从而控制这些部件按指令的要求尽心动作。</li><li>时间控制。对各种操作加以时间上的控制。</li><li>数据加工。对数据进行算术和逻辑运算。</li><li>中断处理。对计算机运行过程中出现的异常情况和特殊请求进行处理。</li></ol><h3 id="CPU的基本结构"><a href="#CPU的基本结构" class="headerlink" title="CPU的基本结构"></a>CPU的基本结构</h3><p>CPU主要由运算器和控制器组成，</p><p>运算器主要负责对数据的加工，进行逻辑和算术运算等操作。</p><p>控制器负责协调并控制计算机各部件执行指令的顺序等操作，包括取指令、分析指令、中断等操作。</p><p><img src="https://img-blog.csdnimg.cn/direct/dcbe30f1f6f743b59fe2e6cf8fcf6c70.png"></p><h4 id="运算器的基本结构"><a href="#运算器的基本结构" class="headerlink" title="运算器的基本结构"></a>运算器的基本结构</h4><p>运算器由算术逻辑单元(ALU)、通用寄存器组、暂存寄存器、累加寄存器（ACC）、程序状态寄存器（PSW）、移位器、计数器（CT）等所组成。</p><p>算术逻辑单元主要功能是进行算术&#x2F;逻辑运算。</p><p>通用寄存器如AX、BX、CD、SP（堆栈指针，用于指示栈顶的地址）等，用于存放操作数（包括源操作数、目的操作数及中间结果）和各种地址信息等，下图的通用寄存器AX中的AH表示高地址部分，AL表示地址部分。</p><p><img src="https://img-blog.csdnimg.cn/direct/c591b4a6866b470f91fe2e575f79e8f6.png"></p><h5 id="ALU与寄存器之间的连线方式"><a href="#ALU与寄存器之间的连线方式" class="headerlink" title="ALU与寄存器之间的连线方式"></a>ALU与寄存器之间的连线方式</h5><ol><li><p>使用专用数据通路方式；根据指令执行过程中的数据和地址的流动方向安排线路，每个寄存器都有专门的导线与ALU相连。</p><p>若直接用导线相连，为防止多个寄存器同时向ALU传输数据，可以用多路选择器或三态门来解决该问题。</p><p><img src="https://img-blog.csdnimg.cn/direct/bb40888c18d6492aabd7dac483d4d183.png" alt="三态门解决"></p></li><li><p>CPU内部单总线方式：将所有寄存器输入和输出端都连接到一条公共通路上。</p><p>该方法需要搭配暂存寄存器，结构简单，容易实现，但数据传输存在较多冲突的现象，性能较低。</p><p><img src="https://img-blog.csdnimg.cn/direct/742d185be2f64c98a1dab41f030b08d8.png"></p></li></ol><h4 id="控制器的基本结构"><a href="#控制器的基本结构" class="headerlink" title="控制器的基本结构"></a>控制器的基本结构</h4><p>控制器由程序计数器（PC）、指令寄存器（IR）、指令译码器、存储器地址寄存器（MAR）、存储器数据寄存器（MDR）、时序系统和微操作信号发生器等组成。</p><ol><li>程序计数器。用于指出<strong>下一条指令</strong>在主存中的存放地址，PC由自增功能。</li><li>指令寄存器。当取出一条指令后，会将指令放到指令寄存器中，用来保存当前正在执行的指令。</li><li>指令译码器。将指令寄存器中操作码部分进行译码，然后向控制器提供特定的操作信号。</li><li>微操作信号发生器。根据译码器中的译码结果来确定接下来CPU要执行哪些操作。</li><li>时序系统。来产生各种时序信号，让微操作系统来确定先执行哪些操作。</li><li>存储器地址寄存器（MAR）。存放要访问主存单元的地址，</li><li>存储器数据寄存器（MDR）。存放向主存写入的信息或从主存读出的信息。</li></ol><p><img src="https://img-blog.csdnimg.cn/direct/5d10de8ab4f6449797f0b0df55f55802.png"></p><p><strong>注：CPU内部程序计数器PC、程序状态寄存器PSW、累加器和通用寄存器组是对用户可见的，可供汇编程序员进行操作。</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 中央处理器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>计算机组成原理-CISC和RISC的基本概念</title>
+      <link href="/2023/12/26/ji-suan-ji-zu-cheng-yuan-li-cisc-he-risc-de-ji-ben-gai-nian/"/>
+      <url>/2023/12/26/ji-suan-ji-zu-cheng-yuan-li-cisc-he-risc-de-ji-ben-gai-nian/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="复杂指令系统计算机（CISC-Complex-Instruction-Set-Computer）"><a href="#复杂指令系统计算机（CISC-Complex-Instruction-Set-Computer）" class="headerlink" title="复杂指令系统计算机（CISC, Complex Instruction Set Computer）"></a>复杂指令系统计算机（CISC, Complex Instruction Set Computer）</h3><p>设计思路：<strong>一条指令完成一个复杂的基本功能</strong>，例，x86架构，主要用于笔记本，台式机等。</p><p>CISC的主要特点：</p><ol><li>指令系统复杂庞大，指令数目一般200条以上。</li><li>指令长度不固定。</li><li>可以访存的指令不受限制。</li><li>各种指令使用频率相差大。</li><li>各种指令指令时间相差大。</li><li>控制器大多数采用微程序控制。</li><li>难以优化编译生成高效的目标代码程序。</li></ol><h3 id="精简指令系统计算机（RISC-Reduced-Instruction-Set-Computer）"><a href="#精简指令系统计算机（RISC-Reduced-Instruction-Set-Computer）" class="headerlink" title="精简指令系统计算机（RISC, Reduced Instruction Set Computer）"></a>精简指令系统计算机（RISC, Reduced Instruction Set Computer）</h3><p>设计思路：一条指令完成一个基本“动作”；<strong>多条指令组合完成一个复杂的基本功能</strong>，例，ARM架构，主要用于手机、平板等。</p><p>RISC的主要特点：</p><ol><li>选取使用频率最高的一些简单指令，复杂指令功能由简单指令的组合来实现。</li><li>指令长度固定，指令格式种类少。</li><li>只有<code>Load/Store</code>（取数，存数）指令能访存，其余指令的操作都在寄存器之间进行。</li><li>CPU中通用寄存器数量多。</li><li>RISC一定采用指令流水线技术，大部分指令在一个时钟周期内完成。</li><li>以硬布线控制为主。</li><li>重视编译优化工作，以减少程序执行时间。</li></ol><h3 id="CISC和RISC的比较"><a href="#CISC和RISC的比较" class="headerlink" title="CISC和RISC的比较"></a>CISC和RISC的比较</h3><p><img src="https://img-blog.csdnimg.cn/direct/beb0a0fed12544b4bd920dd3f3b1e513.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 指令系统 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>计算机组成原理-程序的机器代码表示</title>
       <link href="/2023/12/23/ji-suan-ji-zu-cheng-yuan-li-cheng-xu-de-ji-qi-dai-ma-biao-shi/"/>
       <url>/2023/12/23/ji-suan-ji-zu-cheng-yuan-li-cheng-xu-de-ji-qi-dai-ma-biao-shi/</url>
