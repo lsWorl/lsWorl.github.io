@@ -475,14 +475,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-12-28
+                    2024-01-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.6k
+                    2.1k
                 </div>
                 
 
@@ -611,6 +611,55 @@
 <li><p>由硬件产生微程序入口地址</p>
 </li>
 </ol>
+<h4 id="微程序控制单元的设计"><a href="#微程序控制单元的设计" class="headerlink" title="微程序控制单元的设计"></a>微程序控制单元的设计</h4><p>设计步骤：</p>
+<ol>
+<li><p>分析每个阶段的微操作序列</p>
+</li>
+<li><p>写出对应机器的微操作命令及节拍安排</p>
+<ol>
+<li><p>写出每个周期所需的微操作（参照硬布线）</p>
+</li>
+<li><p>补充微程序控制器特有的微操作：</p>
+<p>a.取指周期：</p>
+<p>  Ad(CMDR) -&gt; CMAR</p>
+<p>  OP(IR) -&gt; CMAR</p>
+<p>b.执行周期：</p>
+<p>  Ad(CMDR) -&gt; CMAR</p>
+</li>
+</ol>
+</li>
+<li><p>确定微指令格式</p>
+<p>根据微操作个数决定采用何种编码方式，以确定微指令的操作控制字段的位数。</p>
+<p>根据CM中存储的微指令总数，确定微指令的顺序控制字段的位数。</p>
+<p>最后按操作控制字段位数和顺序控制字段位数就可以确定微指令字长。</p>
+</li>
+<li><p>编写微指令码点</p>
+<p>根据操作控制字段每一位代表的微操作命令，编写每一条微指令的码点。</p>
+</li>
+</ol>
+<p><strong>例：</strong></p>
+<h5 id="取指周期-微程序控制器的节拍安排"><a href="#取指周期-微程序控制器的节拍安排" class="headerlink" title="取指周期-微程序控制器的节拍安排"></a>取指周期-微程序控制器的节拍安排</h5><p>假设取指周期为三个节拍</p>
+<p>T_0	PC-&gt;MAR	将PC中指令放到MAR中</p>
+<p>T_0	1-&gt; R		向主存发送读信号</p>
+<p>T_1	(PC) + 1 -&gt; PC	PC加“1”来指向下一个要执行的指令</p>
+<p>T_1	M(MAR) -&gt; MDR	将主存中地址MAR中的数据放入MDR中</p>
+<p>T_2	MDR -&gt; IR	将MDR存一份到IR中</p>
+<p>T_2	OP(IR)-&gt; 微地址形成部件	将IR的操作码发送给微地址形成部件	</p>
+<p>此时取指操作用三个微指令即可完成</p>
+<p>而每执行完<strong>一条微指令</strong>的命令后要在最后用一个节拍实现<code>Ad(CMDR) -&gt; CMAR</code>来将CMDR的下地址信息送给CMAR，使CMAR有下一条地址的信息。取指周期内最后还要执行指令：<code>OP(IR)-&gt;微地址形成部件-&gt;CMAR</code></p>
+<p><img src="https://img-blog.csdnimg.cn/direct/ebf7a6561af242eb9d857bcfb7b7d273.png"></p>
+<h4 id="微程序设计分类"><a href="#微程序设计分类" class="headerlink" title="微程序设计分类"></a>微程序设计分类</h4><ol>
+<li><p>静态微程序设计和动态微程序设计</p>
+<ul>
+<li>静态。微程序无需改变，采用<strong>ROM</strong>实现。</li>
+<li>动态。通过<strong>改变微指令和微程序</strong>改变机器指令，有利于仿真，采用EPROM</li>
+</ul>
+</li>
+<li><p>毫微程序设计</p>
+<p>毫微程序设计就是用<strong>毫微程序解释微程序</strong>。对微程序的更深一层的套娃。</p>
+</li>
+</ol>
+<h4 id="微程序控制器和硬布线控制器的区别"><a href="#微程序控制器和硬布线控制器的区别" class="headerlink" title="微程序控制器和硬布线控制器的区别"></a>微程序控制器和硬布线控制器的区别</h4><p><img src="https://img-blog.csdnimg.cn/direct/13c85edc1c13429a917e3585a438d031.png"></p>
 
                 
             </div>
@@ -1228,7 +1277,7 @@
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
-                <span id="year">2022-2023</span>
+                <span id="year">2022-2024</span>
             
             <a href="/about" target="_blank">LsWorld</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
