@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>计算机组成原理-指令流水线</title>
+      <link href="/2024/01/04/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-liu-shui-xian/"/>
+      <url>/2024/01/04/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-liu-shui-xian/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h3 id="指令流水的定义"><a href="#指令流水的定义" class="headerlink" title="指令流水的定义"></a>指令流水的定义</h3><p>一条指令的执行过程可以分成多个阶段，每个阶段功能由相应的功能部件完成。而视各阶段为相应的流水段，则指令的执行过程就构成了一条指令流水线。</p><h4 id="顺序执行方式"><a href="#顺序执行方式" class="headerlink" title="顺序执行方式"></a>顺序执行方式</h4><p>即只有上一条指令完成后才能进行下一条指令的执行。</p><p>若设取指、分析、执行三个阶段的时间都相等，用t表示，顺序执行方式可得：</p><p><img src="https://img-blog.csdnimg.cn/direct/391d9004a20848b481d94729866b87fc.png"></p><p>总耗时T&#x3D;$n\times 3t&#x3D;3nt$。</p><p>传统的冯诺依曼机就是采用顺序执行方式，该方式<strong>又称串行执行方式</strong>。</p><p><strong>优点</strong>：控制简单，硬件代价小。</p><p><strong>缺点</strong>：执行指令的速度较慢，在任何时刻，处理机中只有一条指令在执行，各功能部件的利用率很低。</p><h4 id="一次重叠执行方式"><a href="#一次重叠执行方式" class="headerlink" title="一次重叠执行方式"></a>一次重叠执行方式</h4><p><img src="https://img-blog.csdnimg.cn/direct/a3a92cdf98b549a8a875bc778013e01f.png"></p><p>总耗时T&#x3D;$(n-1)\times 2t+3t&#x3D;(1+2n)t$。</p><p><strong>优点</strong>：程序的执行时间缩短了1&#x2F;3，各功能部件的利用率提高。</p><p><strong>缺点</strong>：需要付出硬件上较大开销的代价，控制过程也比顺序执行复杂。</p><h4 id="二次重叠执行方式"><a href="#二次重叠执行方式" class="headerlink" title="二次重叠执行方式"></a>二次重叠执行方式</h4><p><img src="https://img-blog.csdnimg.cn/direct/659018fb623b42a5b2c9b11ee77e428e.png"></p><p>总耗时T&#x3D;$(n-1)\times t+3t&#x3D;(2+n)t$。</p><p><strong>优点</strong>：与顺序执行程序的执行时间缩短了2&#x2F;3，各功能部件的利用率提高，这是一种理想的指令执行方式。</p><h4 id="流水线的表示方法"><a href="#流水线的表示方法" class="headerlink" title="流水线的表示方法"></a>流水线的表示方法</h4><p><img src="https://img-blog.csdnimg.cn/direct/c185c24d2a994770bdbea16736fa63d1.png"></p><p><strong>指令流程图</strong>用于分析影响流水线的因素。</p><p><strong>时空图</strong>用于分析流水线的性能。</p><h4 id="流水线的性能指标"><a href="#流水线的性能指标" class="headerlink" title="流水线的性能指标"></a>流水线的性能指标</h4><ol><li><p>吞吐率。吞吐率是指在单位时间内流水线所完成的任务数量，或是输出结果的数量。</p><p>设任务数为n：处理完成n各任务所用的时间为T</p><p>则流水线吞吐率（TP）的基本公式为<strong>TP&#x3D;n&#x2F;T</strong>。</p></li><li><p>加速比。完成同样一批任务，不使用流水线所用的时间与使用流水线所用的时间之比。</p></li><li><p>效率。流水线的设备利用率。</p><p>一般公式为<br>$$<br>E&#x3D;\frac{n个任务占用k时空区有效面积}{n个任务所用的时间与k个流水段所围成的时空区总面积}<br>$$</p></li></ol><h3 id="影响流水线的因素"><a href="#影响流水线的因素" class="headerlink" title="影响流水线的因素"></a>影响流水线的因素</h3><h4 id="结构相关（资源冲突）"><a href="#结构相关（资源冲突）" class="headerlink" title="结构相关（资源冲突）"></a>结构相关（资源冲突）</h4><p>由于多条指令在同一时刻争用同一资源而形成的冲突称为结构相关。</p><p><img src="https://img-blog.csdnimg.cn/direct/6532ec71f4e04ce582105410940290d6.png"></p><p>解决方法：</p><ol><li>后一相关指令暂停一周期</li><li>资源重复配置： 数据存储器+指令存储器分配到不同的地方。</li></ol><h4 id="数据相关（数据冲突）"><a href="#数据相关（数据冲突）" class="headerlink" title="数据相关（数据冲突）"></a>数据相关（数据冲突）</h4><p>数据相关指在一个程序中，存在必须等前一条指令执行完才能执行后一条指令的情况，则这两条指令即为数据相关。</p><p><img src="https://img-blog.csdnimg.cn/direct/7257d649a71b47758f09f4880a23888f.png"></p><p>解决方法：</p><ol><li>把遇到数据相关的指令及其后序指令都暂停一至几个时钟周期，直到数据相关问题消失后再继续执行。可分为<strong>硬件阻塞（stall）</strong>和<strong>软件插入“NOP”（空操作）</strong>两种方法。</li><li>数据旁路技术。</li><li>编译优化：通过编译器调整指令顺序来解决数据相关。</li></ol><h4 id="控制相关（控制冲突）"><a href="#控制相关（控制冲突）" class="headerlink" title="控制相关（控制冲突）"></a>控制相关（控制冲突）</h4><p>当流水线遇到转移指令和其他改变PC指的指令而造成断流时，会引起控制相关。</p><p><img src="https://img-blog.csdnimg.cn/direct/d6351a69895549a9a23f82358d4f2660.png"></p><h3 id="流水线的多发技术"><a href="#流水线的多发技术" class="headerlink" title="流水线的多发技术"></a>流水线的多发技术</h3><h4 id="超标量流水线技术"><a href="#超标量流水线技术" class="headerlink" title="超标量流水线技术"></a>超标量流水线技术</h4><p><img src="https://img-blog.csdnimg.cn/direct/71923b0393004092b068025117f7278d.png"></p><p>每个时钟周期内可并发多条独立指令，要配置多个功能部件，且<strong>不能调整</strong>指令的执行顺序。</p><p>通过编译优化技术来把可并行的指令搭配起来。</p><h4 id="超流水技术"><a href="#超流水技术" class="headerlink" title="超流水技术"></a>超流水技术</h4><p><img src="https://img-blog.csdnimg.cn/direct/a505035d66244fc9aef5fda8a001b1e0.png"></p><p>在一个时钟周期内再分段，在一个时钟周期内<strong>一个功能部件使用多次</strong>。同样不能调整指令的执行顺序。</p><h4 id="超长指令字"><a href="#超长指令字" class="headerlink" title="超长指令字"></a>超长指令字</h4><p><img src="https://img-blog.csdnimg.cn/direct/b65da3b88bda41d29ef8ed0b135e5b8b.png"></p><p>由编译程序挖掘出指令间<strong>潜在的并行性</strong>，将多条能并行操作的指令组合成一条具有多个操作码字段的超长指令字。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机组成原理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机组成原理 </tag>
+            
+            <tag> 中央处理器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>计算机组成原理-控制器的功能和工作原理</title>
       <link href="/2023/12/28/ji-suan-ji-zu-cheng-yuan-li-kong-zhi-qi-de-gong-neng-he-gong-zuo-yuan-li/"/>
       <url>/2023/12/28/ji-suan-ji-zu-cheng-yuan-li-kong-zhi-qi-de-gong-neng-he-gong-zuo-yuan-li/</url>
