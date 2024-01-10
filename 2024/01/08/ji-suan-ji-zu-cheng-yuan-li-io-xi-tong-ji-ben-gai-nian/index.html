@@ -476,14 +476,14 @@ int main()&amp;#123;
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-08
+                    2024-01-10
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    560
+                    1.1k
                 </div>
                 
 
@@ -537,6 +537,30 @@ int main()&amp;#123;
 <h4 id="显示存储器（VRAM）"><a href="#显示存储器（VRAM）" class="headerlink" title="显示存储器（VRAM）"></a>显示存储器（VRAM）</h4><p>也称<strong>刷新存储器</strong>，为了不断提高刷新图形的信号，必须把一帧图像信息存储在刷新存储器中。其存储容量由图像分辨率和灰度级决定，分辨率越高，灰度级越多，刷新存储器容量越大。</p>
 <p><strong>VARM容量&#x3D; 分辨率 × 灰度级位数</strong>。</p>
 <p><strong>VARM带宽&#x3D; 分辨率 × 灰度级位数 × 帧频</strong>。</p>
+<h3 id="I-x2F-O接口的作用"><a href="#I-x2F-O接口的作用" class="headerlink" title="I&#x2F;O接口的作用"></a>I&#x2F;O接口的作用</h3><p>I&#x2F;O接口中大体上包含了数据寄存器、控制寄存器与状态寄存器，分别能实现以下的主要功能：</p>
+<ol>
+<li>数据缓冲：通过数据缓冲寄存器（DBR）达到主机和外设工作速度的匹配。</li>
+<li>错误或状态检测：通过状态寄存器反馈设备的各种错误、状态信息，供CPU查用。</li>
+<li>控制和定时：接受从控制总线发来的控制信号、时钟信号。</li>
+<li>与主机的设备通信：实现 主机——IO设备—IO设备之间的通信</li>
+</ol>
+<h3 id="I-x2F-O端口及其编址"><a href="#I-x2F-O端口及其编址" class="headerlink" title="I&#x2F;O端口及其编址"></a>I&#x2F;O端口及其编址</h3><p>I&#x2F;O端口可分为数据端口（读或写）、控制端口（写）和状态端口（读），端口若想被CPU访问，就必须对各个端口进行编号。</p>
+<h4 id="统一编址"><a href="#统一编址" class="headerlink" title="统一编址"></a>统一编址</h4><p><img src="https://img-blog.csdnimg.cn/direct/8cfcfba6df6d466fae6db37e0b9b1f24.png"></p>
+<p>又称<strong>存储器映射方式</strong>，把IO端口和内存一起分配，靠<strong>不同的地址码</strong>区分内存和IO设备。CPU不需要设置专门的IO指令，用统一的访存指令就可以访问IO端口。RISC机器常用，因为这种机器只有LOAD、STORE两个取指指令。</p>
+<p><strong>优点</strong>：</p>
+<p>不需要专门的输入&#x2F;输出指令，所有访存指令都可直接访问端口，程序设计灵活性高</p>
+<p>端口有较大的编址空间。</p>
+<p>读写控制逻辑电路简单。</p>
+<p><strong>缺点：</strong></p>
+<p>端口占用了主存地址空间，使主存地址空间变小外设寻址时间长。</p>
+<h4 id="独立编址"><a href="#独立编址" class="headerlink" title="独立编址"></a>独立编址</h4><p>靠不同的<strong>指令</strong>区分内存的IO设备。只能用专门的IO指令访问IO端口。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/045564ee40254e2ba3aa8711d6dfed21.png"></p>
+<p>Intel处理器常用IN、OUT就是IO指令。</p>
+<p><strong>优点：</strong></p>
+<p>使用专用IO指令，程序编制清晰，IO端口地址位数少，地址译码速度快，IO端口的地址不占用主存地址空间。</p>
+<p><strong>缺点：</strong></p>
+<p>IO指令类型少，一般只能对端口进行传送操作，程序设计灵活性差。</p>
+<p>需要CPU提供存储器读&#x2F;写、IO设备读&#x2F;写两组控制信号，增加了控制逻辑电路的复杂性。</p>
 
                 
             </div>
