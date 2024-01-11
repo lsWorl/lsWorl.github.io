@@ -476,14 +476,14 @@ int main()&amp;#123;
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-10
+                    2024-01-11
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    1.7k
                 </div>
                 
 
@@ -561,6 +561,33 @@ int main()&amp;#123;
 <p><strong>缺点：</strong></p>
 <p>IO指令类型少，一般只能对端口进行传送操作，程序设计灵活性差。</p>
 <p>需要CPU提供存储器读&#x2F;写、IO设备读&#x2F;写两组控制信号，增加了控制逻辑电路的复杂性。</p>
+<h3 id="程序中断"><a href="#程序中断" class="headerlink" title="程序中断"></a>程序中断</h3><p>CPU响应中断必须满足以下3个条件：</p>
+<ol>
+<li>中断源有中断请求。</li>
+<li>CPU允许中断即开中断。</li>
+<li>一条指令执行完毕，且没有更紧迫的任务。</li>
+</ol>
+<h4 id="程序中断判优"><a href="#程序中断判优" class="headerlink" title="程序中断判优"></a>程序中断判优</h4><p>中断判优既可以用硬件实现，也可以用软件实现。</p>
+<p>硬件实现是通过<strong>硬件排队器</strong>实现，它既可以设置在CPU中，也可以分散在各个中断源中；</p>
+<p>软件实现是通过<strong>查询程序</strong>实现。</p>
+<h4 id="中断隐指令的主要任务"><a href="#中断隐指令的主要任务" class="headerlink" title="中断隐指令的主要任务"></a>中断隐指令的主要任务</h4><ol>
+<li>关中断。在中断服务程序中，为了保护中断现场（即CPU主要寄存器中的内容）期间不被新的中断所大端，必须关中断，从而保证被中断的程序在中断服务程序执行完毕之后能正确继续执行下去。</li>
+<li>保存断点。为了保证在中断服务程序执行完后能正确返回到原先程序，必须保存PC的内容。</li>
+<li>引出中断服务程序。引出中断服务程序的实质就是取出中断服务程序的入口地址并传送给程序计数器（PC）。</li>
+</ol>
+<p><strong>单重中断</strong>：执行中断服务程序时<strong>不响应</strong>新的中断请求。</p>
+<p><strong>多重中断</strong>：又称中断嵌套，执行中断服务程序<strong>可响应</strong>新的中断请求。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/5187c5dacdfc4f0987ba450e130ad667.png"></p>
+<h4 id="中断屏蔽技术"><a href="#中断屏蔽技术" class="headerlink" title="中断屏蔽技术"></a>中断屏蔽技术</h4><p>中断屏蔽技术会用屏蔽字来作为是否要中断屏蔽的依准，一般用“1”表示屏蔽，“0”表示正常申请。</p>
+<p>例：设某机有4个中断源A、B、C、D，其硬件排队优先次序为A&gt;B&gt;C&gt;D,现要求中断次序改为D&gt;A&gt;C&gt;B。</p>
+<p>1.写出每个中断源对应的屏蔽字。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/8a003238daae4b6d8fbb8d79970ca006.png"></p>
+<p>A只可以被D中断，所以D的中断信号为0。B可被除自己以外的信号中断，所以除自身以外都为0。C可由A和D屏蔽，所以A和D为0。D优先级最低，所以屏蔽字全为1。</p>
+<p>2.按下图所示的时间轴给出4个中断源的请求时刻，画出CPU执行程序的轨迹。设每个中断服务程序执行时间均为20us。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/8eba60f1a0d34c88b81ff57c11f6b87d.png"></p>
+<p>由上方描述可得下图：</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/a3e1dc31782b4ca59300e96b147ee8ae.png"></p>
+<p>开始B先执行，由于B的次序最低，到执行到D会打断B的执行，然后D完成后继续执行B，再当B执行到10us时执行A（A的次序高于B），A执行完成后再执行B，B执行到15u秒又被C打断执行，执行完C后最后再完成B。</p>
 
                 
             </div>
