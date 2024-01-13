@@ -470,14 +470,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-12
+                    2024-01-13
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    627
+                    858
                 </div>
                 
 
@@ -524,6 +524,19 @@
 <p>而当CPU处于用户态时若对CPU发出特权指令会使CPU<strong>引发一个中断信号</strong>，并强制进入内核态来处理当前中断信号的内核程序。</p>
 <p>若<strong>内核态转用户态</strong>：只有执行一条特权指令——修改PSW的标志为“用户态”才会转变。</p>
 <p>若<strong>用户态转内核态</strong>：则由一个中断信号引发。</p>
+<h3 id="操作系统的结构"><a href="#操作系统的结构" class="headerlink" title="操作系统的结构"></a>操作系统的结构</h3><p><img src="https://img-blog.csdnimg.cn/direct/570618772ff84f4eabc959d8f49abac7.png"></p>
+<p>操作系统一般都会进行分层，而根据内核所覆盖的范围则引申出“大内核”和“微内核”。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/efde02b8bfeb49918d2edc6c3bab4cff.png"></p>
+<h5 id="大内核"><a href="#大内核" class="headerlink" title="大内核"></a>大内核</h5><p>大内核也称宏内核或单内核，其是将操作系统的主要功能模块都作为系统内核，运行在核心态。</p>
+<p>有高性能的优点。</p>
+<p>缺点是内核代码庞大，结构混乱，难以维护。</p>
+<h5 id="微内核"><a href="#微内核" class="headerlink" title="微内核"></a>微内核</h5><p>微内核构架是只把最基本的功能保留在内核。</p>
+<p>优点是内核功能少，结构清晰，方便维护。</p>
+<p>缺点是需要频繁的在核心态和用户态之间切换，性能低。</p>
+<h4 id="各操作系统结构的优缺点"><a href="#各操作系统结构的优缺点" class="headerlink" title="各操作系统结构的优缺点"></a>各操作系统结构的优缺点</h4><p><img src="https://img-blog.csdnimg.cn/direct/b2fa1bda55a744cbbdc6a61878e8e91c.png"></p>
+<h3 id="虚拟机"><a href="#虚拟机" class="headerlink" title="虚拟机"></a>虚拟机</h3><p>虚拟机就是使用虚拟化计数，将一台物理机器虚拟化为多台虚拟机器VM，每个虚拟机器都可以独立运行一个操作系统。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/a28e2358bccf4e629c3ae6d53d40ce78.png"></p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f4cdc025904147e8a6ee07b0df14c206.png"></p>
 
                 
             </div>
