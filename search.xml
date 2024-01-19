@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>操作系统-进程与线程</title>
+      <link href="/2024/01/19/cao-zuo-xi-tong-jin-cheng-yu-xian-cheng/"/>
+      <url>/2024/01/19/cao-zuo-xi-tong-jin-cheng-yu-xian-cheng/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h4 id="进程的概念"><a href="#进程的概念" class="headerlink" title="进程的概念"></a>进程的概念</h4><p>为了让使参与的每个程序都能独立地运行，为之专门配置的一个数据结构就称为进程块（Process Control Block, PCB）。而由程序段、相关数据段和PCB三部分构成了进程实体（又称进程映像）。</p><p><strong>PCB是进程存在的唯一标识，当进程被创建时，操作系统会为其创建PCB，结束后会回收其PCB。</strong></p><p>若执行相同的三个程序，此时会将三个程序载入进程，它们的PCB、数据段各不相同，但程序段的内容都是相同的。</p><h4 id="进程的状态与转换"><a href="#进程的状态与转换" class="headerlink" title="进程的状态与转换"></a>进程的状态与转换</h4><p>进程通常有以下几种状态：</p><ol><li>运行态。进程正在处理机上运行。</li><li>就绪态。进程获得了除处理机外的一切所需资源，一旦得到处理机，便可立即运行。</li><li>阻塞态。又称等待态，进程正在等待<strong>某一事件</strong>（不是在等待CPU处理完成）而暂停运行，如等待某资源为可用（不包括处理机）或等待输入&#x2F;输出完成。即使根据阻塞原因的不同，可设置多个阻塞队列。</li><li>创建态。进程正在被创建，尚未转到就绪态。</li><li>终止态。进程正从系统中小时，可能是进程正常结束或其他原因推出运行。</li></ol><p><img src="https://img-blog.csdnimg.cn/direct/8e52873648664b05b5bd1ff4a21b9829.png"></p><p>由于进程的整个生命周期都在运行态、就绪态、阻塞态三种状态，所以也称这三状态为基本状态。</p><h4 id="进程控制"><a href="#进程控制" class="headerlink" title="进程控制"></a>进程控制</h4><p>进程控制主要是对系统中的所有进程实施有效的管理，可为了保证进程连续，一般进程控制会用原语（即运行时不可被中断，通过关中断指令和开中断指令实现）来实现。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 操作系统 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 操作系统 </tag>
+            
+            <tag> 进程与线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>操作系统-计算机系统概述</title>
       <link href="/2024/01/12/cao-zuo-xi-tong-ji-suan-ji-xi-tong-gai-shu/"/>
       <url>/2024/01/12/cao-zuo-xi-tong-ji-suan-ji-xi-tong-gai-shu/</url>
