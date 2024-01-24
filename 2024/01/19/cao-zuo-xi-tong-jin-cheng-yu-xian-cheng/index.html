@@ -471,14 +471,14 @@ PCB是进程存在的">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-22
+                    2024-01-24
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.1k
+                    3.3k
                 </div>
                 
 
@@ -614,6 +614,40 @@ PCB是进程存在的">
 <p><img src="https://img-blog.csdnimg.cn/direct/800c89bda22b4e958666fe28f6838b7e.png"></p>
 </li>
 </ol>
+<h3 id="处理机调度"><a href="#处理机调度" class="headerlink" title="处理机调度"></a>处理机调度</h3><h4 id="调度的基本概念"><a href="#调度的基本概念" class="headerlink" title="调度的基本概念"></a>调度的基本概念</h4><p>调度就是当有一堆任务要处理，但由于资源有限，这些事情没法同时处理时候就需要根据某种规则来调整这些任务的顺序，这就是调度研究的问题。</p>
+<h4 id="调度的层次"><a href="#调度的层次" class="headerlink" title="调度的层次"></a>调度的层次</h4><p>调度往往需要经历三个层次。</p>
+<h5 id="高级调度（作业调度）"><a href="#高级调度（作业调度）" class="headerlink" title="高级调度（作业调度）"></a>高级调度（作业调度）</h5><p>按一定的原则从外存的作业后备队列中挑选一个作业调入内存，并创建进程。<strong>每个作业只调入一次，调出一次</strong>。作业调入时会建立PCB，调出时才撤销PCB。</p>
+<h5 id="中级调度（内存调度）"><a href="#中级调度（内存调度）" class="headerlink" title="中级调度（内存调度）"></a>中级调度（内存调度）</h5><p>由于内存不够时，CPU可将某些进程的数据调出外存，当内存空闲或进程需要运行时再重新调入内存。</p>
+<p>暂时调到外存等待的进程状态为<strong>挂起状态</strong>。被挂起的进程PCB会被组织成<strong>挂起队列</strong>。</p>
+<p>将挂起队列中的进程重新调入到内存就称内存调度。</p>
+<h5 id="低级调度（进程调度）"><a href="#低级调度（进程调度）" class="headerlink" title="低级调度（进程调度）"></a>低级调度（进程调度）</h5><p>进程调度就是按照某种策略从就绪队列中选取一个进程，将处理机分配给它。进程调度是操作系统中<strong>最基本的一种调度</strong>，在一般的操作系统中都必须配置进程调度。进程调度的<strong>频率很高</strong>。</p>
+<h5 id="三层调度的联系、对比"><a href="#三层调度的联系、对比" class="headerlink" title="三层调度的联系、对比"></a>三层调度的联系、对比</h5><p><img src="https://img-blog.csdnimg.cn/direct/bd53dc778d504131bec2acd21d641f03.png"></p>
+<h4 id="调度的算法评价指标"><a href="#调度的算法评价指标" class="headerlink" title="调度的算法评价指标"></a>调度的算法评价指标</h4><h5 id="CPU利用率"><a href="#CPU利用率" class="headerlink" title="CPU利用率"></a>CPU利用率</h5><p>CPU利用率指CPU“忙碌”的时间占总时间的比例。<br>$$<br>利用率&#x3D;\frac{忙碌的时间}{总时间}<br>$$</p>
+<h5 id="系统吞吐量"><a href="#系统吞吐量" class="headerlink" title="系统吞吐量"></a>系统吞吐量</h5><p>系统吞吐量是指单位时间内完成作业的数量。<br>$$<br>系统吞吐量&#x3D;\frac{总共完成了多少道作业}{总共花了多少时间}<br>$$</p>
+<h5 id="周转时间"><a href="#周转时间" class="headerlink" title="周转时间"></a>周转时间</h5><p>周转时间是指作业被提交给系统开始道作业完成为止过程所需要花费的时间。</p>
+<p>包括四个部分：</p>
+<ol>
+<li>作业再外存后备队列上等待作业调度（高级调度）的时间</li>
+<li>进程在就绪队列上等待进程调度（低级调度）的时间</li>
+<li>进程在CPU上执行的时间</li>
+<li>进程等待I&#x2F;O操作完成的时间</li>
+</ol>
+<p>$$<br>周转时间&#x3D;作业完成时间 - 作业提交时间<br>$$</p>
+<p>$$<br>带权周转时间&#x3D;\frac{作业周转时间}{作业实际运行的时间}<br>$$</p>
+<p>由上可得带权周转时间<strong>越小</strong>，用户满意度<strong>越高</strong>。<br>$$<br>平均带权周转时间&#x3D;\frac{各作业带权周转时间之和}{作业数}<br>$$</p>
+<h5 id="等待时间"><a href="#等待时间" class="headerlink" title="等待时间"></a>等待时间</h5><p>等待时间指进程&#x2F;作业处于等待处理机状态时间之和，等待时间越长，用户满意度越低。</p>
+<p>对于<font color="#ff0000">进程来说</font>，等待时间就是指进程建立后<strong>等待被服务的时间之和</strong>，在等待I&#x2F;O完成的期间其实进程也是在被服务的，所以不计入等待时间。</p>
+<p>对于<font color="#ff0000">作业来说</font>，不仅要考虑建立进程后的等待时间，还要加上作业在外存后备队列中等待的时间。</p>
+<h5 id="响应时间"><a href="#响应时间" class="headerlink" title="响应时间"></a>响应时间</h5><p>响应时间是指从用户提交请求道首次产生响应所用的时间。</p>
+<h4 id="调度算法"><a href="#调度算法" class="headerlink" title="调度算法"></a>调度算法</h4><h5 id="先来先服务（FCFS）"><a href="#先来先服务（FCFS）" class="headerlink" title="先来先服务（FCFS）"></a>先来先服务（FCFS）</h5><p>先来先服务算法是根据作业的先后顺序进行服务，为非抢占式算法。</p>
+<p>作业&#x2F;进程调度时，考虑的是哪个作业先到达后备队列；用于进程调度时，考虑的是哪个进程先到达就绪队列。</p>
+<p>优点：公平、算法实现简单。</p>
+<p>缺点：FCFS算法对<strong>长作业有利，对短作业不利</strong>。</p>
+<h5 id="短作业优先（SIF）"><a href="#短作业优先（SIF）" class="headerlink" title="短作业优先（SIF）"></a>短作业优先（SIF）</h5><p>短作业优先是将最短的作业&#x2F;进程优先得到服务。短作业优先即可用于作业调度也可用于进程调度。当用于进程调度时称为“短进程优先”（SPF）。</p>
+<p>优点：可以获得一个很短的平均等待时间、平均周转时间。</p>
+<p>缺点：<strong>对短作业有利，对长作业不利，可能产生饥饿现象</strong>。若长作业一直得不到服务会产生“饿死”现象。</p>
+<h5 id="高响应比优先（HRRN）"><a href="#高响应比优先（HRRN）" class="headerlink" title="高响应比优先（HRRN）"></a>高响应比优先（HRRN）</h5><p>高响应比是根据响应比来将响应比最高的作业&#x2F;进程来为其服务。<br>$$<br>响应比&#x3D;\frac{等待时间+要求服务时间}{要求服务时间}<br>$$<br>高响应比即可用于作业调度，也可用于进程调度。</p>
+<p>优点：综合考虑了等待时间和运行时间，既有SIF的优点，也有FCFS的优点，且避免了长作业饥饿的问题。</p>
 
                 
             </div>
