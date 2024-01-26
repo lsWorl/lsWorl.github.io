@@ -471,14 +471,14 @@ PCB是进程存在的">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-24
+                    2024-01-26
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.3k
+                    5.1k
                 </div>
                 
 
@@ -648,6 +648,119 @@ PCB是进程存在的">
 <p>缺点：<strong>对短作业有利，对长作业不利，可能产生饥饿现象</strong>。若长作业一直得不到服务会产生“饿死”现象。</p>
 <h5 id="高响应比优先（HRRN）"><a href="#高响应比优先（HRRN）" class="headerlink" title="高响应比优先（HRRN）"></a>高响应比优先（HRRN）</h5><p>高响应比是根据响应比来将响应比最高的作业&#x2F;进程来为其服务。<br>$$<br>响应比&#x3D;\frac{等待时间+要求服务时间}{要求服务时间}<br>$$<br>高响应比即可用于作业调度，也可用于进程调度。</p>
 <p>优点：综合考虑了等待时间和运行时间，既有SIF的优点，也有FCFS的优点，且避免了长作业饥饿的问题。</p>
+<h5 id="时间片轮转（RR）"><a href="#时间片轮转（RR）" class="headerlink" title="时间片轮转（RR）"></a>时间片轮转（RR）</h5><p>时间片轮转算法就是可以公平地、轮流地为各个进程服务，让每个进程在一定时间间隔内都可以得到响应。</p>
+<p>算法具体是按照各进程<strong>到达就绪队列的顺序</strong>，轮流让每个进程执行一个时间片（如100ms），若进程未在一个时间片内执行完，则剥夺处理机重新排队。因此时间片轮转属于<strong>抢占式</strong>算法。</p>
+<p>如果时间片太大，使得每个进程都可以在一个时间片内就完成，则时间片轮转算法将会<strong>退化成先来先服务</strong>调度算法，并且会增大进程响应时间。因此时间片不能太大。</p>
+<p>由于进程调度、切换是有时间代价的，因此如果<strong>时间片太小</strong>，会导致进程切换过于频繁，系统会花大量的时间来处理进程切换，从而导致实际用于进程执行的实际比例减少。</p>
+<p>优点：公平；响应快，适用于分时操作系统；</p>
+<p>缺点：由于高频率的进程切换，因此有一定开销；不区分任务的紧急程度。</p>
+<h5 id="优先级调度"><a href="#优先级调度" class="headerlink" title="优先级调度"></a>优先级调度</h5><p>优先级调度算法就是根据任务的紧急程度来决定处理顺序。</p>
+<p>该算法会给每个作业设置各自的优先级，调度时选择优先级最高的作业。</p>
+<p>优先级调度算法会根据优先级是否可以动态改变又分为静态优先级和动态优先级两种。</p>
+<ul>
+<li>静态优先级：创建进程时确定，之后一直不变。</li>
+<li>动态优先级：创建进程时有一个初始值，之后会根据情况动态地调整优先级。</li>
+</ul>
+<h5 id="多级反馈队列调度算法"><a href="#多级反馈队列调度算法" class="headerlink" title="多级反馈队列调度算法"></a>多级反馈队列调度算法</h5><p>多级反馈队列调度算法是前几种算法的折中权衡。</p>
+<p>该算法会设置多级就绪队列，各级队列优先级从高到低，时间片从小到大。</p>
+<p>进程到达时候先进入第1级队列，按FCFS原则排队等待被分配时间片，若用完时间片进程还未结束，则进程进入下一级队列队尾。</p>
+<p>只有第k级队列为空时，才会从k+1级队头的进程分配时间片用于进程调度。</p>
+<p>该算法属于<strong>抢占式</strong>算法，在k级队列进程运行过程中，1~k-1级队列中进入一个新进程就会进行抢占。</p>
+<h3 id="同步与互斥"><a href="#同步与互斥" class="headerlink" title="同步与互斥"></a>同步与互斥</h3><p>同步就是让进程之间有<strong>直接制约关系</strong>，它是为了某些进程需要在某些为止上协调它们的工作次序而产生的制约关系。</p>
+<p>进程互斥是因为有<strong>临界资源</strong>（要求一个时间段内只允许一个进程使用）必须互斥的访问，即不能同时访问同个临界资源，此时产生了间接制约关系，因此称为进程互斥。</p>
+<p>对于临界资源的访问可分成四部分：</p>
+<ul>
+<li>进入区。负责检测是否可以进入临界区。</li>
+<li>临界区。访问临界资源的那段代码。</li>
+<li>退出区。负责解除正在访问临界资源的标志。</li>
+<li>剩余区。做其他处理。</li>
+</ul>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">do</span><span class="token punctuation">&#123;</span>
+    entry selection<span class="token punctuation">;</span>		<span class="token comment">//进入区</span>
+    critical selection<span class="token punctuation">;</span>		<span class="token comment">//临界区</span>
+    exit selection<span class="token punctuation">;</span>			<span class="token comment">//退出区</span>
+    remainder selection<span class="token punctuation">;</span>	<span class="token comment">//剩余区</span>
+<span class="token punctuation">&#125;</span><span class="token keyword">while</span><span class="token punctuation">(</span>true<span class="token punctuation">)</span></code></pre>
+
+<p><strong>注：进入区和退出区是负责实现互斥的代码段。</strong></p>
+<h3 id="实现临界区互斥的基本方法"><a href="#实现临界区互斥的基本方法" class="headerlink" title="实现临界区互斥的基本方法"></a>实现临界区互斥的基本方法</h3><h4 id="软件实现"><a href="#软件实现" class="headerlink" title="软件实现"></a>软件实现</h4><h5 id="单标志法"><a href="#单标志法" class="headerlink" title="单标志法"></a>单标志法</h5><p>该算法会设置一个公用变量turn，用于指示被允许进入临界区的进程编号。</p>
+<p>如下面有p0和p1两个进程。</p>
+<pre class="language-c" data-language="c"><code class="language-c">P0<span class="token operator">:</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>turn<span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//进入区</span>
+critical selection<span class="token punctuation">;</span>		<span class="token comment">//临界区</span>
+turn <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>				<span class="token comment">//退出区</span>
+remainder slection<span class="token punctuation">;</span>		<span class="token comment">//剩余区</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c">P1<span class="token operator">:</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>turn<span class="token operator">!=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//进入区</span>
+critical selection<span class="token punctuation">;</span>		<span class="token comment">//临界区</span>
+turn <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>				<span class="token comment">//退出区</span>
+remainder slection<span class="token punctuation">;</span>		<span class="token comment">//剩余区</span></code></pre>
+
+<p>若turn&#x3D;&#x3D;0时进入P0进程，turn&#x3D;&#x3D;1时进入P1进程。</p>
+<p>仅当退出的时候会修改turn的值。</p>
+<h5 id="双标志检查法"><a href="#双标志检查法" class="headerlink" title="双标志检查法"></a>双标志检查法</h5><p>该算法会设置一个布尔型数组flag[]，数组中存放<strong>标记各进程想进入临界区的意愿</strong>。只有当对方为false时才能使用临界区。</p>
+<p>如下面有p0和p1两个进程。</p>
+<pre class="language-c" data-language="c"><code class="language-c">P0<span class="token operator">:</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//进入区</span>
+flag<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> true<span class="token punctuation">;</span>			<span class="token comment">//进入区</span>
+critical selection<span class="token punctuation">;</span>		<span class="token comment">//临界区</span>
+flag<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> false<span class="token punctuation">;</span>		<span class="token comment">//退出区</span>
+remainder slection<span class="token punctuation">;</span>		<span class="token comment">//剩余区</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c">P1<span class="token operator">:</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>flag<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//进入区</span>
+flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> true<span class="token punctuation">;</span>			<span class="token comment">//进入区</span>
+critical selection<span class="token punctuation">;</span>		<span class="token comment">//临界区</span>
+flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> false<span class="token punctuation">;</span>		<span class="token comment">//退出区</span>
+remainder slection<span class="token punctuation">;</span>		<span class="token comment">//剩余区</span></code></pre>
+
+<p>若flag[1]&#x3D;&#x3D;false时进入P0进程，flag[0]&#x3D;&#x3D;false时进入P1进程。</p>
+<p>仅当退出的时候会修改flag的值。</p>
+<p>由于双标志先检查法在并发环境进入区的“检查”和“上锁”不是同时完成，有可能会违法“忙则等待”原则。</p>
+<p><strong>双标志后检查法是先上锁后检查。但在并发环境下会出现饥饿现象，导致谁都无法使用临界区</strong></p>
+<h5 id="Peterson算法"><a href="#Peterson算法" class="headerlink" title="Peterson算法"></a>Peterson算法</h5><p>Peterson算法就是结合双标志法、单标志法的思想，设置turn和flag两变量实现。</p>
+<p>如下面有p0和p1两个进程。</p>
+<pre class="language-c" data-language="c"><code class="language-c">P0<span class="token operator">:</span>
+flag<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> true<span class="token punctuation">;</span> turn <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>						<span class="token comment">//进入区</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> turn<span class="token operator">==</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>						<span class="token comment">//进入区</span>
+critical selection<span class="token punctuation">;</span>								<span class="token comment">//临界区</span>
+flag<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> false<span class="token punctuation">;</span>								<span class="token comment">//退出区</span>
+remainder slection<span class="token punctuation">;</span>								<span class="token comment">//剩余区</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c">P1<span class="token operator">:</span>
+flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> true<span class="token punctuation">;</span> turn <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>						<span class="token comment">//进入区</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> turn<span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>						<span class="token comment">//进入区</span>
+critical selection<span class="token punctuation">;</span>								<span class="token comment">//临界区</span>
+flag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> false<span class="token punctuation">;</span>								<span class="token comment">//退出区</span>
+remainder slection<span class="token punctuation">;</span>								<span class="token comment">//剩余区</span></code></pre>
+
+<p>仅有当flag[0]&#x3D;&#x3D;true且turn&#x3D;&#x3D;1时才执行P0进程，很好的防止并发情况下会卡在while循环的情况，但仍然未能解决其他未能进入临界区的进程退出进入区的情况。</p>
+<h4 id="硬件实现"><a href="#硬件实现" class="headerlink" title="硬件实现"></a>硬件实现</h4><h5 id="中断屏蔽方法"><a href="#中断屏蔽方法" class="headerlink" title="中断屏蔽方法"></a>中断屏蔽方法</h5><p>通过开关中断来实现互斥，即进程进入临界区后关中断，退出临界区再开中断。</p>
+<p>优点：简单、高效。</p>
+<p>缺点：由于开关中断指令只能在内核态中运行，因此不适用于多处理机。</p>
+<h4 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h4><p>解决临界区最简单的工具就是互斥锁（mutex lock），当进程进入临界时候会获得锁；退出后释放锁。</p>
+<p>互斥锁的主要缺点就是忙等待，当有一个进程在临界区，其他任何进程进入临界区必须进行等待。</p>
+<p>而需要连续循环忙等待的互斥锁就称为<strong>自旋锁</strong>（spin lock）。</p>
+<p>优点：等待期间不需要切换进程上下文，多核处理器系统中，若上锁时间段，则等待代价很低。</p>
+<h4 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h4><p>信号量机制是可以很好的用来解决互斥和同步问题的机制，它只能被两个标准原语wait(S)和signal(S)访问，也可以记作P(S)、P(S)。</p>
+<p>信号量实际就是一个变量（可以为整数，也可以是更复杂的记录型变量）。</p>
+<h5 id="整型信号量"><a href="#整型信号量" class="headerlink" title="整型信号量"></a>整型信号量</h5><p>对于整型信号量只有三种操作，即初始化、p操作、v操作。</p>
+<p>C语言模拟实现信号量的<code>wait(s),signal(s)</code></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">wait</span><span class="token punctuation">(</span><span class="token keyword">int</span> S<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//wait原语，相对于“进入区”</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span>S<span class="token operator">&lt;=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>		<span class="token comment">//如果资源数不够。就一直循环等待</span>
+    S <span class="token operator">=</span> S<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>			<span class="token comment">//如果资源数够，就占用一个资源</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">signal</span><span class="token punctuation">(</span><span class="token keyword">int</span> S<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//signal原语，相对于“退出区”</span>
+    S <span class="token operator">=</span> S<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>			<span class="token comment">//使用完资源后，在退出区释放资源</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
 
                 
             </div>
