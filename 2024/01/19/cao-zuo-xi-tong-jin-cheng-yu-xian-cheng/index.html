@@ -471,14 +471,14 @@ PCB是进程存在的">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-26
+                    2024-01-27
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.1k
+                    5.5k
                 </div>
                 
 
@@ -760,6 +760,70 @@ remainder slection<span class="token punctuation">;</span>								<span class="t
 <span class="token keyword">void</span> <span class="token function">signal</span><span class="token punctuation">(</span><span class="token keyword">int</span> S<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>		<span class="token comment">//signal原语，相对于“退出区”</span>
     S <span class="token operator">=</span> S<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>			<span class="token comment">//使用完资源后，在退出区释放资源</span>
 <span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="记录型信号量"><a href="#记录型信号量" class="headerlink" title="记录型信号量"></a>记录型信号量</h5><p>记录型信号量使用一个记录型的数据结构来表示。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//记录型信号量的定义</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> value<span class="token punctuation">;</span>			<span class="token comment">//剩余资源数</span>
+    <span class="token keyword">struct</span> <span class="token class-name">process</span> <span class="token operator">*</span>L<span class="token punctuation">;</span>	<span class="token comment">//等待队列</span>
+<span class="token punctuation">&#125;</span> semaphore<span class="token punctuation">;</span></code></pre>
+
+
+
+<p>相应的<code>wait(S)</code>和<code>signal(S)</code>操作。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">wait</span><span class="token punctuation">(</span>semaphore S<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    S<span class="token punctuation">.</span>value<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>S<span class="token punctuation">.</span>value <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token function">block</span><span class="token punctuation">(</span>S<span class="token punctuation">.</span>L<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//若资源数不够将进程从运行态进入阻塞态</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">signal</span><span class="token punctuation">(</span>semaphore S<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    S<span class="token punctuation">.</span>value<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>S<span class="token punctuation">.</span>value <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token function">wakeup</span><span class="token punctuation">(</span>S<span class="token punctuation">.</span>L<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//释放资源后若等待队列中还有进程，则将该进程从阻塞态变为就绪态</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="信号量机制实现进程互斥"><a href="#信号量机制实现进程互斥" class="headerlink" title="信号量机制实现进程互斥"></a>信号量机制实现进程互斥</h5><p>实现进程互斥只需在临界区使用一个互斥信号量<code>mutex</code>即可实现，初值为1.</p>
+<pre class="language-c" data-language="c"><code class="language-c">semaphore mutex <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">//初始化信号量</span>
+
+<span class="token function">P1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token function">P</span><span class="token punctuation">(</span>mutex<span class="token punctuation">)</span><span class="token punctuation">;</span>		<span class="token comment">//使用临界资源前需要加锁</span>
+    临界区代码段<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token function">V</span><span class="token punctuation">(</span>mutex<span class="token punctuation">)</span><span class="token punctuation">;</span>		<span class="token comment">//使用临界资源后需要解锁</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h5 id="信号量机制实现进程同步"><a href="#信号量机制实现进程同步" class="headerlink" title="信号量机制实现进程同步"></a>信号量机制实现进程同步</h5><p>通过设置同步信号量S，<strong>初始为0</strong>，在“前操作”之后执行V(S)（来唤醒后操作），在“后操作”之前执行P(S)（确保前操作没执行完前block）。</p>
+<pre class="language-c" data-language="c"><code class="language-c">semaphore S<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+
+<span class="token function">P1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    代码<span class="token number">1</span><span class="token punctuation">;</span>
+    代码<span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token function">V</span><span class="token punctuation">(</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//S++，并唤醒等待队列中进程</span>
+    代码<span class="token number">3</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token function">P</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">P</span><span class="token punctuation">(</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">//S--，若此时P1未执行导相应代码则进入阻塞态</span>
+    代码<span class="token number">4</span><span class="token punctuation">;</span>
+    代码<span class="token number">5</span><span class="token punctuation">;</span>
+    代码<span class="token number">6</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+
 
 
                 
