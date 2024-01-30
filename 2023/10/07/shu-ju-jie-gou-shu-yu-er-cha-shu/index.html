@@ -465,7 +465,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-10-17
+                    2024-01-30
                 </div>
                 
 
@@ -561,7 +561,7 @@
 <p><img src="https://img-blog.csdnimg.cn/99e238a3019745a99d195ef2ce4e44d7.png" alt="1-7"></p>
 <h5 id="度为m的树第i层至多有-m-i-1-个结点-i-geqslant-1-，m叉树也同理"><a href="#度为m的树第i层至多有-m-i-1-个结点-i-geqslant-1-，m叉树也同理" class="headerlink" title="度为m的树第i层至多有$$m^{i-1}$$个结点$$i\geqslant 1$$，m叉树也同理"></a>度为m的树第i层至多有$$m^{i-1}$$个结点$$i\geqslant 1$$，m叉树也同理</h5><p><img src="https://img-blog.csdnimg.cn/cb95633542094aa6993689b3c5dcf923.png" alt="1-8"></p>
 <p>如1-8所示，因为度为m的树的性质为一个基点结点最多有m个结点，所以若为度为1的树，则至多有$$m^0$$个结点，若度为2，则至多有$$m^2$$个结点，以此类推。</p>
-<h5 id="高度为h的m叉树至多结点数"><a href="#高度为h的m叉树至多结点数" class="headerlink" title="高度为h的m叉树至多结点数"></a>高度为h的m叉树至多结点数</h5><p>计算公式（等比数列求和，公比为m）：<br>$$<br>\sum_{i&#x3D;0}^{h-1}{m^i}&#x3D;m^0 + m^1 + {\cdots} + m^{h-1} &#x3D; \frac{m^{h}-1}{m-1}<br>$$<br>研究了一段时间才发现以上所用的等比数列求和不是常用的而是另外一个，上方结果是根据后面的公式得出,等比求和公式(q为公比)：<br>$$<br>S&#x3D;\frac{a_1(1-q^n)}{1-q}&#x3D;\frac{a_nq-a_1}{q-1}<br>$$</p>
+<h5 id="高度为h的m叉树至多结点数"><a href="#高度为h的m叉树至多结点数" class="headerlink" title="高度为h的m叉树至多结点数"></a>高度为h的m叉树至多结点数</h5><p>计算公式（等比数列求和，首项为1，公比为m）：<br>$$<br>\sum_{i&#x3D;0}^{h-1}{m^i}&#x3D;m^0 + m^1 + {\cdots} + m^{h-1} &#x3D; \frac{m^{h}-1}{m-1}<br>$$<br>研究了一段时间才发现以上所用的等比数列求和不是常用的而是另外一个，上方结果是根据后面的公式得出,等比求和公式(q为公比)：<br>$$<br>S&#x3D;\frac{a_1(1-q^n)}{1-q}&#x3D;\frac{a_nq-a_1}{q-1}<br>$$</p>
 <h5 id="高度为h的m叉树至少结点数"><a href="#高度为h的m叉树至少结点数" class="headerlink" title="高度为h的m叉树至少结点数"></a>高度为h的m叉树至少结点数</h5><p>高度为h的<strong>m叉树</strong>至少有<strong>h</strong>个结点，即每个结点只有一个直接后继结点。</p>
 <p>高度为h、度为m的<strong>树</strong>至少有<strong>h+m-1</strong>个结点，由于度为m的树至少有一个结点的直接后继有m个，所以让其他结点都只有一个直接后继结点，加上有一个为m的结点然后再减去1即可得出。</p>
 <p><img src="https://img-blog.csdnimg.cn/3cae2722e40b430b860dd8ebe30a09a6.png" alt="1-9"></p>
