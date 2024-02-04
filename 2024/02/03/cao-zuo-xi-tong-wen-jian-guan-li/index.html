@@ -474,14 +474,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-02-03
+                    2024-02-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.5k
+                    2.2k
                 </div>
                 
 
@@ -550,6 +550,38 @@
 <li>多层索引。建立多层索引。使第一层索引块指向第二层索引块，还可根据文件大小的要求再建立第三层、第四层索引块。若采用多层索引，则<strong>各层索引表大小不能超过一个磁盘块</strong>。</li>
 <li>混合索引。多种索引分配方式的结合。例，一个文件的顶级索引表中，即包含<strong>直接地址索引）（直接指向数据块）</strong>，又包含<strong>一级间接索引</strong>（指向单层索引表）、还包含<strong>两级间接索引</strong>（指向两层索引表）。</li>
 </ul>
+<h4 id="文件存储空间管理"><a href="#文件存储空间管理" class="headerlink" title="文件存储空间管理"></a>文件存储空间管理</h4><h5 id="空闲表法"><a href="#空闲表法" class="headerlink" title="空闲表法"></a>空闲表法</h5><p>属于连续分配方式，会为外存上的所有空闲区建立一张空闲表，包括第一个空闲盘块号和空闲盘块数。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/d97c17454e234adea8cf9207c71d6d27.png"></p>
+<p>分配磁盘块：可采用首次适应、最佳适应、最坏适应等算法来决定为文件分配哪个区间。</p>
+<p>回收磁盘块：</p>
+<p>​	回收某个存储区时有四种情况：</p>
+<ol>
+<li>回收区的前后都没有相邻空闲区。</li>
+<li>回收区的前后都是空闲区。</li>
+<li>会收取前面是空闲区。</li>
+<li>会收取后面是空闲区。</li>
+</ol>
+<p><strong>回收时需要注意表项合并问题。</strong></p>
+<h5 id="空闲链表法"><a href="#空闲链表法" class="headerlink" title="空闲链表法"></a>空闲链表法</h5><p>该法是将所有空闲盘区拉成一条空闲链，根据构成链所用基本元素不同，分为两种形式：</p>
+<ol>
+<li><p>空闲盘块链</p>
+<p>每个空闲盘中存储着下一个空闲盘块的指针</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/b377a87fba464e329a635eb24d1258e2.png"></p>
+</li>
+<li><p>空闲盘区链</p>
+<p>连续的空闲盘块组成一个空闲盘区，空闲盘区的第一个盘块内记录了盘区的长度、下一个盘区的指针。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/ac0e58c548b84d5ea7e017a226b679d3.png"></p>
+</li>
+</ol>
+<h5 id="位示图法"><a href="#位示图法" class="headerlink" title="位示图法"></a>位示图法</h5><p>位示图法是利用二进制的一位来表示磁盘中的盘块使用情况，一般以“0”表示盘块空闲；为“1”时，表示已分配。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/f84c32ef0c744a7fb684c68e137750b9.png"></p>
+<p>分配磁盘块：顺序扫描位示图，找到要分配个数的空闲磁盘块，然后根据字号、位号算出盘块号分配给文件，并将相应位置设置为“1”。</p>
+<p>回收磁盘块：根据回收的盘块号计算出对应的字号、位号；再将相应的二进制位设为“0”。</p>
+<h5 id="成组链接法"><a href="#成组链接法" class="headerlink" title="成组链接法"></a>成组链接法</h5><p>成组链接法组合了空闲表和空闲链表两种方法，它将存放一组空闲盘块号的盘块称为组链块，然后将一定数列的空闲盘块号放在第一个成组链块中，组链块中第一位放着下一组空闲盘块数，再通过指针链接，从而克服了表太长的缺点。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/d8411f2b303a4cd896dea60007201ad4.png"></p>
+<p>分配盘块：分配盘块会根据组块链第一个位置所存放的盘块数，来比较与要分配的盘块数大小，若当前组块链空闲块号足够，则会将最后几位分配给文件，并修改空闲块数。</p>
+<p>回收盘块：若超级块中空闲块没满，则回收盘块后会将组块链的空闲盘块数增加，若超级块中空闲块已满，则会新建一个组块链，然后使超级块链接新组块链，将收回的空闲块放入超级块中，并且新的组块链来连接剩余的分组。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/0b30710e719e4a9ab36ec9168ebaa458.png"></p>
 
                 
             </div>
