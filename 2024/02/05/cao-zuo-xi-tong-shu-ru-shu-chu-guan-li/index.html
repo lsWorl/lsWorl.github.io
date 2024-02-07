@@ -474,14 +474,14 @@ IO设备的分类
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-02-06
+                    2024-02-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2k
+                    2.7k
                 </div>
                 
 
@@ -539,6 +539,29 @@ IO设备的分类
 <p><img src="https://img-blog.csdnimg.cn/direct/c2cc432e15ab4ff8ab2e0177eba5a7d1.png"></p>
 <p>优点：传输以块为单位，CPU介入频率进一步降低。数据传输效率进一步增加。CPU和IO设备的并行性得到提升。</p>
 <p>缺点：CPU每发出一条IO指令，只能读写一个或多个连续的数据块。</p>
+<h5 id="SPOOLing技术（假脱机技术）"><a href="#SPOOLing技术（假脱机技术）" class="headerlink" title="SPOOLing技术（假脱机技术）"></a>SPOOLing技术（假脱机技术）</h5><p>假脱机技术是为了缓和CPU的高速性和IO设备低速性之间的矛盾，该技术利用专门的外围控制机，将低速IO设备上的数据传送到高速磁盘上，或者相反。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/9adb2e4bc48941bd80d0ef0ab379ec7a.png"></p>
+<p>系统会在磁盘开辟出输入井和输出井两个存储区域。</p>
+<p>“输入井”模拟脱机输入时的磁带，用于收容IO设备输入的数据，“输出井”模拟脱机输出时的磁带，用于收容用户进程输出的数据。</p>
+<p>然后通过内存的输入缓冲区和输出缓冲区作为中转，来实现磁盘与输入输出设备的交互。</p>
+<p>SPOOLing技术是必须要有多道程序技术的支持，系统会建立输入进程和输出进程。</p>
+<h4 id="缓冲区管理"><a href="#缓冲区管理" class="headerlink" title="缓冲区管理"></a>缓冲区管理</h4><p>缓冲区是一个存储区域，是用于缓和CPU与IO设备之间速度不匹配的矛盾，减少对CPU的中断频率，放宽对CPU中断相应时间的限制，解决数据粒度不匹配的问题，并提高CPU与IO之间的并行性。</p>
+<p>缓冲区的实现方法：</p>
+<ol>
+<li>采用硬件缓冲区，用一个寄存器或其他部件来作为数据间的缓冲区，但由于成本太高，一般不建议采用硬件缓冲区。</li>
+<li>采用内存缓冲区。将内存一部分空间作为缓冲区使用。</li>
+</ol>
+<p>根据系统设置缓冲器的个数，缓冲技术可以分为以下几种：</p>
+<h5 id="单缓冲"><a href="#单缓冲" class="headerlink" title="单缓冲"></a>单缓冲</h5><p>操作系统会在主存中为其分配一个缓冲区。当设备和处理机交换数据时，会先将数据写入缓冲区，然后需要数据的设备或处理机从缓冲区取走数据，在缓冲区写入或取出时，其他需要使用的设备要等待。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/060396b277064424b899da72d63023e0.png"></p>
+<p>采用单缓冲策略，<strong>处理一块数据平均耗时为Max(输入时间，处理时间)+传送时间</strong>。</p>
+<h5 id="双缓冲"><a href="#双缓冲" class="headerlink" title="双缓冲"></a>双缓冲</h5><p>采用双缓冲策略，操作系统会在主存中为其分配两个缓冲区。</p>
+<p>若假设初始状态为：工作区空，其中一个缓冲区满，另一个缓冲区空</p>
+<p>假设输入时间&lt;处理时间+传送时间</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c8e0c7e7ae5e47398bdac77a7c7ed414.png"></p>
+<p>由此可得处理一块数据所消耗的时间，只有当回到初始状态才算数据处理完成，所以首先会经历M传送时间，然后再经历C处理时间，同步地再从工作区读入一块数据，输入时间为T，由于输入时间&lt;处理时间+传送时间，所以处理一块数据所消耗的时间为T。</p>
+<h5 id="循环缓冲区"><a href="#循环缓冲区" class="headerlink" title="循环缓冲区"></a>循环缓冲区</h5><p>循环缓冲区是将内存中多个大小相等的缓冲区链接成一个循环队列。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/a864053acaa4427cbc4f3c82cb9b4441.png"></p>
 <h3 id="磁盘与固态硬盘"><a href="#磁盘与固态硬盘" class="headerlink" title="磁盘与固态硬盘"></a>磁盘与固态硬盘</h3><p>磁盘就是由表面涂有磁性物质的物理盘片，通过一个称为磁头的导体线圈从磁盘存取数据。</p>
 <p><img src="https://img-blog.csdnimg.cn/direct/f57400c801234571bf045ddf9ca4bf35.png"></p>
 <p>磁盘进行读写操作时，磁头固定，磁盘再下面高速旋转。</p>
