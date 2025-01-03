@@ -4,6 +4,60 @@
   
     
     <entry>
+      <title>串口协议</title>
+      <link href="/2025/01/03/chuan-kou-xie-yi/"/>
+      <url>/2025/01/03/chuan-kou-xie-yi/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><h4 id="USART串口通信"><a href="#USART串口通信" class="headerlink" title="USART串口通信"></a>USART串口通信</h4><p>stm32中使用USART串口通信主要通过RX和TX两个接口完成基础操作，发送的数据通过总线到发送数据寄存器TDR，然后TDR中数据会发送到发送移位寄存器，发送移位寄存器会将比特右移的传到USARTX_TX引脚，产生串口协议规定的波形，<strong>当数据从发送移位寄存器发送完成时，TXE标志位会置1，只需判断TXE就可以知道是否可以传下一个数据</strong>。</p><p>同样在接受控制器中通过USARTX_TX引脚接受数据，<strong>接受完成会将RXNE标志位置0</strong>。</p><p>在实际使用中只有DR寄存器可供读写，写入DR时，数据走TX发送，读出DR时，数据走TX接受。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 嵌入式 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> stm32 </tag>
+            
+            <tag> 单片机 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>ADC模数转换器</title>
+      <link href="/2025/01/02/adc-mo-shu-zhuan-huan-qi/"/>
+      <url>/2025/01/02/adc-mo-shu-zhuan-huan-qi/</url>
+      
+        <content type="html"><![CDATA[<meta name="referrer" content="no-referrer"/><p>ADC可以将模拟电压转换为数字变量，</p><p>输入电压范围0<del>3.3V，转换结果的范围：0</del>4095，即0V对应0，3.3V对应4095，中间均为一一对应的线性关系。</p><blockquote><p>STM32F10系列中ADC有多达18个通道，可测量16个外部和2个内部信号源。各通道的A&#x2F;D转换可以单次、连续、扫描或间断模式执行。ADC的结果可以左对齐或右对齐方式存储在16位数据寄存器中。</p></blockquote><h5 id="STM32-ADC的总转换时间"><a href="#STM32-ADC的总转换时间" class="headerlink" title="STM32 ADC的总转换时间"></a>STM32 ADC的总转换时间</h5><p>$$<br>T_{CONV} &#x3D; 采样时间+12.5个ADC周期<br>$$</p><p>例：</p><p>当ADCCLK &#x3D;14MHz，采样时间为1.5个ADC周期，  则<br>$$<br>T_{CONV} &#x3D; 1.5 +12.5 &#x3D;14个ADC周期&#x3D;1us<br>$$</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 嵌入式 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> stm32 </tag>
+            
+            <tag> 单片机 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>stm32TIM定时中断</title>
       <link href="/2025/01/01/stm32tim-ding-shi-zhong-duan/"/>
       <url>/2025/01/01/stm32tim-ding-shi-zhong-duan/</url>
@@ -19,6 +73,8 @@
       
       
         <tags>
+            
+            <tag> stm32 </tag>
             
             <tag> 单片机 </tag>
             
