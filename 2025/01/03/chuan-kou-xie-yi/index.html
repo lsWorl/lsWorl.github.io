@@ -470,14 +470,14 @@ USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口�
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-01-04
+                    2025-01-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    602
+                    830
                 </div>
                 
 
@@ -574,6 +574,13 @@ USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口�
 
 
 <h4 id="I2C通信"><a href="#I2C通信" class="headerlink" title="I2C通信"></a>I2C通信</h4><p>I2C有两根通信线：SCL（Serial Clock），SDA（Serial Data），支持同步，半双工通信，支持总线挂载多设备（一主多从，多主多从）</p>
+<p>设备的SCL和SDA均要配置程开漏输出模式，且SCL和SDA需各添加一个上拉电阻，阻值一般为4.7kΩ左右。</p>
+<h5 id="I2C时序基本单元"><a href="#I2C时序基本单元" class="headerlink" title="I2C时序基本单元"></a>I2C时序基本单元</h5><p>I2C总线进行通信的起始条件是SCL高电平期间，SDA从高电平转换到低电平，如下图所示。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/51b332a892e1417d8a60b991305f1830.png"></p>
+<p>终止条件是SDA从低电平转换到高电平，SCL处于高电平。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/2e7990de05fb43fe8e7f01ebfc3e9351.png"></p>
+<p>I2C发送数据：在SCL低电平期间，发送端将数据位依次按高位到低位放到SDA线上，然后由接收端在SCL高电平期间读取数据位。（若主机为接受端，需要在主机接受数据之前释放SDA，即相对于切换为输入模式）</p>
+<p>在应答时候SCL处于高电平时，SDA应处于低电平表示收到应答信号。第一个发送字节通常都是主机寻找从机地址。</p>
 
                 
             </div>
