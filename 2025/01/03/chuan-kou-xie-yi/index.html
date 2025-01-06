@@ -470,14 +470,14 @@ USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口�
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-01-05
+                    2025-01-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    830
+                    920
                 </div>
                 
 
@@ -516,7 +516,7 @@ USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口�
 
 
 
-<p>接受数据的函数形式为</p>
+<p>接受数据的形式为</p>
 <pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">USART_GetITStatus</span><span class="token punctuation">(</span>USART1<span class="token punctuation">,</span> USART_IT_RXNE<span class="token punctuation">)</span> <span class="token operator">==</span> SET<span class="token punctuation">)</span>
   <span class="token punctuation">&#123;</span>
     <span class="token comment">// 读取接收到的数据</span>
@@ -581,6 +581,29 @@ USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口�
 <p><img src="https://i-blog.csdnimg.cn/direct/2e7990de05fb43fe8e7f01ebfc3e9351.png"></p>
 <p>I2C发送数据：在SCL低电平期间，发送端将数据位依次按高位到低位放到SDA线上，然后由接收端在SCL高电平期间读取数据位。（若主机为接受端，需要在主机接受数据之前释放SDA，即相对于切换为输入模式）</p>
 <p>在应答时候SCL处于高电平时，SDA应处于低电平表示收到应答信号。第一个发送字节通常都是主机寻找从机地址。</p>
+<h5 id="软件实现"><a href="#软件实现" class="headerlink" title="软件实现"></a>软件实现</h5><ul>
+<li><p>初始化（以stm32f103c8t6芯片的引脚为例，可知PB10是I2C_SCL的引脚，PB11是I2C_SDA的引脚）</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/9ea2727127a74f1f9eb46083f0b4b65e.png"></p>
+</li>
+</ul>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">MyI2C_Init</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// 使能 I2C1 时钟</span>
+    <span class="token function">RCC_APB1PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB1Periph_I2C1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 使能 GPIOB 时钟</span>
+    <span class="token function">RCC_APB2PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB2Periph_GPIOB<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 配置 GPIOB 的引脚 10 和 11 为开漏输出</span>
+    GPIO_InitTypeDef GPIO_InitStructure<span class="token punctuation">;</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Mode <span class="token operator">=</span> GPIO_Mode_Out_OD<span class="token punctuation">;</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Pin <span class="token operator">=</span> GPIO_Pin_10 <span class="token operator">|</span> GPIO_Pin_11<span class="token punctuation">;</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Speed <span class="token operator">=</span> GPIO_Speed_50MHz<span class="token punctuation">;</span>
+    <span class="token function">GPIO_Init</span><span class="token punctuation">(</span>SCL_PORT<span class="token punctuation">,</span> <span class="token operator">&amp;</span>GPIO_InitStructure<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">GPIO_SetBits</span><span class="token punctuation">(</span>GPIOB<span class="token punctuation">,</span> GPIO_Pin_10 <span class="token operator">|</span> GPIO_Pin_11<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 设置 PB10 和 PB11 为高电平</span>
+    
+<span class="token punctuation">&#125;</span></code></pre>
+
 
                 
             </div>

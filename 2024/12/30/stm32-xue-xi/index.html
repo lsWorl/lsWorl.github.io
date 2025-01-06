@@ -471,14 +471,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-01-01
+                    2025-01-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    873
+                    1.8k
                 </div>
                 
 
@@ -569,6 +569,54 @@ GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Speed <span class
 
 
 
+<table>
+<thead>
+<tr>
+<th>GPIO八种模式</th>
+<th>特点以及应用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模拟输入</td>
+<td>ADC和DAC使用。此模式下引脚电平不被采样或拉动。在此模式GPIO的数字输入功能关闭。</td>
+</tr>
+<tr>
+<td>浮空输入</td>
+<td>不使用内部电阻，完全浮空，默认状态不定，通常用于外部电路已经提供明确的上拉或下拉信号的场景。如 I²C 总线 SDA&#x2F;SCL 引脚，外部已经设计有上拉电阻。</td>
+</tr>
+<tr>
+<td>下拉输入</td>
+<td>使用内部下拉电阻，默认输入低电平。适用于引脚通常为低电平，仅在特定情况下拉高。</td>
+</tr>
+<tr>
+<td>上拉输入</td>
+<td>使用内部上拉电阻，默认输入高电平。适用于检测低电平的输入信号，例如开关按钮的闭合状态。</td>
+</tr>
+<tr>
+<td>开漏输出</td>
+<td>引脚通过 MOS 管连接到地，输出低电平时导通，<strong>输出高电平时需外部上拉电阻</strong>。适用于多设备共享总线，如 I²C、多个设备的中断信号线以及电平兼容，如3.3V和5V设备互联。</td>
+</tr>
+<tr>
+<td>推挽输出</td>
+<td>引脚可以输出高电平或低电平，内部由MOS管驱动。适用于控制 LED、蜂鸣器、继电器等负载。</td>
+</tr>
+<tr>
+<td>复用开漏</td>
+<td>配置为复用功能，并使用开漏输出方式。适用于I²C 总线通信的 SDA 和 SCL 引脚以及多设备共享复用引脚时。</td>
+</tr>
+<tr>
+<td>复用推挽</td>
+<td>配置为复用功能，并使用推挽输出方式驱动信号。适用于外设信号需要主动输出高低电平。如 USART 的 TX、SPI 的 SCK&#x2F; MOSI 等时序信号。</td>
+</tr>
+</tbody></table>
+<h5 id="模拟输入（下方所有×号代表不启用）"><a href="#模拟输入（下方所有×号代表不启用）" class="headerlink" title="模拟输入（下方所有×号代表不启用）"></a>模拟输入（下方所有×号代表不启用）</h5><p><img src="https://i-blog.csdnimg.cn/direct/26862517021c47afb6c517c587b002ea.png"></p>
+<h5 id="浮空输入"><a href="#浮空输入" class="headerlink" title="浮空输入"></a>浮空输入</h5><p><img src="https://i-blog.csdnimg.cn/direct/80d0830b2f19455fb31d9eb28b801bc2.png"></p>
+<h5 id="输入上拉（上开关打开，默认为高电平）"><a href="#输入上拉（上开关打开，默认为高电平）" class="headerlink" title="输入上拉（上开关打开，默认为高电平）"></a>输入上拉（上开关打开，默认为高电平）</h5><p><img src="https://i-blog.csdnimg.cn/direct/2a9329638fd242efa9bce594c4c52ad9.png"></p>
+<h5 id="输入下拉（下开关打开，默认为低电平）"><a href="#输入下拉（下开关打开，默认为低电平）" class="headerlink" title="输入下拉（下开关打开，默认为低电平）"></a>输入下拉（下开关打开，默认为低电平）</h5><p><img src="https://i-blog.csdnimg.cn/direct/ad4c360600064a4784db6ef3a50449ad.png"></p>
+<h5 id="开漏输出（允许输入，且输出低电平导通）"><a href="#开漏输出（允许输入，且输出低电平导通）" class="headerlink" title="开漏输出（允许输入，且输出低电平导通）"></a>开漏输出（允许输入，且输出低电平导通）</h5><p><img src="https://i-blog.csdnimg.cn/direct/b37f357d57df4191836d839d94bc5ba2.png"></p>
+<h5 id="推挽输出（输出数据寄存器输出高电平P-MOS导通，低电平N-MOS导通）"><a href="#推挽输出（输出数据寄存器输出高电平P-MOS导通，低电平N-MOS导通）" class="headerlink" title="推挽输出（输出数据寄存器输出高电平P-MOS导通，低电平N-MOS导通）"></a>推挽输出（输出数据寄存器输出高电平P-MOS导通，低电平N-MOS导通）</h5><p><img src="https://i-blog.csdnimg.cn/direct/2f8b50df185647e69b49da58fca5e37a.png"></p>
+<h5 id="复用开漏（类似开漏输出，不过输出电平来自片上外设）"><a href="#复用开漏（类似开漏输出，不过输出电平来自片上外设）" class="headerlink" title="复用开漏（类似开漏输出，不过输出电平来自片上外设）"></a>复用开漏（类似开漏输出，不过输出电平来自片上外设）</h5><p><img src="https://i-blog.csdnimg.cn/direct/e40510a7ff7d46f2a043ccebcec022ae.png"></p>
+<h5 id="复用推挽（类似推挽输出，不过输出电平来自片上外设）"><a href="#复用推挽（类似推挽输出，不过输出电平来自片上外设）" class="headerlink" title="复用推挽（类似推挽输出，不过输出电平来自片上外设）"></a>复用推挽（类似推挽输出，不过输出电平来自片上外设）</h5><p><img src="https://i-blog.csdnimg.cn/direct/c021049db6a74fe19eb4709fb21638df.png"></p>
 <h3 id="GPIO的函数使用"><a href="#GPIO的函数使用" class="headerlink" title="GPIO的函数使用"></a>GPIO的函数使用</h3><h5 id="设置函数"><a href="#设置函数" class="headerlink" title="设置函数"></a>设置函数</h5><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">GPIO_SetBits</span><span class="token punctuation">(</span>GPIO_TypeDef<span class="token operator">*</span> GPIOx<span class="token punctuation">,</span> <span class="token class-name">uint16_t</span> GPIO_Pin<span class="token punctuation">)</span><span class="token punctuation">;</span>					<span class="token comment">//将GPIO_Pin设置为高电平，支持多引脚</span>
 <span class="token keyword">void</span> <span class="token function">GPIO_ResetBits</span><span class="token punctuation">(</span>GPIO_TypeDef<span class="token operator">*</span> GPIOx<span class="token punctuation">,</span> <span class="token class-name">uint16_t</span> GPIO_Pin<span class="token punctuation">)</span><span class="token punctuation">;</span>				<span class="token comment">//将GPIO_Pin设置为低电平，支持多引脚</span>
 <span class="token keyword">void</span> <span class="token function">GPIO_WriteBit</span><span class="token punctuation">(</span>GPIO_TypeDef<span class="token operator">*</span> GPIOx<span class="token punctuation">,</span> <span class="token class-name">uint16_t</span> GPIO_Pin<span class="token punctuation">,</span> BitAction BitVal<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//第三个参数为Bit_SET置为高电平，Bit_RESET置为低电平，仅支持单引脚配置</span>
@@ -595,6 +643,77 @@ GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Speed <span class
 
 
 <h4 id="AHB总线连接的外设"><a href="#AHB总线连接的外设" class="headerlink" title="AHB总线连接的外设"></a>AHB总线连接的外设</h4><p><img src="https://i-blog.csdnimg.cn/direct/69348e69e1df41a08c186ebf5fd4a7d4.png"></p>
+<p><strong>注：在APB1的操作速度最大频率为36MHz，在APB2的操作速度最大频率为72MHz</strong></p>
+<h4 id="AFIO重映射"><a href="#AFIO重映射" class="headerlink" title="AFIO重映射"></a>AFIO重映射</h4><p>当使用的引脚的功能冲突时可以通过AFIO重映射来使用其他引脚来实现对应的功能，如USART1和TIM1的CH2和CH3引脚冲突，此时就可以使用AFIO将USART1_TX和USART1_RX的引脚改为PB6和PB7。</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">USART1_Remap_Init</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 1. 启用 GPIOB 和 AFIO 时钟</span>
+    <span class="token function">RCC_APB2PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB2Periph_GPIOB <span class="token operator">|</span> RCC_APB2Periph_AFIO<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 2. 重映射 USART1 引脚到 PB6 (TX) 和 PB7 (RX)</span>
+    <span class="token function">GPIO_PinRemapConfig</span><span class="token punctuation">(</span>GPIO_Remap_USART1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 3. 配置 GPIOB 的引脚为复用功能</span>
+    GPIO_InitTypeDef GPIO_InitStruct<span class="token punctuation">;</span>
+    
+    <span class="token comment">// 配置 PB6 为复用推挽输出（USART1_TX）</span>
+    GPIO_InitStruct<span class="token punctuation">.</span>GPIO_Pin <span class="token operator">=</span> GPIO_Pin_6<span class="token punctuation">;</span>
+    GPIO_InitStruct<span class="token punctuation">.</span>GPIO_Mode <span class="token operator">=</span> GPIO_Mode_AF_PP<span class="token punctuation">;</span>
+    GPIO_InitStruct<span class="token punctuation">.</span>GPIO_Speed <span class="token operator">=</span> GPIO_Speed_50MHz<span class="token punctuation">;</span>
+    <span class="token function">GPIO_Init</span><span class="token punctuation">(</span>GPIOB<span class="token punctuation">,</span> <span class="token operator">&amp;</span>GPIO_InitStruct<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 配置 PB7 为浮空输入（USART1_RX）</span>
+    GPIO_InitStruct<span class="token punctuation">.</span>GPIO_Pin <span class="token operator">=</span> GPIO_Pin_7<span class="token punctuation">;</span>
+    GPIO_InitStruct<span class="token punctuation">.</span>GPIO_Mode <span class="token operator">=</span> GPIO_Mode_IN_FLOATING<span class="token punctuation">;</span>
+    <span class="token function">GPIO_Init</span><span class="token punctuation">(</span>GPIOB<span class="token punctuation">,</span> <span class="token operator">&amp;</span>GPIO_InitStruct<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 4. 启用 USART1 时钟</span>
+    <span class="token function">RCC_APB2PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB2Periph_USART1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 5. 配置 USART1 参数</span>
+    USART_InitTypeDef USART_InitStruct<span class="token punctuation">;</span>
+
+    USART_InitStruct<span class="token punctuation">.</span>USART_BaudRate <span class="token operator">=</span> <span class="token number">9600</span><span class="token punctuation">;</span>                      <span class="token comment">// 波特率 9600</span>
+    USART_InitStruct<span class="token punctuation">.</span>USART_WordLength <span class="token operator">=</span> USART_WordLength_8b<span class="token punctuation">;</span>     <span class="token comment">// 数据位 8 位</span>
+    USART_InitStruct<span class="token punctuation">.</span>USART_StopBits <span class="token operator">=</span> USART_StopBits_1<span class="token punctuation">;</span>          <span class="token comment">// 停止位 1 位</span>
+    USART_InitStruct<span class="token punctuation">.</span>USART_Parity <span class="token operator">=</span> USART_Parity_No<span class="token punctuation">;</span>             <span class="token comment">// 无校验</span>
+    USART_InitStruct<span class="token punctuation">.</span>USART_HardwareFlowControl <span class="token operator">=</span> USART_HardwareFlowControl_None<span class="token punctuation">;</span> <span class="token comment">// 无硬件流控</span>
+    USART_InitStruct<span class="token punctuation">.</span>USART_Mode <span class="token operator">=</span> USART_Mode_Rx <span class="token operator">|</span> USART_Mode_Tx<span class="token punctuation">;</span> <span class="token comment">// 收发模式</span>
+
+    <span class="token function">USART_Init</span><span class="token punctuation">(</span>USART1<span class="token punctuation">,</span> <span class="token operator">&amp;</span>USART_InitStruct<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 6. 启用 USART1</span>
+    <span class="token function">USART_Cmd</span><span class="token punctuation">(</span>USART1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h3 id="时钟"><a href="#时钟" class="headerlink" title="时钟"></a>时钟</h3><p>在STM32中由三种不同的时钟源来驱动系统时钟（SYSCLK）:</p>
+<ul>
+<li>HSI振荡器时钟（High Speed Internal）</li>
+<li>HSE振荡器时钟（High Speed External）</li>
+<li>PLL时钟()</li>
+</ul>
+<p>SYSCLK通过时钟树分发到不同的子系统和外设，如</p>
+<ol>
+<li>SYSCLK-&gt;AHB时钟<ul>
+<li>通过AHB Prescaler分频器生产AHB时钟（HCLK）用于：<ul>
+<li>Cortex-M内核</li>
+<li>DMA控制器</li>
+<li>内存接口（SRAM、FLASH等）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>HCLK-&gt;APB时钟<ul>
+<li>通过APB和APB Prescaler 分频器生成APB时钟（PCLK1和PCLK2),用于：<ul>
+<li>APB1 外设（如 TIM2、USART2 等）</li>
+<li>APB2 外设（如 ADC、USART1 等）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>时钟配置可以使高速设备接高速时钟，低速设备接低速时钟，起到最大程度的<strong>节能效果</strong>。</p>
+<h4 id="时钟树"><a href="#时钟树" class="headerlink" title="时钟树"></a>时钟树</h4><p><img src="https://i-blog.csdnimg.cn/direct/1d595ec21b3c4d5a9b96b4d3a09b5a84.png"></p>
 
                 
             </div>
