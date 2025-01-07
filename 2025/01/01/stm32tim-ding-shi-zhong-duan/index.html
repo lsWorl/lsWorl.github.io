@@ -7,15 +7,9 @@
     <meta name="keywords" content="stm32TIM定时中断, LsWorld">
     <meta name="description" content="
 
-
-
-
-
-
-
-计数器计数频率$$CK_CNT &amp;#x3D; CK_PSC&amp;#x2F;(PSC+1)$$
-CK_CNT：定时器时钟，CK_PSC：定时器时钟源，PSC：预频分值。
-计数器溢出频率$$CK_CNT_OV &amp;#x3D; CK_C">
+USART1_RQXN
+中断优先级配置NVIC来进行中断优先级配置（值越小，优先级越高）。
+NVIC优先级分组NVIC的优先级组通过NVIC_PriorityGroupConfig(NVIC_PriorityGroup_X)来配置X表示">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -476,14 +470,14 @@ CK_CNT：定时器时钟，CK_PSC：定时器时钟源，PSC：预频分值。
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-01-06
+                    2025-01-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    90
+                    173
                 </div>
                 
 
@@ -505,12 +499,43 @@ CK_CNT：定时器时钟，CK_PSC：定时器时钟源，PSC：预频分值。
             <div id="articleContent">
                 <meta name="referrer" content="no-referrer"/>
 
-
-
-
-
-
-
+<p>USART1_RQXN</p>
+<h4 id="中断优先级"><a href="#中断优先级" class="headerlink" title="中断优先级"></a>中断优先级</h4><p>配置NVIC来进行中断优先级配置（值越小，优先级越高）。</p>
+<h5 id="NVIC优先级分组"><a href="#NVIC优先级分组" class="headerlink" title="NVIC优先级分组"></a>NVIC优先级分组</h5><p>NVIC的优先级组通过<code>NVIC_PriorityGroupConfig(NVIC_PriorityGroup_X)</code>来配置<code>X</code>表示哪个分组。</p>
+<table>
+<thead>
+<tr>
+<th>NVIC组</th>
+<th>抢占优先级</th>
+<th>响应优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NVIC_PriorityGroup_0</code></td>
+<td>0bits</td>
+<td>4bits，可分为0-15</td>
+</tr>
+<tr>
+<td><code>NVIC_PriorityGroup_1</code></td>
+<td>1bits</td>
+<td>3bits</td>
+</tr>
+<tr>
+<td><code>NVIC_PriorityGroup_2</code></td>
+<td>2bits</td>
+<td>2bits</td>
+</tr>
+<tr>
+<td><code>NVIC_PriorityGroup_3</code></td>
+<td>3bits</td>
+<td>1bits</td>
+</tr>
+<tr>
+<td><code>NVIC_PriorityGroup_4</code></td>
+<td>4bits</td>
+<td>0bits</td>
+</tr>
+</tbody></table>
 <h5 id="计数器计数频率"><a href="#计数器计数频率" class="headerlink" title="计数器计数频率"></a>计数器计数频率</h5><p>$$<br>CK_CNT &#x3D; CK_PSC&#x2F;(PSC+1)<br>$$</p>
 <p>CK_CNT：定时器时钟，CK_PSC：定时器时钟源，PSC：预频分值。</p>
 <h5 id="计数器溢出频率"><a href="#计数器溢出频率" class="headerlink" title="计数器溢出频率"></a>计数器溢出频率</h5><p>$$<br>CK_CNT_OV &#x3D; CK_CNT&#x2F;(ARR +1)&#x3D;CK_PSC&#x2F;(PSC+1)&#x2F;(ARR+1)<br>$$</p>
