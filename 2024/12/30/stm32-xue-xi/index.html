@@ -471,14 +471,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-01-06
+                    2025-01-09
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.8k
+                    2k
                 </div>
                 
 
@@ -713,6 +713,50 @@ GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Speed <span class
 </li>
 </ol>
 <p>时钟配置可以使高速设备接高速时钟，低速设备接低速时钟，起到最大程度的<strong>节能效果</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>频率</th>
+<th>外部连接</th>
+<th>功能</th>
+<th>用途</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HSE（High-Speed External），高速外部时钟</td>
+<td>4~16MHz</td>
+<td>4~16MHz晶体</td>
+<td></td>
+<td>系统时钟&#x2F;RTC</td>
+<td>成本高，温漂小</td>
+</tr>
+<tr>
+<td>LSE(Low-Speed External)，低速外部时钟</td>
+<td>32kHz</td>
+<td>32.768kHz晶体</td>
+<td>带校准功能</td>
+<td>RTC</td>
+<td>成本高，温漂小</td>
+</tr>
+<tr>
+<td>HSI（High-Speed Internal），高速内部时钟</td>
+<td>8MHz</td>
+<td>无</td>
+<td>经出产调校</td>
+<td>系统时钟</td>
+<td>成本低，温漂大</td>
+</tr>
+<tr>
+<td>LSI（Low-Speed Interal）,低速内部时钟</td>
+<td>40kHz</td>
+<td>无</td>
+<td>带校准功能</td>
+<td>RTC</td>
+<td>成本低，温漂大</td>
+</tr>
+</tbody></table>
 <h4 id="时钟树"><a href="#时钟树" class="headerlink" title="时钟树"></a>时钟树</h4><p><img src="https://i-blog.csdnimg.cn/direct/1d595ec21b3c4d5a9b96b4d3a09b5a84.png"></p>
 
                 

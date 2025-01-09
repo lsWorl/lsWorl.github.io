@@ -4,15 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="stm32TIM定时中断, LsWorld">
+    <meta name="keywords" content="STM32F1系列驱动SG90舵机模块, LsWorld">
     <meta name="description" content="
 
-中断优先级配置NVIC来进行中断优先级配置（值越小，优先级越高）。
-NVIC优先级分组NVIC的优先级组通过NVIC_PriorityGroupConfig(NVIC_PriorityGroup_X)来配置X表示哪个分组。
 
 
+SG90舵机模块介绍
+标准库代码实现驱动舵机由上图可知可以通过PWM来实现驱动舵机，这里采用STM32F103C8T6的TIM2的通道4来实现，即该芯片的A3口引脚，如下图所示
 
-NVI">
+配置20ms的时基单元（以PLL时钟频率为72MHz">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -26,7 +26,7 @@ NVI">
 
     
 
-    <title>stm32TIM定时中断 | LsWorld</title>
+    <title>STM32F1系列驱动SG90舵机模块 | LsWorld</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
@@ -316,12 +316,12 @@ NVI">
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">stm32TIM定时中断</h1>
+                    <h1 class="description center-align post-title">STM32F1系列驱动SG90舵机模块</h1>
                 </div>
             </div>
         </div>
@@ -466,7 +466,7 @@ NVI">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2025-01-01
+                    2025-01-09
                 </div>
                 
 
@@ -480,7 +480,7 @@ NVI">
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    397
+                    254
                 </div>
                 
 
@@ -502,58 +502,20 @@ NVI">
             <div id="articleContent">
                 <meta name="referrer" content="no-referrer"/>
 
-<h4 id="中断优先级"><a href="#中断优先级" class="headerlink" title="中断优先级"></a>中断优先级</h4><p>配置NVIC来进行中断优先级配置（值越小，优先级越高）。</p>
-<h5 id="NVIC优先级分组"><a href="#NVIC优先级分组" class="headerlink" title="NVIC优先级分组"></a>NVIC优先级分组</h5><p>NVIC的优先级组通过<code>NVIC_PriorityGroupConfig(NVIC_PriorityGroup_X)</code>来配置<code>X</code>表示哪个分组。</p>
-<table>
-<thead>
-<tr>
-<th>NVIC组</th>
-<th>抢占优先级</th>
-<th>响应优先级</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>NVIC_PriorityGroup_0</code></td>
-<td>0bits</td>
-<td>4bits，可分为0-15</td>
-</tr>
-<tr>
-<td><code>NVIC_PriorityGroup_1</code></td>
-<td>1bits</td>
-<td>3bits</td>
-</tr>
-<tr>
-<td><code>NVIC_PriorityGroup_2</code></td>
-<td>2bits</td>
-<td>2bits</td>
-</tr>
-<tr>
-<td><code>NVIC_PriorityGroup_3</code></td>
-<td>3bits</td>
-<td>1bits</td>
-</tr>
-<tr>
-<td><code>NVIC_PriorityGroup_4</code></td>
-<td>4bits</td>
-<td>0bits</td>
-</tr>
-</tbody></table>
-<h5 id="计数器计数频率"><a href="#计数器计数频率" class="headerlink" title="计数器计数频率"></a>计数器计数频率</h5><p>$$<br>CK_CNT &#x3D; CK_PSC&#x2F;(PSC+1)<br>$$</p>
-<p>CK_CNT：定时器时钟，CK_PSC：定时器时钟源，PSC：预频分值。</p>
-<h5 id="计数器溢出频率"><a href="#计数器溢出频率" class="headerlink" title="计数器溢出频率"></a>计数器溢出频率</h5><p>$$<br>CK_CNT_OV &#x3D; CK_CNT&#x2F;(ARR +1)&#x3D;CK_PSC&#x2F;(PSC+1)&#x2F;(ARR+1)<br>$$</p>
-<p>ARR：自动重装值。</p>
-<h3 id="PWM"><a href="#PWM" class="headerlink" title="PWM"></a>PWM</h3><h5 id="PWM频率"><a href="#PWM频率" class="headerlink" title="PWM频率"></a>PWM频率</h5><p>$$<br>Freq &#x3D;CK_CNT &#x2F;(PSC+1)&#x2F;(ARR+1)<br>$$</p>
-<h5 id="PWM占空比"><a href="#PWM占空比" class="headerlink" title="PWM占空比"></a>PWM占空比</h5><p>$$<br>Duty&#x3D;CCR&#x2F;(ARR+1)<br>$$</p>
-<h5 id="PWM分辨率"><a href="#PWM分辨率" class="headerlink" title="PWM分辨率"></a>PWM分辨率</h5><p>$$<br>Reso &#x3D; 1&#x2F;(ARR+1)<br>$$</p>
-<h4 id="标准库PWM设置"><a href="#标准库PWM设置" class="headerlink" title="标准库PWM设置"></a>标准库PWM设置</h4><p>以TIM2的通道4为例。</p>
+
+
+<h3 id="SG90舵机模块介绍"><a href="#SG90舵机模块介绍" class="headerlink" title="SG90舵机模块介绍"></a>SG90舵机模块介绍</h3><p><img src="https://i-blog.csdnimg.cn/direct/d01abb86c0ec4fea8bf57e3feff2552e.png"></p>
+<h3 id="标准库代码实现驱动舵机"><a href="#标准库代码实现驱动舵机" class="headerlink" title="标准库代码实现驱动舵机"></a>标准库代码实现驱动舵机</h3><p>由上图可知可以通过PWM来实现驱动舵机，这里采用STM32F103C8T6的TIM2的通道4来实现，即该芯片的A3口引脚，如下图所示</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/766b50d8ed004cafb65dcafbf3f27713.png"></p>
+<p>配置20ms的时基单元（以PLL时钟频率为72MHz为例），那么就是将TIM2的定时器的周期配置为20ms（50Hz），即设置<code>ARR= 2000 - 1</code>，<code>PSC = 720 -1</code>，则定时器的时钟周期就为20ms，并且我在初始位置设置为90°，即起始值设置为150，代码如下：</p>
 <pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">TIM2_PWM_Config</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#123;</span>
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure<span class="token punctuation">;</span>
     TIM_OCInitTypeDef TIM_OCInitStructure<span class="token punctuation">;</span>
 
     <span class="token comment">// 配置定时器周期为20ms（50Hz）</span>
-    TIM_TimeBaseStructure<span class="token punctuation">.</span>TIM_Period <span class="token operator">=</span> <span class="token number">2000</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// 72MHz / 7200 = 10KHz (ARR)</span>
-    TIM_TimeBaseStructure<span class="token punctuation">.</span>TIM_Prescaler <span class="token operator">=</span> <span class="token number">720</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// 10KHz / 720 = 50Hz (PSC)</span>
+    TIM_TimeBaseStructure<span class="token punctuation">.</span>TIM_Period <span class="token operator">=</span> <span class="token number">2000</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// 72MHz / 7200 = 10KHz</span>
+    TIM_TimeBaseStructure<span class="token punctuation">.</span>TIM_Prescaler <span class="token operator">=</span> <span class="token number">720</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// 10KHz / 720 = 50Hz</span>
     TIM_TimeBaseStructure<span class="token punctuation">.</span>TIM_ClockDivision <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment">// 时钟不分频</span>
     TIM_TimeBaseStructure<span class="token punctuation">.</span>TIM_CounterMode <span class="token operator">=</span> TIM_CounterMode_Up<span class="token punctuation">;</span> <span class="token comment">// 向上计数</span>
     <span class="token function">TIM_TimeBaseInit</span><span class="token punctuation">(</span>TIM2<span class="token punctuation">,</span> <span class="token operator">&amp;</span>TIM_TimeBaseStructure<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 初始化TIM2</span>
@@ -561,7 +523,7 @@ NVI">
     <span class="token comment">// 配置PWM模式</span>
     TIM_OCInitStructure<span class="token punctuation">.</span>TIM_OCMode <span class="token operator">=</span> TIM_OCMode_PWM1<span class="token punctuation">;</span> <span class="token comment">// PWM模式1</span>
     TIM_OCInitStructure<span class="token punctuation">.</span>TIM_OutputState <span class="token operator">=</span> TIM_OutputState_Enable<span class="token punctuation">;</span> <span class="token comment">// 输出使能</span>
-    TIM_OCInitStructure<span class="token punctuation">.</span>TIM_Pulse <span class="token operator">=</span> <span class="token number">150</span><span class="token punctuation">;</span> <span class="token comment">// 初始位置1.5ms (初始值)</span>
+    TIM_OCInitStructure<span class="token punctuation">.</span>TIM_Pulse <span class="token operator">=</span> <span class="token number">150</span><span class="token punctuation">;</span> <span class="token comment">// 初始位置1.5ms</span>
     TIM_OCInitStructure<span class="token punctuation">.</span>TIM_OCPolarity <span class="token operator">=</span> TIM_OCPolarity_High<span class="token punctuation">;</span> <span class="token comment">// 输出极性高</span>
     <span class="token function">TIM_OC4Init</span><span class="token punctuation">(</span>TIM2<span class="token punctuation">,</span> <span class="token operator">&amp;</span>TIM_OCInitStructure<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 使用通道4</span>
 
@@ -570,37 +532,6 @@ NVI">
     <span class="token function">TIM_CtrlPWMOutputs</span><span class="token punctuation">(</span>TIM2<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 主输出使能</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-
-
-<h4 id="PWM模式1和PWM模式2的区别"><a href="#PWM模式1和PWM模式2的区别" class="headerlink" title="PWM模式1和PWM模式2的区别"></a><strong>PWM模式1和PWM模式2的区别</strong></h4><table>
-<thead>
-<tr>
-<th>特性</th>
-<th>PWM模式1 (<code>TIM_OCMode_PWM1</code>)</th>
-<th>PWM模式2 (<code>TIM_OCMode_PWM2</code>)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>有效电平</strong></td>
-<td>计数器值 &lt; <code>TIM_Pulse</code> 时有效</td>
-<td>计数器值 ≥ <code>TIM_Pulse</code> 时有效</td>
-</tr>
-<tr>
-<td><strong>无效电平</strong></td>
-<td>计数器值 ≥ <code>TIM_Pulse</code> 时无效</td>
-<td>计数器值 &lt; <code>TIM_Pulse</code> 时无效</td>
-</tr>
-<tr>
-<td><strong>极性反转</strong></td>
-<td>通过 <code>TIM_OCPolarity</code> 配置</td>
-<td>通过 <code>TIM_OCPolarity</code> 配置</td>
-</tr>
-<tr>
-<td><strong>适用场景</strong></td>
-<td>常规PWM控制</td>
-<td>需要反向逻辑的PWM控制</td>
-</tr>
-</tbody></table>
 
                 
             </div>
@@ -627,7 +558,7 @@ NVI">
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2025/01/01/stm32tim-ding-shi-zhong-duan/">http://example.com/2025/01/01/stm32tim-ding-shi-zhong-duan/</a>
+                    <a href="http://example.com/2025/01/09/stm32f1-xi-lie-qu-dong-sg90-duo-ji-mo-kuai/">http://example.com/2025/01/09/stm32f1-xi-lie-qu-dong-sg90-duo-ji-mo-kuai/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -984,17 +915,18 @@ NVI">
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2025/01/02/adc-mo-shu-zhuan-huan-qi/">
+                <a href="/2025/01/09/stm32f1-xi-lie-qu-dong-sg90-duo-ji-mo-kuai/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="ADC模数转换器">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="STM32F1系列驱动SG90舵机模块">
                         
-                        <span class="card-title">ADC模数转换器</span>
+                        <span class="card-title">STM32F1系列驱动SG90舵机模块</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1004,9 +936,9 @@ NVI">
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2025-01-02
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-01-09
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1019,6 +951,7 @@ NVI">
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1041,13 +974,13 @@ NVI">
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2024/12/30/stm32-xue-xi/">
+                <a href="/2025/01/07/python3-yu-fa/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="stm32标准库初始化">
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Python3中常用函数">
                         
-                        <span class="card-title">stm32标准库初始化</span>
+                        <span class="card-title">Python3中常用函数</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1058,14 +991,14 @@ NVI">
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2024-12-30
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-01-07
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" class="post-category">
-                                    嵌入式
+                            <a href="/categories/python/" class="post-category">
+                                    python
                                 </a>
                             
                             
@@ -1075,8 +1008,8 @@ NVI">
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E5%8D%95%E7%89%87%E6%9C%BA/">
-                        <span class="chip bg-color">单片机</span>
+                    <a href="/tags/python/">
+                        <span class="chip bg-color">python</span>
                     </a>
                     
                 </div>
