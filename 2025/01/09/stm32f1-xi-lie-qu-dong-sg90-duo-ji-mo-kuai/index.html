@@ -473,14 +473,14 @@ SG90舵机模块介绍
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-01-09
+                    2025-01-11
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    254
+                    434
                 </div>
                 
 
@@ -532,6 +532,27 @@ SG90舵机模块介绍
     <span class="token function">TIM_CtrlPWMOutputs</span><span class="token punctuation">(</span>TIM2<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 主输出使能</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
+<p>这里我采用A3口作为舵机的驱动引脚，那么GPIO的配置就应该是以下：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">GPIO_Config</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    GPIO_InitTypeDef GPIO_InitStructure<span class="token punctuation">;</span>
+
+    <span class="token comment">// Enable GPIOA clock</span>
+    <span class="token function">RCC_APB2PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB2Periph_GPIOA<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// Configure PA3 as TIM2_CH4 alternate function push-pull output</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Pin <span class="token operator">=</span> GPIO_Pin_3<span class="token punctuation">;</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Mode <span class="token operator">=</span> GPIO_Mode_AF_PP<span class="token punctuation">;</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Speed <span class="token operator">=</span> GPIO_Speed_50MHz<span class="token punctuation">;</span>
+    <span class="token function">GPIO_Init</span><span class="token punctuation">(</span>GPIOA<span class="token punctuation">,</span> <span class="token operator">&amp;</span>GPIO_InitStructure<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>然后可以通过<code>TIM_SetCompare4();</code>该函数设置捕获&#x2F;比较寄存器4(CCR4)的值，来动态调整占空比，从而控制每个周期的高电平时间，实现舵机的转向。</p>
+<p>即</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">TIM_SetCompare4</span><span class="token punctuation">(</span>TIM2<span class="token punctuation">,</span> <span class="token number">150</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//此时占空比为7.5%，高电平时间为1.5ms</span></code></pre>
+
+<p>计算公式：<br>$$<br>高电平时间&#x3D; \frac{定时器时钟频率}{TIM_Pulse}&#x3D; \frac{150}{0.1MHz} &#x3D;1.5ms<br>$$</p>
+<p>$$<br>占空比&#x3D;(\frac{TIM_Pulse}{TIM_Period +1})×100%&#x3D;\frac{150}{2000}×100%&#x3D;7.5%<br>$$</p>
 
                 
             </div>
@@ -915,18 +936,17 @@ SG90舵机模块介绍
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2025/01/09/stm32f1-xi-lie-qu-dong-sg90-duo-ji-mo-kuai/">
+                <a href="/2025/01/15/stm32-zhong-re-min-dian-zu-mo-kuai-zai-oled-shang-shi-shi-xian-shi-wen-du/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="STM32F1系列驱动SG90舵机模块">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="stm32中热敏电阻模块在OLED上实时显示温度">
                         
-                        <span class="card-title">STM32F1系列驱动SG90舵机模块</span>
+                        <span class="card-title">stm32中热敏电阻模块在OLED上实时显示温度</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -936,9 +956,9 @@ SG90舵机模块介绍
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2025-01-09
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-01-15
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -951,7 +971,6 @@ SG90舵机模块介绍
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
