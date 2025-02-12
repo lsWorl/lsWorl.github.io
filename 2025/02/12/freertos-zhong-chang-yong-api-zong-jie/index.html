@@ -1,0 +1,2431 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="freertos中常用api总结, LsWorld">
+    <meta name="description" content="
+
+
+
+1. 任务管理 (Task Management) 
+
+xTaskCreate():  创建任务。
+
+功能:  动态创建一个新的任务，并将其加入到 FreeRTOS 的任务调度器中。
+
+常用场景:  在系统初始化阶段或运行时动态创建">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    
+
+    <title>freertos中常用api总结 | LsWorld</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">LsWorld</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">LsWorld</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/lsWorl/lsWorl.github.io" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/lsWorl/lsWorl.github.io" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">freertos中常用api总结</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/">
+                                <span class="chip bg-color">嵌入式</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" class="post-category">
+                                嵌入式
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2025-02-12
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2025-02-12
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    5.7k
+                </div>
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+        <!-- 是否加载使用自带的 prismjs. -->
+        <link rel="stylesheet" href="/libs/prism/prism.css">
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <meta name="referrer" content="no-referrer"/>
+
+
+
+<p><strong>1. 任务管理 (Task Management)</strong> </p>
+<ul>
+<li><p><strong><code>xTaskCreate()</code></strong>:  <strong>创建任务</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  动态创建一个新的任务，并将其加入到 FreeRTOS 的任务调度器中。</p>
+</li>
+<li><p><strong>常用场景</strong>:  在系统初始化阶段或运行时动态创建任务，用于执行不同的功能模块。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>pvTaskCode</code>:  指向任务函数的指针，任务代码的入口。</li>
+<li><code>pcName</code>:  任务名称，字符串形式，方便调试和追踪。</li>
+<li><code>usStackDepth</code>:  任务堆栈大小，以字 (word) 为单位，需要根据任务需求合理配置。</li>
+<li><code>pvParameters</code>:  传递给任务函数的参数，void 指针类型，可以传递任意类型数据。</li>
+<li><code>uxPriority</code>:  任务优先级，数值越大优先级越高，FreeRTOS 会根据优先级进行任务调度。</li>
+<li><code>pxCreatedTask</code>:  任务句柄指针，用于存储创建的任务句柄，后续操作任务时需要使用该句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vTaskDelete()</code></strong>:  <strong>删除任务</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的任务。可以删除自身任务或其它任务。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务执行完成后不再需要，或者需要动态管理任务生命周期时。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTaskToDelete</code>:  要删除的任务句柄。如果为 <code>NULL</code>，则删除自身任务。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vTaskDelay()</code></strong>:  <strong>任务延时</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  使当前任务进入阻塞态，延时指定的时间。</p>
+</li>
+<li><p><strong>常用场景</strong>:  周期性任务的延时，或在不需要立即执行的任务中加入延时以降低 CPU 占用率。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTicksToDelay</code>:  延时的时间，以 tick 为单位。tick 的时间长度由 <code>configTICK_RATE_HZ</code> 配置宏定义，例如 <code>configTICK_RATE_HZ</code> 为 1000，则 1 tick 为 1ms。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vTaskSuspend()</code></strong>:  <strong>挂起任务</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  将指定的任务挂起，使其进入挂起态，不再参与任务调度。</p>
+</li>
+<li><p><strong>常用场景</strong>:  暂时停止某个任务的执行，例如调试时暂停某个功能模块。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTaskToSuspend</code>:  要挂起的任务句柄。如果为 <code>NULL</code>，则挂起自身任务。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vTaskResume()</code></strong>:  <strong>恢复任务</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  恢复被挂起的任务，使其进入就绪态，重新参与任务调度。</p>
+</li>
+<li><p><strong>常用场景</strong>:  与 <code>vTaskSuspend()</code> 配对使用，在需要时恢复被挂起的任务。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTaskToResume</code>:  要恢复的任务句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>uxTaskGetStackHighWaterMark()</code></strong>:  <strong>获取任务堆栈剩余空间</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  获取任务堆栈当前剩余空间的大小，用于评估堆栈使用情况，避免堆栈溢出。</p>
+</li>
+<li><p><strong>常用场景</strong>:  调试阶段或性能优化时，检查任务堆栈是否足够，预防潜在的堆栈溢出问题。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTask</code>:  要查询的任务句柄。如果为 <code>NULL</code>，则查询自身任务。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>pcTaskGetName()</code></strong>: <strong>获取任务名称</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>: 获取指定任务的任务名称字符串。</p>
+</li>
+<li><p><strong>常用场景</strong>:  调试信息输出，日志记录等，方便识别任务。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTaskToQuery</code>: 要查询的任务句柄。如果为 <code>NULL</code>，则查询自身任务。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 队列管理 (Queue Management)</strong></p>
+<ul>
+<li><p><strong><code>xQueueCreate()</code></strong>:  <strong>创建队列</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个新的队列，用于任务间或 ISR 与任务间的数据传递。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务间通信，数据缓冲，消息传递。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>uxQueueLength</code>:  队列的长度，即队列可以存储的最大消息数量。</li>
+<li><code>uxItemSize</code>:  队列中每个消息的长度，以字节为单位。如果消息是结构体，则为结构体的大小。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xQueueSend()</code> &#x2F; <code>xQueueSendToBack()</code></strong>:  <strong>发送消息到队列尾部</strong> (前者是宏定义，后者是函数)。</p>
+<ul>
+<li><p><strong>功能</strong>:  向队列的尾部发送一条消息。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务向队列发送数据。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xQueue</code>:  要发送消息的队列句柄。</li>
+<li><code>pvItemToQueue</code>:  指向要发送的消息数据的指针。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间，如果队列已满，任务将阻塞等待，直到队列有空间或超时。设置为 0 表示非阻塞发送，队列满则立即返回错误。<code>portMAX_DELAY</code> 表示永久阻塞等待。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xQueueSendToFront()</code></strong>:  <strong>发送消息到队列头部</strong>。</p>
+<ul>
+<li><strong>功能</strong>:  向队列的头部发送一条消息。</li>
+<li><strong>常用场景</strong>:  发送高优先级消息，需要优先处理的消息。</li>
+<li><strong>参数</strong>:  与 <code>xQueueSend()</code> 类似。</li>
+</ul>
+</li>
+<li><p><strong><code>xQueueReceive()</code></strong>:  <strong>接收队列消息</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  从队列中接收一条消息。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务从队列接收数据。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xQueue</code>:  要接收消息的队列句柄。</li>
+<li><code>pvBuffer</code>:  指向接收消息数据缓冲区的指针。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间，如果队列为空，任务将阻塞等待，直到队列有消息或超时。设置为 0 表示非阻塞接收，队列空则立即返回错误。<code>portMAX_DELAY</code> 表示永久阻塞等待。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>uxQueueMessagesWaiting()</code></strong>:  <strong>获取队列中消息数量</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  获取当前队列中已有的消息数量。</p>
+</li>
+<li><p><strong>常用场景</strong>:  查询队列状态，判断队列是否为空或已满。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xQueue</code>:  要查询的队列句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vQueueDelete()</code></strong>:  <strong>删除队列</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的队列，释放队列占用的内存。</p>
+</li>
+<li><p><strong>常用场景</strong>:  队列不再需要时，释放资源。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xQueueToDelete</code>:  要删除的队列句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>3. 信号量管理 (Semaphore Management)</strong></p>
+<ul>
+<li><p><strong><code>xSemaphoreCreateBinary()</code></strong>:  <strong>创建二值信号量</strong>。</p>
+<ul>
+<li><strong>功能</strong>:  创建一个二值信号量，初始状态可以为可用或不可用。二值信号量只能取 0 和 1 两个值。</li>
+<li><strong>常用场景</strong>:  互斥访问共享资源，任务同步 (例如事件触发)。</li>
+<li><strong>返回</strong>:  信号量句柄，创建失败返回 <code>NULL</code>。</li>
+</ul>
+</li>
+<li><p><strong><code>xSemaphoreCreateCounting()</code></strong>:  <strong>创建计数信号量</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个计数信号量，可以设定最大计数值和初始计数值。计数信号量可以允许多个任务访问资源 (但访问数量有限制)。</p>
+</li>
+<li><p><strong>常用场景</strong>:  资源计数，例如控制访问具有多个槽位的资源池 (例如缓冲区管理)。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>uxMaxCount</code>:  信号量的最大计数值。</li>
+<li><code>uxInitialCount</code>:  信号量的初始计数值。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  信号量句柄，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xSemaphoreCreateMutex()</code></strong>:  **创建互斥信号量 (互斥锁)**。</p>
+<ul>
+<li><strong>功能</strong>:  创建一个互斥信号量，用于保护共享资源，防止多个任务同时访问造成数据竞争。互斥信号量具有优先级继承机制，可以避免优先级反转问题。</li>
+<li><strong>常用场景</strong>:  保护临界区，例如访问共享外设、全局变量等。</li>
+<li><strong>返回</strong>:  互斥信号量句柄，创建失败返回 <code>NULL</code>。</li>
+</ul>
+</li>
+<li><p><strong><code>xSemaphoreTake()</code></strong>:  <strong>获取信号量</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  尝试获取信号量，如果信号量不可用，则任务进入阻塞态等待信号量可用。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务访问共享资源前，先获取信号量。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xSemaphore</code>:  要获取的信号量句柄。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间，如果信号量不可用，任务将阻塞等待，直到信号量可用或超时。<code>portMAX_DELAY</code> 表示永久阻塞等待。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xSemaphoreGive()</code></strong>:  <strong>释放信号量</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  释放信号量，使信号量可用。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务访问完共享资源后，释放信号量，允许其他任务访问。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xSemaphore</code>:  要释放的信号量句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vSemaphoreDelete()</code></strong>:  <strong>删除信号量</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的信号量，释放信号量占用的内存。</p>
+</li>
+<li><p><strong>常用场景</strong>:  信号量不再需要时，释放资源。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xSemaphoreToDelete</code>:  要删除的信号量句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>4. 互斥量 (Mutex) 管理</strong></p>
+<ul>
+<li><strong>互斥信号量 <code>xSemaphoreCreateMutex()</code>  实际上就是互斥量，因此互斥量管理 API 与信号量管理 API 在互斥量部分是重合的。</strong>  常用的互斥量操作 API 实际上就是 <code>xSemaphoreTake()</code> 和 <code>xSemaphoreGive()</code>。</li>
+</ul>
+<p><strong>5. 事件组管理 (Event Group Management)</strong></p>
+<ul>
+<li><p><strong><code>xEventGroupCreate()</code></strong>:  <strong>创建事件组</strong>。</p>
+<ul>
+<li><strong>功能</strong>:  创建一个事件组，用于任务间的事件同步。一个事件组可以包含多个事件标志位。</li>
+<li><strong>常用场景</strong>:  多事件同步，一个任务需要等待多个事件发生后才能执行。</li>
+<li><strong>返回</strong>:  事件组句柄，创建失败返回 <code>NULL</code>。</li>
+</ul>
+</li>
+<li><p><strong><code>xEventGroupSetBits()</code></strong>:  <strong>设置事件位</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  设置事件组中指定的事件位。</p>
+</li>
+<li><p><strong>常用场景</strong>:  事件发生时，设置对应的事件位。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xEventGroup</code>:  要设置事件位的事件组句柄。</li>
+<li><code>uxBitsToSet</code>:  要设置的事件位掩码。可以使用位操作来设置多个事件位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xEventGroupWaitBits()</code></strong>:  <strong>等待事件位</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  等待事件组中指定的事件位被设置。</p>
+</li>
+<li><p><strong>常用场景</strong>:  任务等待指定的事件发生。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xEventGroup</code>:  要等待事件位的事件组句柄。</li>
+<li><code>uxBitsToWaitFor</code>:  要等待的事件位掩码。</li>
+<li><code>xClearOnExit</code>:  退出时是否清除等待的事件位。</li>
+<li><code>xWaitForAllBits</code>:  是否等待所有指定的事件位都被设置。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  实际触发的事件位掩码。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xEventGroupClearBits()</code></strong>:  <strong>清除事件位</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  清除事件组中指定的事件位。</p>
+</li>
+<li><p><strong>常用场景</strong>:  事件处理完成后，清除事件位，准备下一次事件触发。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xEventGroup</code>:  要清除事件位的事件组句柄。</li>
+<li><code>uxBitsToClear</code>:  要清除的事件位掩码。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vEventGroupDelete()</code></strong>:  <strong>删除事件组</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的事件组，释放事件组占用的内存。</p>
+</li>
+<li><p><strong>常用场景</strong>:  事件组不再需要时，释放资源。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xEventGroupToDelete</code>:  要删除的事件组句柄。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>6. 软件定时器管理 (Software Timer Management)</strong></p>
+<ul>
+<li><p><strong><code>xTimerCreate()</code></strong>:  <strong>创建软件定时器</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个软件定时器，可以设置定时器周期和回调函数。</p>
+</li>
+<li><p><strong>常用场景</strong>:  周期性任务触发，延时操作，事件触发等。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>pcTimerName</code>:  定时器名称，字符串形式。</li>
+<li><code>xTimerPeriodInTicks</code>:  定时器周期，以 tick 为单位。</li>
+<li><code>uxAutoReload</code>:  自动重载标志，<code>pdTRUE</code> 为自动重载 (周期定时器)，<code>pdFALSE</code> 为单次触发定时器。</li>
+<li><code>pvTimerID</code>:  定时器 ID，用户自定义数据，可以传递给定时器回调函数。</li>
+<li><code>pxCallbackFunction</code>:  定时器回调函数指针，定时器超时后执行的函数。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  定时器句柄，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xTimerStart()</code></strong>:  <strong>启动定时器</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  启动指定的定时器。</p>
+</li>
+<li><p><strong>常用场景</strong>:  在需要开始定时时启动定时器。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTimer</code>:  要启动的定时器句柄。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间 (通常设置为 0 或 <code>portMAX_DELAY</code>，在定时器服务任务上下文中可以阻塞等待，在其他任务上下文中不应该阻塞等待)。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xTimerStop()</code></strong>:  <strong>停止定时器</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  停止指定的定时器。</p>
+</li>
+<li><p><strong>常用场景</strong>:  在不需要定时器触发时停止定时器。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTimer</code>:  要停止的定时器句柄。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间 (同 <code>xTimerStart()</code> )。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xTimerChangePeriod()</code></strong>:  <strong>修改定时器周期</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  动态修改定时器的周期。</p>
+</li>
+<li><p><strong>常用场景</strong>:  在运行时根据需要调整定时器周期。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTimer</code>:  要修改周期的定时器句柄。</li>
+<li><code>xNewPeriodInTicks</code>:  新的定时器周期，以 tick 为单位。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间 (同 <code>xTimerStart()</code> )。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xTimerIsTimerActive()</code></strong>:  <strong>判断定时器是否激活</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  判断指定的定时器是否处于激活状态。</p>
+</li>
+<li><p><strong>常用场景</strong>:  查询定时器状态。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTimer</code>:  要查询的定时器句柄。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  <code>pdTRUE</code> 表示激活，<code>pdFALSE</code> 表示未激活。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xTimerDelete()</code></strong>:  <strong>删除定时器</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的定时器，释放定时器占用的内存。</p>
+</li>
+<li><p><strong>常用场景</strong>:  定时器不再需要时，释放资源。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xTimerToDelete</code>:  要删除的定时器句柄。</li>
+<li><code>xTicksToWait</code>:  阻塞等待时间 (同 <code>xTimerStart()</code> )。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>7. 内存管理 (Memory Management)</strong></p>
+<ul>
+<li><p><strong><code>pvPortMalloc()</code></strong>:  <strong>动态内存分配</strong> (FreeRTOS 的内存分配函数)。</p>
+<ul>
+<li><p><strong>功能</strong>:  从 FreeRTOS 的堆内存中分配指定大小的内存块。</p>
+</li>
+<li><p><strong>常用场景</strong>:  动态创建 FreeRTOS 对象 (例如队列、信号量、任务等) 或应用程序需要动态内存分配时。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xWantedSize</code>:  要分配的内存块大小，以字节为单位。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  指向分配的内存块的指针，分配失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>vPortFree()</code></strong>:  <strong>动态内存释放</strong> (FreeRTOS 的内存释放函数)。</p>
+<ul>
+<li><p><strong>功能</strong>:  释放由 <code>pvPortMalloc()</code> 分配的内存块。</p>
+</li>
+<li><p><strong>常用场景</strong>:  释放不再使用的动态分配内存，避免内存泄漏。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>pvBlockToFree</code>:  指向要释放的内存块的指针，必须是由 <code>pvPortMalloc()</code> 分配的内存块。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>8. 中断管理 (Interrupt Management)</strong></p>
+<ul>
+<li><p><strong><code>xSemaphoreGiveFromISR()</code></strong>:  <strong>在中断服务例程 (ISR) 中释放信号量</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  在 ISR 中释放信号量，用于通知任务发生了某个事件。</p>
+</li>
+<li><p><strong>常用场景</strong>:  ISR 中检测到硬件事件，需要通知任务进行处理时。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xSemaphore</code>:  要释放的信号量句柄。</li>
+<li><code>pxHigherPriorityTaskWoken</code>:  输出参数，用于指示是否有更高优先级的任务因为释放信号量而进入就绪态，需要进行上下文切换。通常需要根据该参数判断是否需要手动触发上下文切换 (<code>portYIELD_FROM_ISR()</code> 或 <code>taskYIELD_FROM_ISR()</code> )。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xQueueSendFromISR()</code> &#x2F; <code>xQueueSendToBackFromISR()</code></strong>:  <strong>在 ISR 中发送消息到队列尾部</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  在 ISR 中向队列发送消息，用于 ISR 与任务间的数据传递。</p>
+</li>
+<li><p><strong>常用场景</strong>:  ISR 中接收到数据，需要传递给任务进行处理时。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>xQueue</code>:  要发送消息的队列句柄。</li>
+<li><code>pvItemToQueue</code>:  指向要发送的消息数据的指针。</li>
+<li><code>pxHigherPriorityTaskWoken</code>:  输出参数，同 <code>xSemaphoreGiveFromISR()</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>xQueueSendToFrontFromISR()</code></strong>:  <strong>在 ISR 中发送消息到队列头部</strong>。</p>
+<ul>
+<li><strong>功能</strong>:  在 ISR 中向队列头部发送消息。</li>
+<li><strong>参数</strong>:  与 <code>xQueueSendFromISR()</code> 类似。</li>
+</ul>
+</li>
+<li><p><strong><code>portYIELD_FROM_ISR()</code> &#x2F; <code>taskYIELD_FROM_ISR()</code></strong>:  <strong>在 ISR 中触发上下文切换</strong> (与具体的 FreeRTOS 移植有关)。</p>
+<ul>
+<li><p><strong>功能</strong>:  在 ISR 中手动触发上下文切换，将 CPU 使用权交给更高优先级的就绪态任务。</p>
+</li>
+<li><p><strong>常用场景</strong>:  当 ISR 中释放信号量或发送消息到队列，导致更高优先级的任务进入就绪态时，需要触发上下文切换，立即执行高优先级任务，提高系统实时性。</p>
+</li>
+<li><p>参数</p>
+<p>:</p>
+<ul>
+<li>无参数，根据 <code>xSemaphoreGiveFromISR()</code> 或 <code>xQueueSendFromISR()</code> 的 <code>pxHigherPriorityTaskWoken</code> 参数判断是否需要调用。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>二、CMSIS-V2 RTOS API (在 STM32CubeMX 中常用)</strong></p>
+<p>CMSIS-V2 RTOS API 提供了一套标准化的 RTOS 接口，在 STM32CubeMX 中，如果您选择了 CMSIS_RTOS_V2，则可以使用 CMSIS-V2 标准接口来操作 FreeRTOS 内核对象。CMSIS-V2 RTOS API 实际上是对原生 FreeRTOS API 的一层封装，其底层实现仍然是调用原生 FreeRTOS API。</p>
+<p>使用 CMSIS-V2 RTOS API 的好处是可以提高代码的可移植性，如果将来需要更换 RTOS，只需要修改 RTOS 适配层即可，应用程序代码可以基本保持不变。</p>
+<p>以下是一些常用的 CMSIS-V2 RTOS API 接口，对应于原生 FreeRTOS API 的功能模块：</p>
+<p><strong>1. 任务管理 (Thread Management)</strong>  (CMSIS-V2 中任务称为线程)</p>
+<ul>
+<li><p><strong><code>osThreadNew()</code></strong>:  <strong>创建线程</strong> (对应 <code>xTaskCreate()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建并启动一个新的线程。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>thread_def</code>:  线程定义结构体指针，包含线程入口函数、名称、优先级、堆栈大小等信息。</li>
+<li><code>thread_attr</code>:  线程属性结构体指针，可以配置线程属性，例如堆栈、优先级等，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  线程 ID (<code>osThreadId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osThreadTerminate()</code></strong>:  <strong>终止线程</strong> (对应 <code>vTaskDelete()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  终止指定的线程。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>thread_id</code>:  要终止的线程 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osDelay()</code></strong>:  <strong>线程延时</strong> (对应 <code>vTaskDelay()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  使当前线程进入延时状态。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>ticks</code>:  延时的时间，以 tick 为单位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osThreadSuspend()</code></strong>:  <strong>挂起线程</strong> (对应 <code>vTaskSuspend()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  挂起指定的线程。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>thread_id</code>:  要挂起的线程 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osThreadResume()</code></strong>:  <strong>恢复线程</strong> (对应 <code>vTaskResume()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  恢复被挂起的线程。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>thread_id</code>:  要恢复的线程 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osThreadGetStackSpace()</code></strong>:  <strong>获取线程堆栈剩余空间</strong> (对应 <code>uxTaskGetStackHighWaterMark()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  获取线程堆栈当前剩余空间的大小。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>thread_id</code>:  要查询的线程 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osThreadGetName()</code></strong>: <strong>获取线程名称</strong> (对应 <code>pcTaskGetName()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>: 获取指定线程的线程名称字符串。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>thread_id</code>: 要查询的线程 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 队列管理 (Message Queue Management)</strong> (CMSIS-V2 中队列称为消息队列)</p>
+<ul>
+<li><p><strong><code>osMessageQueueNew()</code></strong>:  <strong>创建消息队列</strong> (对应 <code>xQueueCreate()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个新的消息队列。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>msg_count</code>:  消息队列的长度，即队列可以存储的最大消息数量。</li>
+<li><code>msg_size</code>:  队列中每个消息的长度，以字节为单位。</li>
+<li><code>queue_attr</code>:  队列属性结构体指针，可以配置队列属性，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  消息队列 ID (<code>osMessageQueueId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMessageQueuePut()</code></strong>:  <strong>发送消息到消息队列尾部</strong> (对应 <code>xQueueSend()</code> &#x2F; <code>xQueueSendToBack()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  向消息队列的尾部发送一条消息。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mq_id</code>:  要发送消息的消息队列 ID。</li>
+<li><code>msg_ptr</code>:  指向要发送的消息数据的指针。</li>
+<li><code>timeout</code>:  阻塞等待时间，以 tick 为单位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMessageQueueGet()</code></strong>:  <strong>接收消息队列消息</strong> (对应 <code>xQueueReceive()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  从消息队列中接收一条消息。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mq_id</code>:  要接收消息的消息队列 ID。</li>
+<li><code>msg_ptr</code>:  指向接收消息数据缓冲区的指针。</li>
+<li><code>timeout</code>:  阻塞等待时间，以 tick 为单位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMessageQueueGetCount()</code></strong>:  <strong>获取消息队列中消息数量</strong> (对应 <code>uxQueueMessagesWaiting()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  获取当前消息队列中已有的消息数量。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mq_id</code>:  要查询的消息队列 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMessageQueueDelete()</code></strong>:  <strong>删除消息队列</strong> (对应 <code>vQueueDelete()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的消息队列。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mq_id</code>:  要删除的消息队列 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>3. 信号量管理 (Semaphore Management)</strong></p>
+<ul>
+<li><p><strong><code>osSemaphoreNew()</code></strong>:  <strong>创建信号量</strong> (对应 <code>xSemaphoreCreateBinary()</code> 和 <code>xSemaphoreCreateCounting()</code> )。</p>
+<ul>
+<li><p>功能</p>
+<p>:  创建一个信号量，可以创建二值信号量或计数信号量，根据 </p>
+<pre class="language-none"><code class="language-none">max_signals</code></pre>
+
+<p> 参数决定。</p>
+<ul>
+<li>如果 <code>max_signals</code> 为 1，则创建二值信号量。</li>
+<li>如果 <code>max_signals</code> 大于 1，则创建计数信号量。</li>
+</ul>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>max_signals</code>:  信号量的最大计数数量 (二值信号量为 1，计数信号量大于 1)。</li>
+<li><code>initial_signals</code>:  信号量的初始计数数量。</li>
+<li><code>semaphore_attr</code>:  信号量属性结构体指针，可以配置信号量属性，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  信号量 ID (<code>osSemaphoreId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osSemaphoreAcquire()</code></strong>:  <strong>获取信号量</strong> (对应 <code>xSemaphoreTake()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  尝试获取信号量。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>semaphore_id</code>:  要获取的信号量 ID。</li>
+<li><code>timeout</code>:  阻塞等待时间，以 tick 为单位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osSemaphoreRelease()</code></strong>:  <strong>释放信号量</strong> (对应 <code>xSemaphoreGive()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  释放信号量。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>semaphore_id</code>:  要释放的信号量 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osSemaphoreDelete()</code></strong>:  <strong>删除信号量</strong> (对应 <code>vSemaphoreDelete()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的信号量。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>semaphore_id</code>:  要删除的信号量 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>4. 互斥锁 (Mutex) 管理</strong></p>
+<ul>
+<li><p><strong><code>osMutexNew()</code></strong>:  <strong>创建互斥锁</strong> (对应 <code>xSemaphoreCreateMutex()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个互斥锁。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mutex_attr</code>:  互斥锁属性结构体指针，可以配置互斥锁属性，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  互斥锁 ID (<code>osMutexId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMutexAcquire()</code></strong>:  <strong>获取互斥锁</strong> (对应 <code>xSemaphoreTake()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  尝试获取互斥锁。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mutex_id</code>:  要获取的互斥锁 ID。</li>
+<li><code>timeout</code>:  阻塞等待时间，以 tick 为单位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMutexRelease()</code></strong>:  <strong>释放互斥锁</strong> (对应 <code>xSemaphoreGive()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  释放互斥锁。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mutex_id</code>:  要释放的互斥锁 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMutexDelete()</code></strong>:  <strong>删除互斥锁</strong> (对应 <code>vSemaphoreDelete()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的互斥锁。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mutex_id</code>:  要删除的互斥锁 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>5. 事件标志 (Event Flags) 管理</strong> (CMSIS-V2 中事件组称为事件标志)</p>
+<ul>
+<li><p><strong><code>osEventFlagsNew()</code></strong>:  <strong>创建事件标志</strong> (对应 <code>xEventGroupCreate()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个事件标志组。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>ef_attr</code>:  事件标志属性结构体指针，可以配置事件标志属性，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  事件标志 ID (<code>osEventFlagsId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osEventFlagsSet()</code></strong>:  <strong>设置事件标志位</strong> (对应 <code>xEventGroupSetBits()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  设置事件标志组中指定的事件位。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>ef_id</code>:  要设置事件位的事件标志 ID。</li>
+<li><code>flags</code>:  要设置的事件位掩码。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osEventFlagsWait()</code></strong>:  <strong>等待事件标志位</strong> (对应 <code>xEventGroupWaitBits()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  等待事件标志组中指定的事件位被设置。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>ef_id</code>:  要等待事件位的事件标志 ID。</li>
+<li><code>flags</code>:  要等待的事件位掩码。</li>
+<li><code>options</code>:  等待选项，例如 <code>osFlagsWaitAny</code> (等待任意一个事件位被设置) 或 <code>osFlagsWaitAll</code> (等待所有指定的事件位都被设置)。</li>
+<li><code>timeout</code>:  阻塞等待时间，以 tick 为单位。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  实际触发的事件位掩码。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osEventFlagsClear()</code></strong>:  <strong>清除事件标志位</strong> (对应 <code>xEventGroupClearBits()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  清除事件标志组中指定的事件位。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>ef_id</code>:  要清除事件位的事件标志 ID。</li>
+<li><code>flags</code>:  要清除的事件位掩码。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osEventFlagsDelete()</code></strong>:  <strong>删除事件标志</strong> (对应 <code>vEventGroupDelete()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的事件标志组。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>ef_id</code>:  要删除的事件标志 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>6. 定时器 (Timer) 管理</strong> (CMSIS-V2 中软件定时器称为定时器)</p>
+<ul>
+<li><p><strong><code>osTimerNew()</code></strong>:  <strong>创建定时器</strong> (对应 <code>xTimerCreate()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个定时器。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>callback</code>:  定时器回调函数指针。</li>
+<li><code>type</code>:  定时器类型，<code>osTimerOnce</code> (单次触发) 或 <code>osTimerPeriodic</code> (周期触发)。</li>
+<li><code>timer_attr</code>:  定时器属性结构体指针，可以配置定时器属性，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  定时器 ID (<code>osTimerId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osTimerStart()</code></strong>:  <strong>启动定时器</strong> (对应 <code>xTimerStart()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  启动指定的定时器。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>timer_id</code>:  要启动的定时器 ID。</li>
+<li><code>period</code>:  定时器周期，以 tick 为单位。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osTimerStop()</code></strong>:  <strong>停止定时器</strong> (对应 <code>xTimerStop()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  停止指定的定时器。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>timer_id</code>:  要停止的定时器 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osTimerIsRunning()</code></strong>:  <strong>判断定时器是否运行</strong> (对应 <code>xTimerIsTimerActive()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  判断指定的定时器是否处于运行状态。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>timer_id</code>:  要查询的定时器 ID。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  <code>true</code> 表示运行，<code>false</code> 表示停止。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osTimerDelete()</code></strong>:  <strong>删除定时器</strong> (对应 <code>xTimerDelete()</code> )。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的定时器。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>timer_id</code>:  要删除的定时器 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>7. 内存管理 (Memory Pool Management)</strong> (CMSIS-V2 中没有直接对应 <code>pvPortMalloc()</code> 和 <code>vPortFree()</code> 的标准 API，CMSIS-V2 提供了内存池管理，用于管理固定大小的内存块，如果需要动态内存分配，仍然需要使用原生 FreeRTOS 的 <code>pvPortMalloc()</code> 和 <code>vPortFree()</code>  或者 C 标准库的 <code>malloc()</code> 和 <code>free()</code> )</p>
+<ul>
+<li><p><strong><code>osMemoryPoolNew()</code></strong>:  <strong>创建内存池</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  创建一个内存池，用于管理固定大小的内存块。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>block_count</code>:  内存池中内存块的数量。</li>
+<li><code>block_size</code>:  每个内存块的大小，以字节为单位。</li>
+<li><code>mp_attr</code>:  内存池属性结构体指针，可以配置内存池属性，可以设置为 <code>NULL</code> 使用默认属性。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  内存池 ID (<code>osMemoryPoolId_t</code>)，创建失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMemoryPoolAlloc()</code></strong>:  <strong>从内存池分配内存块</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  从内存池中分配一个内存块。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mp_id</code>:  要分配内存的内存池 ID。</li>
+<li><code>timeout</code>:  阻塞等待时间，以 tick 为单位。</li>
+</ul>
+</li>
+<li><p><strong>返回</strong>:  指向分配的内存块的指针，分配失败返回 <code>NULL</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMemoryPoolFree()</code></strong>:  <strong>释放内存块到内存池</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  将从内存池分配的内存块释放回内存池。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mp_id</code>:  要释放内存的内存池 ID。</li>
+<li><code>block</code>:  指向要释放的内存块的指针。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>osMemoryPoolDelete()</code></strong>:  <strong>删除内存池</strong>。</p>
+<ul>
+<li><p><strong>功能</strong>:  删除指定的内存池。</p>
+</li>
+<li><p>关键参数</p>
+<p>:</p>
+<ul>
+<li><code>mp_id</code>:  要删除的内存池 ID。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">LsWorld</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://example.com/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/">http://example.com/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">LsWorld</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/">
+                                    <span class="chip bg-color">嵌入式</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: url('../../source/mouse-click-solid.png'),pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/libs/valine/av-min.js"></script>
+<script src="/libs/valine/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'arRvTlzSn9CAss8hbeBtFvpV-gzGzoHsz',
+        appKey: 'FgLccL6NmYrYIouy47VKkySf',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="freertos中常用api总结">
+                        
+                        <span class="card-title">freertos中常用api总结</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-02-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" class="post-category">
+                                    嵌入式
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/">
+                        <span class="chip bg-color">嵌入式</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="STM32根据DHT11温湿度分析城市相似度项目总结">
+                        
+                        <span class="card-title">STM32根据DHT11温湿度分析城市相似度项目总结</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-02-04
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" class="post-category">
+                                    嵌入式
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%95%E7%89%87%E6%9C%BA/">
+                        <span class="chip bg-color">单片机</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2022-2025</span>
+            
+            <a href="/about" target="_blank">LsWorld</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+                <span id="sitetime"> Loading ...</span>
+                <script>
+                    var calcSiteTime = function () {
+                        var seconds = 1000;
+                        var minutes = seconds * 60;
+                        var hours = minutes * 60;
+                        var days = hours * 24;
+                        var years = days * 365;
+                        var today = new Date();
+                        var startYear = "2022";
+                        var startMonth = "4";
+                        var startDate = "10";
+                        var startHour = "16";
+                        var startMinute = "38";
+                        var startSecond = "0";
+                        var todayYear = today.getFullYear();
+                        var todayMonth = today.getMonth() + 1;
+                        var todayDate = today.getDate();
+                        var todayHour = today.getHours();
+                        var todayMinute = today.getMinutes();
+                        var todaySecond = today.getSeconds();
+                        var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                        var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                        var diff = t2 - t1;
+                        var diffYears = Math.floor(diff / years);
+                        var diffDays = Math.floor((diff / days) - diffYears * 365);
+
+                        // 区分是否有年份.
+                        var language = 'zh-CN';
+                        if (startYear === String(todayYear)) {
+                            document.getElementById("year").innerHTML = todayYear;
+                            var daysTip = 'This site has been running for ' + diffDays + ' days';
+                            if (language === 'zh-CN') {
+                                daysTip = '本站已运行 ' + diffDays + ' 天';
+                            } else if (language === 'zh-HK') {
+                                daysTip = '本站已運行 ' + diffDays + ' 天';
+                            }
+                            document.getElementById("sitetime").innerHTML = daysTip;
+                        } else {
+                            document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                            var yearsAndDaysTip = 'This site has been running for ' + diffYears + ' years and '
+                                + diffDays + ' days';
+                            if (language === 'zh-CN') {
+                                yearsAndDaysTip = '本站已运行 ' + diffYears + ' 年 ' + diffDays + ' 天';
+                            } else if (language === 'zh-HK') {
+                                yearsAndDaysTip = '本站已運行 ' + diffYears + ' 年 ' + diffDays + ' 天';
+                            }
+                            document.getElementById("sitetime").innerHTML = yearsAndDaysTip;
+                        }
+                    }
+
+                    calcSiteTime();
+                </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/lsWorl" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1428903832@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1428903832" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1428903832" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+    <script type="text/javascript" color="0,147,255"
+        pointColor="0,0,255" opacity='0.7'
+        zIndex="-1" count="99"
+        src="/libs/background/canvas-nest.js"></script>
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
