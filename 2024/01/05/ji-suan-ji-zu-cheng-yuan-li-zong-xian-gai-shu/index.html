@@ -1,0 +1,294 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>计算机组成原理-总线概述 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="总线的基本概念总线是一组能为多个部件同时共享的公共信息传送线路。由于总线发送信号，与总线连接的所有部件都能接受到，所以同一时刻只能有一个部件发送数据。可有多个部件同时接受数据。  总线的特点：共享：指总线上可以挂接多个部件，各个部件之间互相交换的信息都可以通过这组线路分时共享。 分时：指同一时刻只允许有一个部件向总线发送信息，如果系统中有多个部件，则它们只能分时向总线发送信息。 总线的分类串行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理-总线概述">
+<meta property="og:url" content="https://lsworl.github.io/2024/01/05/ji-suan-ji-zu-cheng-yuan-li-zong-xian-gai-shu/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="总线的基本概念总线是一组能为多个部件同时共享的公共信息传送线路。由于总线发送信号，与总线连接的所有部件都能接受到，所以同一时刻只能有一个部件发送数据。可有多个部件同时接受数据。  总线的特点：共享：指总线上可以挂接多个部件，各个部件之间互相交换的信息都可以通过这组线路分时共享。 分时：指同一时刻只允许有一个部件向总线发送信息，如果系统中有多个部件，则它们只能分时向总线发送信息。 总线的分类串行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2024-01-05T11:19:01.000Z">
+<meta property="article:modified_time" content="2026-05-22T11:24:08.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="计算机组成原理">
+<meta property="article:tag" content="总线">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "计算机组成原理-总线概述",
+  "url": "https://lsworl.github.io/2024/01/05/ji-suan-ji-zu-cheng-yuan-li-zong-xian-gai-shu/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2024-01-05T11:19:01.000Z",
+  "dateModified": "2026-05-22T11:24:08.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2024/01/05/ji-suan-ji-zu-cheng-yuan-li-zong-xian-gai-shu/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '计算机组成原理-总线概述',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">计算机组成原理-总线概述</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">计算机组成原理-总线概述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-01-05T11:19:01.000Z" title="发表于 2024-01-05 19:19:01">2024-01-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-22T11:24:08.000Z" title="更新于 2026-05-22 19:24:08">2026-05-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">计算机组成原理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><meta name="referrer" content="no-referrer">
+
+<h3 id="总线的基本概念"><a href="#总线的基本概念" class="headerlink" title="总线的基本概念"></a>总线的基本概念</h3><p>总线是一组能为多个部件同时共享的公共信息传送线路。由于总线发送信号，与总线连接的所有部件都能接受到，所以<strong>同一时刻只能有一个部件发送数据</strong>。可<strong>有多个部件同时接受数据</strong>。</p>
+<p><img src="https://img-blog.csdnimg.cn/direct/c7b06567f9e84fcf8eb86815ea13d20b.png"></p>
+<h5 id="总线的特点："><a href="#总线的特点：" class="headerlink" title="总线的特点："></a>总线的特点：</h5><p>共享：指总线上可以挂接多个部件，各个部件之间互相交换的信息都可以通过这组线路<strong>分时共享</strong>。</p>
+<p>分时：指同一时刻只允许有一个部件向总线发送信息，如果系统中有多个部件，则它们只能分时向总线发送信息。</p>
+<h3 id="总线的分类"><a href="#总线的分类" class="headerlink" title="总线的分类"></a>总线的分类</h3><h4 id="串行总线与并行总线"><a href="#串行总线与并行总线" class="headerlink" title="串行总线与并行总线"></a>串行总线与并行总线</h4><p><strong>串行总线：</strong></p>
+<p>每次传送只传送1bit数据。</p>
+<p>优点：只需要一条传输线，成本低廉，广泛应用于长距离传输；应用于计算机内部时，可以节省布线空间。</p>
+<p>缺点：在数据发送和接受的时候要进行拆卸和装配，要考虑串行，并行转换的问题。</p>
+<p><strong>并行总线：</strong></p>
+<p>每次可以并行发送多bit数据。</p>
+<p>优点：总线的逻辑时序比较简单，电路实现起来比较容易。</p>
+<p>缺点：信号线数量多，占用更多的布线空间；远距离传输成本高昂；由于工作频率较高时，并行的信号线之间会产生严重干扰，对每条线等长的要求也越高，所以无法持续提升工作频率。</p>
+<h4 id="按功能进行划分"><a href="#按功能进行划分" class="headerlink" title="按功能进行划分"></a>按功能进行划分</h4><h5 id="片内总线"><a href="#片内总线" class="headerlink" title="片内总线"></a>片内总线</h5><p>片内总线式芯片内部的总线，如CPU内部寄存器与寄存器之间、ALU之间的公共连接线。</p>
+<h5 id="系统总线"><a href="#系统总线" class="headerlink" title="系统总线"></a>系统总线</h5><p>系统总线式计算机系统内各功能部件（CPU、主存、I&#x2F;O接口）之间相互连接的总线。又可分为数据总线、地址总线和控制总线。</p>
+<p><strong>数据总线</strong>的根数与机器字长、存储字长有关，为双向传输。</p>
+<p><strong>地址总线</strong>的根数与主存地址空间大小及设备数量有关，为单向传输。</p>
+<p><strong>控制总线</strong>用于传输控制信息，包括CPU送出的控制命令和主存（或外设）返回CPU的反馈信号。</p>
+<h3 id="系统总线的结构"><a href="#系统总线的结构" class="headerlink" title="系统总线的结构"></a>系统总线的结构</h3><h4 id="单总线结构"><a href="#单总线结构" class="headerlink" title="单总线结构"></a>单总线结构</h4><p><img src="https://img-blog.csdnimg.cn/direct/0468dbe4f3e24fc9ab6ef941f3c12c72.png"></p>
+<p>单总线结构将CPU、主存、I&#x2F;O设备都连接在一组总线上，允许I&#x2F;O设备之间、I&#x2F;O设备和CPU之间直接交换信息。</p>
+<p><strong>优点</strong>：结构简单，成本低，易于接入新的设备。</p>
+<p><strong>缺点</strong>：带宽低、父爱中，多个部件只能争用唯一的总线，且不支持并发传送操作。</p>
+<h4 id="双总线结构"><a href="#双总线结构" class="headerlink" title="双总线结构"></a>双总线结构</h4><p><img src="https://img-blog.csdnimg.cn/direct/5ff17cfc03c6489eb36453d973fed39b.png"></p>
+<p>双总线结构式用两条总线，一条是<strong>主存总线</strong>，用于CPU、主存和通道之间进行数据传送；另一条是<strong>I&#x2F;O总线</strong>，用于多个外部设备与通道之间进行数据传送。</p>
+<p>上图<strong>通道是具有特殊功能的处理器</strong>，对输入输出设备统一管理。</p>
+<p>该模式支持<strong>突发传送</strong>（送出一个地址，收到多个地址连续的数据）。</p>
+<p><strong>优点</strong>：将较低俗的I&#x2F;O设备从单总线上分离处理，实现存储器总线和I&#x2F;O设备分离。</p>
+<p><strong>缺点</strong>：需要增加通道等硬件设备。</p>
+<h4 id="三总线结构"><a href="#三总线结构" class="headerlink" title="三总线结构"></a>三总线结构</h4><p><img src="https://img-blog.csdnimg.cn/direct/a28a1ef60ecb4f67a192bbb0d1fdb1c6.png"></p>
+<p>三总线结构式在计算机系统各部件之间采用3条各自独立的总线来构成信息通路，这3条总线分别为主存总线、I&#x2F;O总线和直接内存访问DMA总线。</p>
+<p><strong>优点</strong>：提高了I&#x2F;O设备的性能，使其更快地响应命令，提高系统吞吐量。</p>
+<p><strong>缺点</strong>：系统工作效率较低、</p>
+<h3 id="总线的性能指标"><a href="#总线的性能指标" class="headerlink" title="总线的性能指标"></a>总线的性能指标</h3><h4 id="总线的传输周期（总线周期）"><a href="#总线的传输周期（总线周期）" class="headerlink" title="总线的传输周期（总线周期）"></a>总线的传输周期（总线周期）</h4><p><strong>指一次总线操作所需的时间</strong>。总线传输周期通常由若干各总线时钟周期构成。</p>
+<h4 id="总线时钟周期"><a href="#总线时钟周期" class="headerlink" title="总线时钟周期"></a>总线时钟周期</h4><p>即<strong>机器的时钟周期</strong>。计算机有一个统一的时钟，以控制整个计算机的各个部件，总线也要受此时钟的控制。（现代计算机中，总线时钟周期也有可能由桥接器设备提供）。</p>
+<h4 id="总线的工作频率"><a href="#总线的工作频率" class="headerlink" title="总线的工作频率"></a>总线的工作频率</h4><p>总线上各种操作的频率，为<strong>总线周期的倒数</strong>。若总线周期&#x3D;N个时钟周期，则总线的工作频率&#x3D;时钟频率&#x2F;N。实际上表示<strong>总线在一秒内会传送几次数据</strong>。</p>
+<h4 id="总线的时钟频率"><a href="#总线的时钟频率" class="headerlink" title="总线的时钟频率"></a>总线的时钟频率</h4><p>即机器的时钟频率，为<strong>时钟周期的倒数</strong>。若时钟周期为T，则时钟频率为1&#x2F;T.</p>
+<p>实际上指<strong>一秒内由多少个时钟周期</strong>。</p>
+<h4 id="总线宽度"><a href="#总线宽度" class="headerlink" title="总线宽度"></a>总线宽度</h4><p>又称为总线位宽，它是<strong>总线上同时能够传输的数据位数</strong>，通常指<strong>数据总线的根数</strong>，如32根称为32位总线。</p>
+<h4 id="总线带宽"><a href="#总线带宽" class="headerlink" title="总线带宽"></a>总线带宽</h4><p>可理解为总线的数据传输率，即<strong>单位时间内总线上可传输数据的位数</strong>，通常每秒传送信息的字节数来衡量，单位可用字节&#x2F;秒表示。<br>$$<br>总线带宽&#x3D;总线工作频率\times 总线宽度(bit&#x2F;s)&#x3D;总线工作频率\times(总线宽度&#x2F;8)(B&#x2F;s)<br>$$<br>总线带宽指的是总线本身所能达到的<strong>最高传输速率</strong>。</p>
+<h4 id="总线复用"><a href="#总线复用" class="headerlink" title="总线复用"></a>总线复用</h4><p>总线复用是指一种信号线在<strong>不同时间传输不同的信息</strong>。可以使用较少的线传输更多的信息，从而节省了空间和成本。</p>
+<h4 id="信号线数"><a href="#信号线数" class="headerlink" title="信号线数"></a>信号线数</h4><p>地址总线、数据总线和控制总线3种总线数的总和称为信号线数。</p>
+<h3 id="总线传输"><a href="#总线传输" class="headerlink" title="总线传输"></a>总线传输</h3><p>总线传输总共分为四个阶段：</p>
+<ol>
+<li>申请分配阶段：由需要使用总线的主模块提出申请，经总线仲裁后决定下一传输周期的总线使用权。也可将此阶段细分为<strong>传输请求和总线仲裁</strong>两个阶段。</li>
+<li>寻址阶段：获得使用权的主模块通过总线发出本次要访问的从模块的地址和相关命令。</li>
+<li>传输阶段：主模块和从模块进行数据交换，可单向或双向进行数据传送。</li>
+<li>结束阶段：主模块<strong>有关信息</strong>均从系统总线上撤除，让出总线使用权。</li>
+</ol>
+<p>总线传输会根据其定时方式来协调发送和接受双方的传送定时关系。</p>
+<h4 id="同步定时方式"><a href="#同步定时方式" class="headerlink" title="同步定时方式"></a>同步定时方式</h4><p>总线控制器采用<strong>统一的时钟信号</strong>来协调发送和接受双方的传送定时关系。</p>
+<p>优点：传送速度快，具有较高的传输速率；总线控制逻辑简单。</p>
+<p>缺点：主从设备属于强制性同步；不能及时进行数据通信的有效性检验，可靠性差。</p>
+<p>同步通信适用于<strong>总线长度较短</strong>以及总线所接<strong>部件的存取时间近</strong>的系统。</p>
+<h4 id="异步定时方式"><a href="#异步定时方式" class="headerlink" title="异步定时方式"></a>异步定时方式</h4><p>异步定时方式通过传输双方相互制约的“握手”信号来实现定时控制。</p>
+<p>优点：总线周期长度可变，可保证两个工作速度相差很大的部件或设备之间可靠地进行信息交换，自动适应时间的配合。</p>
+<p>缺点：比同步控制方式复杂，速度比同步定时慢。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2024/01/05/ji-suan-ji-zu-cheng-yuan-li-zong-xian-gai-shu/">https://lsworl.github.io/2024/01/05/ji-suan-ji-zu-cheng-yuan-li-zong-xian-gai-shu/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">计算机组成原理</a><a class="post-meta__tags" href="/tags/%E6%80%BB%E7%BA%BF/">总线</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/01/08/ji-suan-ji-zu-cheng-yuan-li-io-xi-tong-ji-ben-gai-nian/" title="计算机组成原理-IO系统基本概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">计算机组成原理-IO系统基本概念</div></div><div class="info-2"><div class="info-item-1">    IO控制方式简介假设有这么一段代码： #include &lt;stdio.h> int main()&#123;     char i;     scanf("%c", &amp;i);     printf("%c",i);     return 0; &#125;  当上方代码执行到scanf(&quot;%c&quot;, &amp;i);此时需要I&#x2F;O设备来输入内容使程序继续进行下去。 此时CPU有两种解决方案：  程序查询方式：CPU不断轮询检查I&#x2F;O控制器的状态寄存器，检测到状态为”已完成“后，再从数据寄存器取出输入数据。 程序中断方式：等待键盘I&#x2F;O时可以先让CPU执行其他程序，键盘I&#x2F;O完成后I&#x2F;O控制器向CPU发出中断请求，CPU响应中断请求，并取走输入数据。  用上述方法都需要用CPU做中转站来让主存和IO设备相互联系。  若对磁盘等高速外设就不适合使用上诉方法，因此就可以用DMA（Direct Memory Access）控制方式。 DMA控制方式：主存和高速io设备之间建立一条直接数据通路。每完成...</div></div></div></a><a class="pagination-related" href="/2024/01/05/ji-suan-ji-zu-cheng-yuan-li-duo-chu-li-qi-de-ji-ben-gai-nian/" title="计算机组成原理-多处理器的基本概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">计算机组成原理-多处理器的基本概念</div></div><div class="info-2"><div class="info-item-1">    SISD、SIMD、MIMD的基本概念单指令流单数据流（SISD）结构该计算机通常仅包含一个处理器和一个存储器。 特性：  各指令序列只能并发、不能并行，每条指令处理一两个数据。 不是数据级并行技术。  硬件组成：  一个处理器+一个主存储器 若采用指令流水线，需设置多个功能部件，采用多模块交叉存储器。  前面介绍的计算机架构都是SISD结构。 单指令流多数据流(SIMD)特性：  各指令序列只能并发、不能并行，但每条指令可同时处理多个数据。 是一个数据级并行技术。  硬件组成：  一个指令控制部件（CU）+多个处理单元&#x2F;执行单元（如ALU）+多个局部存储器+一个主存储器 每个执行单元有各自的寄存器组、局部寄存器及地址寄存器。 不同执行单元执行同一条指令，处理不同的数据。  多指令流单数据流（MISD）能同时执行多条指令，处理同一个数据，现实中不存在这种计算机。 多指令流多数据流（MIMD）如现实中的intel i5或 i7等处理器。 特性：  各指令序列并行执行，分别处理多个不同的数据。 是一种线程级并行，甚至是线程级以上并行技术。  进一步分类可分为：  多...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/04/15/ji-suan-ji-zu-cheng-yuan-li-zong-xian/" title="计算机组成原理_总线"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-15</div><div class="info-item-2">计算机组成原理_总线</div></div><div class="info-2"><div class="info-item-1">总线的基本概念一、为什么要用总线分散连接存在的问题： ​	1.内部的连线复杂 ​	2.新增IO设备困难 二、什么是总线​		总线是连接各个部件的信息传输线，是各个部件共享的传输介质 三、总线上信息的传送​	串行：所谓的串行就是将要传输的信息一位一位的放在总线上，接收方一位一位的进行接收，支持距离长 ​	并行：需要多条数据线进行传输，数据能同步进行传输，如果传输距离长，线与线之间并行传输，传输信号可能会发生变形，接收方很难接收到正确信号 四、总线结构 ​	1.单总线结构 ​		所有数据在同一条总线上传输，会发生总线争用问题 ​	2.面向CPU双总线结构 ​		向CPU延生出两条总线，IO总线和M总线，M总线连接主存。 ​		存在问题：一旦IO总线和M总线同时向CPU发送数据，CPU的计算任务还是会被打断。 ​	3.以存储器为中心的双总线结构 ​		从贮存延生两条总线，一条连接系统总线（包括IO设备接口和CPU），一条存储总线连接CPU。  3.2总线的分类1.片内总线（芯片内部的总线）2.系统总线（计算机各部件之间的信息）1.数据总线​			双向与机器字长、存储字长有关。通常情况下...</div></div></div></a><a class="pagination-related" href="/2023/12/26/ji-suan-ji-zu-cheng-yuan-li-cisc-he-risc-de-ji-ben-gai-nian/" title="计算机组成原理-CISC和RISC的基本概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-26</div><div class="info-item-2">计算机组成原理-CISC和RISC的基本概念</div></div><div class="info-2"><div class="info-item-1">    复杂指令系统计算机（CISC, Complex Instruction Set Computer）设计思路：一条指令完成一个复杂的基本功能，例，x86架构，主要用于笔记本，台式机等。 CISC的主要特点：  指令系统复杂庞大，指令数目一般200条以上。 指令长度不固定。 可以访存的指令不受限制。 各种指令使用频率相差大。 各种指令指令时间相差大。 控制器大多数采用微程序控制。 难以优化编译生成高效的目标代码程序。  精简指令系统计算机（RISC, Reduced Instruction Set Computer）设计思路：一条指令完成一个基本“动作”；多条指令组合完成一个复杂的基本功能，例，ARM架构，主要用于手机、平板等。 RISC的主要特点：  选取使用频率最高的一些简单指令，复杂指令功能由简单指令的组合来实现。 指令长度固定，指令格式种类少。 只有Load/Store（取数，存数）指令能访存，其余指令的操作都在寄存器之间进行。 CPU中通用寄存器数量多。 RISC一定采用指令流水线技术，大部分指令在一个时钟周期内完成。 以硬布线控制为主。 重视编译优化工作，以减少程...</div></div></div></a><a class="pagination-related" href="/2023/12/27/ji-suan-ji-zu-cheng-yuan-li-zhi-ling-zhi-xing-guo-cheng/" title="计算机组成原理-指令执行过程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-27</div><div class="info-item-2">计算机组成原理-指令执行过程</div></div><div class="info-2"><div class="info-item-1">  了解指令执行过程之前，需要了解指令的一些基本概念。 指令周期指令周期是CPU从主存中每取出并执行一条指令所需的全部时间。 指令周期常常用若干机器周期来表示，机器周期又叫CPU周期。 而一个机器周期又包含若干时钟周期（也成为节拍、T周期或CPU时钟周期，它是CPU操作的最基本单位）  由上图可得每个指令周期内机器周期数可以不等，每个机器周期内的节拍数也可以不等。 指令工作周期总共可以区分为四个阶段：取值周期、间址周期、执行周期和中断周期，而为了区别不同的工作周期，在CPU内设置4个标志触发器FE（对应取值）、IND（对应间址）、EX（对应执行）、INT（对应中断）来区别为哪个工作周期。 指令周期的数据流取指周期若想进行取指，首先PC会想MAR发送当前指令地址，然后CU会发出控制信号，经控制总线传到主存，同时MAR中地址信息也会通过地址总线发送到主存中，此时主存中所读出的数据会通过数据总线传到MDR中，最后将MDR中获取到的数据放到IR中，就完成了一次取指操作。  间指周期有些指令取完后会进入间指周期，此时IR中已经放着数据的地址，要再通过取指操作来进行间接寻址。 指令执行方案单...</div></div></div></a><a class="pagination-related" href="/2022/04/14/ji-suan-ji-gai-lun/" title="计算机组成原理-计算机概论"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-14</div><div class="info-item-2">计算机组成原理-计算机概论</div></div><div class="info-2"><div class="info-item-1">计算机的基本构成计算机的功能部件 输入设备：将信息转换成机器能识别的形式。 存储器：存放数据和程序。 运算器：进行算数运算和逻辑运算。 输出设备：将结果转换成人们熟悉的形式。 控制器：来指挥程序运行。  冯诺伊曼基本思想冯诺依曼机的特点：  采用“存储程序的”工作方式。 计算机硬件系统由运算器、存储器、控制器、输入和输出设备组成。 指令和数据以同等地位存储在存储器中，计算机能区别出它们。 指令和数据均用二进制代码表示。  冯诺伊曼机的基本工作方式是以控制流驱动方式，以运算器为中心，且是单处理器。 “存储程序”的思想是：将事先编制好的程序和原始数据送入主存后才能执行，一旦程序被启动执行，就无需操作人员的干预。  图1-1就是标准的冯诺依曼机，实线表示数据线，虚线表示控制线和反馈线。 冯诺依曼计算机是以运算器为中心，任何计算都得经过运算器，会导致效率过低，从而有了现代计算机的结构，如图1-2。  现代计算机以存储器为中心，当运算完成可以直接从存储器中取址来完成所想要的操作，而现在所谓的CPU就是运算器和控制器的集成部件。 计算机各个部件的工作原理主存储器的基本组成 主存储器以存储单元...</div></div></div></a><a class="pagination-related" href="/2023/12/10/ji-suan-ji-zu-cheng-yuan-li-wai-bu-cun-chu-qi/" title="计算机组成原理-外部存储器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-10</div><div class="info-item-2">计算机组成原理-外部存储器</div></div><div class="info-2"><div class="info-item-1">  计算机的外存储器又称为辅助存储器，目前主要使用磁表面存储器。 所谓“磁表面存储”，是指把某些磁性材料薄薄地涂在金属铝或塑料表面上作为载磁体来存储信息。磁盘存储器、磁带存储器和磁鼓存储器均属于磁表面存储器。 磁盘存储器磁盘存储器的优点有：  存储容量大，位价格低； 记录介质可重复使用； 记录信息可长期保存而不丢失，甚至可脱机存档； 非破坏性读出，读出时不需要再生  缺点：读取速度慢，机械结构复杂，对工作环境要求较高。 外存储器既可以作为输入设备也可以作为输出设备。 磁盘存储器的组成磁盘存储器是由磁盘驱动器、磁盘控制器和盘片组成。  磁盘驱动器。核心部件是磁头组件和盘片组件，温彻斯特盘是一种可移动磁头固定盘片的硬件存储器。 磁盘控制器。硬盘存储器和主机的接口，主流的标准有IDE、SCSI、SATA等。  磁盘的存储区域。一块硬盘含有若干纪录面，每个记录面划分为若干磁道，而每条磁道又划分为若干扇区，扇区（也称块），是磁盘读写的最小单位，即磁盘按块存取。  磁头数（Heads），即记录面数，表示硬盘总共又多少个磁头。磁头用于读取&#x2F;写入盘片上记录面的信息，一个记录面对应一个磁...</div></div></div></a><a class="pagination-related" href="/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/" title="计算机组成原理-浮点数的表示与运算"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-29</div><div class="info-item-2">计算机组成原理-浮点数的表示与运算</div></div><div class="info-2"><div class="info-item-1">    浮点数的表示由于定点数可表示的数字范围有限，而又不能无限制的增加数据的长度，就得考虑在位数不变的情况下增加数据的表示范围，以此拓展了浮点数。例，用定点数表示电子的质量($9 \times 10^{-28}g$)。 浮点数的表示格式通常，浮点数表示为$$N&#x3D;(-1)^S\times M \times R^E$$其中，S取值0或1，用来决定浮点数的符号；M是一个二进制定点小数，称为尾数，一般用定点原码小数表示，称为阶码或指数，用移码表示。R是基数（隐含），可以约定为2、4、16，基本为2等。  尾数的位数反映浮点数的精度。 例：阶码、尾数均用补码表示，求a、b的真值 $a&#x3D;0,01;1.1001$，$b&#x3D;0,10;0.01001$(阶码,前为符号位，尾数.前为符号位) a:  阶码0,01 对应真值 +1  尾数 1.1001 对应原码 1.0111，对应真值为 -0.0111，所以a的真值$&#x3D;2^1\times (-0.0111)&#x3D;-0.111$ b: 阶码0,10 对应真值 +2  尾数 0.01001 对应真值 +0.0...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">总线的基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E7%89%B9%E7%82%B9%EF%BC%9A"><span class="toc-number">1.0.1.</span> <span class="toc-text">总线的特点：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-number">2.</span> <span class="toc-text">总线的分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%B2%E8%A1%8C%E6%80%BB%E7%BA%BF%E4%B8%8E%E5%B9%B6%E8%A1%8C%E6%80%BB%E7%BA%BF"><span class="toc-number">2.1.</span> <span class="toc-text">串行总线与并行总线</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E5%8A%9F%E8%83%BD%E8%BF%9B%E8%A1%8C%E5%88%92%E5%88%86"><span class="toc-number">2.2.</span> <span class="toc-text">按功能进行划分</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%89%87%E5%86%85%E6%80%BB%E7%BA%BF"><span class="toc-number">2.2.1.</span> <span class="toc-text">片内总线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BA%BF"><span class="toc-number">2.2.2.</span> <span class="toc-text">系统总线</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BA%BF%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">系统总线的结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E6%80%BB%E7%BA%BF%E7%BB%93%E6%9E%84"><span class="toc-number">3.1.</span> <span class="toc-text">单总线结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8C%E6%80%BB%E7%BA%BF%E7%BB%93%E6%9E%84"><span class="toc-number">3.2.</span> <span class="toc-text">双总线结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E6%80%BB%E7%BA%BF%E7%BB%93%E6%9E%84"><span class="toc-number">3.3.</span> <span class="toc-text">三总线结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="toc-number">4.</span> <span class="toc-text">总线的性能指标</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E4%BC%A0%E8%BE%93%E5%91%A8%E6%9C%9F%EF%BC%88%E6%80%BB%E7%BA%BF%E5%91%A8%E6%9C%9F%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">总线的传输周期（总线周期）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F"><span class="toc-number">4.2.</span> <span class="toc-text">总线时钟周期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E5%B7%A5%E4%BD%9C%E9%A2%91%E7%8E%87"><span class="toc-number">4.3.</span> <span class="toc-text">总线的工作频率</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E7%9A%84%E6%97%B6%E9%92%9F%E9%A2%91%E7%8E%87"><span class="toc-number">4.4.</span> <span class="toc-text">总线的时钟频率</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E5%AE%BD%E5%BA%A6"><span class="toc-number">4.5.</span> <span class="toc-text">总线宽度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E5%B8%A6%E5%AE%BD"><span class="toc-number">4.6.</span> <span class="toc-text">总线带宽</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E5%A4%8D%E7%94%A8"><span class="toc-number">4.7.</span> <span class="toc-text">总线复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E7%BA%BF%E6%95%B0"><span class="toc-number">4.8.</span> <span class="toc-text">信号线数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E4%BC%A0%E8%BE%93"><span class="toc-number">5.</span> <span class="toc-text">总线传输</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E5%AE%9A%E6%97%B6%E6%96%B9%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">同步定时方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%AE%9A%E6%97%B6%E6%96%B9%E5%BC%8F"><span class="toc-number">5.2.</span> <span class="toc-text">异步定时方式</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）">K 近邻算法：KNN（K-Nearest Neighbors）</a><time datetime="2026-05-19T11:43:23.000Z" title="发表于 2026-05-19 19:43:23">2026-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/" title="freertos中常用api总结">freertos中常用api总结</a><time datetime="2025-02-12T06:43:35.000Z" title="发表于 2025-02-12 14:43:35">2025-02-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/" title="STM32根据DHT11温湿度分析城市相似度项目总结">STM32根据DHT11温湿度分析城市相似度项目总结</a><time datetime="2025-02-04T03:03:33.000Z" title="发表于 2025-02-04 11:03:33">2025-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/31/stm32-ying-jian-shi-xian-yu-w25qxx-tong-xin/" title="stm32硬件实现与w25qxx通信">stm32硬件实现与w25qxx通信</a><time datetime="2025-01-31T01:05:54.000Z" title="发表于 2025-01-31 09:05:54">2025-01-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/18/stm32f103c8t6-zong-he-xue-xi-xiang-mu-de-ju-ti-gong-neng-shi-xian-xiang-jie/" title="STM32F103C8T6综合学习项目的具体功能实现详解">STM32F103C8T6综合学习项目的具体功能实现详解</a><time datetime="2025-01-18T02:12:33.000Z" title="发表于 2025-01-18 10:12:33">2025-01-18</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

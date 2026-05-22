@@ -1,0 +1,284 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>LsWorld - 机器学习与代码笔记</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录机器学习、深度学习和工程实践的个人博客。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LsWorld">
+<meta property="og:url" content="https://lsworl.github.io/page/4/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="记录机器学习、深度学习和工程实践的个人博客。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="machine learning, deep learning, python, notes, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/page/4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'LsWorld',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">LsWorld</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/12/04/ji-suan-ji-zu-cheng-yuan-li-cun-chu-qi-gai-shu/" title="计算机组成原理-存储器概述">计算机组成原理-存储器概述</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-12-04T14:11:26.000Z" title="发表于 2023-12-04 22:11:26">2023-12-04</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">计算机组成原理</a></span></div><div class="content">    存储器的分类存储器种类繁多，可从不同角度对存储器进行分类。 按在计算机中的作用（层次）分类  主存储器。简称主存，又称内存储器（内存），用来存放计算机运行期间所需的程序和数据，CPU可以直接随机地对其进行访问，也可以和Cache及辅存交换数据。特点是容量较小、存取速度较快，每位价格较高。 辅助存储器。简称辅存，用来存放需要永久性保存的信息。辅存的内容需要调入主存后才能被CPU访问。特点是容量大、存取速度较慢、单位成本低。 高速缓冲存储器。简称Cache，位于主存和CPU之间，用来存放CPU经常使用的指令和数据，以便CPU能高速地访问它们。Cache的存取速度可与CPU速度相匹配，但存储容量小、价格高。现代计算机通常集成在CPU中。   按存储介质分类按存储介质，存储器可分为磁表面（磁盘、磁带）、磁芯存储器、半导体存储器（MOS型存储器、双极型存储器，主存和Cache也属于这部分）和光存储器（光盘）。 按存取方式分类 随机存储器（RAM，Random Access Memory）。存储器的任何一个存储单元都可以随机存取，而且存取时间与存储单元的物理地址无关。优点是读写方便、...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/11/30/dian-lu-dian-lu-ding-li/" title="电路-电路定理">电路-电路定理</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-30T02:24:09.000Z" title="发表于 2023-11-30 10:24:09">2023-11-30</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%94%B5%E8%B7%AF/">电路</a></span></div><div class="content">    叠加定理在线性电路中，任一支路的电流（或电压）可以看成是电路中每一个独立电源单独作用于电路时，在该支路产生的电流（或电压）的代数和。 结点电压和支路电流均为各电源的一次函数，均可看成各独立电源单独作用时，产生的响应之叠加。 使用叠加定理注意事项：  叠加定理只适用于线性电路。 一个电源作用，其余电源为零。电压源为零——短路，电流源为零——开路。 功率不能叠加。 u ,i 叠加时要注意各分量的参考方向。 含受控源（线性）电路亦可用叠加，但受控源应始终保留。   例：求电压源的电流及功率  将上方电路进行拆分，拆分成两个简单电路的单独作用：  显然左边的图为电桥平衡状态，此时$I(1)&#x3D;0$，右图在4Ω和2Ω间的结点列写KCL得$I(2)&#x3D;70&#x2F;14+70&#x2F;7&#x3D;15A$。所以原电路$I&#x3D;I(1)+I(2)&#x3D;15A,P_发&#x3D;15\times 70&#x3D;1050W$ 齐性原理线性电路中，所有激励（独立源）都增大（或减少）同样的倍数，则电路中响应（电压或电流）也增大（或减小）同样的倍数。 注：  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/11/29/ji-suan-ji-zu-cheng-yuan-li-fu-dian-shu-de-biao-shi-yu-yun-suan/" title="计算机组成原理-浮点数的表示与运算">计算机组成原理-浮点数的表示与运算</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-29T12:02:34.000Z" title="发表于 2023-11-29 20:02:34">2023-11-29</time></span></div><div class="content">    浮点数的表示由于定点数可表示的数字范围有限，而又不能无限制的增加数据的长度，就得考虑在位数不变的情况下增加数据的表示范围，以此拓展了浮点数。例，用定点数表示电子的质量($9 \times 10^{-28}g$)。 浮点数的表示格式通常，浮点数表示为$$N&#x3D;(-1)^S\times M \times R^E$$其中，S取值0或1，用来决定浮点数的符号；M是一个二进制定点小数，称为尾数，一般用定点原码小数表示，称为阶码或指数，用移码表示。R是基数（隐含），可以约定为2、4、16，基本为2等。  尾数的位数反映浮点数的精度。 例：阶码、尾数均用补码表示，求a、b的真值 $a&#x3D;0,01;1.1001$，$b&#x3D;0,10;0.01001$(阶码,前为符号位，尾数.前为符号位) a:  阶码0,01 对应真值 +1  尾数 1.1001 对应原码 1.0111，对应真值为 -0.0111，所以a的真值$&#x3D;2^1\times (-0.0111)&#x3D;-0.111$ b: 阶码0,10 对应真值 +2  尾数 0.01001 对应真值 +0.0...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/11/23/dian-lu-dian-zu-dian-lu-de-yi-ban-fen-xi/" title="电路-电阻电路的一般分析">电路-电阻电路的一般分析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-23T01:56:27.000Z" title="发表于 2023-11-23 09:56:27">2023-11-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%94%B5%E8%B7%AF/">电路</a></span></div><div class="content">    网孔电流法网孔电流法是以沿网孔连续流动的假想电流为未知量列写电路方程分析电路的方法。仅适用于平面电路。 基本思想：为减少未知量的个数，假想每个回路种有一个回路电流。各支路电流可用回路电流的线性组合表示，来求得电路的解。 列写的方程：网孔电流在网孔中是闭合的，对每个相关节点均流进一次，流出一次，所以KCL自动满足。因此网孔电流法的方程个数即为网孔数。网孔方程是根据KVL进行列写。 例：  假想图1-1两个回路$l_1,l_2$的电流分别为$i_{l1},i_{l2}$，支路电流可表示为：$$i_1&#x3D;i_{l1}\qquad i_3&#x3D;i_{l2}\i_2&#x3D;i_{l2} - i_{l1}$$ 方程可列写为：$$\begin{cases}\ l_1:R_1i_{l1}+R_2(i_{l1}-i_{l2})+u_{S2}-u_{S1}&#x3D;0\\ l_2:R_2(i_{l2}-i_{l1})+R_3i_{l2}-u_{S2}&#x3D;0\ \end{cases}$$整理得：$$\begin{cases}\ l_1:(R_1+R_2)i_{l1}...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/11/21/ji-suan-ji-zu-cheng-yuan-li-shu-ju-de-biao-shi-yu-yun-suan/" title="计算机组成原理-数据的表示与运算">计算机组成原理-数据的表示与运算</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-21T13:13:50.000Z" title="发表于 2023-11-21 21:13:50">2023-11-21</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">计算机组成原理</a></span></div><div class="content">    数制与编码进位计数制及其相互转换总所周知，计算机系统内部只能使用二进制进行编码，所以进制间的转换尤为重要。 进位计数法常用的进位计数法由十进制、二进制、八进制、十六进制等。  二进制：二进制只有0和1两种数字符号，计数“逢二进一”，它的任意数位权位$2^i$，i位所在位数。 八进制：八进制有0~7八种数字符号，计数“逢八进一”，它的任意数位权位$8^i$，i位所在位数，二进制的3位数码编为一组解释一位八进制数码。 八进制：八进制有0~9、A、B、C、D、E、F十六种符号，计数“逢十六进一”，它的任意数位权位$16^i$，i位所在位数，二进制的4位数码编为一组解释一位十六进制数码。  各种进制的常见书写方式： 二进制： $(1010)_2&#x3D;1010B$ 八进制：$(1652)_8$ 十六进制：$(1652)_{16}&#x3D;1652H&#x3D;0x1652$ 十进制：$(1652)_{10}&#x3D;1652D$  不同进制数间的相互转换 二进制转换八进制数和十六进制数 在进行转换时，应以小数点为界。3位（4位）二进制转为1位八进制（十六进制），若整数不足...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/11/04/shu-dian-men-dian-lu/" title="数电-门电路">数电-门电路</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-04T07:22:29.000Z" title="发表于 2023-11-04 15:22:29">2023-11-04</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E7%94%B5/">数电</a></span></div><div class="content">      门电路（Gate Circuit）门电路是指以实现基本逻辑关系和复合逻辑关系的电子电路。 高电平和低电平的含义高电平和低电平为某规定范围（由门电路的种类决定）的电位值，而非一固定值。  若无特殊声明，在日常生活中均以正逻辑体制来表示高低电平。 二极管的开关特性本征半导体导体基本概念： 导体：自然界中容易导电的物质。 绝缘体：电阻率很高的物质，几乎不导电。 半导体：导电特性处于导体和绝缘体之间的物质。 现代电子学中，用的最多的半导体是硅和锗，最外层电子（价电子）都是4个。 本征半导体：完全纯净的、结构完整的半导体晶体。  在硅和锗晶体中，原子按四角形系统组成晶体点阵，每个原子都处在正四面体的中心，而四个其他原子位于四面体的顶点，每个原子与其相邻的原子之间形成共价键，共用一对价电子。    共价键中的两个电子被紧紧束缚在共价键中，称为束缚电子，常温下束缚电子很难脱离共价键成为自由电子，因此本征半导体中的自由电子很少，导电能力很弱。   本征半导体的导电机理 载流子、自由电子和空穴 在绝对0度（T&#x3D;0K）和没有外界激发时，价电子完全被共价键束缚着，本征半导体中没有...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/11/03/shu-ju-jie-gou-pai-xu/" title="数据结构-排序">数据结构-排序</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-03T14:57:17.000Z" title="发表于 2023-11-03 22:57:17">2023-11-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></span></div><div class="content">    排序的基本概念排序算法的稳定性：若进行排序算法后，关键字相同的元素在排序之后相对位置保持不变，就称算法是稳定的，反之为不稳定。  如图1-1，若3的元素相对位置发生改变即为不稳定。 插入排序插入排序的基本思想是每次将一个待排序的记录按其关键字大小插入前面已排好序的子序列，直到全部插入完成。 直接插入排序直接插入排序算法就是，就是一个个从左往右比较大小，将大的放在后面，小的放在前面。 算法实现代码： void InsertSort(int A[],int n)&#123;     int i,j,temp;     for(i=1;i&lt;n;i++)&#123;         if(A[i]&lt;A[i-1])&#123;	//若后一位小于前一位则交换位置             temp = A[i];             for(j= i-1; j>=0 &amp;&amp; A[j] > temp;--j) //检查排好序中是否有更大的数                 A[j+1] = A[j];             A[j+1] = temp;  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/10/25/shu-ju-jie-gou-cha-zhao/" title="数据结构-查找">数据结构-查找</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-25T12:59:12.000Z" title="发表于 2023-10-25 20:59:12">2023-10-25</time></span></div><div class="content">    查找表的基本概念 查找：在数据集合中寻找满足某种条件的数据元素的过程叫查找。 查找表（查找结构）：用于查找的数据集合称为查找表，由同一类型的数据元素组成。 静态查找表：若查找表只涉及搜索和插入操作，无需动态的修改查找表，则称此类表为静态查找表。 关键字：数据元素中唯一标识该元素的某个数据项的值。 平均查找长度：在查找过程中，进行关键字比较次数的平均值，数学定义为：  $$ASL&#x3D;\sum_{i&#x3D;1}^{n}P_iC_i$$ n是查找表的长度；$P_i$是查找第i各数据元素的概率，一般认为每个数据元素的查找概率相等，即$P_i&#x3D;\frac{1}{n}$；$C_i$是找到第i各元素所需进行的比较次数。 顺序查找和折半查找顺序查找 顺序查找又称线性查找，它对于顺序表和链表都适用。对于顺序表，可通过数组下标递增来顺序扫描每个元素；对于链表，可通过next来依次扫描每个元素。顺序查找通常分为对一般的无序线性表的顺序查找和对按关键字有序的线性表的顺序查找。  一般线性表的顺序查找作为最直观的查找方法，基本思想就是从一端逐个检查关键字是否满足给定的条件。 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/10/19/fu-bian-han-shu-fu-shu-yu-fu-bian-han-shu/" title="复变函数-相关公式">复变函数-相关公式</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-19T13:17:33.000Z" title="发表于 2023-10-19 21:17:33">2023-10-19</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%A4%8D%E5%8F%98%E5%87%BD%E6%95%B0/">复变函数</a></span></div><div class="content">    复数的基本概念将$$z&#x3D;x+iy$$的数称为复数，其中i称为虚数单位，并规定$$i^2&#x3D;-1$$，或$$i&#x3D;\sqrt{-1}$$；x和y是任意实数，依次称为z的实部（real part）与虚部（imaginary part），分别表示：$$Re z&#x3D;x\quad Imz&#x3D;y$$例：$$z&#x3D;\sqrt{2}+i$$，有$$Re z&#x3D;\sqrt{2}\quad Imz&#x3D;1$$设$$z&#x3D;x+iy$$是一个复数，而称$$x-iy$$为z的共轭复数，记作$$\overline{z}$$，可得$$\overline{\overline{z}}&#x3D;z$$。 复数的四则运算设$$z_1&#x3D;x_1+iy_1$$，$$z_2&#x3D;x_2+iy_2$$。 加法：$$z_1+z_2&#x3D;(x_1+x_2)+i(y_1+y_2)$$减法：$$z_1-z_2&#x3D;(x_1-x_2)+i(y_1-y_2)$$乘法：$$z_1\cdot z_2 &#x3D; (x_1x_2-y_...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/10/17/shu-ju-jie-gou-tu/" title="数据结构-图">数据结构-图</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-17T14:17:03.000Z" title="发表于 2023-10-17 22:17:03">2023-10-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></span></div><div class="content">  图的基本概念图的定义 图G（Graph）由顶点集V（Vertex）和边集E（Edge）组成，记为$$G&#x3D;(V,E)$$，其中V(G)表示图G中顶点的有限非空集：E（G）表示图G中顶点之间的关系（边）集合，如图1-1。   注： 线性表可以是空表，树可以是空树，但图不能是空图。图可以没有边，但不能没有顶点。 有向图有向图就是点与点之间相互有方向之间的关系，若设v,w为顶点，而&lt;v,w&gt;为从顶点v到顶点w，则有向图中$$&lt;v,w&gt;\neq&lt;w,v&gt;$$。  无向图在无向图中，若设v,w为顶点，而&lt;v,w&gt;为从顶点v到顶点w，则有$$&lt;v,w&gt;&#x3D;&lt;w,v&gt;$$。 简单图、多重图简单图就是满足以下条件的图：  不存在重复边。 不存在顶点到自身的边  多重图就是图中某两个结点的边数多余一条，又允许顶点通过同一条边和自己关联，则G为多重图。  顶点的度、入度、出度对于无向图：顶点v的度是指依附于该顶点的边的条数，记为TD（v）。 在具有n个顶点、e条边的无向图中，无向图的全部顶点度的和等于边数的2...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/10/07/shu-ju-jie-gou-shu-yu-er-cha-shu/" title="数据结构-树与二叉树">数据结构-树与二叉树</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-07T14:42:02.000Z" title="发表于 2023-10-07 22:42:02">2023-10-07</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></span></div><div class="content">  树的定义和基本术语 树的定义：树是一种递归定义的数据结构，它包含一个根结点和若干个子树。当树的结点数为0时，称为空树；当树的结点数大于0时，除了一个特定的根结点外，其余的结点被分成m个互不相交的有限集合T1, T2,…, Tm，其中每个集合本身又是一棵树，并且称为根结点的子树。   非空树的特性：  有且仅有一个根节点。 没有后继的结点称为“叶子结点”（或终端结点）。 有后继的结点称为“分支结点”（或非终端结点）。 除了根结点外，任何一个结点都有且仅有一个前驱结点。 每个结点可以有0个或多个后继结点。  树结点之间的关系描述 根据1-2图可以得出结点之间的关系描述：  祖先结点：对于”你”结点到”爷爷”结点都是祖先结点，即结点的所有前驱结点为祖先结点。 子孙结点：对于”爷爷”结点，所有后继结点都是子孙结点，即对于一个结点所有后继结点都是子孙结点。 双亲节点（父结点）：对于”你”结点，”父亲”结点即为父结点，即对于一个结点的直接前驱结点为父结点。 孩子结点：对于”父亲”结点来说，”你“结点与”F”结点都是”父亲”结点的孩子结点，即对于一个结点的直接后继结点。 兄弟结点：对于”你...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/10/05/shu-ju-jie-gou-chuan/" title="数据结构-串">数据结构-串</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-05T13:05:14.000Z" title="发表于 2023-10-05 21:05:14">2023-10-05</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></span></div><div class="content">串的实现在C语言中所使用的字符串就是串的数据类型的一种。 串的存储结构定长顺序存储表示类似于线性表的顺序存储结构，用一组连续的存储单元存储串值的字符序列。 #define MAXLEN 255 //预定义最大串长为255  typedef struct SString &#123;   char ch[MAXLEN]; //每个分量存储一个字符   int length;   //串的实际长度 &#125;SString;  串的实际长度只能小于或等于MAXLEN，超过预定义长度的串值会被社区，称为截断。串长的表示由两种方法：一种是通过length存放串的长度；二是在串值后面加一个不计入串长的结束标记字符&#39;\0&#39;（C语言种字符串就是采用这种方法），此时串就根据&#39;\0&#39;来算长度。 堆分配存储表示堆分配存储表示仍然以一组地址连续的存储单元存放串，但存储空间是动态分配获得。 typedef struct&#123;     char *ch;   //按串长分配存储区，ch指向串的首地址     int length; //串的长度 &#125;HStr...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/3/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#content-inner">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#content-inner">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/#content-inner">8</a><a class="extend next" rel="next" href="/page/5/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）">K 近邻算法：KNN（K-Nearest Neighbors）</a><time datetime="2026-05-19T11:43:23.000Z" title="发表于 2026-05-19 19:43:23">2026-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/" title="freertos中常用api总结">freertos中常用api总结</a><time datetime="2025-02-12T06:43:35.000Z" title="发表于 2025-02-12 14:43:35">2025-02-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/" title="STM32根据DHT11温湿度分析城市相似度项目总结">STM32根据DHT11温湿度分析城市相似度项目总结</a><time datetime="2025-02-04T03:03:33.000Z" title="发表于 2025-02-04 11:03:33">2025-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/31/stm32-ying-jian-shi-xian-yu-w25qxx-tong-xin/" title="stm32硬件实现与w25qxx通信">stm32硬件实现与w25qxx通信</a><time datetime="2025-01-31T01:05:54.000Z" title="发表于 2025-01-31 09:05:54">2025-01-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/18/stm32f103c8t6-zong-he-xue-xi-xiang-mu-de-ju-ti-gong-neng-shi-xian-xiang-jie/" title="STM32F103C8T6综合学习项目的具体功能实现详解">STM32F103C8T6综合学习项目的具体功能实现详解</a><time datetime="2025-01-18T02:12:33.000Z" title="发表于 2025-01-18 10:12:33">2025-01-18</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            <a class="card-more-btn" href="/categories/" title="查看更多">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/C/"><span class="card-category-list-name">C</span><span class="card-category-list-count">5</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Flutter/"><span class="card-category-list-name">Flutter</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/JavaScript/"><span class="card-category-list-name">JavaScript</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/TypeScript/"><span class="card-category-list-name">TypeScript</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Velcel/"><span class="card-category-list-name">Velcel</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Vue/"><span class="card-category-list-name">Vue</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Vue3/"><span class="card-category-list-name">Vue3</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/flutter/"><span class="card-category-list-name">flutter</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E5%8D%95%E7%89%87%E6%9C%BA/" style="font-size: 1.5em; color: #99a9bf">单片机</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 1.23em; color: #999ea6">操作系统</a> <a href="/tags/C/" style="font-size: 1.43em; color: #99a6b9">C</a> <a href="/tags/android/" style="font-size: 1.1em; color: #999">android</a> <a href="/tags/%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E7%AE%A1%E7%90%86/" style="font-size: 1.1em; color: #999">输入输出管理</a> <a href="/tags/dart/" style="font-size: 1.1em; color: #999">dart</a> <a href="/tags/javascript/" style="font-size: 1.23em; color: #999ea6">javascript</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" style="font-size: 1.1em; color: #999">嵌入式</a> <a href="/tags/webpack/" style="font-size: 1.1em; color: #999">webpack</a> <a href="/tags/Flutter/" style="font-size: 1.17em; color: #999c9f">Flutter</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 1.1em; color: #999">前端</a> <a href="/tags/%E8%BF%90%E8%BE%93%E5%B1%82/" style="font-size: 1.1em; color: #999">运输层</a> <a href="/tags/typeorm/" style="font-size: 1.1em; color: #999">typeorm</a> <a href="/tags/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" style="font-size: 1.1em; color: #999">正则表达式</a> <a href="/tags/JavaScript/" style="font-size: 1.1em; color: #999">JavaScript</a> <a href="/tags/mustache/" style="font-size: 1.1em; color: #999">mustache</a> <a href="/tags/es6/" style="font-size: 1.1em; color: #999">es6</a> <a href="/tags/%E6%8C%87%E9%92%88/" style="font-size: 1.1em; color: #999">指针</a> <a href="/tags/Vuex/" style="font-size: 1.1em; color: #999">Vuex</a> <a href="/tags/%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F/" style="font-size: 1.23em; color: #999ea6">指令系统</a> <a href="/tags/npm/" style="font-size: 1.1em; color: #999">npm</a> <a href="/tags/stm32/" style="font-size: 1.3em; color: #99a1ac">stm32</a> <a href="/tags/%E5%A4%8D%E5%8F%98%E5%87%BD%E6%95%B0/" style="font-size: 1.1em; color: #999">复变函数</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 1.37em; color: #99a4b2">计算机网络</a> <a href="/tags/%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8/" style="font-size: 1.3em; color: #99a1ac">中央处理器</a> <a href="/tags/hexo/" style="font-size: 1.23em; color: #999ea6">hexo</a> <a href="/tags/flutter/" style="font-size: 1.1em; color: #999">flutter</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 1.43em; color: #99a6b9">数据结构</a> <a href="/tags/nestjs/" style="font-size: 1.17em; color: #999c9f">nestjs</a> <a href="/tags/%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 1.1em; color: #999">输入输出系统</a> <a href="/tags/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" style="font-size: 1.1em; color: #999">进程与线程</a> <a href="/tags/%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/" style="font-size: 1.3em; color: #99a1ac">存储系统</a> <a href="/tags/%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95/" style="font-size: 1.1em; color: #999">分类算法</a> <a href="/tags/%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/" style="font-size: 1.1em; color: #999">错误排查</a> <a href="/tags/mysql/" style="font-size: 1.1em; color: #999">mysql</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 1.1em; color: #999">爬虫</a> <a href="/tags/%E8%B8%A9%E5%9D%91/" style="font-size: 1.1em; color: #999">踩坑</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" style="font-size: 1.1em; color: #999">计算机网络体系结构</a> <a href="/tags/%E5%9F%BA%E7%A1%80/" style="font-size: 1.23em; color: #999ea6">基础</a> <a href="/tags/Dart/" style="font-size: 1.1em; color: #999">Dart</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      <a class="card-more-btn" href="/archives/"
+            title="查看更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/05/">
+            <span class="card-archive-list-date">
+              五月 2026
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/02/">
+            <span class="card-archive-list-date">
+              二月 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/01/">
+            <span class="card-archive-list-date">
+              一月 2025
+            </span>
+            <span class="card-archive-list-count">10</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/12/">
+            <span class="card-archive-list-date">
+              十二月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/02/">
+            <span class="card-archive-list-date">
+              二月 2024
+            </span>
+            <span class="card-archive-list-count">3</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/01/">
+            <span class="card-archive-list-date">
+              一月 2024
+            </span>
+            <span class="card-archive-list-count">6</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2023/12/">
+            <span class="card-archive-list-date">
+              十二月 2023
+            </span>
+            <span class="card-archive-list-count">14</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2023/11/">
+            <span class="card-archive-list-date">
+              十一月 2023
+            </span>
+            <span class="card-archive-list-count">6</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">93</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-05-22T15:55:35.778Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: str => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, null))
+  },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@3.0.0/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["用机器学习理解数据，用代码沉淀思考","Machine Learning Notes & Engineering Practice"].slice()
+
+      if (extraContents.length > 0) {
+        sub.unshift(...extraContents)
+      }
+
+      if (typeof content === 'string') {
+        sub.unshift(content)
+      } else if (Array.isArray(content)) {
+        sub.unshift(...content)
+      }
+
+      sub.length > 0 && typedJSFn.init(sub)
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content :
+        (Array.isArray(content) && content.length > 0 ? content[0] : '')
+    }
+  }
+}
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
+</script><script>function subtitleType () {
+  typedJSFn.processSubtitle(["用机器学习理解数据，用代码沉淀思考","Machine Learning Notes & Engineering Practice"])
+}
+typedJSFn.run(subtitleType)</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

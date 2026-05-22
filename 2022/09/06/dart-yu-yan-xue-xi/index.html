@@ -1,0 +1,359 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Dart语言学习 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有electron(主要桌面开发)、uniapp(小程序方面应用多)、react native(和flutter在app占比差不多)和flutter。当时技术选型时，因为本人是对Vue为主要前端框架进行深入学习，所以开发app时候react native就没有纳入我的范围，uniapp又因为觉得做小程序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dart语言学习">
+<meta property="og:url" content="https://lsworl.github.io/2022/09/06/dart-yu-yan-xue-xi/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有electron(主要桌面开发)、uniapp(小程序方面应用多)、react native(和flutter在app占比差不多)和flutter。当时技术选型时，因为本人是对Vue为主要前端框架进行深入学习，所以开发app时候react native就没有纳入我的范围，uniapp又因为觉得做小程序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2022-09-06T14:47:21.000Z">
+<meta property="article:modified_time" content="2026-05-22T11:24:08.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="dart">
+<meta property="article:tag" content="android">
+<meta property="article:tag" content="flutter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Dart语言学习",
+  "url": "https://lsworl.github.io/2022/09/06/dart-yu-yan-xue-xi/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2022-09-06T14:47:21.000Z",
+  "dateModified": "2026-05-22T11:24:08.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2022/09/06/dart-yu-yan-xue-xi/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Dart语言学习',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">Dart语言学习</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Dart语言学习</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-06T14:47:21.000Z" title="发表于 2022-09-06 22:47:21">2022-09-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-22T11:24:08.000Z" title="更新于 2026-05-22 19:24:08">2026-05-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/flutter/">flutter</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>最近想开发一个即时通讯的app，想要通过跨端平台来做一个app，众所周知，目前比较流行的跨端平台有<code>electron</code>(主要桌面开发)、<code>uniapp</code>(小程序方面应用多)、<code>react native</code>(和<code>flutter</code>在app占比差不多)和<code>flutter</code>。当时技术选型时，因为本人是对<code>Vue</code>为主要前端框架进行深入学习，所以开发app时候<code>react native</code>就没有纳入我的范围，<code>uniapp</code>又因为觉得做小程序比较多，在网上搜索<code>uniapp</code>对app的兼容不如<code>react native</code>和<code>flutter</code>，所以最后就决定选择学习<code>flutter</code>来作为主要开发工具。</p>
+<p>本文主要介绍<code>Dart</code>的基本语法，<code>Dart</code>大部分都是为了<code>flutter</code>而服务，所以这里并不会对<code>Dart</code>进行过多的了解，相信要是有<code>javascript</code>或<code>java</code>语言等高级语言基础的话，可以很快的进行入门。</p>
+<blockquote>
+<p>文章参考了<a target="_blank" rel="noopener" href="https://dart.cn/">Dart</a>的官网。</p>
+</blockquote>
+<hr>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>Dart</code>和<code>Java</code>一样是面向对象的语言，所以他们都有一个<code>main</code>方法，要是数据不是在函数体内声明，则默认为全局方法，不会像<code>Javascript</code>那种面向编程的语言一样，无论在什么环境修改变量都不会报错，在<code>Dart</code>中，全局是默认只能声明不能进行修改的，要想数据必须在<code>void main()&#123;&#125;</code>中，所以以下的代码测试默认处于<code>void main()&#123;&#125;</code>环境。</p>
+<h3 id="Dart数据类型"><a href="#Dart数据类型" class="headerlink" title="Dart数据类型"></a>Dart数据类型</h3><p><code>Dart</code>的数据类型基本与<code>Java</code>的相同，作为一个类型安全的语言，虽然其中可以使用<code>var</code>来声明变量，但声明后就不能修改类型。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token keyword">var</span> name <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'小明'</span></span><span class="token punctuation">;</span>
+name <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment">//报错</span></code></pre>
+
+
+
+<p>所以要用类型最好就在声明时候确定下来。</p>
+<pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token class-name">String</span> name <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'小明'</span></span><span class="token punctuation">;</span></code></pre>
+
+
+
+<h4 id="Dart数据类型种类"><a href="#Dart数据类型种类" class="headerlink" title="Dart数据类型种类"></a>Dart数据类型种类</h4><table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Numbers（数字）</td>
+<td align="center">int a &#x3D; 1;或double &#x3D; 2.1;</td>
+</tr>
+<tr>
+<td align="center">Strings（字符串）</td>
+<td align="center">String a &#x3D; ‘你好’;</td>
+</tr>
+<tr>
+<td align="center">Booleans（布尔）</td>
+<td align="center">bool b &#x3D; true;</td>
+</tr>
+<tr>
+<td align="center">Lists（数组）</td>
+<td align="center">var list &#x3D; [1, 2, 3];</td>
+</tr>
+<tr>
+<td align="center">Sets（无序集合）</td>
+<td align="center">var halogens &#x3D; {‘fluorine’, ‘chlorine’, ‘bromine’, ‘iodine’, ‘astatine’}; 或 var names &#x3D; <String>{};</String></td>
+</tr>
+<tr>
+<td align="center">Map（对象，即Key:value）</td>
+<td align="center">var gifts &#x3D; {‘first’: ‘partridge’,   ‘second’: ‘turtledoves’,   ‘fifth’: ‘golden rings’ }; 或构造器创建：var gifts &#x3D; Map&lt;String, String&gt;();</td>
+</tr>
+<tr>
+<td align="center">Runes</td>
+<td align="center">需要导入 <a target="_blank" rel="noopener" href="https://pub.flutter-io.cn/packages/characters">characters 包</a>，可以用Unicode字符来显示emoji表情，如：大笑的 emoji 表情（😆）的 Unicode 为 <code>\u&#123;1f600&#125;</code>。</td>
+</tr>
+<tr>
+<td align="center">Symbols（用的比较少）</td>
+<td align="center">Symbol obj &#x3D; new Symbol(‘name’);</td>
+</tr>
+<tr>
+<td align="center">null</td>
+<td align="center">null即为null</td>
+</tr>
+</tbody></table>
+<p><strong>各种数值类型具体使用方法下方介绍！（以下Numbers，Strings，Booleans皆可用var声明）</strong></p>
+<h5 id="Numbers（数字类型）"><a href="#Numbers（数字类型）" class="headerlink" title="Numbers（数字类型）"></a>Numbers（数字类型）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义整数类型</span>
+int a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+a <span class="token operator">=</span> <span class="token number">10.9</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+a <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+
+<span class="token comment">//定义浮点数类型</span>
+double b <span class="token operator">=</span> <span class="token number">1.9</span><span class="token punctuation">;</span>
+
+b <span class="token operator">=</span> <span class="token number">2</span> <span class="token punctuation">;</span> <span class="token comment">//不报错</span>
+b <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+</code></pre>
+
+
+
+<h5 id="Strings（字符串）"><a href="#Strings（字符串）" class="headerlink" title="Strings（字符串）"></a>Strings（字符串）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义字符串</span>
+<span class="token class-name">String</span> s <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'123'</span></span><span class="token punctuation">;</span>
+s <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+s <span class="token operator">=</span> <span class="token string-literal"><span class="token string">'147'</span></span><span class="token punctuation">;</span> <span class="token comment">//不报错</span></code></pre>
+
+
+
+<h5 id="Booleans（布尔）"><a href="#Booleans（布尔）" class="headerlink" title="Booleans（布尔）"></a>Booleans（布尔）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义布尔</span>
+bool b <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+b <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">//报错</span>
+b <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span> <span class="token comment">//不报错</span></code></pre>
+
+
+
+<h5 id="Lists（数组）"><a href="#Lists（数组）" class="headerlink" title="Lists（数组）"></a>Lists（数组）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义一个内部全为字符串的数组 &lt;>符号是为了限制类型</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'1'</span></span><span class="token punctuation">,</span><span class="token string-literal"><span class="token string">'2'</span></span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//不报错</span>
+arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">//报错</span></code></pre>
+
+
+
+<h5 id="Sets（无序集合）"><a href="#Sets（无序集合）" class="headerlink" title="Sets（无序集合）"></a>Sets（无序集合）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//用&#123;&#125;创建时候默认为Map，Dart通过调用方法来判断为Set还是Map &lt;>用来限制Set里面为String类型</span>
+<span class="token keyword">var</span> elements <span class="token operator">=</span> <span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+elements<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">'fluorine'</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+elements<span class="token punctuation">.</span><span class="token function">addAll</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">,</span> <span class="token string-literal"><span class="token string">'b'</span></span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>elements<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出&#123;fluorine, a, b&#125;</span>
+
+
+<span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span>num<span class="token punctuation">></span></span> s <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+s<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出 &#123;2&#125;</span></code></pre>
+
+
+
+<h5 id="Map（对象）"><a href="#Map（对象）" class="headerlink" title="Map（对象）"></a>Map（对象）</h5><pre class="language-dart" data-language="dart"><code class="language-dart"><span class="token comment">//定义一个key和value都是字符串的对象</span>
+<span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span><span class="token class-name">String</span><span class="token punctuation">></span></span> m <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+m <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">'a的value'</span></span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token function">print</span><span class="token punctuation">(</span>m<span class="token punctuation">[</span><span class="token string-literal"><span class="token string">'a'</span></span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//输出 a的value</span></code></pre>
+
+
+
+<p><strong>Runes和Symbol目前用的比较少，所以也没有过多研究，等到时候摸透了再回来补….</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2022/09/06/dart-yu-yan-xue-xi/">https://lsworl.github.io/2022/09/06/dart-yu-yan-xue-xi/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/dart/">dart</a><a class="post-meta__tags" href="/tags/android/">android</a><a class="post-meta__tags" href="/tags/flutter/">flutter</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/09/16/flutter-shi-xian-rsa-jia-mi-yu-jie-mi/" title="Flutter实现rsa加密与解密"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Flutter实现rsa加密与解密</div></div><div class="info-2"><div class="info-item-1">  前言在想使用rsa加密前，应该首先了解什么是rsa加密。rsa作为目前流行的非对称加密，所需要公钥和私钥两把钥匙才能解开传输的数据。所以要使用rsa加密算法，首先就得要设置公钥和私钥（私钥一般都是放在后端，私钥在前端极其不安全，前端的代码几乎都是透明的，这里演示就全在前端中演示）。 导包与获取钥匙在Flutter中使用加密算法，需先在pubspec.yaml文件中导如encrypt包（版本以flutter社区的最新版为准），修改文件后保存会自动导包。  然后去获取公钥和私钥（可以在网页上生成），并放在静态资源文件夹中。  公钥格式为：（-----BEGIN PUBLIC KEY-----和结尾的-----END PUBLIC KEY-----是必加的，中间内容为公钥，私钥同理） -----BEGIN PUBLIC KEY----- MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2&#x2F;vF49zKHdP0EY1B9Zim 5t4X1GsnP1TEYgYMnWXQNLluWV53iInEJBmw&#x2F;xf++Ohbgp7Wh...</div></div></div></a><a class="pagination-related" href="/2022/09/01/mysql-yu-ju/" title="mysql常用语句总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">mysql常用语句总结</div></div><div class="info-2"><div class="info-item-1">创建数据库CREATE DATABASE 数据库名；    删除数据库drop database 数据库名;    创建表#IF NOT 表示不存在就创建 CREATE TABLE IF NOT 表名 (column_name column_type);    例子： #AUTO_INCREMENT 表示自增 NOT NULL表示不为空 PRIMARY表示主键 CREATE TABLE IF NOT user( id int PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(20) NOT NULL );    表创建时添加外键约束两个表之间需要相关的值的话就可以使用外键约束，并且设置外键的字段名所用的是主表的主键字段才行。 表创建时添加外键约束CONSTRAINT 外键名 FOREIGN KEY(从表的外键字段名) REFERENCES 主表名(主表的主键字段名)    例子： #主表 CREATE TABLE IF NOT user( id int PRIMARY KEY NOT NULL AUTO_INCREMENT, na...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dart%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">Dart数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Dart%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E7%A7%8D%E7%B1%BB"><span class="toc-number">2.1.</span> <span class="toc-text">Dart数据类型种类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Numbers%EF%BC%88%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B%EF%BC%89"><span class="toc-number">2.1.1.</span> <span class="toc-text">Numbers（数字类型）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Strings%EF%BC%88%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%89"><span class="toc-number">2.1.2.</span> <span class="toc-text">Strings（字符串）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Booleans%EF%BC%88%E5%B8%83%E5%B0%94%EF%BC%89"><span class="toc-number">2.1.3.</span> <span class="toc-text">Booleans（布尔）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Lists%EF%BC%88%E6%95%B0%E7%BB%84%EF%BC%89"><span class="toc-number">2.1.4.</span> <span class="toc-text">Lists（数组）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Sets%EF%BC%88%E6%97%A0%E5%BA%8F%E9%9B%86%E5%90%88%EF%BC%89"><span class="toc-number">2.1.5.</span> <span class="toc-text">Sets（无序集合）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Map%EF%BC%88%E5%AF%B9%E8%B1%A1%EF%BC%89"><span class="toc-number">2.1.6.</span> <span class="toc-text">Map（对象）</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）">K 近邻算法：KNN（K-Nearest Neighbors）</a><time datetime="2026-05-19T11:43:23.000Z" title="发表于 2026-05-19 19:43:23">2026-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/" title="freertos中常用api总结">freertos中常用api总结</a><time datetime="2025-02-12T06:43:35.000Z" title="发表于 2025-02-12 14:43:35">2025-02-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/" title="STM32根据DHT11温湿度分析城市相似度项目总结">STM32根据DHT11温湿度分析城市相似度项目总结</a><time datetime="2025-02-04T03:03:33.000Z" title="发表于 2025-02-04 11:03:33">2025-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/31/stm32-ying-jian-shi-xian-yu-w25qxx-tong-xin/" title="stm32硬件实现与w25qxx通信">stm32硬件实现与w25qxx通信</a><time datetime="2025-01-31T01:05:54.000Z" title="发表于 2025-01-31 09:05:54">2025-01-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/18/stm32f103c8t6-zong-he-xue-xi-xiang-mu-de-ju-ti-gong-neng-shi-xian-xiang-jie/" title="STM32F103C8T6综合学习项目的具体功能实现详解">STM32F103C8T6综合学习项目的具体功能实现详解</a><time datetime="2025-01-18T02:12:33.000Z" title="发表于 2025-01-18 10:12:33">2025-01-18</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="360" viewBox="0 0 980 360" role="img" aria-labelledby="title desc">
+  <title id="title">KNN decision boundary comparison</title>
+  <desc id="desc">Three panels comparing decision boundaries when K equals 1, 5, and 15.</desc>
+  <rect width="980" height="360" fill="#f8fafc"/>
+  <style>
+    text { font-family: Arial, sans-serif; }
+    .panel { fill: #fff; stroke: #cbd5e1; }
+    .label { fill: #334155; font-size: 18px; font-weight: 700; }
+    .note { fill: #64748b; font-size: 13px; }
+  </style>
+  <g transform="translate(28 34)">
+    <rect class="panel" width="292" height="270" rx="8"/>
+    <path d="M0 0H292V270H0Z" fill="#dbeafe"/>
+    <path d="M10 220C38 170 66 255 96 188C126 120 162 238 188 146C214 60 250 130 282 48V270H10Z" fill="#fee2e2" opacity=".92"/>
+    <g fill="#2563eb" stroke="#1e3a8a"><circle cx="58" cy="80" r="5"/><circle cx="92" cy="118" r="5"/><circle cx="122" cy="72" r="5"/><circle cx="178" cy="104" r="5"/><circle cx="228" cy="66" r="5"/></g>
+    <g fill="#dc2626" stroke="#7f1d1d"><circle cx="54" cy="210" r="5"/><circle cx="98" cy="226" r="5"/><circle cx="142" cy="198" r="5"/><circle cx="198" cy="226" r="5"/><circle cx="244" cy="180" r="5"/></g>
+    <text x="98" y="306" class="label">K = 1</text>
+    <text x="62" y="330" class="note">边界曲折，容易过拟合噪声</text>
+  </g>
+  <g transform="translate(344 34)">
+    <rect class="panel" width="292" height="270" rx="8"/>
+    <path d="M0 0H292V270H0Z" fill="#dbeafe"/>
+    <path d="M0 220C42 170 76 190 112 165C160 132 172 198 216 132C244 92 268 80 292 62V270H0Z" fill="#fee2e2" opacity=".92"/>
+    <g fill="#2563eb" stroke="#1e3a8a"><circle cx="56" cy="82" r="5"/><circle cx="100" cy="118" r="5"/><circle cx="138" cy="80" r="5"/><circle cx="186" cy="108" r="5"/><circle cx="232" cy="72" r="5"/></g>
+    <g fill="#dc2626" stroke="#7f1d1d"><circle cx="50" cy="210" r="5"/><circle cx="96" cy="224" r="5"/><circle cx="146" cy="204" r="5"/><circle cx="196" cy="222" r="5"/><circle cx="246" cy="182" r="5"/></g>
+    <text x="98" y="306" class="label">K = 5</text>
+    <text x="54" y="330" class="note">边界较平滑，兼顾局部结构</text>
+  </g>
+  <g transform="translate(660 34)">
+    <rect class="panel" width="292" height="270" rx="8"/>
+    <path d="M0 0H292V270H0Z" fill="#dbeafe"/>
+    <path d="M0 218C78 188 132 168 176 132C216 98 254 76 292 58V270H0Z" fill="#fee2e2" opacity=".92"/>
+    <g fill="#2563eb" stroke="#1e3a8a"><circle cx="60" cy="84" r="5"/><circle cx="102" cy="120" r="5"/><circle cx="140" cy="82" r="5"/><circle cx="184" cy="110" r="5"/><circle cx="232" cy="72" r="5"/></g>
+    <g fill="#dc2626" stroke="#7f1d1d"><circle cx="52" cy="210" r="5"/><circle cx="98" cy="224" r="5"/><circle cx="146" cy="204" r="5"/><circle cx="196" cy="222" r="5"/><circle cx="244" cy="182" r="5"/></g>
+    <text x="94" y="306" class="label">K = 15</text>
+    <text x="54" y="330" class="note">边界过平滑，可能欠拟合</text>
+  </g>
+</svg>

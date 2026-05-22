@@ -1,0 +1,57 @@
+/* Basic visual polish for LsWorld. Keep it in source/css so theme upgrades won't erase it. */
+:root {
+  --lsworl-card-radius: 8px;
+  --lsworl-soft-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+#web_bg {
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(15, 118, 110, 0.07) 48%, rgba(249, 115, 22, 0.06)),
+    #f8fafc;
+}
+
+[data-theme='dark'] #web_bg {
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(15, 118, 110, 0.12) 48%, rgba(249, 115, 22, 0.1)),
+    #0f172a;
+}
+
+#recent-posts > .recent-post-item,
+.card-widget,
+.layout > div:first-child:not(.recent-posts),
+#post,
+#page,
+#archive {
+  border-radius: var(--lsworl-card-radius);
+  box-shadow: var(--lsworl-soft-shadow);
+}
+
+#aside-content .card-info .author-info__name {
+  font-weight: 700;
+}
+
+#aside-content .card-info .author-info__description {
+  color: #475569;
+  line-height: 1.75;
+}
+
+[data-theme='dark'] #aside-content .card-info .author-info__description {
+  color: #cbd5e1;
+}
+
+#site-title {
+  font-weight: 800;
+}
+
+#site-subtitle {
+  font-size: 1.05rem;
+}
+
+.post-title,
+.article-title {
+  line-height: 1.45;
+}
+
+#pagination .page-number.current {
+  border-radius: 999px;
+}

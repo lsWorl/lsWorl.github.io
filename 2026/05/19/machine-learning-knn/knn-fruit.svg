@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="520" viewBox="0 0 860 520" role="img" aria-labelledby="title desc">
+  <title id="title">KNN fruit classification example</title>
+  <desc id="desc">A two-dimensional coordinate plot showing apples, pears, an unknown fruit, and the three nearest neighbors.</desc>
+  <rect width="860" height="520" fill="#f8fafc"/>
+  <rect x="86" y="42" width="640" height="400" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <g stroke="#e2e8f0" stroke-width="1">
+    <path d="M166 42V442M246 42V442M326 42V442M406 42V442M486 42V442M566 42V442M646 42V442"/>
+    <path d="M86 82H726M86 122H726M86 162H726M86 202H726M86 242H726M86 282H726M86 322H726M86 362H726M86 402H726"/>
+  </g>
+  <g stroke="#334155" stroke-width="2">
+    <path d="M86 442H746"/>
+    <path d="M86 442V22"/>
+  </g>
+  <text x="382" y="492" font-family="Arial, sans-serif" font-size="18" fill="#334155">甜度 x1</text>
+  <text x="20" y="235" transform="rotate(-90 20 235)" font-family="Arial, sans-serif" font-size="18" fill="#334155">脆度 x2</text>
+  <g font-family="Arial, sans-serif" font-size="14" fill="#64748b">
+    <text x="80" y="465">0</text><text x="162" y="465">1</text><text x="242" y="465">2</text><text x="322" y="465">3</text><text x="402" y="465">4</text><text x="482" y="465">5</text><text x="562" y="465">6</text><text x="642" y="465">7</text><text x="722" y="465">8</text>
+    <text x="58" y="446">0</text><text x="58" y="406">1</text><text x="58" y="366">2</text><text x="58" y="326">3</text><text x="58" y="286">4</text><text x="58" y="246">5</text><text x="58" y="206">6</text><text x="58" y="166">7</text><text x="58" y="126">8</text>
+  </g>
+  <circle cx="726" cy="162" r="13" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+  <text x="742" y="166" font-family="Arial, sans-serif" font-size="16" fill="#7f1d1d">A 苹果 (8,7)</text>
+  <circle cx="646" cy="122" r="13" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+  <text x="662" y="126" font-family="Arial, sans-serif" font-size="16" fill="#7f1d1d">B 苹果 (7,8)</text>
+  <circle cx="246" cy="282" r="13" fill="#16a34a" stroke="#14532d" stroke-width="2"/>
+  <text x="262" y="286" font-family="Arial, sans-serif" font-size="16" fill="#14532d">C 梨 (2,4)</text>
+  <circle cx="326" cy="322" r="13" fill="#16a34a" stroke="#14532d" stroke-width="2"/>
+  <text x="342" y="326" font-family="Arial, sans-serif" font-size="16" fill="#14532d">D 梨 (3,3)</text>
+  <circle cx="406" cy="242" r="16" fill="#f97316" stroke="#9a3412" stroke-width="3"/>
+  <text x="424" y="246" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#9a3412">X 未知 (4,5)</text>
+  <g stroke="#f97316" stroke-width="2" stroke-dasharray="7 6" fill="none">
+    <path d="M406 242L246 282"/>
+    <path d="M406 242L326 322"/>
+    <path d="M406 242L646 122"/>
+  </g>
+  <rect x="610" y="360" width="210" height="92" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="628" y="390" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">K = 3 最近邻</text>
+  <text x="628" y="418" font-family="Arial, sans-serif" font-size="15" fill="#334155">C、D：梨，B：苹果</text>
+  <text x="628" y="442" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#14532d">预测结果：梨</text>
+</svg>

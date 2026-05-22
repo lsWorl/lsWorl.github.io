@@ -1,0 +1,391 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>stm32中热敏电阻模块在OLED上实时显示温度 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="采用stm32f103c8t6芯片的A0引脚连接热敏电阻模块。采用ADC1的通道0，使用标准库实现。  实现功能所使用的常量为： &#x2F;&#x2F;温度传感器参数 #define VREF 3.3f  &#x2F;&#x2F; ADC参考电压 3.3V #define R1 10000.0f  &#x2F;&#x2F; 电压分压阻值为10KΩ，与热敏电阻串联，用于计算热敏电阻的阻值 #define B 3950.0f  &#x2F;&#x2F; 热敏电阻的 B 常">
+<meta property="og:type" content="article">
+<meta property="og:title" content="stm32中热敏电阻模块在OLED上实时显示温度">
+<meta property="og:url" content="https://lsworl.github.io/2025/01/15/stm32-zhong-re-min-dian-zu-mo-kuai-zai-oled-shang-shi-shi-xian-shi-wen-du/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="采用stm32f103c8t6芯片的A0引脚连接热敏电阻模块。采用ADC1的通道0，使用标准库实现。  实现功能所使用的常量为： &#x2F;&#x2F;温度传感器参数 #define VREF 3.3f  &#x2F;&#x2F; ADC参考电压 3.3V #define R1 10000.0f  &#x2F;&#x2F; 电压分压阻值为10KΩ，与热敏电阻串联，用于计算热敏电阻的阻值 #define B 3950.0f  &#x2F;&#x2F; 热敏电阻的 B 常">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2025-01-15T01:11:56.000Z">
+<meta property="article:modified_time" content="2026-05-22T11:24:08.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="stm32">
+<meta property="article:tag" content="单片机">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "stm32中热敏电阻模块在OLED上实时显示温度",
+  "url": "https://lsworl.github.io/2025/01/15/stm32-zhong-re-min-dian-zu-mo-kuai-zai-oled-shang-shi-shi-xian-shi-wen-du/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2025-01-15T01:11:56.000Z",
+  "dateModified": "2026-05-22T11:24:08.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2025/01/15/stm32-zhong-re-min-dian-zu-mo-kuai-zai-oled-shang-shi-shi-xian-shi-wen-du/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'stm32中热敏电阻模块在OLED上实时显示温度',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">stm32中热敏电阻模块在OLED上实时显示温度</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">stm32中热敏电阻模块在OLED上实时显示温度</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-15T01:11:56.000Z" title="发表于 2025-01-15 09:11:56">2025-01-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-22T11:24:08.000Z" title="更新于 2026-05-22 19:24:08">2026-05-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/">嵌入式</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><meta name="referrer" content="no-referrer">
+
+<blockquote>
+<p>采用stm32f103c8t6芯片的A0引脚连接热敏电阻模块。采用ADC1的通道0，使用标准库实现。</p>
+</blockquote>
+<p>实现功能所使用的常量为：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//温度传感器参数</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">VREF</span> <span class="token expression"><span class="token number">3.3f</span>  </span><span class="token comment">// ADC参考电压 3.3V</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">R1</span> <span class="token expression"><span class="token number">10000.0f</span>  </span><span class="token comment">// 电压分压阻值为10KΩ，与热敏电阻串联，用于计算热敏电阻的阻值</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">B</span> <span class="token expression"><span class="token number">3950.0f</span>  </span><span class="token comment">// 热敏电阻的 B 常数，单位为开尔文（K），用于计算热敏电阻的温度</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">T0</span> <span class="token expression"><span class="token number">298.15f</span>  </span><span class="token comment">// 参考温度，单位为开尔文（K），298.15K即 25°C</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">R0</span> <span class="token expression"><span class="token number">10000.0f</span>  </span><span class="token comment">// 热敏电阻在参考温度 T0 下的阻值，用于计算热敏电阻在当前温度下的阻值</span></span>
+
+<span class="token comment">// DMA内存存入位置</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">ADC_BUFFER_SIZE</span> <span class="token expression"><span class="token number">10</span></span></span>
+<span class="token class-name">uint16_t</span> ADC_ConvertedValue<span class="token punctuation">[</span>ADC_BUFFER_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+
+
+
+<p>GPIO引脚配置：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">GPIO_Config</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    GPIO_InitTypeDef GPIO_InitStructure<span class="token punctuation">;</span>
+
+    <span class="token comment">// 使能GPIOA时钟</span>
+    <span class="token function">RCC_APB2PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB2Periph_GPIOA<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">//配置PA0为模拟输入用于温度传感器</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Pin <span class="token operator">=</span> GPIO_Pin_0<span class="token punctuation">;</span>
+    GPIO_InitStructure<span class="token punctuation">.</span>GPIO_Mode <span class="token operator">=</span> GPIO_Mode_AIN<span class="token punctuation">;</span>
+    <span class="token function">GPIO_Init</span><span class="token punctuation">(</span>GPIOA<span class="token punctuation">,</span> <span class="token operator">&amp;</span>GPIO_InitStructure<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>ADC配置：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">ADC_Config</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    ADC_InitTypeDef ADC_InitStructure<span class="token punctuation">;</span>
+
+    <span class="token comment">// 使能ADC1时钟</span>
+    <span class="token function">RCC_APB2PeriphClockCmd</span><span class="token punctuation">(</span>RCC_APB2Periph_ADC1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// 配置 ADC1 的基本参数</span>
+    ADC_InitStructure<span class="token punctuation">.</span>ADC_Mode <span class="token operator">=</span> ADC_Mode_Independent<span class="token punctuation">;</span> 								<span class="token comment">//配置为独立模式因芯片只有ADC1</span>
+    ADC_InitStructure<span class="token punctuation">.</span>ADC_ScanConvMode <span class="token operator">=</span> ENABLE<span class="token punctuation">;</span>									<span class="token comment">//启用连续扫描，这里因只开一个通道，是否启用连续扫描都不影响结果</span>
+    ADC_InitStructure<span class="token punctuation">.</span>ADC_ContinuousConvMode <span class="token operator">=</span> ENABLE<span class="token punctuation">;</span>								<span class="token comment">//启用连续转换，每次读入模拟量就进行转换</span>
+    ADC_InitStructure<span class="token punctuation">.</span>ADC_ExternalTrigConv <span class="token operator">=</span> ADC_ExternalTrigConv_None<span class="token punctuation">;</span>				<span class="token comment">//不适用外部触发</span>
+    ADC_InitStructure<span class="token punctuation">.</span>ADC_DataAlign <span class="token operator">=</span> ADC_DataAlign_Right<span class="token punctuation">;</span>							<span class="token comment">//数据选择右对齐，转换结果低12位有效</span>
+    ADC_InitStructure<span class="token punctuation">.</span>ADC_NbrOfChannel <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>											<span class="token comment">//转换通道数设置为1</span>
+    <span class="token function">ADC_Init</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">,</span> <span class="token operator">&amp;</span>ADC_InitStructure<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 配置 ADC1 的通道，设置通道在规则组中的转换顺序为第 1 个，设置采样时间为 239.5 个时钟周期</span>
+    <span class="token function">ADC_RegularChannelConfig</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">,</span> ADC_Channel_0<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> ADC_SampleTime_239Cycles5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 启用 ADC1 的 DMA 功能，可以通过DMA实现高速转换</span>
+    <span class="token function">ADC_DMACmd</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 启用 ADC1</span>
+    <span class="token function">ADC_Cmd</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 校准 ADC1，消除 ADC 的偏移误差</span>
+    <span class="token function">ADC_ResetCalibration</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">)</span><span class="token punctuation">;</span>						<span class="token comment">//复位 ADC1 的校准寄存器</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token function">ADC_GetResetCalibrationStatus</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>		<span class="token comment">//等待复位校准完成，完成置0</span>
+    <span class="token function">ADC_StartCalibration</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">)</span><span class="token punctuation">;</span>						<span class="token comment">//启动 ADC1 的校准</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token function">ADC_GetCalibrationStatus</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>			<span class="token comment">//等待完成</span>
+
+    <span class="token comment">// 启动 ADC1 转换，使用软件触发转换功能，将结果通过DMA传输刀内存中</span>
+    <span class="token function">ADC_SoftwareStartConvCmd</span><span class="token punctuation">(</span>ADC1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<p>DMA模块实现：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">DMA_Config</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    DMA_InitTypeDef DMA_InitStructure<span class="token punctuation">;</span>
+    
+    <span class="token comment">// 使能 DMA1 时钟</span>
+    <span class="token function">RCC_AHBPeriphClockCmd</span><span class="token punctuation">(</span>RCC_AHBPeriph_DMA1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// 配置 DMA1 通道1</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_PeripheralBaseAddr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">uint32_t</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>ADC1<span class="token operator">-></span>DR<span class="token punctuation">;</span>				<span class="token comment">//配置DMA读取数据位置为ADC1的DR寄存器中（每次通过A0引脚读入的值都放在DR中所以DMA通过DR读数据）</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_MemoryBaseAddr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">uint32_t</span><span class="token punctuation">)</span>ADC_ConvertedValue<span class="token punctuation">;</span>		<span class="token comment">//配置DMA内存地址为ADC_ConvertedValue，即上方常量的地址</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_DIR <span class="token operator">=</span> DMA_DIR_PeripheralSRC<span class="token punctuation">;</span>							<span class="token comment">//传输方向为外设到内存</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_BufferSize <span class="token operator">=</span> ADC_BUFFER_SIZE<span class="token punctuation">;</span>							<span class="token comment">//缓冲区大小为每次DMA传输的数据量，即上方常量中的值</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_PeripheralInc <span class="token operator">=</span> DMA_PeripheralInc_Disable<span class="token punctuation">;</span>			<span class="token comment">//禁用外设地址自增，ADC 数据寄存器地址是固定的</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_MemoryInc <span class="token operator">=</span> DMA_MemoryInc_Enable<span class="token punctuation">;</span>						<span class="token comment">//启用内存地址自增，数组的每个元素地址是连续的</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_PeripheralDataSize <span class="token operator">=</span> DMA_PeripheralDataSize_HalfWord<span class="token punctuation">;</span> <span class="token comment">//设置外设数据大小为半字（16位）</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_MemoryDataSize <span class="token operator">=</span> DMA_MemoryDataSize_HalfWord<span class="token punctuation">;</span>			<span class="token comment">//设置内存数据大小为半字（16位），与 ADC 数据寄存器一致</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_Mode <span class="token operator">=</span> DMA_Mode_Circular<span class="token punctuation">;</span>								<span class="token comment">//设置 DMA 模式为循环模式，即 DMA 传输完成后会自动重新开始</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_Priority <span class="token operator">=</span> DMA_Priority_High<span class="token punctuation">;</span>							<span class="token comment">//设置 DMA 通道的优先级为高（因为就一个通道，不设置也没关系）</span>
+    DMA_InitStructure<span class="token punctuation">.</span>DMA_M2M <span class="token operator">=</span> DMA_M2M_Disable<span class="token punctuation">;</span>								<span class="token comment">//禁用内存到内存的传输模式</span>
+    <span class="token function">DMA_Init</span><span class="token punctuation">(</span>DMA1_Channel1<span class="token punctuation">,</span> <span class="token operator">&amp;</span>DMA_InitStructure<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// 使能 DMA1 通道1</span>
+    <span class="token function">DMA_Cmd</span><span class="token punctuation">(</span>DMA1_Channel1<span class="token punctuation">,</span> ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<p>将模拟量转换为温度：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">float</span> <span class="token function">GetTemperature</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">uint32_t</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">uint8_t</span> i<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> voltage<span class="token punctuation">,</span> rt<span class="token punctuation">,</span> temperature<span class="token punctuation">;</span>
+    <span class="token class-name">uint16_t</span> adc_value<span class="token punctuation">;</span> 
+    <span class="token comment">// 计算10个样本的平均值 ADC_BUFFER_SIZE为10</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> ADC_BUFFER_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        sum <span class="token operator">+=</span> ADC_ConvertedValue<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    adc_value <span class="token operator">=</span> sum <span class="token operator">/</span> ADC_BUFFER_SIZE<span class="token punctuation">;</span>
+    
+    <span class="token comment">// 将ADC值转换为电压 12位为4096</span>
+    voltage <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span>adc_value <span class="token operator">*</span> VREF <span class="token operator">/</span> <span class="token number">4096.0f</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 计算热敏电阻阻值</span>
+    rt <span class="token operator">=</span> R1 <span class="token operator">*</span> voltage <span class="token operator">/</span> <span class="token punctuation">(</span>VREF <span class="token operator">-</span> voltage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 使用Steinhart-Hart公式计算温度</span>
+    temperature <span class="token operator">=</span> <span class="token number">1.0f</span> <span class="token operator">/</span> <span class="token punctuation">(</span><span class="token number">1.0f</span><span class="token operator">/</span>T0 <span class="token operator">+</span> <span class="token function">log</span><span class="token punctuation">(</span>rt<span class="token operator">/</span>R0<span class="token punctuation">)</span><span class="token operator">/</span>B<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">273.15f</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> temperature<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>温度T的计算公式：<br>$$<br>T&#x3D;\frac{1}{\frac{1}{T_0}+\frac{\frac{ln(R_t)}{R_0}}{B}}<br>$$</p>
+<h5 id="公式中的参数"><a href="#公式中的参数" class="headerlink" title="公式中的参数"></a>公式中的参数</h5><ul>
+<li><strong>T</strong>：参考温度，通常为 25°C（即 298.15K）。</li>
+<li><strong>R0</strong>：热敏电阻在参考温度 T0<em>T</em>0 下的阻值，通常为 10kΩ。</li>
+<li><strong>Rt</strong>：热敏电阻在当前温度下的阻值，通过分压电路和 ADC 测量得到。</li>
+<li><strong>B</strong>：热敏电阻的 B 常数，通常由热敏电阻的规格书提供，例如 3950。</li>
+</ul>
+<p>通过以上的函数调用即可实现热敏电阻读取温度，最后在main函数中使用OLED显示温度：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// 初始化</span>
+    <span class="token function">GPIO_Config</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">DMA_Config</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">ADC_Config</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// 初始化 OLED（OLED的代码需要自行去搜索获取）</span>
+    <span class="token function">OLED_Init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">OLED_Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token class-name">uint32_t</span> i<span class="token punctuation">;</span>
+        <span class="token comment">// 获取温度</span>
+        <span class="token keyword">float</span> temperature <span class="token operator">=</span> <span class="token function">GetTemperature</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">char</span> temp_str<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token function">sprintf</span><span class="token punctuation">(</span>temp_str<span class="token punctuation">,</span> <span class="token string">"Temp:%.1fC"</span><span class="token punctuation">,</span> temperature<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//格式化字符串</span>
+        <span class="token function">OLED_ShowString</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> temp_str<span class="token punctuation">)</span><span class="token punctuation">;</span>			  <span class="token comment">//OLED显示温度</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2025/01/15/stm32-zhong-re-min-dian-zu-mo-kuai-zai-oled-shang-shi-shi-xian-shi-wen-du/">https://lsworl.github.io/2025/01/15/stm32-zhong-re-min-dian-zu-mo-kuai-zai-oled-shang-shi-shi-xian-shi-wen-du/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/stm32/">stm32</a><a class="post-meta__tags" href="/tags/%E5%8D%95%E7%89%87%E6%9C%BA/">单片机</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/01/15/ji-yu-stm32-zong-he-xue-xi-xiang-mu-jie-gou-she-ji/" title="基于STM32综合学习项目结构设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">基于STM32综合学习项目结构设计</div></div><div class="info-2"><div class="info-item-1">   该项目基于型号STM32F103C8T6，项目的具体内容参考GitHub仓库，根据各个模块来学习对应的功能的实现。  开发GPIO驱动在开发GPIO模块前，需要对GPIO_TypeDef中的参数有一定的认识。 typedef struct &#123;   __IO uint32_t CRL;   __IO uint32_t CRH;   __IO uint32_t IDR;   __IO uint32_t ODR;   __IO uint32_t BSRR;   __IO uint32_t BRR;   __IO uint32_t LCKR; &#125; GPIO_TypeDef;  1. CRL (Configuration Register Low) 作用：配置 GPIO 端口的低 8 个引脚（Pin 0 ~ Pin 7）的模式和速度。  位域：  每 4 位控制一个引脚： MODEy[1:0]：配置引脚的模式（输入、输出、复用功能、模拟模式）。 CNFy[1:0]：配置引脚的输出类型（推挽、开漏、复用功能、模拟模式）。     示例：  设置 Pin 0 为推挽输...</div></div></div></a><a class="pagination-related" href="/2025/01/09/stm32f1-xi-lie-qu-dong-sg90-duo-ji-mo-kuai/" title="STM32F1系列驱动SG90舵机模块"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">STM32F1系列驱动SG90舵机模块</div></div><div class="info-2"><div class="info-item-1">    SG90舵机模块介绍 标准库代码实现驱动舵机由上图可知可以通过PWM来实现驱动舵机，这里采用STM32F103C8T6的TIM2的通道4来实现，即该芯片的A3口引脚，如下图所示  配置20ms的时基单元（以PLL时钟频率为72MHz为例），那么就是将TIM2的定时器的周期配置为20ms（50Hz），即设置ARR= 2000 - 1，PSC = 720 -1，则定时器的时钟周期就为20ms，并且我在初始位置设置为90°，即起始值设置为150，代码如下： void TIM2_PWM_Config(void) &#123;     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;     TIM_OCInitTypeDef TIM_OCInitStructure;      // 配置定时器周期为20ms（50Hz）     TIM_TimeBaseStructure.TIM_Period = 2000 - 1; // 72MHz / 7200 = 10KHz     TIM_TimeBaseStructure.TIM_Prescal...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/01/03/chuan-kou-xie-yi/" title="串口协议"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-03</div><div class="info-item-2">串口协议</div></div><div class="info-2"><div class="info-item-1">    USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口完成基础操作，发送的数据通过总线到发送数据寄存器TDR，然后TDR中数据会发送到发送移位寄存器，发送移位寄存器会将比特右移的传到USARTX_TX引脚，产生串口协议规定的波形，当数据从发送移位寄存器发送完成时，TXE标志位会置1，只需判断TXE就可以知道是否可以传下一个数据。 同样在接受控制器中通过USARTX_TX引脚接受数据，接受完成会将RXNE标志位置1。 在实际使用中只有DR寄存器可供读写，写入DR时，数据走TX发送，读出DR时，数据走TX接受。 发送数据的函数形式为 void Serial_SendChar(uint8_t ch) &#123;        // 发送字符   USART_SendData(USART1, ch);   // 等待发送缓冲区为空  发送完成会将USART_FLAG_TXE置1   while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); &#125;    接受数据的形式为 if (US...</div></div></div></a><a class="pagination-related" href="/2025/01/09/stm32f1-xi-lie-qu-dong-sg90-duo-ji-mo-kuai/" title="STM32F1系列驱动SG90舵机模块"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-09</div><div class="info-item-2">STM32F1系列驱动SG90舵机模块</div></div><div class="info-2"><div class="info-item-1">    SG90舵机模块介绍 标准库代码实现驱动舵机由上图可知可以通过PWM来实现驱动舵机，这里采用STM32F103C8T6的TIM2的通道4来实现，即该芯片的A3口引脚，如下图所示  配置20ms的时基单元（以PLL时钟频率为72MHz为例），那么就是将TIM2的定时器的周期配置为20ms（50Hz），即设置ARR= 2000 - 1，PSC = 720 -1，则定时器的时钟周期就为20ms，并且我在初始位置设置为90°，即起始值设置为150，代码如下： void TIM2_PWM_Config(void) &#123;     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;     TIM_OCInitTypeDef TIM_OCInitStructure;      // 配置定时器周期为20ms（50Hz）     TIM_TimeBaseStructure.TIM_Period = 2000 - 1; // 72MHz / 7200 = 10KHz     TIM_TimeBaseStructure.TIM_Prescal...</div></div></div></a><a class="pagination-related" href="/2025/01/18/stm32f103c8t6-zong-he-xue-xi-xiang-mu-de-ju-ti-gong-neng-shi-xian-xiang-jie/" title="STM32F103C8T6综合学习项目的具体功能实现详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-18</div><div class="info-item-2">STM32F103C8T6综合学习项目的具体功能实现详解</div></div><div class="info-2"><div class="info-item-1">   代码项目地址为stm32综合学习项目。  项目概述（详细可在项目的Project_Structure中查看）该项目基于STM32F103C8T6芯片，学习I2C,GPIO,ADC,EXTI,PWM等基础模块的使用，并通过模块化的方式使代码具有良好的可读性与健壮性。 准备的模块 OLED显示屏（I2C） 蜂鸣器模块（GPIO） 光敏电阻传感器（ADC） 热敏电阻传感器（ADC） MPU6050陀螺仪（I2C） 旋转编码器（EXTI+TIM） 舵机（PWM） LED指示灯（GPIO） 按钮（GPIO+EXTI） STM23F103C8T6芯片  文件结构设计硬件驱动层Hardware&#x2F; ├── OLED.c ├── OLED.h ├── OLED_Font.h ├── beeper.c ├── beeper.h ├── light_sensor.c ├── light_sensor.h ├── temp_sensor.c ├── temp_sensor.h ├── mpu6050.c ├── mpu6050.h ├── encoder.c ├── encoder.h ...</div></div></div></a><a class="pagination-related" href="/2025/01/02/adc-mo-shu-zhuan-huan-qi/" title="ADC模数转换器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-02</div><div class="info-item-2">ADC模数转换器</div></div><div class="info-2"><div class="info-item-1">    ADC可以将模拟电压转换为数字变量， 输入电压范围03.3V，转换结果的范围：04095，即0V对应0，3.3V对应4095，中间均为一一对应的线性关系。  STM32F10系列中ADC有多达18个通道，可测量16个外部和2个内部信号源。各通道的A&#x2F;D转换可以单次、连续、扫描或间断模式执行。ADC的结果可以左对齐或右对齐方式存储在16位数据寄存器中。  STM32 ADC的总转换时间$$T_{CONV} &#x3D; 采样时间+12.5个ADC周期$$ 例： 当ADCCLK &#x3D;14MHz，采样时间为1.5个ADC周期，  则$$T_{CONV} &#x3D; 1.5 +12.5 &#x3D;14个ADC周期&#x3D;1us$$ </div></div></div></a><a class="pagination-related" href="/2025/01/01/stm32tim-ding-shi-zhong-duan/" title="stm32TIM定时中断"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-01</div><div class="info-item-2">stm32TIM定时中断</div></div><div class="info-2"><div class="info-item-1">  中断优先级配置NVIC来进行中断优先级配置（值越小，优先级越高）。 NVIC优先级分组NVIC的优先级组通过NVIC_PriorityGroupConfig(NVIC_PriorityGroup_X)来配置X表示哪个分组。    NVIC组 抢占优先级 响应优先级    NVIC_PriorityGroup_0 0bits 4bits，可分为0-15   NVIC_PriorityGroup_1 1bits 3bits   NVIC_PriorityGroup_2 2bits 2bits   NVIC_PriorityGroup_3 3bits 1bits   NVIC_PriorityGroup_4 4bits 0bits   计数器计数频率$$CK_CNT &#x3D; CK_PSC&#x2F;(PSC+1)$$ CK_CNT：定时器时钟，CK_PSC：定时器时钟源，PSC：预频分值。 计数器溢出频率$$CK_CNT_OV &#x3D; CK_CNT&#x2F;(ARR +1)&#x3D;CK_PSC&#x2F;(PSC+1)&#x2F;(ARR+1)$$ ARR：自动重...</div></div></div></a><a class="pagination-related" href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/" title="STM32根据DHT11温湿度分析城市相似度项目总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-04</div><div class="info-item-2">STM32根据DHT11温湿度分析城市相似度项目总结</div></div><div class="info-2"><div class="info-item-1">     所使用的模块与工具：  STM32F103C8T6 DHT11温湿度传感器 ESP32WROOM(采用ESP-IDF) EMQX Serverless（MQTT Broker） TiDB Cloud（云数据库） 腾讯位置服务API 和风天气API   硬件层STM32Stm32Cubemx配置 使用引脚:  PA10-&gt;D17(USART1_RX连到ESP32的D17) P9-&gt;D16(USART1_TX连到ESP32的D16) PB10-&gt;LED（用于测试系统是否正常运作，设置为GPIO_Output，推挽输出） PA0-&gt;DHT11 Do口（芯片左边标S的口，最右边有-的标志连GND，中间连VCC）   Pinout&amp;Configuration 由于硬件层面比较简单，就不采用DMA来传输了  SystemCore配置 GPIO  PA0  GPIO output level: low（默认输出低电平） GPIO mode : Output Push Pull（推挽输出） GPIO Pull-up&#x2F;Pull-down：No p...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%AC%E5%BC%8F%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">公式中的参数</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）">K 近邻算法：KNN（K-Nearest Neighbors）</a><time datetime="2026-05-19T11:43:23.000Z" title="发表于 2026-05-19 19:43:23">2026-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/" title="freertos中常用api总结">freertos中常用api总结</a><time datetime="2025-02-12T06:43:35.000Z" title="发表于 2025-02-12 14:43:35">2025-02-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/" title="STM32根据DHT11温湿度分析城市相似度项目总结">STM32根据DHT11温湿度分析城市相似度项目总结</a><time datetime="2025-02-04T03:03:33.000Z" title="发表于 2025-02-04 11:03:33">2025-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/31/stm32-ying-jian-shi-xian-yu-w25qxx-tong-xin/" title="stm32硬件实现与w25qxx通信">stm32硬件实现与w25qxx通信</a><time datetime="2025-01-31T01:05:54.000Z" title="发表于 2025-01-31 09:05:54">2025-01-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/18/stm32f103c8t6-zong-he-xue-xi-xiang-mu-de-ju-ti-gong-neng-shi-xian-xiang-jie/" title="STM32F103C8T6综合学习项目的具体功能实现详解">STM32F103C8T6综合学习项目的具体功能实现详解</a><time datetime="2025-01-18T02:12:33.000Z" title="发表于 2025-01-18 10:12:33">2025-01-18</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

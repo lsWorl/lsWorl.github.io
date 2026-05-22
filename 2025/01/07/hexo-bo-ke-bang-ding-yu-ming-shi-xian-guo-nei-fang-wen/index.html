@@ -1,0 +1,273 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>hexo博客绑定域名实现国内访问 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在本地可以用hexo来搭建自己的博客后（若还没有搭建可以看我的博客搭建这篇文章），再在Vercel实现线上访问（若想以其他静态页面而非Hexo来Vercel结合github实现线上访问可以看我的使用Vercel来部署静态页面并解决跨域问题这篇文章）。 经过以上两个步骤可以实现使用科技手段来访问搭建的网页或博客，但此时若不想使用科技手段对Vercel提供的域名在国内访问搭建的博客大概率是会访问失">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo博客绑定域名实现国内访问">
+<meta property="og:url" content="https://lsworl.github.io/2025/01/07/hexo-bo-ke-bang-ding-yu-ming-shi-xian-guo-nei-fang-wen/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="在本地可以用hexo来搭建自己的博客后（若还没有搭建可以看我的博客搭建这篇文章），再在Vercel实现线上访问（若想以其他静态页面而非Hexo来Vercel结合github实现线上访问可以看我的使用Vercel来部署静态页面并解决跨域问题这篇文章）。 经过以上两个步骤可以实现使用科技手段来访问搭建的网页或博客，但此时若不想使用科技手段对Vercel提供的域名在国内访问搭建的博客大概率是会访问失">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2025-01-07T00:30:18.000Z">
+<meta property="article:modified_time" content="2026-05-22T11:24:08.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "hexo博客绑定域名实现国内访问",
+  "url": "https://lsworl.github.io/2025/01/07/hexo-bo-ke-bang-ding-yu-ming-shi-xian-guo-nei-fang-wen/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2025-01-07T00:30:18.000Z",
+  "dateModified": "2026-05-22T11:24:08.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2025/01/07/hexo-bo-ke-bang-ding-yu-ming-shi-xian-guo-nei-fang-wen/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'hexo博客绑定域名实现国内访问',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">hexo博客绑定域名实现国内访问</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">hexo博客绑定域名实现国内访问</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-07T00:30:18.000Z" title="发表于 2025-01-07 08:30:18">2025-01-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-22T11:24:08.000Z" title="更新于 2026-05-22 19:24:08">2026-05-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><meta name="referrer" content="no-referrer">
+
+<p>在本地可以用hexo来搭建自己的博客后（若还没有搭建可以看我的<a target="_blank" rel="noopener" href="https://www.lsworl.online/2022/04/11/hexo-da-jian-yu-ying-yong-zhu-ti/">博客搭建</a>这篇文章），再在<a target="_blank" rel="noopener" href="https://vercel.com/">Vercel</a>实现线上访问（若想以其他静态页面而非Hexo来Vercel结合github实现线上访问可以看我的<a target="_blank" rel="noopener" href="https://www.lsworl.online/2022/05/27/shi-yong-vercel-lai-bu-shu-jing-tai-ye-mian-bing-jie-jue-kua-yu-wen-ti/">使用Vercel来部署静态页面并解决跨域问题</a>这篇文章）。</p>
+<p>经过以上两个步骤可以实现使用科技手段来访问搭建的网页或博客，但此时若不想使用科技手段对Vercel提供的域名在国内访问搭建的博客大概率是会访问失败。（这里的原理结合我所学的知识应该是因为Vercel所生成的默认的域名在国内dns服务器解析失败导致无法找到ip，从而使我们所搭建的网站在国内无法访问）  </p>
+<p>这个问题可以通过购买国内域名就可以实现，购买一些便宜的域名即可（域名购买的步骤不再演示了，便宜的域名6块1年也不是很贵，这里以阿里云的域名为例）。</p>
+<p>域名购买完成后可在搜索栏中搜索域名，进入域名控制台页面。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/ac2336782b1849b49b325725d1a85557.png"></p>
+<p>然后点击全部域名查看自己购买到的域名。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/abaa16c19ff94bec8bac03ff6739606c.png"></p>
+<p>下方应该就会有你所购买到的域名信息（若状态不是处于正常状态需要等待一段时间检查）。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/59bf3e5f54564d9aa7088916288bf301.png"></p>
+<p>然后打开Vercel，点击右上角的ADD NEW下面的Project。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/e9350aed7ee9476e9b6a59e26e08ca7d.png"></p>
+<p>在下方选择你的博客或其他静态页面仓库（我的博客是lsWorl.github.io，所以我选择这个进行import）</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/e2be1a8a74814e51b8a11a7abd8dae84.png"></p>
+<p>该页面下无需额外配置直接点部署。（当然也可以修改Framework Preset中改成hexo，或者你的build或output命令自己做了自定义则需修改build and output Setting，更详细的可以留言进行进一步交流，这里我直接点部署）</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/42990545dbca44bdb8ac9a263a33e4d1.png"></p>
+<p>部署完成应该可以通过外网访问自己的博客了。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/d039bd1d563447f794d1f31b074572c6.png"></p>
+<p>接下来就是添加域名，通过点击下方Add Domain。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/1ae0b8eb093e4af2bffe901268fa2d45.png"></p>
+<p>点击Edit。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/432faaa7ed724427841dddad1649d6f1.png"></p>
+<p>在输入框中输入你购买到的域名后点击Add。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/a4dc6c4d64d143e0a035878f174d1903.png"></p>
+<p>直接点击Add即可，无需修改。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/bb901405a15a4eb2a914c886be219bba.png"></p>
+<p>然后回到阿里云域名平台这点击解析设置。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/d78743866a8a4348b6f3a6845e3c2d39.png"></p>
+<p>点击添加记录。（我这里因为先前已经添加过两条记录所以下方有两条已经启用的主机记录）</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/ec913f532e164f1ba82ed19af7f63dc9.png"></p>
+<p>进入到添加记录，如我下面两个这样进行填写。（这里的<strong>记录值</strong>得和Vercel要求填写的对应，每个人的应该是不相同的）</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/b25dfd6cd5b647d0afb3b9b38bc1a8ed.png"></p>
+<p><img src="https://i-blog.csdnimg.cn/direct/14a9042ae0384e94929646226884ab6b.png"></p>
+<p>添加后两条记录应该处于启用状态，然后回到Vercel，下方所有都处于Valid Configuration就说明配置成功。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/0f8c1043a23e4897a2bda971422a687e.png"></p>
+<p>以上步骤都实现后就可以直接访问自己的博客，无需再使用科技手段！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2025/01/07/hexo-bo-ke-bang-ding-yu-ming-shi-xian-guo-nei-fang-wen/">https://lsworl.github.io/2025/01/07/hexo-bo-ke-bang-ding-yu-ming-shi-xian-guo-nei-fang-wen/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hexo/">hexo</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/01/07/python3-yu-fa/" title="Python3中常用函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Python3中常用函数</div></div><div class="info-2"><div class="info-item-1">   本文参考Python菜鸟教程  Python基础语法#单行注释以`#`，多行注释以`"""`开头和`"""`结尾。  #注释1 """ 多行注释 """  #缩进与if，无需分号 if True:     print('true')      #多行语句，变量通过‘\’来实现多行语句 a = 1 b = 2 c = 3 total = a + \ 		b + \ 		c + \ print(total)  #输出6  #字符串 str = '012345' print(str) 			#输出012345 print(str[0:-1]) 	#输出01234 取0到4左闭右开 -1表示最右边 print(str[0:-2]) 	#输出0123 print(str[1]) 		#输出 1 print(str[2:])		#输出 2345 print(str[0:4:2])   #输出 02 范围[0,4),即0 1 2 3 步长为2 print(str * 2)		#输出012345012345 print(str + '你好')  #输出012345你好 字符串拼接  dat...</div></div></div></a><a class="pagination-related" href="/2025/01/03/chuan-kou-xie-yi/" title="串口协议"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">串口协议</div></div><div class="info-2"><div class="info-item-1">    USART串口通信stm32中使用USART串口通信主要通过RX和TX两个接口完成基础操作，发送的数据通过总线到发送数据寄存器TDR，然后TDR中数据会发送到发送移位寄存器，发送移位寄存器会将比特右移的传到USARTX_TX引脚，产生串口协议规定的波形，当数据从发送移位寄存器发送完成时，TXE标志位会置1，只需判断TXE就可以知道是否可以传下一个数据。 同样在接受控制器中通过USARTX_TX引脚接受数据，接受完成会将RXNE标志位置1。 在实际使用中只有DR寄存器可供读写，写入DR时，数据走TX发送，读出DR时，数据走TX接受。 发送数据的函数形式为 void Serial_SendChar(uint8_t ch) &#123;        // 发送字符   USART_SendData(USART1, ch);   // 等待发送缓冲区为空  发送完成会将USART_FLAG_TXE置1   while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); &#125;    接受数据的形式为 if (US...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/04/11/hexo-da-jian-yu-ying-yong-zhu-ti/" title="Hexo搭建与应用主题"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-11</div><div class="info-item-2">Hexo搭建与应用主题</div></div><div class="info-2"><div class="info-item-1">前置安装1.Node.js (nodejs.org)(Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本) 2.Git (git-scm.com) 3.淘宝镜像（非必要）npm config set registry https://registry.npm.taobao.org  ​		用了淘宝镜像可以更快下载资源包。 ​		使用npm config get registry来查看是否配置完成。   ​		显示地址说明配置完成。 4.安装hexo Hexo官网地址(更详细的安装配置等可以看官方文档) 使用npm install hexo-cli -g可将hexo全局配置。 使用npx hexo可以来查看hexo是否安装成功。   出现相关命令则安装成功。 hexo初始化到任意磁盘位置创建一个文件夹并打开cmd使用hexo init命令对目标文件夹初始化（这里以D:\blog为例）   检查文件夹是否有以下几种文件：   没有报错则初始化成功。(如果有问题大部分是node.js版本或git未安装导致) 在控制台使用hexo s可以在本地查看b...</div></div></div></a><a class="pagination-related" href="/2022/05/27/jie-jue-matery-zhu-ti-fu-biao-ti-wu-fa-xian-shi-de-wen-ti/" title="解决matery主题副标题无法显示的问题"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-27</div><div class="info-item-2">解决matery主题副标题无法显示的问题</div></div><div class="info-2"><div class="info-item-1">今天部署博客发现在本地运行的时候也会出现页面迟迟无法出现的问题，结果打开控制台面板一看发现type.js没有使用上。     查看源代码发现https://cdn.jsdelivr.net/npm/typed.js@2.0.11挂了，而matery主题默认使用jsdelivr来引入一些js代码。     现在在控制台中发现了错误，那解决办法就很简单了，在matery主题的源代码中将cdn换成国内加速就可以完美解决副标题不显示的问题了。     经过一路筛查后发现在主题文件的\layout\_partial\bg-cover-content.ejs中发现了代码。接下来把他替换成https://cdn.bootcss.com/typed.js/2.0.5/typed.js，就可以完美解决问题了       重新启动后发现报错没了，副标题也一如既往的显示了。 </div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">93</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）">K 近邻算法：KNN（K-Nearest Neighbors）</a><time datetime="2026-05-19T11:43:23.000Z" title="发表于 2026-05-19 19:43:23">2026-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/" title="freertos中常用api总结">freertos中常用api总结</a><time datetime="2025-02-12T06:43:35.000Z" title="发表于 2025-02-12 14:43:35">2025-02-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/04/stm32-gen-ju-dht11-wen-shi-du-fen-xi-cheng-shi-xiang-si-du-xiang-mu-zong-jie/" title="STM32根据DHT11温湿度分析城市相似度项目总结">STM32根据DHT11温湿度分析城市相似度项目总结</a><time datetime="2025-02-04T03:03:33.000Z" title="发表于 2025-02-04 11:03:33">2025-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/31/stm32-ying-jian-shi-xian-yu-w25qxx-tong-xin/" title="stm32硬件实现与w25qxx通信">stm32硬件实现与w25qxx通信</a><time datetime="2025-01-31T01:05:54.000Z" title="发表于 2025-01-31 09:05:54">2025-01-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/18/stm32f103c8t6-zong-he-xue-xi-xiang-mu-de-ju-ti-gong-neng-shi-xian-xiang-jie/" title="STM32F103C8T6综合学习项目的具体功能实现详解">STM32F103C8T6综合学习项目的具体功能实现详解</a><time datetime="2025-01-18T02:12:33.000Z" title="发表于 2025-01-18 10:12:33">2025-01-18</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
