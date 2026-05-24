@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">Logistic regression decision boundary</title>
+  <desc id="desc">Two classes of points separated by a linear decision boundary where predicted probability equals 0.5.</desc>
+  <rect width="920" height="520" fill="#f8fafc"/>
+  <style>
+    text { font-family: Arial, sans-serif; fill: #334155; }
+    .muted { fill: #64748b; font-size: 15px; }
+    .label { font-size: 18px; font-weight: 700; }
+  </style>
+  <rect x="90" y="50" width="660" height="390" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <path d="M90 440H770" stroke="#334155" stroke-width="2"/>
+  <path d="M90 440V30" stroke="#334155" stroke-width="2"/>
+  <g stroke="#e2e8f0">
+    <path d="M170 50V440M250 50V440M330 50V440M410 50V440M490 50V440M570 50V440M650 50V440M730 50V440"/>
+    <path d="M90 110H750M90 170H750M90 230H750M90 290H750M90 350H750M90 410H750"/>
+  </g>
+  <path d="M150 400L700 90" stroke="#0f172a" stroke-width="4"/>
+  <path d="M150 400L700 90" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="8 8"/>
+  <text x="530" y="84" class="label">wᵀx + b = 0</text>
+  <text x="544" y="112" class="muted">P(y=1|x)=0.5</text>
+  <g fill="#2563eb" stroke="#1e3a8a" stroke-width="2">
+    <circle cx="180" cy="140" r="10"/><circle cx="238" cy="170" r="10"/><circle cx="300" cy="125" r="10"/>
+    <circle cx="355" cy="175" r="10"/><circle cx="405" cy="130" r="10"/><circle cx="470" cy="168" r="10"/>
+    <circle cx="525" cy="128" r="10"/><circle cx="608" cy="150" r="10"/><circle cx="640" cy="95" r="10"/>
+  </g>
+  <g fill="#dc2626" stroke="#7f1d1d" stroke-width="2">
+    <circle cx="210" cy="365" r="10"/><circle cx="270" cy="330" r="10"/><circle cx="340" cy="370" r="10"/>
+    <circle cx="410" cy="320" r="10"/><circle cx="470" cy="360" r="10"/><circle cx="535" cy="305" r="10"/>
+    <circle cx="610" cy="340" r="10"/><circle cx="670" cy="285" r="10"/><circle cx="705" cy="350" r="10"/>
+  </g>
+  <text x="804" y="170" class="label" fill="#2563eb">预测为 1</text>
+  <text x="804" y="205" class="muted">概率大于 0.5</text>
+  <text x="804" y="325" class="label" fill="#dc2626">预测为 0</text>
+  <text x="804" y="360" class="muted">概率小于 0.5</text>
+  <text x="380" y="488" font-size="18">Feature 1</text>
+  <text x="28" y="260" transform="rotate(-90 28 260)" font-size="18">Feature 2</text>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="430" viewBox="0 0 920 430" role="img" aria-labelledby="title desc">
+  <title id="title">Cross entropy loss curves</title>
+  <desc id="desc">Two loss curves showing that confident wrong predictions receive a much larger penalty.</desc>
+  <rect width="920" height="430" fill="#f8fafc"/>
+  <style>
+    text { font-family: Arial, sans-serif; fill: #334155; }
+    .muted { fill: #64748b; font-size: 14px; }
+    .label { font-size: 18px; font-weight: 700; }
+  </style>
+  <rect x="70" y="45" width="350" height="285" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="500" y="45" width="350" height="285" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <g stroke="#e2e8f0">
+    <path d="M110 85H390M110 135H390M110 185H390M110 235H390M110 285H390"/>
+    <path d="M540 85H820M540 135H820M540 185H820M540 235H820M540 285H820"/>
+  </g>
+  <g stroke="#334155" stroke-width="2">
+    <path d="M110 305H390M110 305V70"/>
+    <path d="M540 305H820M540 305V70"/>
+  </g>
+  <path d="M120 78 C160 94, 205 122, 245 165 C292 216, 340 270, 385 300" fill="none" stroke="#2563eb" stroke-width="5"/>
+  <path d="M550 300 C595 270, 642 216, 690 165 C730 122, 775 94, 815 78" fill="none" stroke="#dc2626" stroke-width="5"/>
+  <text x="142" y="35" class="label">真实标签 y = 1</text>
+  <text x="550" y="35" class="label">真实标签 y = 0</text>
+  <text x="144" y="356" class="muted">预测概率 p 越接近 1，损失越小</text>
+  <text x="558" y="356" class="muted">预测概率 p 越接近 0，损失越小</text>
+  <text x="218" y="395" class="label" fill="#2563eb">L = -log(p)</text>
+  <text x="632" y="395" class="label" fill="#dc2626">L = -log(1-p)</text>
+  <text x="255" y="326" class="muted">p</text>
+  <text x="680" y="326" class="muted">p</text>
+  <text x="82" y="78" class="muted">大</text>
+  <text x="86" y="304" class="muted">小</text>
+  <text x="512" y="78" class="muted">大</text>
+  <text x="516" y="304" class="muted">小</text>
+  <rect x="190" y="110" width="158" height="48" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="206" y="140" font-size="15">正类却预测很低：重罚</text>
+  <rect x="570" y="110" width="184" height="48" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="586" y="140" font-size="15">负类却预测很高：重罚</text>
+</svg>

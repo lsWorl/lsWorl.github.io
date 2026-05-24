@@ -1,0 +1,446 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>逻辑回归：从直线到概率的分类算法 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="用图像和公式理解逻辑回归：它如何把线性模型变成概率，又如何用交叉熵学习分类边界。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑回归：从直线到概率的分类算法">
+<meta property="og:url" content="https://lsworl.github.io/2026/05/24/machine-learning-logistic-regression/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="用图像和公式理解逻辑回归：它如何把线性模型变成概率，又如何用交叉熵学习分类边界。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-05-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-24T08:48:04.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="监督学习">
+<meta property="article:tag" content="分类算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "逻辑回归：从直线到概率的分类算法",
+  "url": "https://lsworl.github.io/2026/05/24/machine-learning-logistic-regression/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-05-23T16:00:00.000Z",
+  "dateModified": "2026-05-24T08:48:04.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/05/24/machine-learning-logistic-regression/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '逻辑回归：从直线到概率的分类算法',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">96</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">31</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">逻辑回归：从直线到概率的分类算法</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">逻辑回归：从直线到概率的分类算法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-23T16:00:00.000Z" title="发表于 2026-05-24 00:00:00">2026-05-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-24T08:48:04.000Z" title="更新于 2026-05-24 16:48:04">2026-05-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>逻辑回归（Logistic Regression）名字里有“回归”，但它最常用于分类任务，尤其是二分类问题。</p>
+<p>它要回答的问题不是“这个样本的数值是多少”，而是“这个样本属于某一类的概率有多大”。例如：</p>
+<ul>
+<li>一封邮件是垃圾邮件的概率是多少？</li>
+<li>一个用户会不会点击广告？</li>
+<li>一个肿瘤样本是恶性的概率是多少？</li>
+<li>一个学生是否能通过考试？</li>
+</ul>
+<p>逻辑回归的核心思想可以概括为一句话：先用一条直线算出一个分数，再用 Sigmoid 函数把这个分数压缩成 $0$ 到 $1$ 之间的概率。</p>
+<span id="more"></span>
+
+<p><img src="https://lsworl.github.io/images/ml-blog/logistic-sigmoid-map.svg" alt="线性分数经过 Sigmoid 函数变成概率"></p>
+<h2 id="1-从线性回归说起"><a href="#1-从线性回归说起" class="headerlink" title="1. 从线性回归说起"></a>1. 从线性回归说起</h2><p>在线性回归中，我们用一个线性函数预测连续值：</p>
+<p>$$<br>z &#x3D; wx + b<br>$$</p>
+<p>如果是多个特征，可以写成：</p>
+<p>$$<br>z &#x3D; \mathbf{w}^{T}\mathbf{x} + b<br>$$</p>
+<p>这里的 $z$ 可以理解为模型给样本打出的“原始分数”。</p>
+<p>但是分类问题不能直接使用这个分数。比如判断一封邮件是不是垃圾邮件时，我们希望模型输出的是：</p>
+<p>$$<br>P(y&#x3D;1|\mathbf{x})<br>$$</p>
+<p>也就是“在输入特征为 $\mathbf{x}$ 的条件下，样本属于正类的概率”。</p>
+<p>概率必须满足两个条件：</p>
+<ul>
+<li>不能小于 $0$</li>
+<li>不能大于 $1$</li>
+</ul>
+<p>而线性函数 $z&#x3D;\mathbf{w}^{T}\mathbf{x}+b$ 的取值范围是 $(-\infty,+\infty)$。所以逻辑回归需要一个函数，把任意实数压缩到 $0$ 和 $1$ 之间。</p>
+<p>这个函数就是 Sigmoid 函数。</p>
+<h2 id="2-Sigmoid-函数：把分数变成概率"><a href="#2-Sigmoid-函数：把分数变成概率" class="headerlink" title="2. Sigmoid 函数：把分数变成概率"></a>2. Sigmoid 函数：把分数变成概率</h2><p>Sigmoid 函数定义为：</p>
+<p>$$<br>\sigma(z)&#x3D;\frac{1}{1+e^{-z}}<br>$$</p>
+<p>它有几个重要特点：</p>
+<ul>
+<li>当 $z$ 很大时，$\sigma(z)$ 接近 $1$</li>
+<li>当 $z$ 很小时，$\sigma(z)$ 接近 $0$</li>
+<li>当 $z&#x3D;0$ 时，$\sigma(z)&#x3D;0.5$</li>
+</ul>
+<p>所以逻辑回归的完整模型可以写成：</p>
+<p>$$<br>\hat{y}&#x3D;P(y&#x3D;1|\mathbf{x})&#x3D;\sigma(\mathbf{w}^{T}\mathbf{x}+b)<br>$$</p>
+<p>其中 $\hat{y}$ 表示模型预测为正类的概率。</p>
+<p>直观地看：</p>
+<ul>
+<li>$z$ 越大，模型越相信样本属于正类。</li>
+<li>$z$ 越小，模型越相信样本属于负类。</li>
+<li>$z&#x3D;0$ 时，模型刚好一半一半，不偏向任何一类。</li>
+</ul>
+<h2 id="3-分类规则：概率超过阈值就判为正类"><a href="#3-分类规则：概率超过阈值就判为正类" class="headerlink" title="3. 分类规则：概率超过阈值就判为正类"></a>3. 分类规则：概率超过阈值就判为正类</h2><p>逻辑回归输出的是概率，不是直接输出类别。因此还需要设定一个阈值。</p>
+<p>最常见的阈值是 $0.5$：</p>
+<p>$$<br>\hat{y}_{class} &#x3D;<br>\begin{cases}<br>1, &amp; \hat{y} \ge 0.5 \<br>0, &amp; \hat{y} &lt; 0.5<br>\end{cases}<br>$$</p>
+<p>由于 $\sigma(0)&#x3D;0.5$，所以：</p>
+<p>$$<br>\hat{y} \ge 0.5 \Longleftrightarrow \mathbf{w}^{T}\mathbf{x}+b \ge 0<br>$$</p>
+<p>这说明逻辑回归的决策边界其实是一条线，或者在高维空间里是一个超平面：</p>
+<p>$$<br>\mathbf{w}^{T}\mathbf{x}+b&#x3D;0<br>$$</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/logistic-decision-boundary.svg" alt="逻辑回归的线性决策边界"></p>
+<p>图中蓝色点和红色点代表两类样本，中间的黑色直线就是决策边界。边界的一侧被预测为正类，另一侧被预测为负类。</p>
+<h2 id="4-一个具体例子：学习时长与是否通过考试"><a href="#4-一个具体例子：学习时长与是否通过考试" class="headerlink" title="4. 一个具体例子：学习时长与是否通过考试"></a>4. 一个具体例子：学习时长与是否通过考试</h2><p>假设我们只用“学习时长”这一个特征，预测学生是否通过考试。</p>
+<table>
+<thead>
+<tr>
+<th align="center">学习时长&#x2F;小时</th>
+<th align="center">是否通过</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+<p>我们希望模型学到一个函数：</p>
+<p>$$<br>P(\text{通过}|x)&#x3D;\sigma(wx+b)<br>$$</p>
+<p>假设模型学到：</p>
+<p>$$<br>w&#x3D;1.4,\quad b&#x3D;-5.6<br>$$</p>
+<p>那么当 $x&#x3D;4$ 时：</p>
+<p>$$<br>z&#x3D;1.4 \times 4 - 5.6 &#x3D; 0<br>$$</p>
+<p>于是：</p>
+<p>$$<br>P(\text{通过}|x&#x3D;4)&#x3D;\sigma(0)&#x3D;0.5<br>$$</p>
+<p>这意味着学习 $4$ 小时是模型眼中的临界点。</p>
+<p>当 $x&#x3D;5$ 时：</p>
+<p>$$<br>z&#x3D;1.4 \times 5 - 5.6 &#x3D; 1.4<br>$$</p>
+<p>$$<br>P(\text{通过}|x&#x3D;5)&#x3D;\sigma(1.4)\approx0.80<br>$$</p>
+<p>模型会认为通过概率较高。</p>
+<p>当 $x&#x3D;2$ 时：</p>
+<p>$$<br>z&#x3D;1.4 \times 2 - 5.6 &#x3D; -2.8<br>$$</p>
+<p>$$<br>P(\text{通过}|x&#x3D;2)&#x3D;\sigma(-2.8)\approx0.06<br>$$</p>
+<p>模型会认为通过概率很低。</p>
+<p>这就是逻辑回归最直观的含义：输入特征先转成分数，再转成概率，最后根据阈值做分类。</p>
+<h2 id="5-为什么不用均方误差"><a href="#5-为什么不用均方误差" class="headerlink" title="5. 为什么不用均方误差"></a>5. 为什么不用均方误差</h2><p>在线性回归中，我们常用均方误差：</p>
+<p>$$<br>J&#x3D;\frac{1}{m}\sum_{i&#x3D;1}^{m}(\hat{y}^{(i)}-y^{(i)})^2<br>$$</p>
+<p>但逻辑回归通常不用它，而是使用交叉熵损失（Cross Entropy Loss）。</p>
+<p>原因是：逻辑回归输出的是概率。对于概率预测，我们更关心“模型对真实类别有多自信”。</p>
+<p>如果真实标签 $y&#x3D;1$，模型预测 $\hat{y}&#x3D;0.99$，说明模型非常正确；如果预测 $\hat{y}&#x3D;0.01$，说明模型非常自信地错了，应该受到很重的惩罚。</p>
+<p>交叉熵正好有这个特点。</p>
+<h2 id="6-交叉熵损失"><a href="#6-交叉熵损失" class="headerlink" title="6. 交叉熵损失"></a>6. 交叉熵损失</h2><p>对单个样本，逻辑回归的损失函数为：</p>
+<p>$$<br>L(\hat{y},y)&#x3D;-\left[y\log(\hat{y})+(1-y)\log(1-\hat{y})\right]<br>$$</p>
+<p>分两种情况看就很清楚。</p>
+<p>当 $y&#x3D;1$ 时：</p>
+<p>$$<br>L&#x3D;-\log(\hat{y})<br>$$</p>
+<p>如果模型把正类预测成 $0.99$，损失很小；如果预测成 $0.01$，损失会非常大。</p>
+<p>当 $y&#x3D;0$ 时：</p>
+<p>$$<br>L&#x3D;-\log(1-\hat{y})<br>$$</p>
+<p>如果模型把负类预测成 $0.01$，损失很小；如果预测成 $0.99$，损失会非常大。</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/logistic-cross-entropy-loss.svg" alt="交叉熵损失对错误自信预测的惩罚更大"></p>
+<p>对全部训练样本，代价函数为：</p>
+<p>$$<br>J(\mathbf{w},b)&#x3D;<br>-\frac{1}{m}\sum_{i&#x3D;1}^{m}<br>\left[<br>y^{(i)}\log(\hat{y}^{(i)})<br>+(1-y^{(i)})\log(1-\hat{y}^{(i)})<br>\right]<br>$$</p>
+<p>训练逻辑回归，就是找到合适的 $\mathbf{w}$ 和 $b$，让这个代价函数尽可能小。</p>
+<h2 id="7-梯度下降如何学习参数"><a href="#7-梯度下降如何学习参数" class="headerlink" title="7. 梯度下降如何学习参数"></a>7. 梯度下降如何学习参数</h2><p>逻辑回归也可以用梯度下降来训练。</p>
+<p>每轮迭代大致做三件事：</p>
+<ol>
+<li>用当前的 $\mathbf{w}$ 和 $b$ 计算每个样本的预测概率。</li>
+<li>根据交叉熵损失计算模型错得有多严重。</li>
+<li>沿着损失下降最快的方向更新参数。</li>
+</ol>
+<p>参数更新公式可以写成：</p>
+<p>$$<br>w_j :&#x3D; w_j - \alpha \frac{\partial J}{\partial w_j}<br>$$</p>
+<p>$$<br>b :&#x3D; b - \alpha \frac{\partial J}{\partial b}<br>$$</p>
+<p>其中 $\alpha$ 是学习率，控制每次更新走多远。</p>
+<p>逻辑回归的直觉就是：如果正类样本被预测得太低，就把决策边界往能提高它概率的方向推；如果负类样本被预测得太高，就把边界往能降低它概率的方向推。</p>
+<h2 id="8-Python-实战"><a href="#8-Python-实战" class="headerlink" title="8. Python 实战"></a>8. Python 实战</h2><p>下面用 <code>scikit-learn</code> 训练一个二维逻辑回归模型，并画出决策边界。</p>
+<p>安装依赖：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">pip <span class="token function">install</span> scikit-learn numpy matplotlib</code></pre>
+
+<p>示例代码：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+<span class="token keyword">import</span> matplotlib<span class="token punctuation">.</span>pyplot <span class="token keyword">as</span> plt
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>datasets <span class="token keyword">import</span> make_classification
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>linear_model <span class="token keyword">import</span> LogisticRegression
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>preprocessing <span class="token keyword">import</span> StandardScaler
+
+X<span class="token punctuation">,</span> y <span class="token operator">=</span> make_classification<span class="token punctuation">(</span>
+    n_samples<span class="token operator">=</span><span class="token number">120</span><span class="token punctuation">,</span>
+    n_features<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span>
+    n_redundant<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>
+    n_informative<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span>
+    n_clusters_per_class<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+    class_sep<span class="token operator">=</span><span class="token number">1.4</span><span class="token punctuation">,</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+scaler <span class="token operator">=</span> StandardScaler<span class="token punctuation">(</span><span class="token punctuation">)</span>
+X_scaled <span class="token operator">=</span> scaler<span class="token punctuation">.</span>fit_transform<span class="token punctuation">(</span>X<span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> LogisticRegression<span class="token punctuation">(</span><span class="token punctuation">)</span>
+model<span class="token punctuation">.</span>fit<span class="token punctuation">(</span>X_scaled<span class="token punctuation">,</span> y<span class="token punctuation">)</span>
+
+x_min<span class="token punctuation">,</span> x_max <span class="token operator">=</span> X_scaled<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">min</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">0.5</span><span class="token punctuation">,</span> X_scaled<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">max</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">0.5</span>
+y_min<span class="token punctuation">,</span> y_max <span class="token operator">=</span> X_scaled<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">min</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">0.5</span><span class="token punctuation">,</span> X_scaled<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">max</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">0.5</span>
+xx<span class="token punctuation">,</span> yy <span class="token operator">=</span> np<span class="token punctuation">.</span>meshgrid<span class="token punctuation">(</span>
+    np<span class="token punctuation">.</span>linspace<span class="token punctuation">(</span>x_min<span class="token punctuation">,</span> x_max<span class="token punctuation">,</span> <span class="token number">200</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    np<span class="token punctuation">.</span>linspace<span class="token punctuation">(</span>y_min<span class="token punctuation">,</span> y_max<span class="token punctuation">,</span> <span class="token number">200</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+grid <span class="token operator">=</span> np<span class="token punctuation">.</span>c_<span class="token punctuation">[</span>xx<span class="token punctuation">.</span>ravel<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> yy<span class="token punctuation">.</span>ravel<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+proba <span class="token operator">=</span> model<span class="token punctuation">.</span>predict_proba<span class="token punctuation">(</span>grid<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>reshape<span class="token punctuation">(</span>xx<span class="token punctuation">.</span>shape<span class="token punctuation">)</span>
+
+plt<span class="token punctuation">.</span>figure<span class="token punctuation">(</span>figsize<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>contourf<span class="token punctuation">(</span>xx<span class="token punctuation">,</span> yy<span class="token punctuation">,</span> proba<span class="token punctuation">,</span> levels<span class="token operator">=</span><span class="token number">20</span><span class="token punctuation">,</span> cmap<span class="token operator">=</span><span class="token string">"RdBu"</span><span class="token punctuation">,</span> alpha<span class="token operator">=</span><span class="token number">0.35</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>contour<span class="token punctuation">(</span>xx<span class="token punctuation">,</span> yy<span class="token punctuation">,</span> proba<span class="token punctuation">,</span> levels<span class="token operator">=</span><span class="token punctuation">[</span><span class="token number">0.5</span><span class="token punctuation">]</span><span class="token punctuation">,</span> colors<span class="token operator">=</span><span class="token string">"black"</span><span class="token punctuation">,</span> linewidths<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>scatter<span class="token punctuation">(</span>X_scaled<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> X_scaled<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> c<span class="token operator">=</span>y<span class="token punctuation">,</span> cmap<span class="token operator">=</span><span class="token string">"RdBu"</span><span class="token punctuation">,</span> edgecolors<span class="token operator">=</span><span class="token string">"k"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>title<span class="token punctuation">(</span><span class="token string">"Logistic Regression Decision Boundary"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>xlabel<span class="token punctuation">(</span><span class="token string">"Feature 1"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>ylabel<span class="token punctuation">(</span><span class="token string">"Feature 2"</span><span class="token punctuation">)</span>
+plt<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>这段代码中的黑色线就是 $P(y&#x3D;1|\mathbf{x})&#x3D;0.5$ 的位置，也就是逻辑回归的分类边界。</p>
+<h2 id="9-逻辑回归的优缺点"><a href="#9-逻辑回归的优缺点" class="headerlink" title="9. 逻辑回归的优缺点"></a>9. 逻辑回归的优缺点</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>简单、稳定、可解释性强。</li>
+<li>输出的是概率，而不仅仅是类别。</li>
+<li>训练速度快，适合做二分类基线模型。</li>
+<li>对线性可分或近似线性可分的数据效果很好。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>决策边界是线性的，难以直接处理复杂非线性数据。</li>
+<li>对特征缩放比较敏感，实践中通常需要标准化。</li>
+<li>如果特征之间关系很复杂，单纯逻辑回归可能欠拟合。</li>
+<li>对异常值和强相关特征也需要适当处理。</li>
+</ul>
+<h2 id="10-实践建议"><a href="#10-实践建议" class="headerlink" title="10. 实践建议"></a>10. 实践建议</h2><p>使用逻辑回归时，可以优先注意下面几点：</p>
+<ol>
+<li>对连续特征做标准化。</li>
+<li>用验证集或交叉验证选择正则化强度。</li>
+<li>如果类别不平衡，不要只看准确率，可以关注精确率、召回率、F1、AUC。</li>
+<li>如果数据明显非线性，可以加入多项式特征，或者换用树模型、SVM、神经网络等方法。</li>
+<li>业务上需要概率解释时，逻辑回归往往比只输出类别的模型更方便。</li>
+</ol>
+<h2 id="11-总结"><a href="#11-总结" class="headerlink" title="11. 总结"></a>11. 总结</h2><p>逻辑回归虽然名字叫“回归”，但它解决的是分类问题。</p>
+<p>它的核心链路是：</p>
+<p>$$<br>\mathbf{x}<br>\rightarrow<br>z&#x3D;\mathbf{w}^{T}\mathbf{x}+b<br>\rightarrow<br>\hat{y}&#x3D;\sigma(z)<br>\rightarrow<br>\text{类别}<br>$$</p>
+<p>从图像上看，逻辑回归用一条直线或一个超平面切分空间；从概率上看，它用 Sigmoid 函数把线性分数转成属于正类的概率；从优化上看，它用交叉熵损失惩罚错误预测，并通过梯度下降学习参数。</p>
+<p>因此，逻辑回归非常适合作为理解分类算法的第一站：它足够简单，但又包含了概率、损失函数、决策边界、梯度下降这些机器学习中非常核心的概念。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/05/24/machine-learning-logistic-regression/">https://lsworl.github.io/2026/05/24/machine-learning-logistic-regression/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="post-meta__tags" href="/tags/%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/">监督学习</a><a class="post-meta__tags" href="/tags/%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95/">分类算法</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/05/24/hexo-source-private-deploy-public/" title="Hexo 如何实现源码私有、页面公开部署"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Hexo 如何实现源码私有、页面公开部署</div></div><div class="info-2"><div class="info-item-1">使用 Hexo 搭建博客时，我们通常会接触到两类文件：  Hexo 源代码：Markdown 文章、主题配置、站点配置、脚手架、依赖文件等。 静态网页文件：Hexo 生成后的 HTML、CSS、JS、图片等，也就是访问者真正看到的网页。  如果把这两类文件都放在同一个公开仓库里，别人不仅能看到博客页面，也能看到你的 Markdown 原文、草稿结构、主题配置和提交历史。为了更好地管理博客，可以采用一种更清晰的方案：源码放私有仓库，网页放公开仓库。   1. 为什么要分开部署Hexo 的工作流程可以理解为： Hexo 源代码     |     | npx hexo generate     v 静态网页文件     |     | npx hexo deploy     v GitHub Pages 公开访问  访问者真正需要的是生成后的静态网页，并不需要看到你的 Hexo 源代码。 因此，更合理的结构是： 私有仓库：保存 Hexo 源代码 公开仓库：保存 hexo deploy 生成的网页文件  这样既能正常公开博客，又能避免源码仓库暴露。 2. public 和 privac...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-19</div><div class="info-item-2">K 近邻算法：KNN（K-Nearest Neighbors）</div></div><div class="info-2"><div class="info-item-1">KNN（K-Nearest Neighbors，K 近邻）是一种非常直观的监督学习算法：一个样本属于什么类别，可以参考它在特征空间中最近的 $K$ 个邻居。 在分类任务中，KNN 通常采用“多数投票”：最近的 $K$ 个样本里哪个类别最多，就预测为哪个类别；在回归任务中，KNN 通常取最近 $K$ 个样本标签值的平均值或加权平均值。   1. KNN 的直觉可以把 KNN 想象成“向邻居打听答案”。 假设小区里新搬来一户人家，你想判断他们更像“高收入家庭”还是“普通收入家庭”。最直接的方式，是观察离他们最近的几户邻居：如果最近的 5 户里有 3 户都是高收入家庭，那么你可能会猜测这户新邻居也更接近高收入家庭。 机器学习里的 KNN 做的是类似的事情：  输入：一个尚未标记类别的新样本。 过程：在训练集中找到距离它最近的 $K$ 个已知样本。 输出：分类时进行多数投票，回归时进行平均或加权平均。  KNN 本质上没有显式的训练过程，它把训练数据保存下来，预测时再计算新样本与训练样本之间的距离。因此它也被称为惰性学习（Lazy Learning）。 2. 数学原理KNN 要解决两个核...</div></div></div></a><a class="pagination-related" href="/2026/05/23/machine-learning-linear-regression/" title="线性回归：从直觉到最小二乘法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-23</div><div class="info-item-2">线性回归：从直觉到最小二乘法</div></div><div class="info-2"><div class="info-item-1">线性回归（Linear Regression）是机器学习中最基础、也最常用的监督学习算法之一。它主要用于解决回归问题，也就是预测一个连续数值。 例如：  根据房屋面积预测房价。 根据学习时长预测考试分数。 根据广告投入预测销售额。  线性回归的核心思想很朴素：如果两个变量之间存在近似线性的关系，就可以用一条直线或者一个线性函数去描述这种关系，并用它来预测未知样本。  图中的蓝色点是训练数据，红色直线是拟合出的线性模型，灰色虚线表示预测值和真实值之间的误差。线性回归训练时，本质上就是在寻找一条让整体误差尽可能小的直线。   1. 线性回归的直觉假设我们想根据学习时长预测考试分数，已有数据如下：    学习时长&#x2F;小时 考试分数    1 50   2 55   3 65   4 70   5 80   把这些点画到坐标系中，可以发现：学习时间越长，考试分数通常越高。虽然这些点不一定完全落在同一条直线上，但整体趋势接近一条向上倾斜的直线。 线性回归要做的事情，就是找到一条尽可能贴近这些数据点的直线： $$\hat{y} &#x3D; wx + b$$ 其中：  $x$ 表示输...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">96</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">31</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%8E%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E8%AF%B4%E8%B5%B7"><span class="toc-number">1.</span> <span class="toc-text">1. 从线性回归说起</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Sigmoid-%E5%87%BD%E6%95%B0%EF%BC%9A%E6%8A%8A%E5%88%86%E6%95%B0%E5%8F%98%E6%88%90%E6%A6%82%E7%8E%87"><span class="toc-number">2.</span> <span class="toc-text">2. Sigmoid 函数：把分数变成概率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%88%86%E7%B1%BB%E8%A7%84%E5%88%99%EF%BC%9A%E6%A6%82%E7%8E%87%E8%B6%85%E8%BF%87%E9%98%88%E5%80%BC%E5%B0%B1%E5%88%A4%E4%B8%BA%E6%AD%A3%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">3. 分类规则：概率超过阈值就判为正类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%B8%80%E4%B8%AA%E5%85%B7%E4%BD%93%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%AD%A6%E4%B9%A0%E6%97%B6%E9%95%BF%E4%B8%8E%E6%98%AF%E5%90%A6%E9%80%9A%E8%BF%87%E8%80%83%E8%AF%95"><span class="toc-number">4.</span> <span class="toc-text">4. 一个具体例子：学习时长与是否通过考试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8%E5%9D%87%E6%96%B9%E8%AF%AF%E5%B7%AE"><span class="toc-number">5.</span> <span class="toc-text">5. 为什么不用均方误差</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BA%A4%E5%8F%89%E7%86%B5%E6%8D%9F%E5%A4%B1"><span class="toc-number">6.</span> <span class="toc-text">6. 交叉熵损失</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E5%A6%82%E4%BD%95%E5%AD%A6%E4%B9%A0%E5%8F%82%E6%95%B0"><span class="toc-number">7.</span> <span class="toc-text">7. 梯度下降如何学习参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-Python-%E5%AE%9E%E6%88%98"><span class="toc-number">8.</span> <span class="toc-text">8. Python 实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">9.</span> <span class="toc-text">9. 逻辑回归的优缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">9.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">9.2.</span> <span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE"><span class="toc-number">10.</span> <span class="toc-text">10. 实践建议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%80%BB%E7%BB%93"><span class="toc-number">11.</span> <span class="toc-text">11. 总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/24/hexo-source-private-deploy-public/" title="Hexo 如何实现源码私有、页面公开部署">Hexo 如何实现源码私有、页面公开部署</a><time datetime="2026-05-23T16:00:00.000Z" title="发表于 2026-05-24 00:00:00">2026-05-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/24/machine-learning-logistic-regression/" title="逻辑回归：从直线到概率的分类算法">逻辑回归：从直线到概率的分类算法</a><time datetime="2026-05-23T16:00:00.000Z" title="发表于 2026-05-24 00:00:00">2026-05-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/23/machine-learning-linear-regression/" title="线性回归：从直觉到最小二乘法">线性回归：从直觉到最小二乘法</a><time datetime="2026-05-22T16:00:00.000Z" title="发表于 2026-05-23 00:00:00">2026-05-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）">K 近邻算法：KNN（K-Nearest Neighbors）</a><time datetime="2026-05-19T11:43:23.000Z" title="发表于 2026-05-19 19:43:23">2026-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/12/freertos-zhong-chang-yong-api-zong-jie/" title="freertos中常用api总结">freertos中常用api总结</a><time datetime="2025-02-12T06:43:35.000Z" title="发表于 2025-02-12 14:43:35">2025-02-12</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

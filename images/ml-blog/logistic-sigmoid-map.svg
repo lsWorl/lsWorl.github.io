@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Sigmoid maps linear score to probability</title>
+  <desc id="desc">A diagram showing a linear score z transformed by the sigmoid curve into a probability between zero and one.</desc>
+  <rect width="920" height="420" fill="#f8fafc"/>
+  <style>
+    text { font-family: Arial, sans-serif; fill: #334155; }
+    .muted { fill: #64748b; font-size: 15px; }
+    .title { font-size: 22px; font-weight: 700; }
+    .formula { font-size: 20px; font-weight: 700; }
+  </style>
+  <rect x="40" y="58" width="190" height="110" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="75" y="102" class="title">线性模型</text>
+  <text x="72" y="136" class="formula">z = wᵀx + b</text>
+  <path d="M240 112H350" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="360" y="36" width="220" height="260" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="400" y="72" class="title">Sigmoid 函数</text>
+  <line x1="390" y1="248" x2="550" y2="248" stroke="#94a3b8"/>
+  <line x1="470" y1="80" x2="470" y2="260" stroke="#94a3b8"/>
+  <path d="M390 238 C420 236, 440 220, 455 180 C470 135, 497 102, 550 92" fill="none" stroke="#f97316" stroke-width="5"/>
+  <text x="392" y="272" class="muted">z 很小</text>
+  <text x="505" y="272" class="muted">z 很大</text>
+  <text x="486" y="95" class="muted">接近 1</text>
+  <text x="390" y="236" class="muted">接近 0</text>
+  <circle cx="470" cy="166" r="6" fill="#2563eb"/>
+  <text x="482" y="170" class="muted">z=0, p=0.5</text>
+  <path d="M590 112H700" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="710" y="58" width="170" height="110" rx="8" fill="#ecfdf5" stroke="#5eead4"/>
+  <text x="750" y="102" class="title">概率</text>
+  <text x="744" y="136" class="formula">0 ≤ p ≤ 1</text>
+  <rect x="140" y="325" width="640" height="52" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="176" y="358" font-size="18">逻辑回归不是直接输出类别，而是先输出属于正类的概率。</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2 2L10 6L2 10Z" fill="#2563eb"/>
+    </marker>
+  </defs>
+</svg>
