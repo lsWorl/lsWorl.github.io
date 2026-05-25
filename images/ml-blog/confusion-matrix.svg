@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="500" viewBox="0 0 920 500" role="img" aria-labelledby="title desc">
+  <title id="title">Confusion matrix</title>
+  <desc id="desc">A binary classification confusion matrix with TP, FP, FN and TN cells.</desc>
+  <rect width="920" height="500" fill="#f8fafc"/>
+  <style>
+    text { font-family: Arial, sans-serif; fill: #334155; }
+    .title { font-size: 24px; font-weight: 700; }
+    .label { font-size: 18px; font-weight: 700; }
+    .small { font-size: 14px; fill: #64748b; }
+    .cell-title { font-size: 34px; font-weight: 800; }
+  </style>
+  <text x="350" y="42" class="title">混淆矩阵</text>
+  <text x="380" y="82" class="label">预测类别</text>
+  <text x="118" y="265" class="label" transform="rotate(-90 118 265)">真实类别</text>
+  <text x="330" y="120" class="label">预测为正类</text>
+  <text x="560" y="120" class="label">预测为负类</text>
+  <text x="190" y="210" class="label">真实正类</text>
+  <text x="190" y="355" class="label">真实负类</text>
+  <rect x="310" y="145" width="210" height="130" rx="8" fill="#dcfce7" stroke="#22c55e" stroke-width="3"/>
+  <rect x="540" y="145" width="210" height="130" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="3"/>
+  <rect x="310" y="295" width="210" height="130" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="3"/>
+  <rect x="540" y="295" width="210" height="130" rx="8" fill="#dcfce7" stroke="#22c55e" stroke-width="3"/>
+  <text x="375" y="200" class="cell-title" fill="#166534">TP</text>
+  <text x="345" y="235" class="small">真实正类，预测正类</text>
+  <text x="604" y="200" class="cell-title" fill="#991b1b">FN</text>
+  <text x="575" y="235" class="small">真实正类，预测负类</text>
+  <text x="374" y="350" class="cell-title" fill="#991b1b">FP</text>
+  <text x="345" y="385" class="small">真实负类，预测正类</text>
+  <text x="605" y="350" class="cell-title" fill="#166534">TN</text>
+  <text x="575" y="385" class="small">真实负类，预测负类</text>
+  <rect x="215" y="438" width="490" height="40" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="250" y="464" class="small">绿色表示预测正确，红色表示预测错误；不同任务对 FP 和 FN 的容忍度不同。</text>
+</svg>
