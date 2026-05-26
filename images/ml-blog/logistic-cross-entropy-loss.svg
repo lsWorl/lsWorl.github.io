@@ -31,7 +31,7 @@
   <text x="86" y="304" class="muted">小</text>
   <text x="512" y="78" class="muted">大</text>
   <text x="516" y="304" class="muted">小</text>
-  <rect x="190" y="110" width="158" height="48" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <rect x="202" y="110" width="158" height="48" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
   <text x="206" y="140" font-size="15">正类却预测很低：重罚</text>
   <rect x="570" y="110" width="184" height="48" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
   <text x="586" y="140" font-size="15">负类却预测很高：重罚</text>

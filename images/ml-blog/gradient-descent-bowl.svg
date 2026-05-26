@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="460" viewBox="0 0 860 460" role="img" aria-labelledby="title desc">
+  <title id="title">Gradient descent on a loss curve</title>
+  <desc id="desc">A parameter moves step by step along a convex loss curve toward the minimum point.</desc>
+  <rect width="860" height="460" fill="#fbfbfd"/>
+  <line x1="88" y1="390" x2="790" y2="390" stroke="#252a34" stroke-width="2"/>
+  <line x1="88" y1="390" x2="88" y2="52" stroke="#252a34" stroke-width="2"/>
+  <text x="764" y="426" font-family="Arial, sans-serif" font-size="20" fill="#252a34">w</text>
+  <text x="32" y="68" font-family="Arial, sans-serif" font-size="20" fill="#252a34">J(w)</text>
+  <path d="M128 86 C220 348 314 392 430 392 C548 392 642 348 734 86" fill="none" stroke="#2f80ed" stroke-width="5" stroke-linecap="round"/>
+  <line x1="430" y1="392" x2="430" y2="74" stroke="#9aa3b2" stroke-width="2" stroke-dasharray="8 8"/>
+  <text x="382" y="426" font-family="Arial, sans-serif" font-size="18" fill="#252a34">minimum</text>
+  <circle cx="685" cy="185" r="10" fill="#eb5757"/>
+  <circle cx="618" cy="266" r="10" fill="#f2994a"/>
+  <circle cx="552" cy="326" r="10" fill="#f2c94c"/>
+  <circle cx="494" cy="365" r="10" fill="#27ae60"/>
+  <circle cx="448" cy="388" r="10" fill="#219653"/>
+  <path d="M672 203 L633 249" stroke="#252a34" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M604 281 L568 314" stroke="#252a34" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M539 337 L508 357" stroke="#252a34" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M482 371 L462 384" stroke="#252a34" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="548" y="112" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#252a34">Move opposite to the gradient</text>
+  <text x="548" y="145" font-family="Arial, sans-serif" font-size="18" fill="#566070">large slope: bigger update</text>
+  <text x="548" y="174" font-family="Arial, sans-serif" font-size="18" fill="#566070">near minimum: smaller update</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#252a34"/>
+    </marker>
+  </defs>
+</svg>

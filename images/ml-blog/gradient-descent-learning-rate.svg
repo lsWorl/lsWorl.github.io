@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="500" viewBox="0 0 860 500" role="img" aria-labelledby="title desc">
+  <title id="title">Learning rate comparison</title>
+  <desc id="desc">Three panels compare small, suitable, and large learning rates in gradient descent.</desc>
+  <rect width="860" height="500" fill="#fbfbfd"/>
+  <text x="54" y="44" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#252a34">Learning rate controls each step size</text>
+  <g transform="translate(40 82)">
+    <rect x="0" y="0" width="240" height="350" rx="8" fill="#ffffff" stroke="#d9dee8"/>
+    <text x="62" y="34" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#252a34">Too small</text>
+    <path d="M30 280 C72 78 168 78 210 280" fill="none" stroke="#2f80ed" stroke-width="4"/>
+    <circle cx="178" cy="139" r="7" fill="#f2994a"/>
+    <circle cx="166" cy="169" r="7" fill="#f2994a"/>
+    <circle cx="155" cy="194" r="7" fill="#f2994a"/>
+    <circle cx="145" cy="215" r="7" fill="#f2994a"/>
+    <circle cx="137" cy="232" r="7" fill="#f2994a"/>
+    <path d="M176 151 L169 159" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M164 180 L158 187" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M153 204 L147 211" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="34" y="318" font-family="Arial, sans-serif" font-size="16" fill="#566070">stable but slow</text>
+  </g>
+  <g transform="translate(310 82)">
+    <rect x="0" y="0" width="240" height="350" rx="8" fill="#ffffff" stroke="#d9dee8"/>
+    <text x="60" y="34" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#252a34">Suitable</text>
+    <path d="M30 280 C72 78 168 78 210 280" fill="none" stroke="#2f80ed" stroke-width="4"/>
+    <circle cx="186" cy="121" r="8" fill="#27ae60"/>
+    <circle cx="155" cy="194" r="8" fill="#27ae60"/>
+    <circle cx="129" cy="246" r="8" fill="#27ae60"/>
+    <circle cx="120" cy="258" r="8" fill="#27ae60"/>
+    <path d="M181 135 L161 181" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M150 207 L133 234" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M127 252 L123 256" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="34" y="318" font-family="Arial, sans-serif" font-size="16" fill="#566070">fast and stable</text>
+  </g>
+  <g transform="translate(580 82)">
+    <rect x="0" y="0" width="240" height="350" rx="8" fill="#ffffff" stroke="#d9dee8"/>
+    <text x="68" y="34" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#252a34">Too large</text>
+    <path d="M30 280 C72 78 168 78 210 280" fill="none" stroke="#2f80ed" stroke-width="4"/>
+    <circle cx="58" cy="238" r="8" fill="#eb5757"/>
+    <circle cx="198" cy="238" r="8" fill="#eb5757"/>
+    <circle cx="35" cy="296" r="8" fill="#eb5757"/>
+    <circle cx="220" cy="322" r="8" fill="#eb5757"/>
+    <path d="M67 237 L185 237" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M189 250 L45 287" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M45 300 L208 318" stroke="#252a34" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="34" y="318" font-family="Arial, sans-serif" font-size="16" fill="#566070">oscillation or divergence</text>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#252a34"/>
+    </marker>
+  </defs>
+</svg>

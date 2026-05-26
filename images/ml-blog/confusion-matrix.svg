@@ -29,5 +29,5 @@
   <text x="605" y="350" class="cell-title" fill="#166534">TN</text>
   <text x="575" y="385" class="small">真实负类，预测负类</text>
   <rect x="215" y="438" width="490" height="40" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
-  <text x="250" y="464" class="small">绿色表示预测正确，红色表示预测错误；不同任务对 FP 和 FN 的容忍度不同。</text>
+  <text x="220" y="464" class="small">绿色表示预测正确，红色表示预测错误；不同任务对 FP 和 FN 的容忍度不同。</text>
 </svg>
