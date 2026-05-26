@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">AICompanion architecture overview</title>
+  <desc id="desc">A desktop AI companion architecture with PySide6 UI, chat controller, LLM API, SQLite storage, emotion system, TTS, and Live2D.</desc>
+  <rect width="920" height="520" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#222831">AICompanion project architecture</text>
+  <text x="52" y="88" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Desktop first, Android possible later</text>
+
+  <rect x="54" y="132" width="210" height="108" rx="8" fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text x="82" y="170" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">PySide6 UI</text>
+  <text x="82" y="202" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">chat window</text>
+  <text x="82" y="224" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">message display</text>
+
+  <rect x="354" y="126" width="220" height="120" rx="8" fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text x="386" y="165" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Controller</text>
+  <text x="386" y="197" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">conversation flow</text>
+  <text x="386" y="219" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">background worker</text>
+
+  <rect x="664" y="80" width="206" height="92" rx="8" fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text x="692" y="118" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">LLM API</text>
+  <text x="692" y="150" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">OpenAI-compatible</text>
+
+  <rect x="664" y="214" width="206" height="112" rx="8" fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text x="692" y="252" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">SQLite</text>
+  <text x="692" y="284" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">chat history</text>
+  <text x="692" y="306" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">memory and reminders</text>
+
+  <rect x="354" y="324" width="220" height="108" rx="8" fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text x="386" y="362" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Emotion System</text>
+  <text x="386" y="394" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">mood state</text>
+  <text x="386" y="416" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">proactive messages</text>
+
+  <rect x="54" y="324" width="210" height="108" rx="8" fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text x="82" y="362" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Live2D + TTS</text>
+  <text x="82" y="394" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">voice reply</text>
+  <text x="82" y="416" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">character expression</text>
+
+  <path d="M264 186 H344" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M574 160 L654 124" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M574 215 L654 264" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M464 246 V314" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M354 378 H274" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M159 324 V250" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f80ed"/>
+    </marker>
+  </defs>
+</svg>
