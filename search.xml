@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>Hexo 部署到 GitHub Pages 后构建失败：从 .nojekyll 到 ignore_hidden 的完整排查</title>
+      <link href="/2026/05/26/hexo-deploy-nojekyll-github-pages-build-failed/"/>
+      <url>/2026/05/26/hexo-deploy-nojekyll-github-pages-build-failed/</url>
+      
+        <content type="html"><![CDATA[<p>最近在使用 Hexo 部署博客时遇到了一个问题：本地执行 <code>npx hexo d</code> 看起来是成功的，但 GitHub Pages 的 <code>pages build and deployment</code> 工作流却失败了。</p><p>一开始我以为是 Hexo 生成出错，后来排查发现，真正的问题并不在文章内容，也不在本地生成，而是在 GitHub Pages 构建流程和 <code>.nojekyll</code> 文件没有真正部署到公开仓库之间。</p><p>这篇文章记录一下完整排查过程。</p><span id="more"></span><h2 id="1-问题现象（若想直接看如何解决可以跳转到7-最终解决）"><a href="#1-问题现象（若想直接看如何解决可以跳转到7-最终解决）" class="headerlink" title="1. 问题现象（若想直接看如何解决可以跳转到7.最终解决）"></a>1. 问题现象（若想直接看如何解决可以跳转到7.最终解决）</h2><p>本地执行：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell">npx hexo d</code></pre><p>命令看起来可以正常执行，静态文件也会被推送到 GitHub Pages 仓库。</p><p><img src="https://lsworl.github.io/images/debug-blog/error_show.png" alt="error_information"></p><p>但是在 GitHub 仓库的 Actions 页面中，可以看到 <code>pages build and deployment</code> 失败，具体失败位置在 <code>build</code> 步骤，错误信息中出现了：</p><pre class="language-text" data-language="text"><code class="language-text">Failed to download archive 'https://codeload.github.com/actions/jekyll-build-pages/...'An action could not be found at the URI</code></pre><p>从这个报错可以看出，GitHub Pages 正在尝试执行和 Jekyll 相关的构建流程。</p><p>但我的博客是 Hexo 博客，静态文件已经在本地生成好了，GitHub Pages 理论上只需要托管生成后的 HTML、CSS、JS 文件，不应该再把它当成 Jekyll 项目重新构建。</p><h2 id="2-为什么-Hexo-需要-nojekyll"><a href="#2-为什么-Hexo-需要-nojekyll" class="headerlink" title="2. 为什么 Hexo 需要 .nojekyll"></a>2. 为什么 Hexo 需要 <code>.nojekyll</code></h2><p>GitHub Pages 默认对站点有一套 Jekyll 构建逻辑。</p><p>如果我们部署的是 Jekyll 博客，这当然没有问题；但如果部署的是 Hexo、VuePress、VitePress 或其他已经生成好的静态站点，就不希望 GitHub Pages 再用 Jekyll 处理一次。</p><p>这时可以在发布分支根目录放一个文件（我是放在了source目录下）：</p><p><img src="https://lsworl.github.io/images/debug-blog/show_path.png" alt="path"></p><pre class="language-text" data-language="text"><code class="language-text">.nojekyll</code></pre><p>它的作用是告诉 GitHub Pages：</p><blockquote><p>当前仓库内容已经是静态站点，不需要再走 Jekyll 构建。</p></blockquote><p>对于 Hexo 来说，最终发布分支一般是 <code>master</code> 或 <code>gh-pages</code>，所以 <code>.nojekyll</code> 必须出现在发布分支的根目录。</p><h2 id="3-第一次修复：在-source-中加入-nojekyll"><a href="#3-第一次修复：在-source-中加入-nojekyll" class="headerlink" title="3. 第一次修复：在 source 中加入 .nojekyll"></a>3. 第一次修复：在 <code>source</code> 中加入 <code>.nojekyll</code></h2><p>Hexo 的源码目录是：</p><pre class="language-text" data-language="text"><code class="language-text">source/</code></pre><p>所以我先在源码目录下新增（<code>.nojekyll</code>中没有添加任何数据）：</p><pre class="language-text" data-language="text"><code class="language-text">source/.nojekyll</code></pre><p>然后执行：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell">npx hexo cleannpx hexo g</code></pre><p>但是检查后发现：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">Test-Path</span> D:\MyBlog\public\<span class="token punctuation">.</span>nojekyll</code></pre><p>结果是：</p><pre class="language-text" data-language="text"><code class="language-text">False</code></pre><p>也就是说，仅仅把 <code>.nojekyll</code> 放到 <code>source</code> 目录下还不够。因为 Hexo 默认不会自动复制点开头的隐藏文件。</p><h2 id="4-第二次修复：让-Hexo-生成-nojekyll"><a href="#4-第二次修复：让-Hexo-生成-nojekyll" class="headerlink" title="4. 第二次修复：让 Hexo 生成 .nojekyll"></a>4. 第二次修复：让 Hexo 生成 <code>.nojekyll</code></h2><p>解决办法是在 <code>_config.yml</code> 中加入：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">include</span><span class="token punctuation">:</span>  <span class="token punctuation">-</span> .nojekyll</code></pre><p>这里的含义是：让 Hexo 在处理 <code>source</code> 目录时，把 <code>.nojekyll</code> 也包含进生成结果中。</p><p>修改后再次执行：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell">npx hexo cleannpx hexo g</code></pre><p>这次可以看到生成日志中出现：</p><pre class="language-text" data-language="text"><code class="language-text">Generated: .nojekyll</code></pre><p>再检查：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">Test-Path</span> D:\MyBlog\public\<span class="token punctuation">.</span>nojekyll</code></pre><p>结果变成：</p><pre class="language-text" data-language="text"><code class="language-text">True</code></pre><p>到这里，看起来问题似乎解决了。</p><p>但实际上还没有。</p><h2 id="5-真正的坑：-nojekyll-生成了，但没有部署上去"><a href="#5-真正的坑：-nojekyll-生成了，但没有部署上去" class="headerlink" title="5. 真正的坑：.nojekyll 生成了，但没有部署上去"></a>5. 真正的坑：<code>.nojekyll</code> 生成了，但没有部署上去</h2><p>执行：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell">npx hexo d</code></pre><p>之后，GitHub Pages 还是失败。</p><p>这时继续检查 Hexo 的部署缓存目录：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">Test-Path</span> D:\MyBlog\<span class="token punctuation">.</span>deploy_git\<span class="token punctuation">.</span>nojekyll</code></pre><p>结果是：</p><pre class="language-text" data-language="text"><code class="language-text">False</code></pre><p>这一步非常关键。</p><p>Hexo 部署到 GitHub 时，并不是直接把 <code>public</code> 目录推送上去，而是先把 <code>public</code> 中的文件复制到：</p><pre class="language-text" data-language="text"><code class="language-text">.deploy_git/</code></pre><p>然后再把 <code>.deploy_git</code> 作为 Git 仓库提交并推送到远程发布分支。</p><p>也就是说，真正会被推到 GitHub Pages 的不是 <code>public</code>，而是 <code>.deploy_git</code>。</p><p>虽然 <code>.nojekyll</code> 已经出现在 <code>public</code> 中，但它没有进入 <code>.deploy_git</code>，自然也就不会出现在 GitHub 仓库的 <code>master</code> 分支根目录。</p><h2 id="6-为什么-deploy-git-中没有-nojekyll"><a href="#6-为什么-deploy-git-中没有-nojekyll" class="headerlink" title="6. 为什么 .deploy_git 中没有 .nojekyll"></a>6. 为什么 <code>.deploy_git</code> 中没有 <code>.nojekyll</code></h2><p>继续排查 <code>hexo-deployer-git</code> 插件后发现，它在复制文件时有一个配置：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml">ignore_hidden</code></pre><p>它会影响部署阶段是否忽略隐藏文件。</p><p><code>.nojekyll</code> 是点开头文件，属于隐藏文件。如果部署插件忽略隐藏文件，那么即使它已经生成到了 <code>public</code>，也不会被复制到 <code>.deploy_git</code>。</p><p>这就是这次问题最迷惑的地方：</p><ul><li><code>source/.nojekyll</code> 存在。</li><li><code>public/.nojekyll</code> 存在。</li><li>但是 <code>.deploy_git/.nojekyll</code> 不存在。</li><li>GitHub Pages 发布分支上也没有 <code>.nojekyll</code>。</li></ul><p>所以 GitHub Pages 仍然会尝试走 Jekyll 相关流程。</p><h2 id="7-最终修复方式"><a href="#7-最终修复方式" class="headerlink" title="7. 最终修复方式"></a>7. 最终修复方式</h2><p>最终需要同时做两件事。</p><p>第一，在 <code>source</code> 目录下创建：</p><pre class="language-text" data-language="text"><code class="language-text">source/.nojekyll</code></pre><p>第二，在根目录下的 <code>_config.yml</code> 中加入完整配置：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">include</span><span class="token punctuation">:</span>  <span class="token punctuation">-</span> .nojekyll</code></pre><p>并在 <code>deploy</code> 配置中加入：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">deploy</span><span class="token punctuation">:</span>  <span class="token key atrule">type</span><span class="token punctuation">:</span> <span class="token string">'git'</span>  <span class="token key atrule">repo</span><span class="token punctuation">:</span> <span class="token string">'https://github.com/lsWorl/lsWorl.github.io.git'</span><span class="token comment">#这里改成自己的仓库</span>  <span class="token key atrule">branch</span><span class="token punctuation">:</span> master  <span class="token key atrule">ignore_hidden</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><span class="token comment">#主要是添加这个</span></code></pre><p>完整关键配置如下：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">include</span><span class="token punctuation">:</span>  <span class="token punctuation">-</span> .nojekyll<span class="token key atrule">deploy</span><span class="token punctuation">:</span>  <span class="token key atrule">type</span><span class="token punctuation">:</span> <span class="token string">'git'</span>  <span class="token key atrule">repo</span><span class="token punctuation">:</span> <span class="token string">'https://github.com/lsWorl/lsWorl.github.io.git'</span>  <span class="token key atrule">branch</span><span class="token punctuation">:</span> master  <span class="token key atrule">ignore_hidden</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre><p>其中：</p><ul><li><code>include: .nojekyll</code> 解决的是 Hexo 生成阶段的问题，让 <code>.nojekyll</code> 出现在 <code>public</code>。</li><li><code>ignore_hidden: false</code> 解决的是 Hexo 部署阶段的问题，让 <code>.nojekyll</code> 从 <code>public</code> 被复制到 <code>.deploy_git</code> 并推送到 GitHub。</li></ul><p>这两个配置缺一不可。</p><h2 id="8-重新生成和部署"><a href="#8-重新生成和部署" class="headerlink" title="8. 重新生成和部署"></a>8. 重新生成和部署</h2><p>修改完成后执行：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell">npx hexo cleannpx hexo gnpx hexo d</code></pre><p>部署成功后，终端中可以看到类似信息：</p><pre class="language-text" data-language="text"><code class="language-text">create mode 100644 .nojekyll</code></pre><p>这说明 <code>.nojekyll</code> 已经被 Git 记录到了部署提交里。</p><p>还可以继续检查：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">Test-Path</span> D:\MyBlog\<span class="token punctuation">.</span>deploy_git\<span class="token punctuation">.</span>nojekyll</code></pre><p>如果结果为：</p><pre class="language-text" data-language="text"><code class="language-text">True</code></pre><p>说明 <code>.nojekyll</code> 已经进入部署缓存。</p><p>也可以从 Git 提交对象中确认：</p><pre class="language-powershell" data-language="powershell"><code class="language-powershell">git <span class="token operator">-</span>C D:\MyBlog\<span class="token punctuation">.</span>deploy_git <span class="token function">ls</span><span class="token operator">-</span>tree <span class="token operator">--</span>name-only HEAD <span class="token punctuation">.</span>nojekyll</code></pre><p>如果输出为：</p><pre class="language-text" data-language="text"><code class="language-text">.nojekyll</code></pre><p>说明当前部署提交中确实包含了这个文件。</p><h2 id="9-GitHub-Pages-侧的检查"><a href="#9-GitHub-Pages-侧的检查" class="headerlink" title="9. GitHub Pages 侧的检查"></a>9. GitHub Pages 侧的检查</h2><p>部署完成后，可以打开 GitHub 仓库的发布分支，检查根目录是否出现：</p><pre class="language-text" data-language="text"><code class="language-text">.nojekyll</code></pre><p>本次部署成功后，GitHub Pages 的最新工作流状态变成了：</p><pre class="language-text" data-language="text"><code class="language-text">Status: Success</code></pre><p>并且 <code>build</code>、<code>report-build-status</code>、<code>deploy</code> 都执行成功。</p><p>最后访问博客地址：</p><pre class="language-text" data-language="text"><code class="language-text">https://lsworl.github.io/</code></pre><p>可以看到最新文章已经正常显示。</p><h2 id="10-这次问题的总结"><a href="#10-这次问题的总结" class="headerlink" title="10. 这次问题的总结"></a>10. 这次问题的总结</h2><p>这次问题表面上看是 GitHub Pages 构建失败，实际上是 <code>.nojekyll</code> 没有真正进入发布分支。</p><p>排查时不要只看 <code>public</code> 目录，还要看 <code>.deploy_git</code> 目录。</p><p>完整链路应该是：</p><pre class="language-text" data-language="text"><code class="language-text">source/.nojekyll        ↓Hexo generate        ↓public/.nojekyll        ↓Hexo deploy        ↓.deploy_git/.nojekyll        ↓GitHub Pages master 分支根目录</code></pre><p>如果中间任何一步断了，GitHub Pages 都可能继续尝试 Jekyll 构建。</p><p>最终修复的核心就是两行配置：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">include</span><span class="token punctuation">:</span>  <span class="token punctuation">-</span> .nojekyll</code></pre><p>以及：</p><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">ignore_hidden</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre><p>前者保证生成，后者保证部署。两个都加上，才是真正闭环。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Hexo </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Hexo </tag>
+            
+            <tag> GitHub Pages </tag>
+            
+            <tag> 博客部署 </tag>
+            
+            <tag> 错误排查 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>AICompanion 开发日志 01：项目搭建与环境准备</title>
       <link href="/2026/05/26/aicompanion-devlog-01-project-setup/"/>
       <url>/2026/05/26/aicompanion-devlog-01-project-setup/</url>
@@ -1725,9 +1756,9 @@
       
         <tags>
             
-            <tag> nestjs </tag>
-            
             <tag> node.js </tag>
+            
+            <tag> nestjs </tag>
             
             <tag> typeorm </tag>
             
@@ -1754,9 +1785,9 @@
       
         <tags>
             
-            <tag> nestjs </tag>
-            
             <tag> node.js </tag>
+            
+            <tag> nestjs </tag>
             
         </tags>
       
@@ -2303,9 +2334,9 @@
       
         <tags>
             
-            <tag> es6 </tag>
-            
             <tag> javascript </tag>
+            
+            <tag> es6 </tag>
             
         </tags>
       
