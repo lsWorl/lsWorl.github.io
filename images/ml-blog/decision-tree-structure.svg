@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+  <title id="title">Decision tree structure</title>
+  <desc id="desc">A decision tree splits samples by feature conditions until reaching class prediction leaves.</desc>
+  <rect width="900" height="520" fill="#fbfbfd"/>
+  <text x="52" y="54" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Decision Tree: split data step by step</text>
+  <text x="52" y="84" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Internal nodes ask questions, leaf nodes give predictions.</text>
+
+  <rect x="330" y="120" width="240" height="76" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="372" y="152" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#222831">Study hours >= 3?</text>
+  <text x="405" y="178" font-family="Arial, sans-serif" font-size="15" fill="#5f6b7a">root node</text>
+
+  <rect x="130" y="270" width="230" height="76" rx="8" fill="#ffffff" stroke="#f2994a" stroke-width="2"/>
+  <text x="177" y="302" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#222831">Sleep >= 7?</text>
+  <text x="196" y="328" font-family="Arial, sans-serif" font-size="15" fill="#5f6b7a">internal node</text>
+
+  <rect x="540" y="270" width="230" height="76" rx="8" fill="#ffffff" stroke="#f2994a" stroke-width="2"/>
+  <text x="585" y="302" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#222831">Review done?</text>
+  <text x="606" y="328" font-family="Arial, sans-serif" font-size="15" fill="#5f6b7a">internal node</text>
+
+  <rect x="54" y="410" width="170" height="60" rx="8" fill="#fff5f5" stroke="#eb5757" stroke-width="2"/>
+  <text x="94" y="446" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#c0392b">Fail</text>
+
+  <rect x="270" y="410" width="170" height="60" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+  <text x="311" y="446" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1f8f4d">Pass</text>
+
+  <rect x="486" y="410" width="170" height="60" rx="8" fill="#fff5f5" stroke="#eb5757" stroke-width="2"/>
+  <text x="526" y="446" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#c0392b">Fail</text>
+
+  <rect x="702" y="410" width="170" height="60" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+  <text x="743" y="446" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1f8f4d">Pass</text>
+
+  <path d="M390 196 L260 263" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M510 196 L640 263" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M203 346 L143 403" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M290 346 L350 403" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M615 346 L575 403" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M695 346 L780 403" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+  <text x="316" y="236" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">No</text>
+  <text x="573" y="236" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">Yes</text>
+  <text x="153" y="382" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">No</text>
+  <text x="330" y="382" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">Yes</text>
+  <text x="536" y="382" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">No</text>
+  <text x="765" y="382" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">Yes</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>
