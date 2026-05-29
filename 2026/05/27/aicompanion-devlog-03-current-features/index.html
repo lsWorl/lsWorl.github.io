@@ -1,0 +1,844 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AICompanion 开发日志 03：当前版本功能总览 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录 AICompanion 当前代码中已经实现的全部功能，包括 PySide6 聊天窗口、后台线程流式回复、OpenAI-compatible 大模型接口、SQLite 聊天记录、长期记忆、情绪状态和主动消息雏形。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AICompanion 开发日志 03：当前版本功能总览">
+<meta property="og:url" content="https://lsworl.github.io/2026/05/27/aicompanion-devlog-03-current-features/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="记录 AICompanion 当前代码中已经实现的全部功能，包括 PySide6 聊天窗口、后台线程流式回复、OpenAI-compatible 大模型接口、SQLite 聊天记录、长期记忆、情绪状态和主动消息雏形。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-05-27T12:40:00.000Z">
+<meta property="article:modified_time" content="2026-05-27T13:14:08.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="AICompanion">
+<meta property="article:tag" content="PySide6">
+<meta property="article:tag" content="AI聊天">
+<meta property="article:tag" content="SQLite">
+<meta property="article:tag" content="大模型">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AICompanion 开发日志 03：当前版本功能总览",
+  "url": "https://lsworl.github.io/2026/05/27/aicompanion-devlog-03-current-features/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-05-27T12:40:00.000Z",
+  "dateModified": "2026-05-27T13:14:08.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/05/27/aicompanion-devlog-03-current-features/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AICompanion 开发日志 03：当前版本功能总览',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">80</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">32</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">AICompanion 开发日志 03：当前版本功能总览</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">AICompanion 开发日志 03：当前版本功能总览</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-27T12:40:00.000Z" title="发表于 2026-05-27 20:40:00">2026-05-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-27T13:14:08.000Z" title="更新于 2026-05-27 21:14:08">2026-05-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">项目实战</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>前两篇分别记录了项目搭建和 PySide6 聊天窗口的实现。这一篇不继续单独展开某一个模块，而是做一次阶段性整理：把目前代码里已经实现的功能完整梳理一遍。</p>
+<p>AICompanion 现在还不是最终形态，还没有 TTS，也还没有 Live2D。但它已经不只是一个空窗口了。目前这个版本已经把桌面聊天、模型接口、本地存储、长期记忆、情绪状态和主动消息的基础流程都接了起来。</p>
+<span id="more"></span>
+
+<h2 id="1-当前项目状态"><a href="#1-当前项目状态" class="headerlink" title="1. 当前项目状态"></a>1. 当前项目状态</h2><p>当前项目路径是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">D:\Study\AICompanion</code></pre>
+
+<p>项目采用 <code>src layout</code>，核心代码放在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/</code></pre>
+
+<p>目前主要模块如下：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/
+  app.py                  # 应用装配入口
+  config.py               # 配置读取
+  controllers/
+    chat_controller.py     # 聊天流程控制
+  domain/
+    character.py           # 角色设定
+    emotion.py             # 情绪状态
+  llm/
+    base.py                # LLM 统一接口
+    mock_client.py         # 本地模拟模型
+    openai_compatible_client.py
+    factory.py             # 根据配置创建模型客户端
+  services/
+    memory_service.py      # 长期记忆服务
+    proactive_service.py   # 主动消息定时服务
+  storage/
+    schema.py              # SQLite 表结构
+    database.py            # SQLite 数据访问层
+  ui/
+    main_window.py         # PySide6 主窗口
+    chat_worker.py         # 后台线程工作对象</code></pre>
+
+<p>这套结构的目标是：UI 只管界面，Controller 负责流程，Service 负责领域功能，Storage 负责数据库，LLM 层负责模型调用。</p>
+<h2 id="2-应用启动流程"><a href="#2-应用启动流程" class="headerlink" title="2. 应用启动流程"></a>2. 应用启动流程</h2><p>程序入口依然是根目录下的：</p>
+<pre class="language-text" data-language="text"><code class="language-text">main.py</code></pre>
+
+<p>它只做一件事：调用 <code>aicompanion.app.main()</code>。</p>
+<p>真正的应用装配在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/app.py</code></pre>
+
+<p>启动时会完成这些步骤：</p>
+<ol>
+<li>读取 <code>.env</code> 和系统环境变量。</li>
+<li>创建 <code>QApplication</code>。</li>
+<li>初始化 SQLite 数据库。</li>
+<li>创建 <code>MemoryService</code>。</li>
+<li>根据配置创建 LLM 客户端。</li>
+<li>创建 <code>ChatController</code>。</li>
+<li>创建 <code>MainWindow</code>。</li>
+<li>启动主动消息定时服务。</li>
+<li>显示窗口。</li>
+</ol>
+<p>对应代码逻辑大致是：</p>
+<pre class="language-python" data-language="python"><code class="language-python">settings <span class="token operator">=</span> load_settings<span class="token punctuation">(</span><span class="token punctuation">)</span>
+app <span class="token operator">=</span> QApplication<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>argv<span class="token punctuation">)</span>
+
+database <span class="token operator">=</span> Database<span class="token punctuation">(</span>settings<span class="token punctuation">.</span>database_path<span class="token punctuation">)</span>
+database<span class="token punctuation">.</span>initialize<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+memory_service <span class="token operator">=</span> MemoryService<span class="token punctuation">(</span>database<span class="token punctuation">)</span>
+llm_client <span class="token operator">=</span> create_llm_client<span class="token punctuation">(</span>settings<span class="token punctuation">)</span>
+controller <span class="token operator">=</span> ChatController<span class="token punctuation">(</span>database<span class="token punctuation">,</span> memory_service<span class="token punctuation">,</span> llm_client<span class="token punctuation">)</span>
+
+window <span class="token operator">=</span> MainWindow<span class="token punctuation">(</span>controller<span class="token operator">=</span>controller<span class="token punctuation">)</span>
+
+proactive_service <span class="token operator">=</span> ProactiveMessageService<span class="token punctuation">(</span>controller<span class="token operator">=</span>controller<span class="token punctuation">,</span> parent<span class="token operator">=</span>window<span class="token punctuation">)</span>
+proactive_service<span class="token punctuation">.</span>message_ready<span class="token punctuation">.</span>connect<span class="token punctuation">(</span>window<span class="token punctuation">.</span>append_assistant_message<span class="token punctuation">)</span>
+proactive_service<span class="token punctuation">.</span>start<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+window<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>这里的 <code>app.py</code> 不写具体业务逻辑，只负责把各个模块接起来。这样后续如果要替换模型、换数据库实现、加新服务，都不会影响启动入口太多。</p>
+<h2 id="3-配置系统"><a href="#3-配置系统" class="headerlink" title="3. 配置系统"></a>3. 配置系统</h2><p>项目使用 <code>python-dotenv</code> 读取 <code>.env</code>。</p>
+<p>配置集中在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/config.py</code></pre>
+
+<p>目前支持的配置项包括：</p>
+<pre class="language-text" data-language="text"><code class="language-text">APP_NAME
+DATABASE_PATH
+LLM_PROVIDER
+LLM_BASE_URL
+LLM_API_KEY
+LLM_MODEL
+LLM_TEMPERATURE
+LLM_TIMEOUT_SECONDS</code></pre>
+
+<p>对应的默认开发配置是：</p>
+<pre class="language-env" data-language="env"><code class="language-env">APP_NAME&#x3D;AICompanion
+DATABASE_PATH&#x3D;data&#x2F;aicompanion.sqlite3
+LLM_PROVIDER&#x3D;mock
+LLM_BASE_URL&#x3D;https:&#x2F;&#x2F;api.openai.com&#x2F;v1
+LLM_API_KEY&#x3D;
+LLM_MODEL&#x3D;gpt-4o-mini
+LLM_TEMPERATURE&#x3D;0.8
+LLM_TIMEOUT_SECONDS&#x3D;60</code></pre>
+
+<p>这里比较重要的是 <code>LLM_PROVIDER</code>。</p>
+<p>当前支持：</p>
+<ul>
+<li><code>mock</code>：本地模拟回复，不需要 API key。</li>
+<li><code>openai_compatible</code>：调用 OpenAI-compatible Chat Completions 接口。</li>
+<li><code>zhipu_compatible</code>：目前也走兼容接口。</li>
+</ul>
+<p>默认使用 <code>mock</code>，所以即使没有 API Key，也可以先开发窗口、数据库和消息流程。</p>
+<h2 id="4-PySide6-聊天窗口"><a href="#4-PySide6-聊天窗口" class="headerlink" title="4. PySide6 聊天窗口"></a>4. PySide6 聊天窗口</h2><p>当前桌面界面由 <code>MainWindow</code> 实现：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/ui/main_window.py</code></pre>
+
+<p>窗口已经实现了这些基础功能：</p>
+<ul>
+<li>显示标题 <code>AICompanion</code>。</li>
+<li>显示聊天记录列表。</li>
+<li>提供输入框。</li>
+<li>提供发送按钮。</li>
+<li>支持回车发送。</li>
+<li>用户消息靠右显示。</li>
+<li>AI 消息靠左显示。</li>
+<li>发送中禁用输入框和按钮。</li>
+<li>回复结束后恢复输入。</li>
+<li>启动时加载最近聊天记录。</li>
+</ul>
+<p>目前聊天列表使用 <code>QListWidget</code>，每一条消息是一个 <code>QListWidgetItem</code>：</p>
+<pre class="language-python" data-language="python"><code class="language-python">item <span class="token operator">=</span> QListWidgetItem<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">&#123;</span>sender<span class="token punctuation">&#125;</span></span><span class="token string">: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>content<span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+item<span class="token punctuation">.</span>setTextAlignment<span class="token punctuation">(</span>
+    Qt<span class="token punctuation">.</span>AlignmentFlag<span class="token punctuation">.</span>AlignRight <span class="token keyword">if</span> align_right <span class="token keyword">else</span> Qt<span class="token punctuation">.</span>AlignmentFlag<span class="token punctuation">.</span>AlignLeft
+<span class="token punctuation">)</span>
+self<span class="token punctuation">.</span>chat_list<span class="token punctuation">.</span>addItem<span class="token punctuation">(</span>item<span class="token punctuation">)</span></code></pre>
+
+<p>这个版本的 UI 还比较朴素，但已经能支撑完整聊天流程。后面可以继续升级为气泡样式、头像、角色立绘区域，最终再接 Live2D。</p>
+<h2 id="5-后台线程与流式回复"><a href="#5-后台线程与流式回复" class="headerlink" title="5. 后台线程与流式回复"></a>5. 后台线程与流式回复</h2><p>聊天程序不能在主线程里直接请求模型。</p>
+<p>如果模型 API 比较慢，而请求又发生在 PySide6 主线程中，窗口就会卡住。所以当前项目加入了：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/ui/chat_worker.py</code></pre>
+
+<p><code>ChatWorker</code> 运行在 <code>QThread</code> 中，负责调用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>stream_user_message<span class="token punctuation">(</span>self<span class="token punctuation">.</span>user_message<span class="token punctuation">)</span></code></pre>
+
+<p>它通过 Signal 把结果发回 UI：</p>
+<pre class="language-python" data-language="python"><code class="language-python">token_received <span class="token operator">=</span> Signal<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">)</span>
+finished <span class="token operator">=</span> Signal<span class="token punctuation">(</span><span class="token punctuation">)</span>
+failed <span class="token operator">=</span> Signal<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">)</span></code></pre>
+
+<p>主窗口收到 token 后，会逐段更新当前 AI 消息：</p>
+<pre class="language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>current_assistant_text <span class="token operator">+=</span> token
+self<span class="token punctuation">.</span>current_assistant_item<span class="token punctuation">.</span>setText<span class="token punctuation">(</span>
+    <span class="token string-interpolation"><span class="token string">f"Emilia: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>self<span class="token punctuation">.</span>current_assistant_text<span class="token punctuation">&#125;</span></span><span class="token string">"</span></span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这就形成了类似“AI 正在打字”的流式显示效果。</p>
+<p>即使当前使用的是 mock 模型，也会把回复拆成小片段返回，用来模拟真实 API 的流式输出。</p>
+<h2 id="6-聊天流程控制器"><a href="#6-聊天流程控制器" class="headerlink" title="6. 聊天流程控制器"></a>6. 聊天流程控制器</h2><p>聊天流程集中在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/controllers/chat_controller.py</code></pre>
+
+<p>这是目前项目中比较核心的模块。</p>
+<p>用户发送一条消息后，完整流程大致如下：</p>
+<pre class="language-text" data-language="text"><code class="language-text">MainWindow
+  -> ChatWorker(QThread)
+  -> ChatController.stream_user_message()
+  -> 保存 user 消息到 SQLite
+  -> 更新情绪状态
+  -> 尝试提取长期记忆
+  -> 读取最近聊天记录
+  -> 构建 system prompt
+  -> 调用 LLMClient.generate_reply_stream()
+  -> UI 逐段显示 token
+  -> 保存完整 assistant 回复到 SQLite</code></pre>
+
+<p>也就是说，Controller 不只是转发消息，它还负责把记忆、情绪、历史记录和大模型调用串成一个完整流程。</p>
+<p>当前 Controller 里保留了两个发送接口：</p>
+<ul>
+<li><code>send_user_message()</code>：同步生成完整回复。</li>
+<li><code>stream_user_message()</code>：流式生成回复，桌面 UI 默认使用这个。</li>
+</ul>
+<p>同步接口可以留给后续测试或命令行调试使用。</p>
+<h2 id="7-LLM-抽象与本地-mock"><a href="#7-LLM-抽象与本地-mock" class="headerlink" title="7. LLM 抽象与本地 mock"></a>7. LLM 抽象与本地 mock</h2><p>大模型接口定义在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/llm/base.py</code></pre>
+
+<p>其中定义了两个核心概念：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@dataclass</span><span class="token punctuation">(</span>frozen<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">ChatTurn</span><span class="token punctuation">:</span>
+    role<span class="token punctuation">:</span> <span class="token builtin">str</span>
+    content<span class="token punctuation">:</span> <span class="token builtin">str</span></code></pre>
+
+<p>以及统一的模型客户端接口：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">LLMClient</span><span class="token punctuation">(</span>Protocol<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">generate_reply</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> messages<span class="token punctuation">,</span> system_prompt<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+    <span class="token keyword">def</span> <span class="token function">generate_reply_stream</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> messages<span class="token punctuation">,</span> system_prompt<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre>
+
+<p>这样 UI 和 Controller 不需要关心具体模型供应商。</p>
+<p>当前本地 mock 客户端在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/llm/mock_client.py</code></pre>
+
+<p>它会读取最近一条用户消息，然后返回模拟回复：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我听到啦。你刚才说：...
+
+现在我还是本地模拟回复，下一步我们会把这里替换成真正的大模型 API。</code></pre>
+
+<p>mock 客户端的价值很大：</p>
+<ul>
+<li>不需要 API Key。</li>
+<li>不需要网络。</li>
+<li>调试 UI 更方便。</li>
+<li>可以验证数据库保存流程。</li>
+<li>可以模拟流式输出。</li>
+</ul>
+<p>这让项目在早期不依赖真实模型服务，也能继续开发。</p>
+<h2 id="8-OpenAI-compatible-API-客户端"><a href="#8-OpenAI-compatible-API-客户端" class="headerlink" title="8. OpenAI-compatible API 客户端"></a>8. OpenAI-compatible API 客户端</h2><p>真实模型调用代码在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/llm/openai_compatible_client.py</code></pre>
+
+<p>它调用的是常见的 Chat Completions 兼容接口：</p>
+<pre class="language-text" data-language="text"><code class="language-text">POST &#123;LLM_BASE_URL&#125;/chat/completions</code></pre>
+
+<p>请求体中会包含：</p>
+<ul>
+<li><code>model</code></li>
+<li><code>messages</code></li>
+<li><code>temperature</code></li>
+<li><code>stream</code></li>
+</ul>
+<p>消息列表会先放入一条系统提示词：</p>
+<pre class="language-python" data-language="python"><code class="language-python">api_messages <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> system_prompt<span class="token punctuation">&#125;</span><span class="token punctuation">]</span></code></pre>
+
+<p>再追加最近的用户和 assistant 历史消息。</p>
+<p>当前客户端支持两种模式：</p>
+<ul>
+<li>非流式：<code>generate_reply()</code></li>
+<li>流式：<code>generate_reply_stream()</code></li>
+</ul>
+<p>流式响应按 SSE 格式解析，遇到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">data: [DONE]</code></pre>
+
+<p>就结束输出。</p>
+<p>项目这里暂时没有引入额外 SDK，而是使用 Python 标准库 <code>urllib</code>。这样依赖更少，也更容易看清楚一次模型请求到底发出了什么。</p>
+<h2 id="9-SQLite-本地存储"><a href="#9-SQLite-本地存储" class="headerlink" title="9. SQLite 本地存储"></a>9. SQLite 本地存储</h2><p>数据库表结构定义在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/storage/schema.py</code></pre>
+
+<p>当前已经有四张表：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql">chat_messages
+memories
+reminders
+emotion_state</code></pre>
+
+<p>其中：</p>
+<table>
+<thead>
+<tr>
+<th>表名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chat_messages</code></td>
+<td>保存用户和 AI 的聊天记录</td>
+</tr>
+<tr>
+<td><code>memories</code></td>
+<td>保存长期记忆</td>
+</tr>
+<tr>
+<td><code>reminders</code></td>
+<td>保存任务提醒，当前先预留表结构</td>
+</tr>
+<tr>
+<td><code>emotion_state</code></td>
+<td>保存角色情绪状态</td>
+</tr>
+</tbody></table>
+<p>数据库访问集中在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/storage/database.py</code></pre>
+
+<p>目前已经实现：</p>
+<ul>
+<li>初始化表结构。</li>
+<li>初始化默认情绪状态。</li>
+<li>保存聊天消息。</li>
+<li>读取最近聊天消息。</li>
+<li>保存长期记忆。</li>
+<li>读取长期记忆。</li>
+<li>读取情绪状态。</li>
+<li>保存情绪状态。</li>
+</ul>
+<p>还有一个细节是：<code>Database.connect()</code> 每次都会创建新的短生命周期连接。</p>
+<p>这是为了避免在 UI 主线程和后台线程之间共享同一个 <code>sqlite3.Connection</code>。桌面程序里一旦涉及线程，共享数据库连接很容易出现奇怪问题，所以这里提前规避。</p>
+<h2 id="10-长期记忆系统"><a href="#10-长期记忆系统" class="headerlink" title="10. 长期记忆系统"></a>10. 长期记忆系统</h2><p>长期记忆服务在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/services/memory_service.py</code></pre>
+
+<p>当前版本先采用非常简单的关键词规则。</p>
+<p>如果用户消息中包含这些词：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我喜欢
+我讨厌
+记住
+我的名字
+我正在</code></pre>
+
+<p>就把整条用户消息保存进 <code>memories</code> 表。</p>
+<p>例如用户输入：</p>
+<pre class="language-text" data-language="text"><code class="language-text">记住，我喜欢晚上写代码。</code></pre>
+
+<p>这条消息就会被保存为长期记忆。</p>
+<p>构建 prompt 时，会读取最近的重要记忆：</p>
+<pre class="language-python" data-language="python"><code class="language-python">memories <span class="token operator">=</span> self<span class="token punctuation">.</span>database<span class="token punctuation">.</span>recent_memories<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>然后整理成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">- 记住，我喜欢晚上写代码。
+- 我的名字是 ...</code></pre>
+
+<p>这些内容会放进系统提示词，让模型在回复时可以参考。</p>
+<p>当前记忆系统还很朴素，但已经有了最小闭环：</p>
+<pre class="language-text" data-language="text"><code class="language-text">用户说出重要信息
+  -> 规则命中
+  -> 保存到 SQLite
+  -> 下次构建 prompt 时注入长期记忆</code></pre>
+
+<p>后续可以升级为 LLM 自动总结，或者加入向量检索。</p>
+<h2 id="11-角色设定"><a href="#11-角色设定" class="headerlink" title="11. 角色设定"></a>11. 角色设定</h2><p>角色设定在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/domain/character.py</code></pre>
+
+<p>目前定义了一个 <code>CharacterProfile</code>：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@dataclass</span><span class="token punctuation">(</span>frozen<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">CharacterProfile</span><span class="token punctuation">:</span>
+    name<span class="token punctuation">:</span> <span class="token builtin">str</span>
+    description<span class="token punctuation">:</span> <span class="token builtin">str</span>
+    speaking_style<span class="token punctuation">:</span> <span class="token builtin">str</span></code></pre>
+
+<p>默认角色名是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Emilia</code></pre>
+
+<p>这里需要注意：当前代码中的设定说明是“原创陪伴角色”，并明确要求不要声称自己是受版权保护的角色。</p>
+<p>角色设定目前会进入系统提示词：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Character name: Emilia
+Character description: ...
+Speaking style: ...</code></pre>
+
+<p>后续这个模块可以继续扩展：</p>
+<ul>
+<li>Live2D 模型路径。</li>
+<li>不同情绪对应的表情。</li>
+<li>角色口癖。</li>
+<li>不同亲密度阶段的说话方式。</li>
+</ul>
+<h2 id="12-情绪状态系统"><a href="#12-情绪状态系统" class="headerlink" title="12. 情绪状态系统"></a>12. 情绪状态系统</h2><p>情绪状态定义在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/domain/emotion.py</code></pre>
+
+<p>当前包含四个字段：</p>
+<pre class="language-python" data-language="python"><code class="language-python">mood<span class="token punctuation">:</span> <span class="token builtin">str</span> <span class="token operator">=</span> <span class="token string">"calm"</span>
+affection<span class="token punctuation">:</span> <span class="token builtin">int</span> <span class="token operator">=</span> <span class="token number">50</span>
+loneliness<span class="token punctuation">:</span> <span class="token builtin">int</span> <span class="token operator">=</span> <span class="token number">15</span>
+energy<span class="token punctuation">:</span> <span class="token builtin">int</span> <span class="token operator">=</span> <span class="token number">80</span></code></pre>
+
+<p>含义大致是：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mood</code></td>
+<td>当前心情</td>
+</tr>
+<tr>
+<td><code>affection</code></td>
+<td>亲密度</td>
+</tr>
+<tr>
+<td><code>loneliness</code></td>
+<td>孤独感</td>
+</tr>
+<tr>
+<td><code>energy</code></td>
+<td>精力</td>
+</tr>
+</tbody></table>
+<p>当用户发送消息后：</p>
+<pre class="language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>loneliness <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>loneliness <span class="token operator">-</span> <span class="token number">10</span><span class="token punctuation">)</span>
+self<span class="token punctuation">.</span>affection <span class="token operator">=</span> <span class="token builtin">min</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>affection <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+self<span class="token punctuation">.</span>energy <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>energy <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+self<span class="token punctuation">.</span>mood <span class="token operator">=</span> <span class="token string">"happy"</span> <span class="token keyword">if</span> self<span class="token punctuation">.</span>affection <span class="token operator">>=</span> <span class="token number">55</span> <span class="token keyword">else</span> <span class="token string">"calm"</span></code></pre>
+
+<p>也就是：</p>
+<ul>
+<li>孤独感下降。</li>
+<li>亲密度略微上升。</li>
+<li>精力略微下降。</li>
+<li>亲密度到一定程度后心情变为 <code>happy</code>。</li>
+</ul>
+<p>当用户长时间没有回复时：</p>
+<pre class="language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>loneliness <span class="token operator">=</span> <span class="token builtin">min</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>loneliness <span class="token operator">+</span> <span class="token number">5</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> self<span class="token punctuation">.</span>loneliness <span class="token operator">>=</span> <span class="token number">60</span><span class="token punctuation">:</span>
+    self<span class="token punctuation">.</span>mood <span class="token operator">=</span> <span class="token string">"lonely"</span></code></pre>
+
+<p>也就是孤独感会上升，并可能切换到 <code>lonely</code> 状态。</p>
+<p>这些情绪值目前已经会保存到 SQLite，并且会进入系统提示词：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Current emotion:
+- mood: calm
+- affection: 50
+- loneliness: 15
+- energy: 80</code></pre>
+
+<p>后续它可以影响：</p>
+<ul>
+<li>回复语气。</li>
+<li>主动消息频率。</li>
+<li>Live2D 表情。</li>
+<li>TTS 声音参数。</li>
+</ul>
+<h2 id="13-主动消息雏形"><a href="#13-主动消息雏形" class="headerlink" title="13. 主动消息雏形"></a>13. 主动消息雏形</h2><p>主动消息服务在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/services/proactive_service.py</code></pre>
+
+<p>它使用 <code>QTimer</code>，每 60 秒检查一次：</p>
+<pre class="language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>timer<span class="token punctuation">.</span>setInterval<span class="token punctuation">(</span><span class="token number">60_000</span><span class="token punctuation">)</span></code></pre>
+
+<p>定时器本身不决定说什么，而是调用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>maybe_create_proactive_message<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>当前主动消息触发条件是规则式的：</p>
+<ul>
+<li>用户至少说过一句话。</li>
+<li>最近 30 分钟没有用户消息。</li>
+<li>最近 30 分钟没有发过主动消息。</li>
+<li>情绪状态里的 <code>loneliness</code> 达到一定阈值。</li>
+</ul>
+<p>如果条件满足，就会生成一条固定主动消息，并保存到数据库：</p>
+<pre class="language-text" data-language="text"><code class="language-text">你这完了吗？我刚刚有点想你。不过不用着急，我会在这里等你。</code></pre>
+
+<p>然后通过 Signal 发给窗口显示。</p>
+<p>这个功能现在还只是雏形，但它已经证明了主动消息的基本链路：</p>
+<pre class="language-text" data-language="text"><code class="language-text">QTimer 定时触发
+  -> Controller 判断规则
+  -> 更新情绪状态
+  -> 生成主动消息
+  -> 保存到 SQLite
+  -> MainWindow 显示</code></pre>
+
+<p>后续可以把固定文本升级为 LLM 生成，让角色根据当前情绪和记忆主动说更自然的话。</p>
+<h2 id="14-系统提示词构建"><a href="#14-系统提示词构建" class="headerlink" title="14. 系统提示词构建"></a>14. 系统提示词构建</h2><p>当前每次请求模型时，Controller 都会构建系统提示词。</p>
+<p>系统提示词由几部分组成：</p>
+<ul>
+<li>角色名。</li>
+<li>角色描述。</li>
+<li>说话风格。</li>
+<li>当前情绪。</li>
+<li>长期记忆。</li>
+</ul>
+<p>大致结构是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Character name: Emilia
+Character description: ...
+Speaking style: ...
+
+Current emotion:
+- mood: calm
+- affection: 50
+- loneliness: 15
+- energy: 80
+
+Long-term memories:
+- ...</code></pre>
+
+<p>这一步很关键。</p>
+<p>因为 AICompanion 不是单纯把用户输入发给模型，而是把“角色是谁”“现在状态如何”“记得用户什么事情”一起发给模型。</p>
+<p>这样后续的陪伴感、角色感、长期记忆和情绪变化，才有地方发挥作用。</p>
+<h2 id="15-当前已经完成的功能清单"><a href="#15-当前已经完成的功能清单" class="headerlink" title="15. 当前已经完成的功能清单"></a>15. 当前已经完成的功能清单</h2><p>截至目前，代码里已经实现的功能可以整理为：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>当前状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PySide6 桌面窗口</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>聊天列表显示</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>输入框和发送按钮</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>回车发送</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>用户&#x2F;AI 消息左右区分</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>启动时加载历史记录</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>后台线程请求回复</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>流式 token 显示</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>本地 mock 模型</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>OpenAI-compatible API 客户端</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>非流式回复接口</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>流式回复接口</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td><code>.env</code> 配置读取</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>SQLite 表结构</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>聊天记录保存</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>长期记忆保存</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>长期记忆注入 prompt</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>情绪状态保存</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>用户消息后更新情绪</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>久未回复时提升孤独感</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>主动消息定时检查</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>主动消息显示</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>任务提醒表结构</td>
+<td>已预留</td>
+</tr>
+<tr>
+<td>TTS 语音回复</td>
+<td>未实现</td>
+</tr>
+<tr>
+<td>Live2D 展示</td>
+<td>未实现</td>
+</tr>
+</tbody></table>
+<p>从这个表可以看出，项目目前已经越过了“单纯聊天窗口”的阶段，进入了“桌面 AI 陪伴系统雏形”的阶段。</p>
+<h2 id="16-当前版本的不足"><a href="#16-当前版本的不足" class="headerlink" title="16. 当前版本的不足"></a>16. 当前版本的不足</h2><p>虽然基础流程已经打通，但现在还有不少明显不足：</p>
+<ul>
+<li>聊天 UI 还比较简单，没有气泡、头像和富文本。</li>
+<li>长期记忆只是关键词规则，容易漏掉重要信息。</li>
+<li>主动消息还是固定文本，不够自然。</li>
+<li>情绪系统只影响 prompt，还没有真正驱动表情或语音。</li>
+<li><code>reminders</code> 表已经有了，但任务提醒功能还没有完整实现。</li>
+<li>API 客户端还没有做重试、取消请求和更细的错误展示。</li>
+<li>还没有 TTS。</li>
+<li>还没有 Live2D。</li>
+</ul>
+<p>不过这些不足并不是坏事。现在最重要的是，项目的各个基础模块已经有了明确位置，后面可以逐步替换和增强。</p>
+<h2 id="17-下一步计划"><a href="#17-下一步计划" class="headerlink" title="17. 下一步计划"></a>17. 下一步计划</h2><p>接下来我准备继续完善两个方向。</p>
+<p>第一个方向是大模型接入体验：</p>
+<ul>
+<li>更详细记录 OpenAI-compatible API 的接入过程。</li>
+<li>测试真实模型回复。</li>
+<li>优化流式响应错误处理。</li>
+<li>让角色回复更符合设定。</li>
+</ul>
+<p>第二个方向是本地存储和记忆：</p>
+<ul>
+<li>更完整地讲 SQLite 表设计。</li>
+<li>给记忆增加去重或更新逻辑。</li>
+<li>让长期记忆不只是保存原句，而是变成更适合 prompt 的摘要。</li>
+<li>后续加入任务提醒的增删查改。</li>
+</ul>
+<p>到目前为止，AICompanion 已经有了一个可以继续生长的核心骨架。接下来每一步功能增强，都可以围绕这个骨架慢慢叠上去。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/05/27/aicompanion-devlog-03-current-features/">https://lsworl.github.io/2026/05/27/aicompanion-devlog-03-current-features/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AICompanion/">AICompanion</a><a class="post-meta__tags" href="/tags/PySide6/">PySide6</a><a class="post-meta__tags" href="/tags/AI%E8%81%8A%E5%A4%A9/">AI聊天</a><a class="post-meta__tags" href="/tags/SQLite/">SQLite</a><a class="post-meta__tags" href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">集成学习：让多个模型一起做决定</div></div><div class="info-2"><div class="info-item-1">前面学习决策树时，我们提到过一个问题：单棵决策树虽然直观、可解释，但很容易过拟合，也很容易受到数据扰动影响。 集成学习（Ensemble Learning）就是为了解决这类问题而出现的思想。它不再把希望全部压在一个模型身上，而是训练多个模型，再把它们的结果组合起来。 可以把它理解成：一个人判断可能会偏，很多人从不同角度判断，再投票或取平均，结果通常更稳定。    1. 什么是集成学习集成学习的核心思想很简单：  训练多个基模型，再把这些模型的预测结果组合成最终结果。  这里的基模型也叫弱学习器（Weak Learner）或基学习器（Base Learner）。它不一定真的很弱，只是相对于最终组合模型来说，每个单独模型只负责贡献一部分判断。 例如一个分类任务中，我们训练了 5 个模型，它们分别预测： 模型 1：通过 模型 2：通过 模型 3：不通过 模型 4：通过 模型 5：通过  如果使用多数投票，最终结果就是“通过”。 如果是回归任务，例如预测房价，多个模型分别预测： 90 万、94 万、92 万、96 万、93 万  最终可以取平均值： $$\hat{y}&#x3D;\fra...</div></div></div></a><a class="pagination-related" href="/2026/05/27/aicompanion-devlog-02-pyside6-chat-window/" title="AICompanion 开发日志 02：用 PySide6 搭建聊天窗口"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">AICompanion 开发日志 02：用 PySide6 搭建聊天窗口</div></div><div class="info-2"><div class="info-item-1">上一篇主要记录了 AICompanion 的项目搭建、技术选型和目录结构。这一篇开始进入真正的功能实现。 当前阶段的目标很明确：先用 PySide6 做出一个可以运行的聊天窗口。它不需要一开始就很华丽，也不需要马上接入 Live2D，但必须把后续扩展需要的基础结构搭好。 也就是说，这一篇的重点不是“画一个窗口”，而是做出一个可以继续生长的桌面聊天程序骨架。   1. 当前阶段目标AICompanion 的整体计划分成几个阶段：    阶段 目标    第一阶段 Python + PySide6 做聊天窗口   第二阶段 接入大模型，实现多轮聊天   第三阶段 SQLite 保存聊天记录和记忆   第四阶段 主动消息、角色设定、表情切换   第五阶段 加入 TTS 语音回复   第六阶段 尝试 Live2D   这篇文章对应第一阶段的核心内容：聊天窗口。 不过在实现窗口时，我没有把所有逻辑都写进一个文件里，而是提前拆成了几个层次：  ui：负责界面显示。 controllers：负责聊天流程。 llm：负责大模型接口。 storage：负责 SQLite 数据读写。 service...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/05/26/aicompanion-devlog-01-project-setup/" title="AICompanion 开发日志 01：项目搭建与环境准备"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="info-item-2">AICompanion 开发日志 01：项目搭建与环境准备</div></div><div class="info-2"><div class="info-item-1">最近我开始做一个新的项目：AICompanion。它的目标是做一个运行在 Windows 电脑桌面上的 AI 聊天陪伴系统，未来也可能扩展到安卓端。 这个项目不只是普通聊天窗口，而是希望逐步实现一个更像“桌面伙伴”的系统：它可以拥有动漫角色设定，能记住聊天内容，有情绪状态，在我长时间没有回复时主动发消息给我，后续再加入 TTS 语音回复和 Live2D 角色展示。 这篇文章是这个系列的第 1 篇，主要记录项目从 0 到 1 的环境搭建和基础结构设计。   1. 项目目标AICompanion 当前的核心目标可以拆成几部分：  使用 PySide6 开发 Windows 桌面聊天窗口。 通过 API 调用大模型，实现多轮对话。 使用 SQLite 保存聊天记录、长期记忆和任务提醒。 加入情感系统，让角色回复不只是机械问答。 支持主动消息，例如用户长时间没回复时，角色可以主动问候。 后续加入 TTS 语音回复。 最终尝试接入 Live2D，让动漫角色可以根据情绪切换表情和动作。  我希望它最终不是一个“输入框 + 回复框”的简单工具，而是一个有角色感、有陪伴感、能长期相处的桌面 AI...</div></div></div></a><a class="pagination-related" href="/2026/05/27/aicompanion-devlog-02-pyside6-chat-window/" title="AICompanion 开发日志 02：用 PySide6 搭建聊天窗口"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-27</div><div class="info-item-2">AICompanion 开发日志 02：用 PySide6 搭建聊天窗口</div></div><div class="info-2"><div class="info-item-1">上一篇主要记录了 AICompanion 的项目搭建、技术选型和目录结构。这一篇开始进入真正的功能实现。 当前阶段的目标很明确：先用 PySide6 做出一个可以运行的聊天窗口。它不需要一开始就很华丽，也不需要马上接入 Live2D，但必须把后续扩展需要的基础结构搭好。 也就是说，这一篇的重点不是“画一个窗口”，而是做出一个可以继续生长的桌面聊天程序骨架。   1. 当前阶段目标AICompanion 的整体计划分成几个阶段：    阶段 目标    第一阶段 Python + PySide6 做聊天窗口   第二阶段 接入大模型，实现多轮聊天   第三阶段 SQLite 保存聊天记录和记忆   第四阶段 主动消息、角色设定、表情切换   第五阶段 加入 TTS 语音回复   第六阶段 尝试 Live2D   这篇文章对应第一阶段的核心内容：聊天窗口。 不过在实现窗口时，我没有把所有逻辑都写进一个文件里，而是提前拆成了几个层次：  ui：负责界面显示。 controllers：负责聊天流程。 llm：负责大模型接口。 storage：负责 SQLite 数据读写。 service...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">80</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">32</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%BD%93%E5%89%8D%E9%A1%B9%E7%9B%AE%E7%8A%B6%E6%80%81"><span class="toc-number">1.</span> <span class="toc-text">1. 当前项目状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">2. 应用启动流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%85%8D%E7%BD%AE%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.</span> <span class="toc-text">3. 配置系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-PySide6-%E8%81%8A%E5%A4%A9%E7%AA%97%E5%8F%A3"><span class="toc-number">4.</span> <span class="toc-text">4. PySide6 聊天窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%90%8E%E5%8F%B0%E7%BA%BF%E7%A8%8B%E4%B8%8E%E6%B5%81%E5%BC%8F%E5%9B%9E%E5%A4%8D"><span class="toc-number">5.</span> <span class="toc-text">5. 后台线程与流式回复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E8%81%8A%E5%A4%A9%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">6.</span> <span class="toc-text">6. 聊天流程控制器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-LLM-%E6%8A%BD%E8%B1%A1%E4%B8%8E%E6%9C%AC%E5%9C%B0-mock"><span class="toc-number">7.</span> <span class="toc-text">7. LLM 抽象与本地 mock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-OpenAI-compatible-API-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">8.</span> <span class="toc-text">8. OpenAI-compatible API 客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-SQLite-%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8"><span class="toc-number">9.</span> <span class="toc-text">9. SQLite 本地存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E9%95%BF%E6%9C%9F%E8%AE%B0%E5%BF%86%E7%B3%BB%E7%BB%9F"><span class="toc-number">10.</span> <span class="toc-text">10. 长期记忆系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E8%A7%92%E8%89%B2%E8%AE%BE%E5%AE%9A"><span class="toc-number">11.</span> <span class="toc-text">11. 角色设定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E6%83%85%E7%BB%AA%E7%8A%B6%E6%80%81%E7%B3%BB%E7%BB%9F"><span class="toc-number">12.</span> <span class="toc-text">12. 情绪状态系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E4%B8%BB%E5%8A%A8%E6%B6%88%E6%81%AF%E9%9B%8F%E5%BD%A2"><span class="toc-number">13.</span> <span class="toc-text">13. 主动消息雏形</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%9E%84%E5%BB%BA"><span class="toc-number">14.</span> <span class="toc-text">14. 系统提示词构建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E5%BD%93%E5%89%8D%E5%B7%B2%E7%BB%8F%E5%AE%8C%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD%E6%B8%85%E5%8D%95"><span class="toc-number">15.</span> <span class="toc-text">15. 当前已经完成的功能清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E5%BD%93%E5%89%8D%E7%89%88%E6%9C%AC%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="toc-number">16.</span> <span class="toc-text">16. 当前版本的不足</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E4%B8%8B%E4%B8%80%E6%AD%A5%E8%AE%A1%E5%88%92"><span class="toc-number">17.</span> <span class="toc-text">17. 下一步计划</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定">集成学习：让多个模型一起做决定</a><time datetime="2026-05-27T16:00:00.000Z" title="发表于 2026-05-28 00:00:00">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/aicompanion-devlog-03-current-features/" title="AICompanion 开发日志 03：当前版本功能总览">AICompanion 开发日志 03：当前版本功能总览</a><time datetime="2026-05-27T12:40:00.000Z" title="发表于 2026-05-27 20:40:00">2026-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/aicompanion-devlog-02-pyside6-chat-window/" title="AICompanion 开发日志 02：用 PySide6 搭建聊天窗口">AICompanion 开发日志 02：用 PySide6 搭建聊天窗口</a><time datetime="2026-05-27T12:10:00.000Z" title="发表于 2026-05-27 20:10:00">2026-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/machine-learning-decision-tree/" title="决策树：像做选择题一样理解分类与回归">决策树：像做选择题一样理解分类与回归</a><time datetime="2026-05-26T16:00:00.000Z" title="发表于 2026-05-27 00:00:00">2026-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/hexo-deploy-nojekyll-github-pages-build-failed/" title="Hexo 部署到 GitHub Pages 后构建失败：从 .nojekyll 到 ignore_hidden 的完整排查">Hexo 部署到 GitHub Pages 后构建失败：从 .nojekyll 到 ignore_hidden 的完整排查</a><time datetime="2026-05-26T13:20:00.000Z" title="发表于 2026-05-26 21:20:00">2026-05-26</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
