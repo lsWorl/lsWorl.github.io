@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">Bagging 与 Bootstrap 抽样流程</title>
+  <desc id="desc">原始数据通过多次有放回抽样生成不同训练集，分别训练多个模型，再投票或平均。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#44546a"/>
+    </marker>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 17px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #526173; }
+      .box { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+      .data { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 2; rx: 8; }
+      .sample { fill: #fff7e6; stroke: #d18a1f; stroke-width: 2; rx: 8; }
+      .model { fill: #eef8f1; stroke: #3f8f5f; stroke-width: 2; rx: 8; }
+      .final { fill: #f0ecff; stroke: #7461c9; stroke-width: 2; rx: 8; }
+      .line { stroke: #44546a; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="900" height="430" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">Bagging：多份 Bootstrap 数据，并行训练多个模型</text>
+  <text class="txt small" x="36" y="72">每份训练集都来自有放回抽样，所以不同模型看到的数据不完全一样。</text>
+
+  <rect class="data" x="44" y="142" width="150" height="150"/>
+  <text class="txt" x="78" y="172">原始数据 D</text>
+  <circle cx="78" cy="210" r="8" fill="#3f79b7"/>
+  <circle cx="115" cy="210" r="8" fill="#3f79b7"/>
+  <circle cx="152" cy="210" r="8" fill="#3f79b7"/>
+  <circle cx="78" cy="246" r="8" fill="#d18a1f"/>
+  <circle cx="115" cy="246" r="8" fill="#d18a1f"/>
+  <circle cx="152" cy="246" r="8" fill="#3f8f5f"/>
+
+  <path class="line" d="M204 180 C250 140, 280 130, 320 130"/>
+  <path class="line" d="M204 217 C250 217, 280 217, 320 217"/>
+  <path class="line" d="M204 254 C250 294, 280 304, 320 304"/>
+
+  <rect class="sample" x="322" y="98" width="150" height="64"/>
+  <text class="txt" x="350" y="137">抽样集 D1</text>
+  <rect class="sample" x="322" y="185" width="150" height="64"/>
+  <text class="txt" x="350" y="224">抽样集 D2</text>
+  <rect class="sample" x="322" y="272" width="150" height="64"/>
+  <text class="txt" x="350" y="311">抽样集 D3</text>
+
+  <path class="line" d="M482 130 L548 130"/>
+  <path class="line" d="M482 217 L548 217"/>
+  <path class="line" d="M482 304 L548 304"/>
+
+  <rect class="model" x="550" y="98" width="130" height="64"/>
+  <text class="txt" x="586" y="137">模型 h1</text>
+  <rect class="model" x="550" y="185" width="130" height="64"/>
+  <text class="txt" x="586" y="224">模型 h2</text>
+  <rect class="model" x="550" y="272" width="130" height="64"/>
+  <text class="txt" x="586" y="311">模型 h3</text>
+
+  <path class="line" d="M690 130 C730 146, 748 170, 770 200"/>
+  <path class="line" d="M690 217 L770 217"/>
+  <path class="line" d="M690 304 C730 288, 748 264, 770 234"/>
+  <rect class="final" x="772" y="178" width="96" height="78"/>
+  <text class="txt" x="792" y="211">投票</text>
+  <text class="txt" x="792" y="237">平均</text>
+</svg>

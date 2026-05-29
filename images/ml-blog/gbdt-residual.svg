@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">GBDT 拟合残差示意图</title>
+  <desc id="desc">GBDT 每一轮计算当前预测和真实值的差距，再用下一棵树拟合残差或负梯度。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#44546a"/>
+    </marker>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 17px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #526173; }
+      .axis { stroke: #6b7888; stroke-width: 2; }
+      .truth { stroke: #3f79b7; stroke-width: 3; fill: none; }
+      .pred { stroke: #d18a1f; stroke-width: 3; fill: none; stroke-dasharray: 7 6; }
+      .res { stroke: #c44d63; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .box { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+    </style>
+  </defs>
+  <rect width="900" height="430" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">GBDT：下一棵树学习当前模型还没补上的差距</text>
+  <text class="txt small" x="36" y="72">平方误差下，负梯度方向就是残差方向，所以常说 GBDT 在拟合残差。</text>
+
+  <line class="axis" x1="70" y1="340" x2="520" y2="340"/>
+  <line class="axis" x1="70" y1="340" x2="70" y2="112"/>
+  <text class="txt small" x="520" y="364">x</text>
+  <text class="txt small" x="48" y="116">y</text>
+
+  <path class="truth" d="M90 290 C160 210, 220 190, 285 160 C350 130, 430 124, 500 92"/>
+  <path class="pred" d="M90 306 C160 280, 220 250, 285 230 C350 210, 430 190, 500 174"/>
+  <text class="txt small" x="525" y="96">真实值 y</text>
+  <text class="txt small" x="525" y="180">当前预测 F(x)</text>
+
+  <path class="res" d="M180 268 L180 206"/>
+  <path class="res" d="M300 226 L300 154"/>
+  <path class="res" d="M430 190 L430 124"/>
+  <text class="txt small" x="190" y="236">残差</text>
+  <text class="txt small" x="310" y="190">y - F(x)</text>
+
+  <rect class="box" x="610" y="126" width="230" height="184"/>
+  <text class="txt" x="642" y="166">第 t 轮训练目标</text>
+  <text class="txt small" x="640" y="202">1. 先计算当前预测 F(t-1)</text>
+  <text class="txt small" x="640" y="232">2. 计算负梯度 r(t)</text>
+  <text class="txt small" x="640" y="262">3. 用新树 h(t) 拟合 r(t)</text>
+</svg>
