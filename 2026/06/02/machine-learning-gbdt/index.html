@@ -1,0 +1,899 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GBDT：从残差到梯度提升树的完整理解 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从直觉、残差、负梯度、损失函数、学习率、分类任务、Python 实战和 XGBoost、LightGBM、CatBoost 等变体，系统理解 GBDT 的原理与应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GBDT：从残差到梯度提升树的完整理解">
+<meta property="og:url" content="https://lsworl.github.io/2026/06/02/machine-learning-gbdt/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="从直觉、残差、负梯度、损失函数、学习率、分类任务、Python 实战和 XGBoost、LightGBM、CatBoost 等变体，系统理解 GBDT 的原理与应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-06-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-02T12:28:36.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="监督学习">
+<meta property="article:tag" content="集成学习">
+<meta property="article:tag" content="梯度提升树">
+<meta property="article:tag" content="GBDT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GBDT：从残差到梯度提升树的完整理解",
+  "url": "https://lsworl.github.io/2026/06/02/machine-learning-gbdt/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-06-01T16:00:00.000Z",
+  "dateModified": "2026-06-02T12:28:36.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/06/02/machine-learning-gbdt/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GBDT：从残差到梯度提升树的完整理解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">106</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">32</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">GBDT：从残差到梯度提升树的完整理解</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">GBDT：从残差到梯度提升树的完整理解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-01T16:00:00.000Z" title="发表于 2026-06-02 00:00:00">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-02T12:28:36.000Z" title="更新于 2026-06-02 20:28:36">2026-06-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>GBDT（Gradient Boosting Decision Tree，梯度提升决策树）是机器学习中非常常用的一类模型，尤其适合表格数据任务。</p>
+<p>它的名字看起来很长，但拆开以后并不神秘：</p>
+<ul>
+<li>Gradient：沿着损失函数下降的方向修正模型。</li>
+<li>Boosting：一轮一轮训练模型，后面的模型修正前面的错误。</li>
+<li>Decision Tree：每一轮加入的基模型通常是一棵回归树。</li>
+</ul>
+<p>一句话概括：</p>
+<blockquote>
+<p>GBDT 不是一次训练一棵很大的树，而是一棵树接一棵树地补前面模型的错误。</p>
+</blockquote>
+<span id="more"></span>
+
+<p><img src="https://lsworl.github.io/images/ml-blog/gbdt-step-by-step.svg" alt="GBDT 逐轮修正示意图"></p>
+<h2 id="1-为什么需要-GBDT"><a href="#1-为什么需要-GBDT" class="headerlink" title="1. 为什么需要 GBDT"></a>1. 为什么需要 GBDT</h2><p>单棵决策树有两个明显问题：</p>
+<ul>
+<li>树太浅，模型表达能力不够，容易欠拟合。</li>
+<li>树太深，容易把训练数据记得太死，导致过拟合。</li>
+</ul>
+<p>GBDT 的思路不是训练一棵特别复杂的树，而是训练很多棵相对简单的树。</p>
+<p>每一棵树只做一件事：</p>
+<pre class="language-text" data-language="text"><code class="language-text">修正当前模型还没预测好的部分</code></pre>
+
+<p>这样模型可以逐步变强，同时通过学习率、树深度、树数量等参数控制复杂度。</p>
+<h2 id="2-从一个房价例子理解-GBDT"><a href="#2-从一个房价例子理解-GBDT" class="headerlink" title="2. 从一个房价例子理解 GBDT"></a>2. 从一个房价例子理解 GBDT</h2><p>假设我们要预测 3 套房子的价格：</p>
+<table>
+<thead>
+<tr>
+<th>房子</th>
+<th align="right">面积</th>
+<th align="right">房龄</th>
+<th align="right">真实价格</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td align="right">70 平</td>
+<td align="right">15 年</td>
+<td align="right">100 万</td>
+</tr>
+<tr>
+<td>B</td>
+<td align="right">100 平</td>
+<td align="right">8 年</td>
+<td align="right">160 万</td>
+</tr>
+<tr>
+<td>C</td>
+<td align="right">130 平</td>
+<td align="right">3 年</td>
+<td align="right">200 万</td>
+</tr>
+</tbody></table>
+<p>GBDT 一开始不会直接训练复杂模型，而是先给一个很粗的初始预测。</p>
+<p>对于平方误差损失，常见初始预测就是所有标签的平均值：</p>
+<p>$$<br>F_0(x)&#x3D;\bar{y}&#x3D;\frac{100+160+200}{3}&#x3D;153.3<br>$$</p>
+<p>也就是说，一开始模型对所有房子都预测：</p>
+<pre class="language-text" data-language="text"><code class="language-text">153.3 万</code></pre>
+
+<p>显然这个预测很粗糙。于是我们计算残差：</p>
+<p>$$<br>r_i&#x3D;y_i-F_0(x_i)<br>$$</p>
+<table>
+<thead>
+<tr>
+<th>房子</th>
+<th align="right">真实价格 $y$</th>
+<th align="right">当前预测 $F_0$</th>
+<th align="right">残差 $r&#x3D;y-F_0$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td align="right">100</td>
+<td align="right">153.3</td>
+<td align="right">-53.3</td>
+</tr>
+<tr>
+<td>B</td>
+<td align="right">160</td>
+<td align="right">153.3</td>
+<td align="right">6.7</td>
+</tr>
+<tr>
+<td>C</td>
+<td align="right">200</td>
+<td align="right">153.3</td>
+<td align="right">46.7</td>
+</tr>
+</tbody></table>
+<p>残差的含义很直观：</p>
+<ul>
+<li>A 的残差是 -53.3，说明当前预测太高了，要往下修正。</li>
+<li>B 的残差是 6.7，说明当前预测已经差不多。</li>
+<li>C 的残差是 46.7，说明当前预测太低了，要往上修正。</li>
+</ul>
+<p>第一棵树学习的目标不是房价本身，而是这些残差。</p>
+<h2 id="3-第一棵树如何修正预测"><a href="#3-第一棵树如何修正预测" class="headerlink" title="3. 第一棵树如何修正预测"></a>3. 第一棵树如何修正预测</h2><p>假设第一棵树 $h_1(x)$ 学到了一个简单规则：</p>
+<pre class="language-text" data-language="text"><code class="language-text">如果 面积 &lt;= 90 平：
+    输出 -40
+否则：
+    输出 35</code></pre>
+
+<p>这表示：</p>
+<ul>
+<li>小面积房子当前预测偏高，需要减一点。</li>
+<li>大面积房子当前预测偏低，需要加一点。</li>
+</ul>
+<p>如果学习率 $\eta&#x3D;0.5$，GBDT 的更新公式是：</p>
+<p>$$<br>F_1(x)&#x3D;F_0(x)+\eta h_1(x)<br>$$</p>
+<p>代入每套房子：</p>
+<table>
+<thead>
+<tr>
+<th>房子</th>
+<th align="right">$F_0(x)$</th>
+<th align="right">$h_1(x)$</th>
+<th align="right">$\eta h_1(x)$</th>
+<th align="right">新预测 $F_1(x)$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td align="right">153.3</td>
+<td align="right">-40</td>
+<td align="right">-20</td>
+<td align="right">133.3</td>
+</tr>
+<tr>
+<td>B</td>
+<td align="right">153.3</td>
+<td align="right">35</td>
+<td align="right">17.5</td>
+<td align="right">170.8</td>
+</tr>
+<tr>
+<td>C</td>
+<td align="right">153.3</td>
+<td align="right">35</td>
+<td align="right">17.5</td>
+<td align="right">170.8</td>
+</tr>
+</tbody></table>
+<p>可以看到：</p>
+<ul>
+<li>A 从 153.3 降到 133.3，更接近真实值 100。</li>
+<li>C 从 153.3 升到 170.8，更接近真实值 200。</li>
+<li>B 被修正得有点过头，这也没关系，下一轮还会继续修正。</li>
+</ul>
+<p>接着计算新的残差：</p>
+<p>$$<br>r_i^{(2)}&#x3D;y_i-F_1(x_i)<br>$$</p>
+<table>
+<thead>
+<tr>
+<th>房子</th>
+<th align="right">真实价格</th>
+<th align="right">当前预测 $F_1$</th>
+<th align="right">新残差</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td align="right">100</td>
+<td align="right">133.3</td>
+<td align="right">-33.3</td>
+</tr>
+<tr>
+<td>B</td>
+<td align="right">160</td>
+<td align="right">170.8</td>
+<td align="right">-10.8</td>
+</tr>
+<tr>
+<td>C</td>
+<td align="right">200</td>
+<td align="right">170.8</td>
+<td align="right">29.2</td>
+</tr>
+</tbody></table>
+<p>第二棵树继续学习这些新残差。</p>
+<p>所以 GBDT 的训练过程可以理解为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">先给一个粗略预测
+    -> 计算当前还差多少
+    -> 训练一棵树去拟合这个差距
+    -> 用学习率控制修正幅度
+    -> 更新预测
+    -> 再计算新的差距
+    -> 继续训练下一棵树</code></pre>
+
+<h2 id="4-GBDT-的加法模型形式"><a href="#4-GBDT-的加法模型形式" class="headerlink" title="4. GBDT 的加法模型形式"></a>4. GBDT 的加法模型形式</h2><p>GBDT 最终得到的不是一棵树，而是很多棵树的累加：</p>
+<p>$$<br>F_T(x)&#x3D;F_0(x)+\eta\sum_{t&#x3D;1}^{T}h_t(x)<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$F_0(x)$ 是初始预测。</li>
+<li>$h_t(x)$ 是第 $t$ 棵树。</li>
+<li>$T$ 是树的数量。</li>
+<li>$\eta$ 是学习率。</li>
+</ul>
+<p>如果每棵树都输出一个修正值，那么最终预测就是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">初始预测 + 第 1 棵树的修正 + 第 2 棵树的修正 + ... + 第 T 棵树的修正</code></pre>
+
+<p>例如某套房子的预测过程是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">初始预测：153.3
+第 1 棵树修正：-20.0
+第 2 棵树修正：-12.5
+第 3 棵树修正：-6.0</code></pre>
+
+<p>最终预测为：</p>
+<p>$$<br>\hat{y}&#x3D;153.3-20.0-12.5-6.0&#x3D;114.8<br>$$</p>
+<p>这就是 GBDT 的加法模型思想。</p>
+<h2 id="5-为什么叫“梯度”提升"><a href="#5-为什么叫“梯度”提升" class="headerlink" title="5. 为什么叫“梯度”提升"></a>5. 为什么叫“梯度”提升</h2><p>前面用平方误差时，我们一直说“拟合残差”。但 GBDT 不只适用于平方误差。</p>
+<p>更一般地说，GBDT 每一轮拟合的是损失函数的负梯度。</p>
+<p>假设训练目标是最小化：</p>
+<p>$$<br>\sum_{i&#x3D;1}^{n}L(y_i,F(x_i))<br>$$</p>
+<p>第 $t$ 轮时，当前模型是 $F_{t-1}(x)$。对每个样本，计算负梯度：</p>
+<p>$$<br>r_i^{(t)}&#x3D;<br>-\left[<br>\frac{\partial L(y_i,F(x_i))}{\partial F(x_i)}<br>\right]<em>{F&#x3D;F</em>{t-1}}<br>$$</p>
+<p>然后训练一棵新的回归树 $h_t(x)$，让它拟合这些 $r_i^{(t)}$。</p>
+<p>这里的 $r_i^{(t)}$ 可以理解为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">当前模型在第 i 个样本上，最应该往哪个方向修正</code></pre>
+
+<p>所以 GBDT 的“梯度”不是说树本身能求导，而是说模型每一轮沿着损失函数下降的方向加一棵树。</p>
+<h2 id="6-平方误差下：负梯度就是残差"><a href="#6-平方误差下：负梯度就是残差" class="headerlink" title="6. 平方误差下：负梯度就是残差"></a>6. 平方误差下：负梯度就是残差</h2><p>回归任务中，常用平方误差：</p>
+<p>$$<br>L(y,F(x))&#x3D;\frac{1}{2}(y-F(x))^2<br>$$</p>
+<p>对 $F(x)$ 求导：</p>
+<p>$$<br>\frac{\partial L}{\partial F(x)}&#x3D;F(x)-y<br>$$</p>
+<p>负梯度为：</p>
+<p>$$<br>-\frac{\partial L}{\partial F(x)}&#x3D;y-F(x)<br>$$</p>
+<p>而 $y-F(x)$ 正好就是残差。</p>
+<p>所以在平方误差下：</p>
+<pre class="language-text" data-language="text"><code class="language-text">拟合负梯度 = 拟合残差</code></pre>
+
+<p>这也是为什么很多入门材料会先用“拟合残差”解释 GBDT。这个说法没错，但它只是平方误差下的特殊情况。</p>
+<h2 id="7-一棵-GBDT-树的叶子输出什么"><a href="#7-一棵-GBDT-树的叶子输出什么" class="headerlink" title="7. 一棵 GBDT 树的叶子输出什么"></a>7. 一棵 GBDT 树的叶子输出什么</h2><p>在 GBDT 中，每一轮训练的是一棵回归树。它会把样本分到不同叶子节点，然后每个叶子输出一个修正值。</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/gbdt-tree-leaves.svg" alt="GBDT 单棵树拟合残差示意图"></p>
+<p>假设某一轮中有 5 个样本的残差：</p>
+<table>
+<thead>
+<tr>
+<th>样本</th>
+<th align="right">残差</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td align="right">-50</td>
+</tr>
+<tr>
+<td>B</td>
+<td align="right">-40</td>
+</tr>
+<tr>
+<td>C</td>
+<td align="right">-10</td>
+</tr>
+<tr>
+<td>D</td>
+<td align="right">30</td>
+</tr>
+<tr>
+<td>E</td>
+<td align="right">45</td>
+</tr>
+</tbody></table>
+<p>一棵回归树可能把它们分成两个叶子：</p>
+<pre class="language-text" data-language="text"><code class="language-text">叶子 1：A、B、C
+叶子 2：D、E</code></pre>
+
+<p>对于平方误差，叶子输出通常取该叶子中残差的平均值。</p>
+<p>叶子 1：</p>
+<p>$$<br>\gamma_1&#x3D;\frac{-50-40-10}{3}&#x3D;-33.3<br>$$</p>
+<p>叶子 2：</p>
+<p>$$<br>\gamma_2&#x3D;\frac{30+45}{2}&#x3D;37.5<br>$$</p>
+<p>如果学习率 $\eta&#x3D;0.1$，那么落到叶子 1 的样本会被修正：</p>
+<p>$$<br>0.1\times(-33.3)&#x3D;-3.33<br>$$</p>
+<p>落到叶子 2 的样本会被修正：</p>
+<p>$$<br>0.1\times37.5&#x3D;3.75<br>$$</p>
+<p>这说明 GBDT 的每棵树不是给出最终答案，而是给出一小步修正。</p>
+<h2 id="8-分类任务中的-GBDT"><a href="#8-分类任务中的-GBDT" class="headerlink" title="8. 分类任务中的 GBDT"></a>8. 分类任务中的 GBDT</h2><p>GBDT 不只能做回归，也能做分类。</p>
+<p>二分类中，模型通常不直接输出类别，而是输出一个分数 $F(x)$，再通过 Sigmoid 函数转成概率：</p>
+<p>$$<br>p(x)&#x3D;\frac{1}{1+e^{-F(x)}}<br>$$</p>
+<p>如果 $p(x)\ge 0.5$，预测为正类；否则预测为负类。</p>
+<p>常用损失函数是对数损失：</p>
+<p>$$<br>L(y,F(x))&#x3D;-[y\log p(x)+(1-y)\log(1-p(x))]<br>$$</p>
+<p>其中 $y\in{0,1}$。</p>
+<p>对这个损失求负梯度，可以得到：</p>
+<p>$$<br>r_i &#x3D; y_i - p_i<br>$$</p>
+<p>这也很直观：</p>
+<ul>
+<li>如果真实 $y&#x3D;1$，但模型预测概率 $p&#x3D;0.2$，则 $r&#x3D;0.8$，说明要大幅提高正类分数。</li>
+<li>如果真实 $y&#x3D;0$，但模型预测概率 $p&#x3D;0.9$，则 $r&#x3D;-0.9$，说明要大幅降低正类分数。</li>
+</ul>
+<p>举个例子：</p>
+<table>
+<thead>
+<tr>
+<th>学生</th>
+<th align="right">是否通过 $y$</th>
+<th align="right">当前预测概率 $p$</th>
+<th align="right">负梯度 $r&#x3D;y-p$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td align="right">1</td>
+<td align="right">0.80</td>
+<td align="right">0.20</td>
+</tr>
+<tr>
+<td>B</td>
+<td align="right">1</td>
+<td align="right">0.30</td>
+<td align="right">0.70</td>
+</tr>
+<tr>
+<td>C</td>
+<td align="right">0</td>
+<td align="right">0.60</td>
+<td align="right">-0.60</td>
+</tr>
+<tr>
+<td>D</td>
+<td align="right">0</td>
+<td align="right">0.10</td>
+<td align="right">-0.10</td>
+</tr>
+</tbody></table>
+<p>下一棵树会重点修正 B 和 C，因为它们的负梯度绝对值更大，说明当前模型错得更明显。</p>
+<h2 id="9-学习率和树数量"><a href="#9-学习率和树数量" class="headerlink" title="9. 学习率和树数量"></a>9. 学习率和树数量</h2><p>GBDT 的更新公式通常写成：</p>
+<p>$$<br>F_t(x)&#x3D;F_{t-1}(x)+\eta h_t(x)<br>$$</p>
+<p>其中 $\eta$ 是学习率。</p>
+<p>学习率越小，每棵树的修正幅度越小。这样训练更稳，但通常需要更多树。</p>
+<p>例如同样一棵树输出修正值 $h_t(x)&#x3D;40$：</p>
+<ul>
+<li>如果 $\eta&#x3D;1$，本轮直接加 40。</li>
+<li>如果 $\eta&#x3D;0.1$，本轮只加 4。</li>
+<li>如果 $\eta&#x3D;0.01$，本轮只加 0.4。</li>
+</ul>
+<p>所以常见经验是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">小学习率 + 多棵树</code></pre>
+
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">learning_rate = 0.05
+n_estimators = 300</code></pre>
+
+<p>通常比：</p>
+<pre class="language-text" data-language="text"><code class="language-text">learning_rate = 0.5
+n_estimators = 30</code></pre>
+
+<p>更稳，但训练成本也更高。</p>
+<h2 id="10-GBDT-的重要参数"><a href="#10-GBDT-的重要参数" class="headerlink" title="10. GBDT 的重要参数"></a>10. GBDT 的重要参数</h2><p>使用 GBDT 时，常见参数包括：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>n_estimators</code></td>
+<td>树的数量</td>
+<td>太少容易欠拟合，太多可能过拟合</td>
+</tr>
+<tr>
+<td><code>learning_rate</code></td>
+<td>学习率</td>
+<td>控制每棵树的修正幅度</td>
+</tr>
+<tr>
+<td><code>max_depth</code></td>
+<td>单棵树最大深度</td>
+<td>控制每棵树复杂度</td>
+</tr>
+<tr>
+<td><code>min_samples_leaf</code></td>
+<td>叶子节点最少样本数</td>
+<td>防止叶子过小</td>
+</tr>
+<tr>
+<td><code>subsample</code></td>
+<td>每轮采样比例</td>
+<td>小于 1 时类似随机梯度提升，可降低过拟合</td>
+</tr>
+<tr>
+<td><code>loss</code></td>
+<td>损失函数</td>
+<td>决定负梯度如何计算</td>
+</tr>
+</tbody></table>
+<p>调参时可以先抓住三个核心：</p>
+<ol>
+<li><code>learning_rate</code></li>
+<li><code>n_estimators</code></li>
+<li><code>max_depth</code></li>
+</ol>
+<p>树越深，单棵树越强，也越容易过拟合。GBDT 中的树通常不需要太深，很多任务中深度 3 到 6 已经能工作得不错。</p>
+<h2 id="11-sklearn-中训练-GBDT-回归模型"><a href="#11-sklearn-中训练-GBDT-回归模型" class="headerlink" title="11. sklearn 中训练 GBDT 回归模型"></a>11. sklearn 中训练 GBDT 回归模型</h2><p>下面用一个简单的回归例子训练 GBDT。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>datasets <span class="token keyword">import</span> make_regression
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>ensemble <span class="token keyword">import</span> GradientBoostingRegressor
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>metrics <span class="token keyword">import</span> mean_squared_error
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>model_selection <span class="token keyword">import</span> train_test_split
+
+<span class="token comment"># 构造一个回归数据集</span>
+X<span class="token punctuation">,</span> y <span class="token operator">=</span> make_regression<span class="token punctuation">(</span>
+    n_samples<span class="token operator">=</span><span class="token number">300</span><span class="token punctuation">,</span>
+    n_features<span class="token operator">=</span><span class="token number">6</span><span class="token punctuation">,</span>
+    noise<span class="token operator">=</span><span class="token number">15</span><span class="token punctuation">,</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+X_train<span class="token punctuation">,</span> X_test<span class="token punctuation">,</span> y_train<span class="token punctuation">,</span> y_test <span class="token operator">=</span> train_test_split<span class="token punctuation">(</span>
+    X<span class="token punctuation">,</span>
+    y<span class="token punctuation">,</span>
+    test_size<span class="token operator">=</span><span class="token number">0.2</span><span class="token punctuation">,</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> GradientBoostingRegressor<span class="token punctuation">(</span>
+    n_estimators<span class="token operator">=</span><span class="token number">200</span><span class="token punctuation">,</span>
+    learning_rate<span class="token operator">=</span><span class="token number">0.05</span><span class="token punctuation">,</span>
+    max_depth<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model<span class="token punctuation">.</span>fit<span class="token punctuation">(</span>X_train<span class="token punctuation">,</span> y_train<span class="token punctuation">)</span>
+
+y_pred <span class="token operator">=</span> model<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>X_test<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"MSE:"</span><span class="token punctuation">,</span> mean_squared_error<span class="token punctuation">(</span>y_test<span class="token punctuation">,</span> y_pred<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>这段代码对应前面的公式：</p>
+<pre class="language-text" data-language="text"><code class="language-text">先初始化预测
+    -> 每一轮训练一棵回归树
+    -> 新树拟合当前负梯度
+    -> 更新整体模型</code></pre>
+
+<p>实际项目中，GBDT 很常用于房价预测、销量预测、风险评分、用户价值预测等表格数据回归任务。</p>
+<h2 id="12-sklearn-中训练-GBDT-分类模型"><a href="#12-sklearn-中训练-GBDT-分类模型" class="headerlink" title="12. sklearn 中训练 GBDT 分类模型"></a>12. sklearn 中训练 GBDT 分类模型</h2><p>下面用鸢尾花数据集训练一个分类模型。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>datasets <span class="token keyword">import</span> load_iris
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>ensemble <span class="token keyword">import</span> GradientBoostingClassifier
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>metrics <span class="token keyword">import</span> classification_report
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>model_selection <span class="token keyword">import</span> train_test_split
+
+iris <span class="token operator">=</span> load_iris<span class="token punctuation">(</span><span class="token punctuation">)</span>
+X <span class="token operator">=</span> iris<span class="token punctuation">.</span>data
+y <span class="token operator">=</span> iris<span class="token punctuation">.</span>target
+
+X_train<span class="token punctuation">,</span> X_test<span class="token punctuation">,</span> y_train<span class="token punctuation">,</span> y_test <span class="token operator">=</span> train_test_split<span class="token punctuation">(</span>
+    X<span class="token punctuation">,</span>
+    y<span class="token punctuation">,</span>
+    test_size<span class="token operator">=</span><span class="token number">0.2</span><span class="token punctuation">,</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+    stratify<span class="token operator">=</span>y<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> GradientBoostingClassifier<span class="token punctuation">(</span>
+    n_estimators<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">,</span>
+    learning_rate<span class="token operator">=</span><span class="token number">0.05</span><span class="token punctuation">,</span>
+    max_depth<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model<span class="token punctuation">.</span>fit<span class="token punctuation">(</span>X_train<span class="token punctuation">,</span> y_train<span class="token punctuation">)</span>
+
+y_pred <span class="token operator">=</span> model<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>X_test<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>classification_report<span class="token punctuation">(</span>y_test<span class="token punctuation">,</span> y_pred<span class="token punctuation">,</span> target_names<span class="token operator">=</span>iris<span class="token punctuation">.</span>target_names<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>分类任务中，GBDT 常用于：</p>
+<ul>
+<li>用户是否会流失。</li>
+<li>是否为欺诈交易。</li>
+<li>是否点击广告。</li>
+<li>是否通过考试。</li>
+<li>商品是否会被购买。</li>
+</ul>
+<p>如果类别不平衡，不建议只看准确率，可以结合精确率、召回率、F1、AUC 等指标。</p>
+<h2 id="13-为什么会出现-GBDT-的变体"><a href="#13-为什么会出现-GBDT-的变体" class="headerlink" title="13. 为什么会出现 GBDT 的变体"></a>13. 为什么会出现 GBDT 的变体</h2><p>原始 GBDT 思想很清楚，但真实工程中会遇到一些问题：</p>
+<ul>
+<li>数据量大时，训练速度慢。</li>
+<li>特征很多时，寻找最佳分裂很耗时。</li>
+<li>容易过拟合，需要更好的正则化。</li>
+<li>类别特征处理麻烦。</li>
+<li>缺失值、稀疏特征、大规模数据需要更好的工程实现。</li>
+</ul>
+<p>于是出现了很多 GBDT 变体。</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/gbdt-variants.svg" alt="GBDT 变体对比示意图"></p>
+<h2 id="14-XGBoost：加入二阶梯度和正则化"><a href="#14-XGBoost：加入二阶梯度和正则化" class="headerlink" title="14. XGBoost：加入二阶梯度和正则化"></a>14. XGBoost：加入二阶梯度和正则化</h2><p>XGBoost 可以看成是 GBDT 的一个强工程增强版。</p>
+<p>它的目标函数通常写成：</p>
+<p>$$<br>Obj&#x3D;\sum_{i&#x3D;1}^{n}L(y_i,\hat{y}<em>i)+\sum</em>{t&#x3D;1}^{T}\Omega(f_t)<br>$$</p>
+<p>前半部分是训练损失，后半部分是树的复杂度惩罚。</p>
+<p>常见正则项为：</p>
+<p>$$<br>\Omega(f)&#x3D;\gamma K+\frac{1}{2}\lambda\sum_{j&#x3D;1}^{K}w_j^2<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$K$ 是叶子节点数量。</li>
+<li>$w_j$ 是第 $j$ 个叶子的输出值。</li>
+<li>$\gamma$ 惩罚叶子数量，防止树长得太复杂。</li>
+<li>$\lambda$ 惩罚叶子权重，防止叶子输出过大。</li>
+</ul>
+<p>XGBoost 的一个重要特点是使用二阶泰勒展开。对第 $t$ 轮新增树 $f_t$，目标函数近似为：</p>
+<p>$$<br>Obj^{(t)}\approx<br>\sum_{i&#x3D;1}^{n}<br>\left[<br>g_i f_t(x_i)+\frac{1}{2}h_i f_t^2(x_i)<br>\right]<br>+\Omega(f_t)<br>$$</p>
+<p>其中：</p>
+<p>$$<br>g_i&#x3D;\frac{\partial L(y_i,\hat{y}_i)}{\partial \hat{y}_i}<br>$$</p>
+<p>$$<br>h_i&#x3D;\frac{\partial^2 L(y_i,\hat{y}_i)}{\partial \hat{y}_i^2}<br>$$</p>
+<p>也就是说，XGBoost 不只看一阶梯度，还看二阶梯度，能更精细地估计下一步怎么修正。</p>
+<h3 id="14-1-XGBoost-的实际应用"><a href="#14-1-XGBoost-的实际应用" class="headerlink" title="14.1 XGBoost 的实际应用"></a>14.1 XGBoost 的实际应用</h3><p>假设做信用风险预测，要判断一个用户是否可能违约。特征包括：</p>
+<pre class="language-text" data-language="text"><code class="language-text">年龄、收入、负债率、历史逾期次数、消费行为、还款记录</code></pre>
+
+<p>XGBoost 会不断加树，每一棵树都修正当前模型对违约概率的判断。同时正则项会限制树不要太复杂，降低过拟合风险。</p>
+<p>因此它常用于：</p>
+<ul>
+<li>风控评分。</li>
+<li>广告点击率预估。</li>
+<li>用户流失预测。</li>
+<li>比赛类表格数据任务。</li>
+</ul>
+<h2 id="15-LightGBM：更快的大规模-GBDT"><a href="#15-LightGBM：更快的大规模-GBDT" class="headerlink" title="15. LightGBM：更快的大规模 GBDT"></a>15. LightGBM：更快的大规模 GBDT</h2><p>LightGBM 的重点是快，尤其适合大规模表格数据。</p>
+<p>它有几个典型思想：</p>
+<h3 id="15-1-直方图算法"><a href="#15-1-直方图算法" class="headerlink" title="15.1 直方图算法"></a>15.1 直方图算法</h3><p>传统 GBDT 找分裂点时，可能会枚举很多连续取值。LightGBM 会先把连续特征分桶。</p>
+<p>例如“年龄”原本有很多取值：</p>
+<pre class="language-text" data-language="text"><code class="language-text">18, 19, 20, 21, ..., 60</code></pre>
+
+<p>可以分成几个桶：</p>
+<pre class="language-text" data-language="text"><code class="language-text">18-25, 26-35, 36-45, 46-60</code></pre>
+
+<p>这样找分裂点时，不用遍历每个具体数值，而是在桶上搜索，速度会快很多。</p>
+<h3 id="15-2-Leaf-wise-生长"><a href="#15-2-Leaf-wise-生长" class="headerlink" title="15.2 Leaf-wise 生长"></a>15.2 Leaf-wise 生长</h3><p>普通树常见做法是 level-wise，也就是一层一层长。</p>
+<p>LightGBM 使用 leaf-wise：每次优先选择能带来最大损失下降的叶子继续分裂。</p>
+<p>直观理解：</p>
+<pre class="language-text" data-language="text"><code class="language-text">哪里错得最严重，就优先细分哪里</code></pre>
+
+<p>这样通常能更快降低损失，但也更容易过拟合，所以常配合 <code>num_leaves</code>、<code>max_depth</code> 控制复杂度。</p>
+<h3 id="15-3-GOSS-和-EFB"><a href="#15-3-GOSS-和-EFB" class="headerlink" title="15.3 GOSS 和 EFB"></a>15.3 GOSS 和 EFB</h3><p>LightGBM 还引入了 GOSS 和 EFB：</p>
+<ul>
+<li>GOSS：保留梯度大的样本，随机采样梯度小的样本。</li>
+<li>EFB：把互斥的稀疏特征合并，减少特征数量。</li>
+</ul>
+<p>梯度大的样本通常表示当前模型还没学好，保留它们可以更高效地训练。</p>
+<p>LightGBM 常用于：</p>
+<ul>
+<li>大规模点击率预估。</li>
+<li>推荐系统排序。</li>
+<li>金融风控。</li>
+<li>海量表格数据建模。</li>
+</ul>
+<h2 id="16-CatBoost：更擅长处理类别特征"><a href="#16-CatBoost：更擅长处理类别特征" class="headerlink" title="16. CatBoost：更擅长处理类别特征"></a>16. CatBoost：更擅长处理类别特征</h2><p>很多表格数据里有大量类别特征，例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">城市、职业、商品类别、商家 ID、用户等级</code></pre>
+
+<p>普通 GBDT 往往需要先手动做 One-Hot 编码、目标编码等处理。CatBoost 的优势之一就是对类别特征更友好。</p>
+<h3 id="16-1-类别特征的目标统计"><a href="#16-1-类别特征的目标统计" class="headerlink" title="16.1 类别特征的目标统计"></a>16.1 类别特征的目标统计</h3><p>例如有一个特征“城市”，标签是“是否购买”。</p>
+<p>可以计算每个城市的购买率：</p>
+<table>
+<thead>
+<tr>
+<th>城市</th>
+<th align="right">购买率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>北京</td>
+<td align="right">0.72</td>
+</tr>
+<tr>
+<td>上海</td>
+<td align="right">0.68</td>
+</tr>
+<tr>
+<td>深圳</td>
+<td align="right">0.75</td>
+</tr>
+</tbody></table>
+<p>然后用这个统计值代替原始类别。</p>
+<p>但这里有一个风险：如果直接用全量数据计算购买率，某个样本自己的标签会参与编码自己，产生目标泄漏。</p>
+<p>CatBoost 使用 Ordered Target Statistics 来降低这种泄漏风险。直观理解是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">给当前样本做类别编码时，只使用它之前样本的标签统计，不提前偷看当前样本标签。</code></pre>
+
+<h3 id="16-2-Ordered-Boosting"><a href="#16-2-Ordered-Boosting" class="headerlink" title="16.2 Ordered Boosting"></a>16.2 Ordered Boosting</h3><p>CatBoost 还使用 Ordered Boosting 来减少预测偏移。它通过有序训练方式，让模型在训练时尽量模拟“面对新样本”的状态。</p>
+<p>CatBoost 常用于：</p>
+<ul>
+<li>类别特征很多的业务数据。</li>
+<li>电商、广告、推荐系统。</li>
+<li>不想手动做大量类别特征编码的任务。</li>
+</ul>
+<h2 id="17-GBDT、XGBoost、LightGBM、CatBoost-对比"><a href="#17-GBDT、XGBoost、LightGBM、CatBoost-对比" class="headerlink" title="17. GBDT、XGBoost、LightGBM、CatBoost 对比"></a>17. GBDT、XGBoost、LightGBM、CatBoost 对比</h2><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>核心特点</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GBDT</td>
+<td>原始梯度提升树，思想清晰</td>
+<td>学习原理、中小规模任务</td>
+</tr>
+<tr>
+<td>XGBoost</td>
+<td>二阶梯度、正则化、缺失值处理强</td>
+<td>通用表格数据、比赛、风控</td>
+</tr>
+<tr>
+<td>LightGBM</td>
+<td>训练快、内存低、适合大数据</td>
+<td>大规模数据、推荐、CTR</td>
+</tr>
+<tr>
+<td>CatBoost</td>
+<td>类别特征处理友好</td>
+<td>类别变量多的业务数据</td>
+</tr>
+</tbody></table>
+<p>简单选择建议：</p>
+<ol>
+<li>学原理：先学 GBDT。</li>
+<li>做通用表格任务：优先试 XGBoost 或 LightGBM。</li>
+<li>数据量很大：优先试 LightGBM。</li>
+<li>类别特征很多：优先试 CatBoost。</li>
+</ol>
+<h2 id="18-GBDT-的优缺点"><a href="#18-GBDT-的优缺点" class="headerlink" title="18. GBDT 的优缺点"></a>18. GBDT 的优缺点</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>对表格数据效果很强。</li>
+<li>可以处理非线性关系。</li>
+<li>不太依赖特征缩放。</li>
+<li>能做回归，也能做分类。</li>
+<li>通过逐步修正错误，模型表达能力强。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>训练通常比单棵树慢。</li>
+<li>参数较多，需要调参。</li>
+<li>对噪声和异常值可能比较敏感。</li>
+<li>树很多时，可解释性下降。</li>
+<li>原始 GBDT 对高维稀疏特征不一定最高效。</li>
+</ul>
+<h2 id="19-实践建议"><a href="#19-实践建议" class="headerlink" title="19. 实践建议"></a>19. 实践建议</h2><p>使用 GBDT 类模型时，可以注意：</p>
+<ol>
+<li>先划分训练集、验证集、测试集，避免数据泄漏。</li>
+<li>用较小学习率配合较多树，例如 <code>learning_rate=0.05</code>。</li>
+<li>控制树深度，不要让单棵树太复杂。</li>
+<li>使用早停，验证集效果不再提升时停止训练。</li>
+<li>类别不平衡时，不要只看准确率。</li>
+<li>对异常值和脏数据要谨慎，Boosting 容易关注难样本。</li>
+</ol>
+<p>如果使用 XGBoost、LightGBM、CatBoost，一般都可以设置 early stopping：</p>
+<pre class="language-text" data-language="text"><code class="language-text">如果验证集指标连续多轮没有提升，就停止加树</code></pre>
+
+<p>这能减少过拟合，也能节省训练时间。</p>
+<h2 id="20-总结"><a href="#20-总结" class="headerlink" title="20. 总结"></a>20. 总结</h2><p>GBDT 的核心可以概括为三句话：</p>
+<ul>
+<li>当前模型先给出一个预测。</li>
+<li>根据损失函数计算每个样本应该如何修正。</li>
+<li>训练一棵新树去拟合这个修正方向，并把它加到整体模型里。</li>
+</ul>
+<p>在平方误差下，这个修正方向就是残差；在一般损失函数下，这个修正方向是负梯度。</p>
+<p>理解 GBDT 时，可以抓住这条主线：</p>
+<pre class="language-text" data-language="text"><code class="language-text">初始预测 -> 计算负梯度 -> 训练回归树 -> 更新模型 -> 重复</code></pre>
+
+<p>XGBoost、LightGBM、CatBoost 都是在这条主线上做工程增强：XGBoost 加入更强的正则化和二阶信息，LightGBM 追求大规模训练效率，CatBoost 更擅长处理类别特征。</p>
+<p>掌握 GBDT 之后，再看这些变体，就不会觉得它们是完全陌生的新算法，而是同一个思想在不同工程场景下的改进版本。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/06/02/machine-learning-gbdt/">https://lsworl.github.io/2026/06/02/machine-learning-gbdt/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="post-meta__tags" href="/tags/%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/">监督学习</a><a class="post-meta__tags" href="/tags/%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0/">集成学习</a><a class="post-meta__tags" href="/tags/%E6%A2%AF%E5%BA%A6%E6%8F%90%E5%8D%87%E6%A0%91/">梯度提升树</a><a class="post-meta__tags" href="/tags/GBDT/">GBDT</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/" title="AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</div></div><div class="info-2"><div class="info-item-1">上一篇日志整理了 AICompanion 当前已经实现的功能：PySide6 聊天窗口、SQLite 本地存储、长期记忆、情绪状态、主动消息雏形，以及 OpenAI-compatible 大模型接口。 写完之后，我继续往前推进了一小步。我开始把项目从本地 mock 回复，推进到更稳定地接入真实大模型。 同时我也重新校准了一下项目定位。AICompanion 不是要做成一个传统桌面助手，不是以任务管理、效率工具或系统控制为核心。它最终想实现的是一个基于 Live2D 动漫角色的情感交互应用。也就是说，后续所有模块都应该服务于“角色感”“陪伴感”“情绪反馈”和“长期关系感”。   1. 这次新增内容概览这次主要新增和完善的是大模型接入体验，集中在 llm 模块和 README 文档中。 当前相关文件包括： src/aicompanion/llm/   base.py   mock_client.py   openai_compatible_client.py   factory.py   diagnostics.py  其中这次比较重要的是： src/aicompanion/llm/...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-28</div><div class="info-item-2">集成学习：让多个模型一起做决定</div></div><div class="info-2"><div class="info-item-1">前面学习决策树时，我们提到过一个问题：单棵决策树虽然直观、可解释，但很容易过拟合，也很容易受到数据扰动影响。 集成学习（Ensemble Learning）就是为了解决这类问题而出现的思想。它不再把希望全部压在一个模型身上，而是训练多个模型，再把它们的结果组合起来。 可以把它理解成：一个人判断可能会偏，很多人从不同角度判断，再投票或取平均，结果通常更稳定。    1. 什么是集成学习集成学习的核心思想很简单：  训练多个基模型，再把这些模型的预测结果组合成最终结果。  这里的基模型也叫弱学习器（Weak Learner）或基学习器（Base Learner）。它不一定真的很弱，只是相对于最终组合模型来说，每个单独模型只负责贡献一部分判断。 例如一个分类任务中，我们训练了 5 个模型，它们分别预测： 模型 1：通过 模型 2：通过 模型 3：不通过 模型 4：通过 模型 5：通过  如果使用多数投票，最终结果就是“通过”。 如果是回归任务，例如预测房价，多个模型分别预测： 90 万、94 万、92 万、96 万、93 万  最终可以取平均值： $$\hat{y}&#x3D;\fra...</div></div></div></a><a class="pagination-related" href="/2026/05/27/machine-learning-decision-tree/" title="决策树：像做选择题一样理解分类与回归"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-27</div><div class="info-item-2">决策树：像做选择题一样理解分类与回归</div></div><div class="info-2"><div class="info-item-1">决策树（Decision Tree）是一种非常符合人类直觉的机器学习算法。它的预测过程就像做选择题：先问一个问题，根据答案走到下一步，再继续问问题，直到得到最终结论。 例如判断一个学生考试是否通过，可以问：  学习时间是否大于 3 小时？ 睡眠时间是否大于 7 小时？ 是否完成复习？  最后走到某个叶子节点，得到“通过”或“不通过”的预测结果。    1. 决策树的基本思想决策树的核心思想是：不断选择一个最合适的特征，把数据集切分得越来越“纯”。 这里的“纯”可以理解为：一个节点里的样本类别越统一，就越纯。 例如一个节点里有 10 个样本：  如果 10 个都是“通过”，这个节点非常纯。 如果 5 个“通过”、5 个“不通过”，这个节点就很混乱。  训练决策树时，算法会不断寻找最佳划分条件，例如： 学习时间 >= 3 小时？  如果这个问题能把“通过”和“不通过”分得更开，就说明它是一个不错的划分。 2. 决策树由哪些部分组成一棵决策树通常包含三类节点：    结构 含义    根节点 整棵树的起点，包含全部训练数据   内部节点 一个判断条件，例如“年龄是否大于 18”   叶...</div></div></div></a><a class="pagination-related" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-19</div><div class="info-item-2">K 近邻算法：KNN（K-Nearest Neighbors）</div></div><div class="info-2"><div class="info-item-1">KNN（K-Nearest Neighbors，K 近邻）是一种非常直观的监督学习算法：一个样本属于什么类别，可以参考它在特征空间中最近的 $K$ 个邻居。 在分类任务中，KNN 通常采用“多数投票”：最近的 $K$ 个样本里哪个类别最多，就预测为哪个类别；在回归任务中，KNN 通常取最近 $K$ 个样本标签值的平均值或加权平均值。   1. KNN 的直觉可以把 KNN 想象成“向邻居打听答案”。 假设小区里新搬来一户人家，你想判断他们更像“高收入家庭”还是“普通收入家庭”。最直接的方式，是观察离他们最近的几户邻居：如果最近的 5 户里有 3 户都是高收入家庭，那么你可能会猜测这户新邻居也更接近高收入家庭。 机器学习里的 KNN 做的是类似的事情：  输入：一个尚未标记类别的新样本。 过程：在训练集中找到距离它最近的 $K$ 个已知样本。 输出：分类时进行多数投票，回归时进行平均或加权平均。  KNN 本质上没有显式的训练过程，它把训练数据保存下来，预测时再计算新样本与训练样本之间的距离。因此它也被称为惰性学习（Lazy Learning）。 2. 数学原理KNN 要解决两个核...</div></div></div></a><a class="pagination-related" href="/2026/05/23/machine-learning-linear-regression/" title="线性回归：从直觉到最小二乘法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-23</div><div class="info-item-2">线性回归：从直觉到最小二乘法</div></div><div class="info-2"><div class="info-item-1">线性回归（Linear Regression）是机器学习中最基础、也最常用的监督学习算法之一。它主要用于解决回归问题，也就是预测一个连续数值。 例如：  根据房屋面积预测房价。 根据学习时长预测考试分数。 根据广告投入预测销售额。  线性回归的核心思想很朴素：如果两个变量之间存在近似线性的关系，就可以用一条直线或者一个线性函数去描述这种关系，并用它来预测未知样本。  图中的蓝色点是训练数据，红色直线是拟合出的线性模型，灰色虚线表示预测值和真实值之间的误差。线性回归训练时，本质上就是在寻找一条让整体误差尽可能小的直线。   1. 线性回归的直觉假设我们想根据学习时长预测考试分数，已有数据如下：    学习时长&#x2F;小时 考试分数    1 50   2 55   3 65   4 70   5 80   把这些点画到坐标系中，可以发现：学习时间越长，考试分数通常越高。虽然这些点不一定完全落在同一条直线上，但整体趋势接近一条向上倾斜的直线。 线性回归要做的事情，就是找到一条尽可能贴近这些数据点的直线： $$\hat{y} &#x3D; wx + b$$ 其中：  $x$ 表示输...</div></div></div></a><a class="pagination-related" href="/2026/05/24/machine-learning-logistic-regression/" title="逻辑回归：从直线到概率的分类算法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-24</div><div class="info-item-2">逻辑回归：从直线到概率的分类算法</div></div><div class="info-2"><div class="info-item-1">逻辑回归（Logistic Regression）名字里有“回归”，但它最常用于分类任务，尤其是二分类问题（逻辑回归说白了就是在线性回归的基础上使用Sigmoid 函数将原先结果转为概率的形式，然后根据设定的阈值来判断是否是正类）。 它要回答的问题不是“这个样本的数值是多少”，而是“这个样本属于某一类的概率有多大”。例如：  一封邮件是垃圾邮件的概率是多少？ 一个用户会不会点击广告？ 一个肿瘤样本是恶性的概率是多少？ 一个学生是否能通过考试？  逻辑回归的核心思想可以概括为一句话：先用一条直线算出一个分数，再用 Sigmoid 函数把这个分数压缩成 $0$ 到 $1$ 之间的概率。    1. 从线性回归说起在线性回归中，我们用一个线性函数预测连续值： $$z &#x3D; wx + b$$ 如果是多个特征（w可以看作权重），可以写成： $$z &#x3D; \mathbf{w}^{T}\mathbf{x} + b$$ 这里的 $z$ 可以理解为模型给样本打出的“原始分数”。 但是分类问题不能直接使用这个分数。比如判断一封邮件是不是垃圾邮件时，我们希望模型输出的是： $$P(y&...</div></div></div></a><a class="pagination-related" href="/2026/05/25/machine-learning-cross-validation-grid-search/" title="交叉验证与网格搜索：让模型选择更可靠"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-25</div><div class="info-item-2">交叉验证与网格搜索：让模型选择更可靠</div></div><div class="info-2"><div class="info-item-1">训练机器学习模型时，我们经常会遇到两个问题：  这个模型到底是不是真的好？ 参数应该怎么选，比如 KNN 的 $K$、逻辑回归的正则化强度、决策树的最大深度？  如果只把数据随便分成一次训练集和测试集，然后看一次准确率，很容易被偶然性误导。交叉验证（Cross Validation）就是为了解决“评估不稳定”的问题；网格搜索（Grid Search）则是为了解决“超参数怎么选”的问题。    1. 为什么不能只划分一次数据假设我们有一份数据集，要判断一个模型效果如何。最常见的做法是： 训练集：用来训练模型 测试集：用来评估模型  这听起来很合理，但有一个问题：一次划分可能有运气成分。 如果测试集刚好比较简单，模型分数会偏高；如果测试集刚好比较困难，模型分数会偏低。也就是说，一次测试结果可能不能代表模型的真实水平。 可以把它想象成考试：  只考一张卷子，可能刚好考到你熟悉的题。 多考几张不同卷子，平均成绩才更接近真实水平。  交叉验证的思想就是：让模型多考几次，再看平均表现。 2. 什么是 K 折交叉验证K 折交叉验证（K-Fold Cross Validation）会把数据分成 ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">106</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">32</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-GBDT"><span class="toc-number">1.</span> <span class="toc-text">1. 为什么需要 GBDT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E%E4%B8%80%E4%B8%AA%E6%88%BF%E4%BB%B7%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3-GBDT"><span class="toc-number">2.</span> <span class="toc-text">2. 从一个房价例子理解 GBDT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%AC%AC%E4%B8%80%E6%A3%B5%E6%A0%91%E5%A6%82%E4%BD%95%E4%BF%AE%E6%AD%A3%E9%A2%84%E6%B5%8B"><span class="toc-number">3.</span> <span class="toc-text">3. 第一棵树如何修正预测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-GBDT-%E7%9A%84%E5%8A%A0%E6%B3%95%E6%A8%A1%E5%9E%8B%E5%BD%A2%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">4. GBDT 的加法模型形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AB%E2%80%9C%E6%A2%AF%E5%BA%A6%E2%80%9D%E6%8F%90%E5%8D%87"><span class="toc-number">5.</span> <span class="toc-text">5. 为什么叫“梯度”提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%B9%B3%E6%96%B9%E8%AF%AF%E5%B7%AE%E4%B8%8B%EF%BC%9A%E8%B4%9F%E6%A2%AF%E5%BA%A6%E5%B0%B1%E6%98%AF%E6%AE%8B%E5%B7%AE"><span class="toc-number">6.</span> <span class="toc-text">6. 平方误差下：负梯度就是残差</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%B8%80%E6%A3%B5-GBDT-%E6%A0%91%E7%9A%84%E5%8F%B6%E5%AD%90%E8%BE%93%E5%87%BA%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">7. 一棵 GBDT 树的叶子输出什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1%E4%B8%AD%E7%9A%84-GBDT"><span class="toc-number">8.</span> <span class="toc-text">8. 分类任务中的 GBDT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%AD%A6%E4%B9%A0%E7%8E%87%E5%92%8C%E6%A0%91%E6%95%B0%E9%87%8F"><span class="toc-number">9.</span> <span class="toc-text">9. 学习率和树数量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-GBDT-%E7%9A%84%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0"><span class="toc-number">10.</span> <span class="toc-text">10. GBDT 的重要参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-sklearn-%E4%B8%AD%E8%AE%AD%E7%BB%83-GBDT-%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B"><span class="toc-number">11.</span> <span class="toc-text">11. sklearn 中训练 GBDT 回归模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-sklearn-%E4%B8%AD%E8%AE%AD%E7%BB%83-GBDT-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B"><span class="toc-number">12.</span> <span class="toc-text">12. sklearn 中训练 GBDT 分类模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%87%BA%E7%8E%B0-GBDT-%E7%9A%84%E5%8F%98%E4%BD%93"><span class="toc-number">13.</span> <span class="toc-text">13. 为什么会出现 GBDT 的变体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-XGBoost%EF%BC%9A%E5%8A%A0%E5%85%A5%E4%BA%8C%E9%98%B6%E6%A2%AF%E5%BA%A6%E5%92%8C%E6%AD%A3%E5%88%99%E5%8C%96"><span class="toc-number">14.</span> <span class="toc-text">14. XGBoost：加入二阶梯度和正则化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-XGBoost-%E7%9A%84%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8"><span class="toc-number">14.1.</span> <span class="toc-text">14.1 XGBoost 的实际应用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-LightGBM%EF%BC%9A%E6%9B%B4%E5%BF%AB%E7%9A%84%E5%A4%A7%E8%A7%84%E6%A8%A1-GBDT"><span class="toc-number">15.</span> <span class="toc-text">15. LightGBM：更快的大规模 GBDT</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E7%9B%B4%E6%96%B9%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="toc-number">15.1.</span> <span class="toc-text">15.1 直方图算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-Leaf-wise-%E7%94%9F%E9%95%BF"><span class="toc-number">15.2.</span> <span class="toc-text">15.2 Leaf-wise 生长</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-GOSS-%E5%92%8C-EFB"><span class="toc-number">15.3.</span> <span class="toc-text">15.3 GOSS 和 EFB</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-CatBoost%EF%BC%9A%E6%9B%B4%E6%93%85%E9%95%BF%E5%A4%84%E7%90%86%E7%B1%BB%E5%88%AB%E7%89%B9%E5%BE%81"><span class="toc-number">16.</span> <span class="toc-text">16. CatBoost：更擅长处理类别特征</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E7%B1%BB%E5%88%AB%E7%89%B9%E5%BE%81%E7%9A%84%E7%9B%AE%E6%A0%87%E7%BB%9F%E8%AE%A1"><span class="toc-number">16.1.</span> <span class="toc-text">16.1 类别特征的目标统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-Ordered-Boosting"><span class="toc-number">16.2.</span> <span class="toc-text">16.2 Ordered Boosting</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-GBDT%E3%80%81XGBoost%E3%80%81LightGBM%E3%80%81CatBoost-%E5%AF%B9%E6%AF%94"><span class="toc-number">17.</span> <span class="toc-text">17. GBDT、XGBoost、LightGBM、CatBoost 对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-GBDT-%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">18.</span> <span class="toc-text">18. GBDT 的优缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">18.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">18.2.</span> <span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE"><span class="toc-number">19.</span> <span class="toc-text">19. 实践建议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E6%80%BB%E7%BB%93"><span class="toc-number">20.</span> <span class="toc-text">20. 总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/machine-learning-gbdt/" title="GBDT：从残差到梯度提升树的完整理解">GBDT：从残差到梯度提升树的完整理解</a><time datetime="2026-06-01T16:00:00.000Z" title="发表于 2026-06-02 00:00:00">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/" title="AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</a><time datetime="2026-05-29T12:30:00.000Z" title="发表于 2026-05-29 20:30:00">2026-05-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定">集成学习：让多个模型一起做决定</a><time datetime="2026-05-27T16:00:00.000Z" title="发表于 2026-05-28 00:00:00">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/aicompanion-devlog-03-current-features/" title="AICompanion 开发日志 03：当前版本功能总览">AICompanion 开发日志 03：当前版本功能总览</a><time datetime="2026-05-27T12:40:00.000Z" title="发表于 2026-05-27 20:40:00">2026-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/aicompanion-devlog-02-pyside6-chat-window/" title="AICompanion 开发日志 02：用 PySide6 搭建聊天窗口">AICompanion 开发日志 02：用 PySide6 搭建聊天窗口</a><time datetime="2026-05-27T12:10:00.000Z" title="发表于 2026-05-27 20:10:00">2026-05-27</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

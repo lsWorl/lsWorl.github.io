@@ -1,0 +1,497 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录 AICompanion 在真实大模型接入体验上的新增内容，包括命令行诊断工具、流式与非流式模型测试、API 错误处理优化，以及项目方向从桌面助手校准为情感交互型 AI 角色应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准">
+<meta property="og:url" content="https://lsworl.github.io/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="记录 AICompanion 在真实大模型接入体验上的新增内容，包括命令行诊断工具、流式与非流式模型测试、API 错误处理优化，以及项目方向从桌面助手校准为情感交互型 AI 角色应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-05-29T12:30:00.000Z">
+<meta property="article:modified_time" content="2026-05-29T14:54:36.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="AICompanion">
+<meta property="article:tag" content="PySide6">
+<meta property="article:tag" content="大模型">
+<meta property="article:tag" content="OpenAI-compatible">
+<meta property="article:tag" content="情感交互">
+<meta property="article:tag" content="AI角色">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准",
+  "url": "https://lsworl.github.io/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-05-29T12:30:00.000Z",
+  "dateModified": "2026-05-29T14:54:36.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">106</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">32</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-29T12:30:00.000Z" title="发表于 2026-05-29 20:30:00">2026-05-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-29T14:54:36.000Z" title="更新于 2026-05-29 22:54:36">2026-05-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">项目实战</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>上一篇日志整理了 AICompanion 当前已经实现的功能：PySide6 聊天窗口、SQLite 本地存储、长期记忆、情绪状态、主动消息雏形，以及 OpenAI-compatible 大模型接口。</p>
+<p>写完之后，我继续往前推进了一小步。我开始把项目从本地 mock 回复，推进到更稳定地接入真实大模型。</p>
+<p>同时我也重新校准了一下项目定位。AICompanion 不是要做成一个传统桌面助手，不是以任务管理、效率工具或系统控制为核心。它最终想实现的是一个基于 Live2D 动漫角色的情感交互应用。也就是说，后续所有模块都应该服务于“角色感”“陪伴感”“情绪反馈”和“长期关系感”。</p>
+<span id="more"></span>
+
+<h2 id="1-这次新增内容概览"><a href="#1-这次新增内容概览" class="headerlink" title="1. 这次新增内容概览"></a>1. 这次新增内容概览</h2><p>这次主要新增和完善的是大模型接入体验，集中在 <code>llm</code> 模块和 README 文档中。</p>
+<p>当前相关文件包括：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/llm/
+  base.py
+  mock_client.py
+  openai_compatible_client.py
+  factory.py
+  diagnostics.py</code></pre>
+
+<p>其中这次比较重要的是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/llm/diagnostics.py
+src/aicompanion/llm/openai_compatible_client.py
+README.md</code></pre>
+
+<p>也就是说，现在项目不只是“代码里有一个真实模型客户端”，而是有了一个单独的诊断入口，可以在不启动桌面窗口的情况下，先测试模型配置是否正确。</p>
+<p>这对后续开发很重要。因为如果每次测试模型都要打开 GUI，再输入消息，再看窗口里是否报错，调试效率会很低。现在可以先在命令行里确认模型连通性，再回到 PySide6 界面里测试完整交互流程。</p>
+<h2 id="2-新增-LLM-诊断命令"><a href="#2-新增-LLM-诊断命令" class="headerlink" title="2. 新增 LLM 诊断命令"></a>2. 新增 LLM 诊断命令</h2><p>新增的诊断工具位于：</p>
+<pre class="language-text" data-language="text"><code class="language-text">src/aicompanion/llm/diagnostics.py</code></pre>
+
+<p>它的作用是：在不打开桌面 UI 的情况下，直接读取 <code>.env</code> 配置，创建当前配置对应的 LLM 客户端，然后发送一条测试消息。</p>
+<p>README 中也补充了使用方式：</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token punctuation">.</span>\<span class="token punctuation">.</span>venv\Scripts\python<span class="token punctuation">.</span>exe <span class="token operator">-</span>m aicompanion<span class="token punctuation">.</span>llm<span class="token punctuation">.</span>diagnostics</code></pre>
+
+<p>如果想发送自定义测试消息，可以这样写：</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token punctuation">.</span>\<span class="token punctuation">.</span>venv\Scripts\python<span class="token punctuation">.</span>exe <span class="token operator">-</span>m aicompanion<span class="token punctuation">.</span>llm<span class="token punctuation">.</span>diagnostics <span class="token string">"你好，请简单介绍一下你自己"</span></code></pre>
+
+<p>默认情况下，诊断命令会测试流式输出。也就是模型返回的内容会一段一段打印出来，模拟正式聊天窗口里的打字效果。</p>
+<p>如果想测试非流式回复，可以加上：</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token punctuation">.</span>\<span class="token punctuation">.</span>venv\Scripts\python<span class="token punctuation">.</span>exe <span class="token operator">-</span>m aicompanion<span class="token punctuation">.</span>llm<span class="token punctuation">.</span>diagnostics <span class="token operator">--</span>no-stream</code></pre>
+
+<p>这个工具的价值不在于功能复杂，而在于它把“模型接入是否正常”从 GUI 流程里拆了出来。后续无论换 OpenAI-compatible 平台、换模型名、换 base_url，还是调整 API key，都可以先用这个命令做一次最小验证。</p>
+<h2 id="3-诊断工具的执行流程"><a href="#3-诊断工具的执行流程" class="headerlink" title="3. 诊断工具的执行流程"></a>3. 诊断工具的执行流程</h2><p><code>diagnostics.py</code> 的流程很简单：</p>
+<pre class="language-text" data-language="text"><code class="language-text">读取命令行参数
+  -> 加载 .env 配置
+  -> 打印 provider / base_url / model / streaming
+  -> create_llm_client(settings)
+  -> 构造一条测试消息
+  -> 调用 generate_reply_stream() 或 generate_reply()
+  -> 打印模型回复</code></pre>
+
+<p>核心逻辑大致是：</p>
+<pre class="language-python" data-language="python"><code class="language-python">settings <span class="token operator">=</span> load_settings<span class="token punctuation">(</span><span class="token punctuation">)</span>
+client <span class="token operator">=</span> create_llm_client<span class="token punctuation">(</span>settings<span class="token punctuation">)</span>
+
+messages <span class="token operator">=</span> <span class="token punctuation">[</span>ChatTurn<span class="token punctuation">(</span>role<span class="token operator">=</span><span class="token string">"user"</span><span class="token punctuation">,</span> content<span class="token operator">=</span>args<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">]</span>
+
+<span class="token keyword">for</span> token <span class="token keyword">in</span> client<span class="token punctuation">.</span>generate_reply_stream<span class="token punctuation">(</span>
+    messages<span class="token operator">=</span>messages<span class="token punctuation">,</span>
+    system_prompt<span class="token operator">=</span>system_prompt<span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>token<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">""</span><span class="token punctuation">,</span> flush<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span></code></pre>
+
+<p>这里没有复用正式聊天窗口里的完整角色 prompt，而是写了一个更小的诊断 prompt：</p>
+<pre class="language-text" data-language="text"><code class="language-text">You are a warm AI companion. Reply naturally in Chinese, and keep the answer concise.</code></pre>
+
+<p>这样做是为了让诊断工具保持轻量。它主要验证 API 是否能通、流式解析是否正常、模型是否能返回中文内容，而不是完整测试角色人格。</p>
+<p>完整角色设定仍然在 <code>ChatController._build_system_prompt()</code> 中负责构建。</p>
+<h2 id="4-流式和非流式都可以单独测试"><a href="#4-流式和非流式都可以单独测试" class="headerlink" title="4. 流式和非流式都可以单独测试"></a>4. 流式和非流式都可以单独测试</h2><p>当前项目的 LLM 抽象接口本来就同时支持两种模式：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">generate_reply</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> messages<span class="token punctuation">,</span> system_prompt<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+<span class="token keyword">def</span> <span class="token function">generate_reply_stream</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> messages<span class="token punctuation">,</span> system_prompt<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre>
+
+<p>桌面窗口默认使用流式回复，因为这样更像角色正在一句一句说话，而不是突然弹出一整段文本。</p>
+<p>但是非流式接口仍然有保留价值：</p>
+<ul>
+<li>方便快速测试模型是否可用。</li>
+<li>方便后续写自动化测试。</li>
+<li>适合某些不支持流式输出的平台。</li>
+<li>后续如果做“记忆摘要”“情绪分析”等内部任务，非流式会更简单。</li>
+</ul>
+<p>因此这次诊断工具同时支持两种模式。这样后续排查问题时，可以判断问题到底出在普通 API 调用，还是出在 SSE 流式解析。</p>
+<h2 id="5-API-错误处理进一步清晰化"><a href="#5-API-错误处理进一步清晰化" class="headerlink" title="5. API 错误处理进一步清晰化"></a>5. API 错误处理进一步清晰化</h2><p>真实 API 接入和 mock 最大的区别是：真实 API 会失败，而且失败原因很多。</p>
+<p>可能是：</p>
+<ul>
+<li>API key 没填。</li>
+<li>API key 错误或过期。</li>
+<li>base_url 写错。</li>
+<li>模型名不存在。</li>
+<li>平台余额不足。</li>
+<li>请求被限流。</li>
+<li>网络或代理异常。</li>
+<li>平台返回的流式数据格式不符合预期。</li>
+</ul>
+<p>如果把这些底层异常直接抛给 UI，用户看到的可能是 <code>urllib.error.HTTPError</code>、<code>URLError</code>、<code>JSONDecodeError</code> 之类的信息，既不友好，也不利于判断下一步该改哪里。</p>
+<p>所以 <code>openai_compatible_client.py</code> 中增加了统一异常：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">LLMResponseError</span><span class="token punctuation">(</span>RuntimeError<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre>
+
+<p>它的目的不是隐藏错误，而是把底层错误整理成更容易理解的提示。</p>
+<p>例如 HTTP 状态码会被转换成更明确的排查方向：</p>
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>提示方向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>401</td>
+<td>检查 API key 是否正确</td>
+</tr>
+<tr>
+<td>403</td>
+<td>检查账号权限、模型权限或访问限制</td>
+</tr>
+<tr>
+<td>404</td>
+<td>检查 base_url 或接口路径</td>
+</tr>
+<tr>
+<td>429</td>
+<td>检查限流、余额或配额</td>
+</tr>
+<tr>
+<td>500+</td>
+<td>平台服务端可能异常</td>
+</tr>
+</tbody></table>
+<p>这样当桌面窗口请求失败时，UI 显示的就不是一大串 traceback，而是相对可读的错误说明。</p>
+<h2 id="6-流式响应解析的处理"><a href="#6-流式响应解析的处理" class="headerlink" title="6. 流式响应解析的处理"></a>6. 流式响应解析的处理</h2><p>OpenAI-compatible 的流式输出通常是 SSE 格式，大致长这样：</p>
+<pre class="language-text" data-language="text"><code class="language-text">data: &#123;"choices":[&#123;"delta":&#123;"content":"你好"&#125;&#125;]&#125;
+data: &#123;"choices":[&#123;"delta":&#123;"content":"呀"&#125;&#125;]&#125;
+data: [DONE]</code></pre>
+
+<p>当前客户端会逐行读取响应：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">for</span> raw_line <span class="token keyword">in</span> response<span class="token punctuation">:</span>
+    line <span class="token operator">=</span> raw_line<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">"utf-8"</span><span class="token punctuation">,</span> errors<span class="token operator">=</span><span class="token string">"ignore"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>然后只处理 <code>data:</code> 开头的内容。</p>
+<p>如果遇到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">data: [DONE]</code></pre>
+
+<p>就结束本次流式响应。</p>
+<p>如果是普通 JSON 事件，就从里面取：</p>
+<pre class="language-text" data-language="text"><code class="language-text">choices[0].delta.content</code></pre>
+
+<p>这个过程现在已经被封装在 <code>_parse_stream_token()</code> 中。这样后续如果某个平台的兼容格式有细微差异，也可以集中在这里调整。</p>
+<h2 id="7-这一步和情感交互有什么关系"><a href="#7-这一步和情感交互有什么关系" class="headerlink" title="7. 这一步和情感交互有什么关系"></a>7. 这一步和情感交互有什么关系</h2><p>表面上看，这次新增的是命令行诊断、错误处理和 API 调试工具，好像和“情感”没什么关系。</p>
+<p>但对 AICompanion 来说，这其实是情感交互的地基。</p>
+<p>因为一个情感交互角色至少需要稳定做到几件事：</p>
+<ul>
+<li>能持续对话。</li>
+<li>能自然地逐段回复。</li>
+<li>出错时不让整个体验突然崩掉。</li>
+<li>能根据角色设定、情绪状态和长期记忆来组织语言。</li>
+<li>后续能把文本回复同步给 Live2D 表情、动作和 TTS。</li>
+</ul>
+<p>如果模型调用本身不稳定，后面的 Live2D、语音、表情、记忆都会被影响。</p>
+<p>所以当前阶段不是在做“桌面助手能力”，而是在补齐一个情感角色应用必须有的对话基础设施。</p>
+<p>换句话说，现在的目标不是让 AICompanion 帮我完成多少任务，而是让她能更稳定、更自然、更有角色感地回应我。</p>
+<h2 id="8-项目方向重新校准"><a href="#8-项目方向重新校准" class="headerlink" title="8. 项目方向重新校准"></a>8. 项目方向重新校准</h2><p>之前代码中已经预留了 <code>reminders</code> 表，也有主动消息雏形。但这不代表项目要走传统助手路线。</p>
+<p>我现在更明确地把 AICompanion 的方向定为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Live2D 动漫角色 + 大模型对话 + 长期记忆 + 情绪状态 + 语音与动作反馈</code></pre>
+
+<p>它更接近一个情感交互应用，而不是效率工具。</p>
+<p>因此后续功能排序也应该围绕“情绪反馈”和“角色表现”展开。</p>
+<p>例如，长期记忆不只是为了记住任务，而是为了让角色形成关系连续性：</p>
+<ul>
+<li>记得用户喜欢什么。</li>
+<li>记得用户讨厌什么。</li>
+<li>记得用户最近在做什么。</li>
+<li>记得用户常见的情绪状态。</li>
+<li>在合适的时候自然提起，而不是机械复述。</li>
+</ul>
+<p>情绪系统也不只是 prompt 里的几个数字，而应该逐步驱动：</p>
+<ul>
+<li>回复语气。</li>
+<li>主动关心的频率。</li>
+<li>Live2D 表情。</li>
+<li>Live2D 动作。</li>
+<li>TTS 的语速、音量和情绪。</li>
+</ul>
+<p>这才是项目后续真正要生长的方向。</p>
+<h2 id="9-当前已经推进到什么程度"><a href="#9-当前已经推进到什么程度" class="headerlink" title="9. 当前已经推进到什么程度"></a>9. 当前已经推进到什么程度</h2><p>结合上一篇日志和这次新增内容，现在项目状态可以更新为：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>当前状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PySide6 聊天窗口</td>
+<td>已实现基础版本</td>
+</tr>
+<tr>
+<td>后台线程流式回复</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>本地 mock 模型</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>OpenAI-compatible 客户端</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>LLM 命令行诊断工具</td>
+<td>已新增</td>
+</tr>
+<tr>
+<td>流式&#x2F;非流式模型测试</td>
+<td>已新增</td>
+</tr>
+<tr>
+<td>API 错误提示整理</td>
+<td>已增强</td>
+</tr>
+<tr>
+<td>SQLite 聊天记录</td>
+<td>已实现</td>
+</tr>
+<tr>
+<td>长期记忆</td>
+<td>仍是关键词规则</td>
+</tr>
+<tr>
+<td>情绪状态</td>
+<td>已有基础数值模型</td>
+</tr>
+<tr>
+<td>主动消息</td>
+<td>仍是规则和固定文本</td>
+</tr>
+<tr>
+<td>Live2D</td>
+<td>未实现</td>
+</tr>
+<tr>
+<td>TTS</td>
+<td>未实现</td>
+</tr>
+</tbody></table>
+<p>也就是说，这次没有大幅增加新的用户可见功能，但增强了真实模型接入的可调试性和可靠性。</p>
+<p>这一步完成之后，后面继续做情感层能力会更踏实。</p>
+<h2 id="10-下一步计划"><a href="#10-下一步计划" class="headerlink" title="10. 下一步计划"></a>10. 下一步计划</h2><p>接下来我准备把重点放回“情感交互”本身，而不是扩展成桌面助手。</p>
+<p>更适合下一阶段的方向是：</p>
+<ol>
+<li>优化角色 prompt，让回复更稳定地符合 Emilia 的性格设定。</li>
+<li>改造长期记忆，不再只保存原句，而是提取成适合角色理解的摘要。</li>
+<li>设计情绪状态到角色表现的映射，比如 <code>happy</code>、<code>lonely</code>、<code>calm</code> 分别对应什么表情和语气。</li>
+<li>为 Live2D 接入提前设计角色状态接口，而不是一上来就把模型显示出来。</li>
+<li>后续再接入 TTS，让文本回复逐步变成“说话”。</li>
+</ol>
+<p>对 AICompanion 来说，Live2D 不是单独的展示层，而应该是情感状态的外显。</p>
+<p>所以在真正接入 Live2D 之前，我需要先让内部状态更清楚：角色现在是什么心情，为什么变成这个心情，她应该用什么语气回应，又应该用什么表情和动作表现出来。</p>
+<p>这一篇日志记录的就是这个过渡阶段：从“能聊天”走向“更稳定地接入真实模型”，再继续朝“能形成情感反馈的角色”前进。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/">https://lsworl.github.io/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AICompanion/">AICompanion</a><a class="post-meta__tags" href="/tags/PySide6/">PySide6</a><a class="post-meta__tags" href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a><a class="post-meta__tags" href="/tags/OpenAI-compatible/">OpenAI-compatible</a><a class="post-meta__tags" href="/tags/%E6%83%85%E6%84%9F%E4%BA%A4%E4%BA%92/">情感交互</a><a class="post-meta__tags" href="/tags/AI%E8%A7%92%E8%89%B2/">AI角色</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/machine-learning-gbdt/" title="GBDT：从残差到梯度提升树的完整理解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">GBDT：从残差到梯度提升树的完整理解</div></div><div class="info-2"><div class="info-item-1">GBDT（Gradient Boosting Decision Tree，梯度提升决策树）是机器学习中非常常用的一类模型，尤其适合表格数据任务。 它的名字看起来很长，但拆开以后并不神秘：  Gradient：沿着损失函数下降的方向修正模型。 Boosting：一轮一轮训练模型，后面的模型修正前面的错误。 Decision Tree：每一轮加入的基模型通常是一棵回归树。  一句话概括：  GBDT 不是一次训练一棵很大的树，而是一棵树接一棵树地补前面模型的错误。     1. 为什么需要 GBDT单棵决策树有两个明显问题：  树太浅，模型表达能力不够，容易欠拟合。 树太深，容易把训练数据记得太死，导致过拟合。  GBDT 的思路不是训练一棵特别复杂的树，而是训练很多棵相对简单的树。 每一棵树只做一件事： 修正当前模型还没预测好的部分  这样模型可以逐步变强，同时通过学习率、树深度、树数量等参数控制复杂度。 2. 从一个房价例子理解 GBDT假设我们要预测 3 套房子的价格：    房子 面积 房龄 真实价格    A 70 平 15 年 100 万   B 100 平 8 年 16...</div></div></div></a><a class="pagination-related" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">集成学习：让多个模型一起做决定</div></div><div class="info-2"><div class="info-item-1">前面学习决策树时，我们提到过一个问题：单棵决策树虽然直观、可解释，但很容易过拟合，也很容易受到数据扰动影响。 集成学习（Ensemble Learning）就是为了解决这类问题而出现的思想。它不再把希望全部压在一个模型身上，而是训练多个模型，再把它们的结果组合起来。 可以把它理解成：一个人判断可能会偏，很多人从不同角度判断，再投票或取平均，结果通常更稳定。    1. 什么是集成学习集成学习的核心思想很简单：  训练多个基模型，再把这些模型的预测结果组合成最终结果。  这里的基模型也叫弱学习器（Weak Learner）或基学习器（Base Learner）。它不一定真的很弱，只是相对于最终组合模型来说，每个单独模型只负责贡献一部分判断。 例如一个分类任务中，我们训练了 5 个模型，它们分别预测： 模型 1：通过 模型 2：通过 模型 3：不通过 模型 4：通过 模型 5：通过  如果使用多数投票，最终结果就是“通过”。 如果是回归任务，例如预测房价，多个模型分别预测： 90 万、94 万、92 万、96 万、93 万  最终可以取平均值： $$\hat{y}&#x3D;\fra...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/05/27/aicompanion-devlog-03-current-features/" title="AICompanion 开发日志 03：当前版本功能总览"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-27</div><div class="info-item-2">AICompanion 开发日志 03：当前版本功能总览</div></div><div class="info-2"><div class="info-item-1">前两篇分别记录了项目搭建和 PySide6 聊天窗口的实现。这一篇不继续单独展开某一个模块，而是做一次阶段性整理：把目前代码里已经实现的功能完整梳理一遍。 AICompanion 现在还不是最终形态，还没有 TTS，也还没有 Live2D。但它已经不只是一个空窗口了。目前这个版本已经把桌面聊天、模型接口、本地存储、长期记忆、情绪状态和主动消息的基础流程都接了起来。   1. 当前项目状态当前项目路径是： D:\Study\AICompanion  项目采用 src layout，核心代码放在： src/aicompanion/  目前主要模块如下： src/aicompanion/   app.py                  # 应用装配入口   config.py               # 配置读取   controllers/     chat_controller.py     # 聊天流程控制   domain/     character.py           # 角色设定     emotion.py             # 情绪状态   llm...</div></div></div></a><a class="pagination-related" href="/2026/05/26/aicompanion-devlog-01-project-setup/" title="AICompanion 开发日志 01：项目搭建与环境准备"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="info-item-2">AICompanion 开发日志 01：项目搭建与环境准备</div></div><div class="info-2"><div class="info-item-1">最近我开始做一个新的项目：AICompanion。它的目标是做一个运行在 Windows 电脑桌面上的 AI 聊天陪伴系统，未来也可能扩展到安卓端。 这个项目不只是普通聊天窗口，而是希望逐步实现一个更像“桌面伙伴”的系统：它可以拥有动漫角色设定，能记住聊天内容，有情绪状态，在我长时间没有回复时主动发消息给我，后续再加入 TTS 语音回复和 Live2D 角色展示。 这篇文章是这个系列的第 1 篇，主要记录项目从 0 到 1 的环境搭建和基础结构设计。   1. 项目目标AICompanion 当前的核心目标可以拆成几部分：  使用 PySide6 开发 Windows 桌面聊天窗口。 通过 API 调用大模型，实现多轮对话。 使用 SQLite 保存聊天记录、长期记忆和任务提醒。 加入情感系统，让角色回复不只是机械问答。 支持主动消息，例如用户长时间没回复时，角色可以主动问候。 后续加入 TTS 语音回复。 最终尝试接入 Live2D，让动漫角色可以根据情绪切换表情和动作。  我希望它最终不是一个“输入框 + 回复框”的简单工具，而是一个有角色感、有陪伴感、能长期相处的桌面 AI...</div></div></div></a><a class="pagination-related" href="/2026/05/27/aicompanion-devlog-02-pyside6-chat-window/" title="AICompanion 开发日志 02：用 PySide6 搭建聊天窗口"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-27</div><div class="info-item-2">AICompanion 开发日志 02：用 PySide6 搭建聊天窗口</div></div><div class="info-2"><div class="info-item-1">上一篇主要记录了 AICompanion 的项目搭建、技术选型和目录结构。这一篇开始进入真正的功能实现。 当前阶段的目标很明确：先用 PySide6 做出一个可以运行的聊天窗口。它不需要一开始就很华丽，也不需要马上接入 Live2D，但必须把后续扩展需要的基础结构搭好。 也就是说，这一篇的重点不是“画一个窗口”，而是做出一个可以继续生长的桌面聊天程序骨架。   1. 当前阶段目标AICompanion 的整体计划分成几个阶段：    阶段 目标    第一阶段 Python + PySide6 做聊天窗口   第二阶段 接入大模型，实现多轮聊天   第三阶段 SQLite 保存聊天记录和记忆   第四阶段 主动消息、角色设定、表情切换   第五阶段 加入 TTS 语音回复   第六阶段 尝试 Live2D   这篇文章对应第一阶段的核心内容：聊天窗口。 不过在实现窗口时，我没有把所有逻辑都写进一个文件里，而是提前拆成了几个层次：  ui：负责界面显示。 controllers：负责聊天流程。 llm：负责大模型接口。 storage：负责 SQLite 数据读写。 service...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">106</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">32</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%BF%99%E6%AC%A1%E6%96%B0%E5%A2%9E%E5%86%85%E5%AE%B9%E6%A6%82%E8%A7%88"><span class="toc-number">1.</span> <span class="toc-text">1. 这次新增内容概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%96%B0%E5%A2%9E-LLM-%E8%AF%8A%E6%96%AD%E5%91%BD%E4%BB%A4"><span class="toc-number">2.</span> <span class="toc-text">2. 新增 LLM 诊断命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%AF%8A%E6%96%AD%E5%B7%A5%E5%85%B7%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3. 诊断工具的执行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%B5%81%E5%BC%8F%E5%92%8C%E9%9D%9E%E6%B5%81%E5%BC%8F%E9%83%BD%E5%8F%AF%E4%BB%A5%E5%8D%95%E7%8B%AC%E6%B5%8B%E8%AF%95"><span class="toc-number">4.</span> <span class="toc-text">4. 流式和非流式都可以单独测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-API-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B8%85%E6%99%B0%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">5. API 错误处理进一步清晰化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%B5%81%E5%BC%8F%E5%93%8D%E5%BA%94%E8%A7%A3%E6%9E%90%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">6.</span> <span class="toc-text">6. 流式响应解析的处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E8%BF%99%E4%B8%80%E6%AD%A5%E5%92%8C%E6%83%85%E6%84%9F%E4%BA%A4%E4%BA%92%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="toc-number">7.</span> <span class="toc-text">7. 这一步和情感交互有什么关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E9%A1%B9%E7%9B%AE%E6%96%B9%E5%90%91%E9%87%8D%E6%96%B0%E6%A0%A1%E5%87%86"><span class="toc-number">8.</span> <span class="toc-text">8. 项目方向重新校准</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%BD%93%E5%89%8D%E5%B7%B2%E7%BB%8F%E6%8E%A8%E8%BF%9B%E5%88%B0%E4%BB%80%E4%B9%88%E7%A8%8B%E5%BA%A6"><span class="toc-number">9.</span> <span class="toc-text">9. 当前已经推进到什么程度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E4%B8%8B%E4%B8%80%E6%AD%A5%E8%AE%A1%E5%88%92"><span class="toc-number">10.</span> <span class="toc-text">10. 下一步计划</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/machine-learning-gbdt/" title="GBDT：从残差到梯度提升树的完整理解">GBDT：从残差到梯度提升树的完整理解</a><time datetime="2026-06-01T16:00:00.000Z" title="发表于 2026-06-02 00:00:00">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/" title="AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</a><time datetime="2026-05-29T12:30:00.000Z" title="发表于 2026-05-29 20:30:00">2026-05-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定">集成学习：让多个模型一起做决定</a><time datetime="2026-05-27T16:00:00.000Z" title="发表于 2026-05-28 00:00:00">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/aicompanion-devlog-03-current-features/" title="AICompanion 开发日志 03：当前版本功能总览">AICompanion 开发日志 03：当前版本功能总览</a><time datetime="2026-05-27T12:40:00.000Z" title="发表于 2026-05-27 20:40:00">2026-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/27/aicompanion-devlog-02-pyside6-chat-window/" title="AICompanion 开发日志 02：用 PySide6 搭建聊天窗口">AICompanion 开发日志 02：用 PySide6 搭建聊天窗口</a><time datetime="2026-05-27T12:10:00.000Z" title="发表于 2026-05-27 20:10:00">2026-05-27</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

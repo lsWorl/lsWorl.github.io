@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">GBDT 单棵树拟合残差示意图</title>
+  <desc id="desc">一棵回归树把样本分到不同叶子节点，每个叶子输出该区域的修正值。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#44546a"/>
+    </marker>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 17px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #526173; }
+      .node { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 2; rx: 8; }
+      .leaf { fill: #eaf7ef; stroke: #3f8f5f; stroke-width: 2; rx: 8; }
+      .line { stroke: #44546a; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .table { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+    </style>
+  </defs>
+  <rect width="900" height="430" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">GBDT 中的一棵树：不是直接预测 y，而是预测修正值</text>
+  <text class="txt small" x="36" y="72">每个叶子节点输出一个常数，用来修正当前模型的预测。</text>
+
+  <rect class="node" x="360" y="98" width="190" height="58"/>
+  <text class="txt" x="392" y="134">面积 ≤ 90 平？</text>
+  <path class="line" d="M400 160 C330 195, 300 220, 250 250"/>
+  <path class="line" d="M510 160 C580 195, 610 220, 660 250"/>
+
+  <rect class="node" x="160" y="250" width="190" height="58"/>
+  <text class="txt" x="184" y="286">房龄 ≤ 10 年？</text>
+  <rect class="leaf" x="54" y="342" width="170" height="52"/>
+  <text class="txt" x="78" y="375">叶子：-35 万</text>
+  <rect class="leaf" x="278" y="342" width="170" height="52"/>
+  <text class="txt" x="302" y="375">叶子：-10 万</text>
+  <path class="line" d="M220 312 L150 340"/>
+  <path class="line" d="M290 312 L350 340"/>
+
+  <rect class="leaf" x="588" y="250" width="190" height="58"/>
+  <text class="txt" x="612" y="286">叶子：+42 万</text>
+
+  <rect class="table" x="560" y="330" width="282" height="66"/>
+  <text class="txt small" x="584" y="356">最终更新：F_t(x)=F_{t-1}(x)+η×叶子值</text>
+  <text class="txt small" x="584" y="382">学习率 η 控制每次修正幅度</text>
+</svg>

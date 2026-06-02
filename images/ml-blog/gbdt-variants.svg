@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">GBDT 变体对比示意图</title>
+  <desc id="desc">XGBoost、LightGBM、CatBoost 都是梯度提升树家族中的常见工程增强版本。</desc>
+  <defs>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 17px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #526173; }
+      .base { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 2; rx: 8; }
+      .xgb { fill: #fff4df; stroke: #d18a1f; stroke-width: 2; rx: 8; }
+      .lgb { fill: #eaf7ef; stroke: #3f8f5f; stroke-width: 2; rx: 8; }
+      .cat { fill: #f0ecff; stroke: #7461c9; stroke-width: 2; rx: 8; }
+      .line { stroke: #44546a; stroke-width: 2.1; fill: none; }
+    </style>
+  </defs>
+  <rect width="900" height="430" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">GBDT 的常见变体：目标相同，工程优化不同</text>
+  <text class="txt small" x="36" y="72">它们都沿着损失下降方向加树，但在正则化、分裂策略、类别特征处理上各有增强。</text>
+
+  <rect class="base" x="330" y="112" width="240" height="72"/>
+  <text class="txt" x="390" y="144">GBDT</text>
+  <text class="txt small" x="366" y="168">负梯度 + 回归树 + 加法模型</text>
+
+  <line class="line" x1="450" y1="184" x2="180" y2="250"/>
+  <line class="line" x1="450" y1="184" x2="450" y2="250"/>
+  <line class="line" x1="450" y1="184" x2="720" y2="250"/>
+
+  <rect class="xgb" x="76" y="250" width="250" height="118"/>
+  <text class="txt" x="142" y="286">XGBoost</text>
+  <text class="txt small" x="104" y="318">二阶梯度、正则化、缺失值方向</text>
+  <text class="txt small" x="104" y="344">效果强，通用性好</text>
+
+  <rect class="lgb" x="325" y="250" width="250" height="118"/>
+  <text class="txt" x="392" y="286">LightGBM</text>
+  <text class="txt small" x="353" y="318">直方图、Leaf-wise、GOSS、EFB</text>
+  <text class="txt small" x="353" y="344">训练快，适合大数据</text>
+
+  <rect class="cat" x="574" y="250" width="250" height="118"/>
+  <text class="txt" x="642" y="286">CatBoost</text>
+  <text class="txt small" x="602" y="318">类别特征、Ordered Boosting</text>
+  <text class="txt small" x="602" y="344">对类别变量更友好</text>
+</svg>

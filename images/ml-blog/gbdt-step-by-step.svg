@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">GBDT 逐轮修正示意图</title>
+  <desc id="desc">GBDT 从初始预测开始，每一轮计算负梯度或残差，再训练一棵树修正当前预测。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#44546a"/>
+    </marker>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 17px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #526173; }
+      .box { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+      .pred { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 2; rx: 8; }
+      .res { fill: #ffecef; stroke: #c44d63; stroke-width: 2; rx: 8; }
+      .tree { fill: #fff4df; stroke: #d18a1f; stroke-width: 2; rx: 8; }
+      .final { fill: #eaf7ef; stroke: #3f8f5f; stroke-width: 2; rx: 8; }
+      .line { stroke: #44546a; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="900" height="430" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">GBDT：一轮一轮计算“还差多少”，再用新树补上</text>
+  <text class="txt small" x="36" y="72">平方误差下，“还差多少”就是残差；一般损失下，对应负梯度方向。</text>
+
+  <rect class="pred" x="42" y="162" width="128" height="82"/>
+  <text class="txt" x="70" y="195">初始预测</text>
+  <text class="txt small" x="78" y="222">F0(x)</text>
+  <path class="line" d="M180 203 L246 203"/>
+
+  <rect class="res" x="248" y="162" width="128" height="82"/>
+  <text class="txt" x="278" y="195">计算残差</text>
+  <text class="txt small" x="268" y="222">r = y - F0(x)</text>
+  <path class="line" d="M386 203 L452 203"/>
+
+  <rect class="tree" x="454" y="162" width="128" height="82"/>
+  <text class="txt" x="480" y="195">训练树 h1</text>
+  <text class="txt small" x="478" y="222">拟合残差 r</text>
+  <path class="line" d="M592 203 L658 203"/>
+
+  <rect class="final" x="660" y="162" width="154" height="82"/>
+  <text class="txt" x="688" y="195">更新预测</text>
+  <text class="txt small" x="682" y="222">F1 = F0 + ηh1</text>
+
+  <path class="line" d="M735 252 C735 320, 312 320, 312 254"/>
+  <text class="txt small" x="430" y="348">继续计算新的残差，再训练下一棵树</text>
+</svg>
