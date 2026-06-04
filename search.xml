@@ -158,9 +158,9 @@
             
             <tag> PySide6 </tag>
             
-            <tag> AI聊天 </tag>
-            
             <tag> SQLite </tag>
+            
+            <tag> AI聊天 </tag>
             
             <tag> 大模型 </tag>
             
@@ -288,11 +288,11 @@
             
             <tag> PySide6 </tag>
             
+            <tag> SQLite </tag>
+            
             <tag> 桌面应用 </tag>
             
             <tag> AI聊天 </tag>
-            
-            <tag> SQLite </tag>
             
         </tags>
       
@@ -1989,9 +1989,9 @@
       
         <tags>
             
-            <tag> nestjs </tag>
-            
             <tag> node.js </tag>
+            
+            <tag> nestjs </tag>
             
             <tag> typeorm </tag>
             
@@ -2018,9 +2018,9 @@
       
         <tags>
             
-            <tag> nestjs </tag>
-            
             <tag> node.js </tag>
+            
+            <tag> nestjs </tag>
             
         </tags>
       

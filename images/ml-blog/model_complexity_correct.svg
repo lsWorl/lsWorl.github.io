@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="712.868437pt" height="427.827975pt" viewBox="0 0 712.868437 427.827975" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-06-04T21:33:33.211046</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.8, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 427.827975 
+L 712.868437 427.827975 
+L 712.868437 0 
+L 0 0 
+z
+" style="fill: #f8f9fa"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.160938 397.3936 
+L 705.668438 397.3936 
+L 705.668438 37.2176 
+L 30.160938 37.2176 
+z
+" style="fill: #f8f9fa"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 60.865824 397.3936 
+L 227.968296 397.3936 
+L 227.968296 37.2176 
+L 60.865824 37.2176 
+z
+" clip-path="url(#p51e24ed7f9)" style="fill: #3b82f6; opacity: 0.05"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 227.968296 397.3936 
+L 442.9025 397.3936 
+L 442.9025 37.2176 
+L 227.968296 37.2176 
+z
+" clip-path="url(#p51e24ed7f9)" style="fill: #10b981; opacity: 0.08"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 442.9025 397.3936 
+L 674.963551 397.3936 
+L 674.963551 37.2176 
+L 442.9025 37.2176 
+z
+" clip-path="url(#p51e24ed7f9)" style="fill: #ef4444; opacity: 0.05"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="text_1">
+     <text style="font-weight: 700; font-size: 14px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; text-anchor: middle; fill: #1f2937" x="367.914688" y="418.877975" transform="rotate(-0 367.914688 418.877975)">模型复杂度 (Model Complexity)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="text_2">
+     <text style="font-weight: 700; font-size: 14px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; text-anchor: middle; fill: #1f2937" x="18.410938" y="217.3056" transform="rotate(-90 18.410938 217.3056)">误差 (Error)</text>
+    </g>
+   </g>
+   <g id="line2d_1">
+    <path d="M 60.865824 53.589236 
+L 67.03766 66.732004 
+L 73.209497 79.356898 
+L 79.381333 91.484326 
+L 85.55317 103.133888 
+L 91.725006 114.324415 
+L 97.896843 125.073994 
+L 104.068679 135.4 
+L 110.240516 145.319124 
+L 116.412352 154.847398 
+L 122.584188 164.000223 
+L 128.756025 172.792393 
+L 134.927861 181.238119 
+L 141.099698 189.351053 
+L 147.271534 197.144308 
+L 153.443371 204.630479 
+L 159.615207 211.821669 
+L 165.787044 218.729499 
+L 171.95888 225.365135 
+L 178.130717 231.739302 
+L 184.302553 237.862304 
+L 190.474389 243.744038 
+L 196.646226 249.39401 
+L 202.818062 254.821351 
+L 208.989899 260.034836 
+L 215.161735 265.042891 
+L 221.333572 269.853609 
+L 230.591326 276.716608 
+L 239.849081 283.177989 
+L 249.106836 289.261254 
+L 258.36459 294.988529 
+L 267.622345 300.380649 
+L 276.8801 305.457224 
+L 286.137854 310.236722 
+L 295.395609 314.736527 
+L 304.653364 318.973006 
+L 313.911119 322.961568 
+L 323.168873 326.716723 
+L 332.426628 330.252128 
+L 341.684383 333.580644 
+L 350.942137 336.714377 
+L 360.199892 339.664725 
+L 372.543565 343.331717 
+L 384.887238 346.715416 
+L 397.230911 349.837709 
+L 409.574584 352.71879 
+L 421.918256 355.377293 
+L 434.261929 357.830415 
+L 446.605602 360.094022 
+L 462.035193 362.679221 
+L 477.464785 365.01723 
+L 492.894376 367.131685 
+L 508.323967 369.043962 
+L 526.839476 371.098906 
+L 545.354986 372.92038 
+L 563.870495 374.534908 
+L 585.471923 376.188184 
+L 607.07335 377.624462 
+L 631.760696 379.036573 
+L 659.53396 380.376078 
+L 674.963551 381.021964 
+L 674.963551 381.021964 
+" clip-path="url(#p51e24ed7f9)" style="fill: none; stroke: #2563eb; stroke-width: 3.5; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 60.865824 58.105948 
+L 67.03766 71.368439 
+L 73.209497 84.071987 
+L 79.381333 96.235299 
+L 85.55317 107.876341 
+L 91.725006 119.012376 
+L 97.896843 129.659983 
+L 104.068679 139.835089 
+L 110.240516 149.552994 
+L 116.412352 158.828395 
+L 122.584188 167.675408 
+L 128.756025 176.107596 
+L 134.927861 184.137984 
+L 141.099698 191.779087 
+L 147.271534 199.042926 
+L 153.443371 205.941046 
+L 159.615207 212.484539 
+L 165.787044 218.684061 
+L 171.95888 224.549847 
+L 178.130717 230.091727 
+L 184.302553 235.319147 
+L 190.474389 240.241179 
+L 196.646226 244.866536 
+L 202.818062 249.203591 
+L 208.989899 253.260384 
+L 215.161735 257.044641 
+L 221.333572 260.56378 
+L 227.505408 263.824931 
+L 233.677245 266.83494 
+L 239.849081 269.600385 
+L 246.020918 272.127582 
+L 252.192754 274.422601 
+L 258.36459 276.491273 
+L 264.536427 278.339196 
+L 270.708263 279.971751 
+L 276.8801 281.394106 
+L 283.051936 282.611223 
+L 289.223773 283.627871 
+L 295.395609 284.448631 
+L 301.567446 285.077903 
+L 307.739282 285.519913 
+L 313.911119 285.778721 
+L 320.082955 285.858227 
+L 326.254791 285.762178 
+L 332.426628 285.494172 
+L 338.598464 285.057667 
+L 344.770301 284.455982 
+L 350.942137 283.692308 
+L 357.113974 282.769709 
+L 363.28581 281.691128 
+L 369.457647 280.459393 
+L 378.715401 278.330539 
+L 387.973156 275.871893 
+L 397.230911 273.091666 
+L 406.488665 269.997585 
+L 415.74642 266.596928 
+L 425.004175 262.896545 
+L 434.261929 258.902887 
+L 443.519684 254.622025 
+L 452.777439 250.059677 
+L 462.035193 245.221225 
+L 471.292948 240.111737 
+L 480.550703 234.735985 
+L 489.808457 229.098458 
+L 499.066212 223.203388 
+L 508.323967 217.054754 
+L 517.581722 210.656306 
+L 526.839476 204.011573 
+L 536.097231 197.123877 
+L 545.354986 189.996346 
+L 554.61274 182.631926 
+L 563.870495 175.033389 
+L 573.12825 167.203346 
+L 582.386004 159.144255 
+L 591.643759 150.858429 
+L 603.987432 139.46171 
+L 616.331105 127.67058 
+L 628.674778 115.489482 
+L 641.018451 102.922516 
+L 653.362124 89.973464 
+L 665.705796 76.645817 
+L 674.963551 66.403576 
+L 674.963551 66.403576 
+" clip-path="url(#p51e24ed7f9)" style="fill: none; stroke: #dc2626; stroke-width: 3.5; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 320.082955 397.3936 
+L 320.082955 37.2176 
+" clip-path="url(#p51e24ed7f9)" style="fill: none; stroke-dasharray: 5.55,2.4; stroke-dashoffset: 0; stroke: #4b5563; stroke-opacity: 0.8; stroke-width: 1.5"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 30.160938 397.3936 
+L 30.160938 37.2176 
+" style="fill: none; stroke: #6b7280; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 30.160937 397.3936 
+L 705.668438 397.3936 
+" style="fill: none; stroke: #6b7280; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; fill: #4b5563" transform="translate(133.480483 25.879163)">欠拟合</text>
+    <text style="font-weight: 700; font-size: 13px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; fill: #4b5563" transform="translate(107.480483 39.691663)">(Underfitting)</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; fill: #059669" transform="translate(294.082955 25.879163)">泛化最佳</text>
+    <text style="font-weight: 700; font-size: 13px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; fill: #059669" transform="translate(281.082955 39.691663)">(Sweet Spot)</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; fill: #b91c1c" transform="translate(563.348892 25.879163)">过拟合</text>
+    <text style="font-weight: 700; font-size: 13px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; fill: #b91c1c" transform="translate(540.598892 39.691663)">(Overfitting)</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 11px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; text-anchor: start; fill: #4b5563" x="332.36491" y="299.755801" transform="rotate(-0 332.36491 299.755801)">早停点 (Early Stopping)</text>
+   </g>
+   <g id="PathCollection_1">
+    <defs>
+     <path id="m1b92492f13" d="M 0 5 
+C 1.326016 5 2.597899 4.473168 3.535534 3.535534 
+C 4.473168 2.597899 5 1.326016 5 0 
+C 5 -1.326016 4.473168 -2.597899 3.535534 -3.535534 
+C 2.597899 -4.473168 1.326016 -5 0 -5 
+C -1.326016 -5 -2.597899 -4.473168 -3.535534 -3.535534 
+C -4.473168 -2.597899 -5 -1.326016 -5 0 
+C -5 1.326016 -4.473168 2.597899 -3.535534 3.535534 
+C -2.597899 4.473168 -1.326016 5 0 5 
+z
+" style="stroke: #ffffff; stroke-width: 2"/>
+    </defs>
+    <g clip-path="url(#p51e24ed7f9)">
+     <use xlink:href="#m1b92492f13" x="320.082955" y="285.858227" style="fill: #dc2626; stroke: #ffffff; stroke-width: 2"/>
+    </g>
+   </g>
+   <g id="legend_1">
+    <g id="line2d_4">
+     <path d="M 166.314688 17.64375 
+L 178.314688 17.64375 
+L 190.314688 17.64375 
+" style="fill: none; stroke: #2563eb; stroke-width: 3.5; stroke-linecap: square"/>
+    </g>
+    <g id="text_7">
+     <text style="font-size: 12px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; text-anchor: start" x="199.914688" y="21.84375" transform="rotate(-0 199.914688 21.84375)">训练误差 (Training Error)</text>
+    </g>
+    <g id="line2d_5">
+     <path d="M 373.914688 17.64375 
+L 385.914688 17.64375 
+L 397.914688 17.64375 
+" style="fill: none; stroke: #dc2626; stroke-width: 3.5; stroke-linecap: square"/>
+    </g>
+    <g id="text_8">
+     <text style="font-size: 12px; font-family: 'SimHei', 'Microsoft YaHei', 'Arial Unicode MS', sans-serif; text-anchor: start" x="407.514688" y="21.84375" transform="rotate(-0 407.514688 21.84375)">验证误差 (Validation Error)</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p51e24ed7f9">
+   <rect x="30.160938" y="37.2176" width="675.5075" height="360.176"/>
+  </clipPath>
+ </defs>
+</svg>

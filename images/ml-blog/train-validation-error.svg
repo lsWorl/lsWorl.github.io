@@ -1,37 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
-  <title id="title">训练误差与验证误差曲线</title>
-  <desc id="desc">随着模型复杂度增加，训练误差下降，而验证误差先下降后上升。</desc>
-  <defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="460" viewBox="0 0 920 460" role="img" aria-labelledby="title desc">
+    <title id="title">机器学习过拟合与欠拟合误差曲线</title>
+    <desc id="desc">展示模型复杂度与训练误差、验证误差之间关系的经典U型曲线图。</desc>
+
     <style>
-      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 16px; }
-      .title { font-size: 22px; font-weight: 700; }
-      .small { font-size: 13px; fill: #526173; }
-      .axis { stroke: #8090a3; stroke-width: 2; }
-      .train { stroke: #3f79b7; stroke-width: 4; fill: none; }
-      .valid { stroke: #c44d63; stroke-width: 4; fill: none; }
-      .dash { stroke: #526173; stroke-width: 2; stroke-dasharray: 6 6; }
-      .band { fill: #eaf7ef; opacity: .75; }
+        text {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .title-text { font-size: 18px; font-weight: bold; }
+        .sub-text { font-size: 14px; fill: #6B7280; }
+        .axis-label { font-size: 16px; font-weight: bold; fill: #1F2937; }
+        .curve-label { font-size: 16px; font-weight: bold; }
     </style>
-  </defs>
-  <rect width="920" height="420" fill="#f7fafc"/>
-  <text class="txt title" x="36" y="42">判断过拟合：不要只看训练误差</text>
-  <text class="txt small" x="36" y="68">模型复杂度增加时，训练误差常常继续下降，但验证误差可能开始上升。</text>
 
-  <line class="axis" x1="100" y1="340" x2="820" y2="340"/>
-  <line class="axis" x1="100" y1="340" x2="100" y2="100"/>
-  <text class="txt small" x="782" y="370">模型复杂度</text>
-  <text class="txt small" x="62" y="108">误差</text>
+    <rect width="100%" height="100%" fill="#F8F9FA"/>
 
-  <rect class="band" x="368" y="104" width="150" height="236"/>
-  <text class="txt small" x="388" y="120">较合适区域</text>
+    <rect x="80" y="80" width="270" height="300" fill="#EFF6FF"/>
+    <rect x="350" y="80" width="200" height="300" fill="#ECFDF5"/>
+    <rect x="550" y="80" width="330" height="300" fill="#FEF2F2"/>
 
-  <path class="train" d="M120 306 C210 260, 300 220, 420 180 C540 144, 670 122, 800 110"/>
-  <path class="valid" d="M120 310 C220 240, 320 172, 430 150 C540 158, 650 216, 800 300"/>
-  <line class="dash" x1="430" y1="340" x2="430" y2="150"/>
+    <g text-anchor="middle">
+        <text x="215" y="45" class="title-text" fill="#3B82F6">欠拟合</text>
+        <text x="215" y="65" class="sub-text">(Underfitting)</text>
+        
+        <text x="450" y="45" class="title-text" fill="#10B981">泛化最佳</text>
+        <text x="450" y="65" class="sub-text">(Sweet Spot)</text>
+        
+        <text x="715" y="45" class="title-text" fill="#EF4444">过拟合</text>
+        <text x="715" y="65" class="sub-text">(Overfitting)</text>
+    </g>
 
-  <text class="txt" x="650" y="124" fill="#3f79b7">训练误差</text>
-  <text class="txt" x="650" y="286" fill="#c44d63">验证误差</text>
-  <text class="txt small" x="126" y="386">欠拟合</text>
-  <text class="txt small" x="426" y="386">泛化较好</text>
-  <text class="txt small" x="732" y="386">过拟合</text>
+    <line x1="450" y1="80" x2="450" y2="380" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6,6"/>
+
+    <path d="M 80 380 L 880 380 M 870 375 L 880 380 L 870 385" stroke="#6B7280" stroke-width="2" fill="none"/>
+    <path d="M 80 380 L 80 80 M 75 90 L 80 80 L 85 90" stroke="#6B7280" stroke-width="2" fill="none"/>
+
+    <text x="480" y="425" class="axis-label" text-anchor="middle">模型复杂度 (Model Complexity)</text>
+    <text x="40" y="230" class="axis-label" text-anchor="middle" transform="rotate(-90, 40, 230)">误差 (Error)</text>
+
+    <path d="M 80 120 Q 200 360, 880 370" stroke="#3B82F6" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <path d="M 80 100 Q 450 480, 880 80" stroke="#EF4444" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <circle cx="450" cy="285" r="7" fill="#EF4444" stroke="#FFFFFF" stroke-width="2"/>
+    <text x="465" y="280" fill="#4B5563" font-size="13" font-weight="bold">早停点 (Early Stopping)</text>
+
+    <text x="750" y="355" class="curve-label" fill="#3B82F6">训练误差</text>
+    <text x="750" y="125" class="curve-label" fill="#EF4444">验证误差</text>
+
 </svg>
