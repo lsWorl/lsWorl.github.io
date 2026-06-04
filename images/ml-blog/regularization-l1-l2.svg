@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">L1 与 L2 正则化约束直觉</title>
+  <desc id="desc">L1 约束呈菱形，更容易让参数变成 0；L2 约束呈圆形，会让参数整体变小。</desc>
+  <defs>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 16px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 13px; fill: #526173; }
+      .panel { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+      .axis { stroke: #8090a3; stroke-width: 1.8; }
+      .contour { stroke: #d18a1f; stroke-width: 2; fill: none; opacity: .75; }
+      .constraint { stroke: #3f79b7; stroke-width: 3; fill: #e8f4ff; fill-opacity: .45; }
+      .point { fill: #c44d63; }
+    </style>
+  </defs>
+  <rect width="920" height="420" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="42">L1 与 L2：都是限制参数，但方式不同</text>
+  <text class="txt small" x="36" y="68">可以把正则化理解成：既要损失小，也要参数别太大、模型别太复杂。</text>
+
+  <rect class="panel" x="80" y="104" width="340" height="286"/>
+  <text class="txt" x="208" y="136">L1 正则</text>
+  <line class="axis" x1="250" y1="344" x2="250" y2="164"/>
+  <line class="axis" x1="150" y1="254" x2="350" y2="254"/>
+  <polygon class="constraint" points="250,164 350,254 250,344 150,254"/>
+  <ellipse class="contour" cx="300" cy="205" rx="80" ry="38" transform="rotate(-35 300 205)"/>
+  <ellipse class="contour" cx="300" cy="205" rx="118" ry="58" transform="rotate(-35 300 205)"/>
+  <circle class="point" cx="250" cy="164" r="6"/>
+  <text class="txt small" x="142" y="370">菱形有尖角，容易碰到坐标轴，让某些参数为 0</text>
+
+  <rect class="panel" x="500" y="104" width="340" height="286"/>
+  <text class="txt" x="628" y="136">L2 正则</text>
+  <line class="axis" x1="670" y1="344" x2="670" y2="164"/>
+  <line class="axis" x1="570" y1="254" x2="770" y2="254"/>
+  <circle class="constraint" cx="670" cy="254" r="92"/>
+  <ellipse class="contour" cx="720" cy="205" rx="80" ry="38" transform="rotate(-35 720 205)"/>
+  <ellipse class="contour" cx="720" cy="205" rx="118" ry="58" transform="rotate(-35 720 205)"/>
+  <circle class="point" cx="700" cy="170" r="6"/>
+  <text class="txt small" x="542" y="370">圆形更平滑，通常让参数变小，但不一定变成 0</text>
+</svg>

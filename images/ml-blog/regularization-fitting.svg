@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">欠拟合、合适拟合与过拟合</title>
+  <desc id="desc">三幅小图对比模型复杂度过低、合适和过高时的拟合效果。</desc>
+  <defs>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 16px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 13px; fill: #526173; }
+      .panel { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+      .axis { stroke: #8090a3; stroke-width: 1.8; }
+      .point { fill: #3f79b7; }
+      .line { stroke: #d18a1f; stroke-width: 3; fill: none; }
+      .wiggle { stroke: #c44d63; stroke-width: 3; fill: none; }
+      .good { stroke: #3f8f5f; stroke-width: 3; fill: none; }
+    </style>
+  </defs>
+  <rect width="920" height="420" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="42">模型复杂度不同，泛化能力也不同</text>
+  <text class="txt small" x="36" y="68">正则化的目标不是让训练集误差最低，而是让模型在新数据上表现更稳定。</text>
+
+  <rect class="panel" x="42" y="104" width="260" height="284"/>
+  <text class="txt" x="122" y="136">欠拟合</text>
+  <line class="axis" x1="76" y1="340" x2="264" y2="340"/>
+  <line class="axis" x1="76" y1="340" x2="76" y2="164"/>
+  <circle class="point" cx="92" cy="305" r="5"/><circle class="point" cx="120" cy="286" r="5"/>
+  <circle class="point" cx="148" cy="252" r="5"/><circle class="point" cx="176" cy="216" r="5"/>
+  <circle class="point" cx="204" cy="184" r="5"/><circle class="point" cx="232" cy="171" r="5"/>
+  <path class="line" d="M86 300 L246 192"/>
+  <text class="txt small" x="86" y="368">模型太简单，规律没学够</text>
+
+  <rect class="panel" x="330" y="104" width="260" height="284"/>
+  <text class="txt" x="424" y="136">合适拟合</text>
+  <line class="axis" x1="364" y1="340" x2="552" y2="340"/>
+  <line class="axis" x1="364" y1="340" x2="364" y2="164"/>
+  <circle class="point" cx="380" cy="305" r="5"/><circle class="point" cx="408" cy="286" r="5"/>
+  <circle class="point" cx="436" cy="252" r="5"/><circle class="point" cx="464" cy="216" r="5"/>
+  <circle class="point" cx="492" cy="184" r="5"/><circle class="point" cx="520" cy="171" r="5"/>
+  <path class="good" d="M374 312 C410 292, 430 246, 458 222 C486 196, 506 180, 534 172"/>
+  <text class="txt small" x="374" y="368">既能学习趋势，又不过分记忆噪声</text>
+
+  <rect class="panel" x="618" y="104" width="260" height="284"/>
+  <text class="txt" x="714" y="136">过拟合</text>
+  <line class="axis" x1="652" y1="340" x2="840" y2="340"/>
+  <line class="axis" x1="652" y1="340" x2="652" y2="164"/>
+  <circle class="point" cx="668" cy="305" r="5"/><circle class="point" cx="696" cy="286" r="5"/>
+  <circle class="point" cx="724" cy="252" r="5"/><circle class="point" cx="752" cy="216" r="5"/>
+  <circle class="point" cx="780" cy="184" r="5"/><circle class="point" cx="808" cy="171" r="5"/>
+  <path class="wiggle" d="M662 306 C682 250, 690 330, 704 286 C718 240, 724 252, 736 246 C750 238, 742 198, 756 216 C770 236, 764 160, 782 184 C798 208, 792 172, 826 170"/>
+  <text class="txt small" x="662" y="368">训练集很好，新数据可能很差</text>
+</svg>
