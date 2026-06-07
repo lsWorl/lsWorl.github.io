@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">文本向量化方法对比</title>
+  <desc id="desc">One-hot、词袋、TF-IDF 和词向量的表示方式对比。</desc>
+  <defs>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 16px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 13px; fill: #526173; }
+      .panel { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+      .cell { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 1.5; }
+      .hot { fill: #d18a1f; }
+      .dense { fill: #3f8f5f; }
+    </style>
+  </defs>
+  <rect width="920" height="420" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">文本向量化：同一句话可以有不同数字表示</text>
+  <text class="txt small" x="36" y="72">传统 NLP 常用稀疏向量，深度学习更常用稠密 embedding。</text>
+
+  <rect class="panel" x="50" y="110" width="190" height="250"/>
+  <text class="txt" x="108" y="142">One-hot</text>
+  <rect class="cell" x="92" y="174" width="28" height="28"/><rect class="cell" x="124" y="174" width="28" height="28"/><rect class="cell hot" x="156" y="174" width="28" height="28"/>
+  <rect class="cell" x="92" y="206" width="28" height="28"/><rect class="cell" x="124" y="206" width="28" height="28"/><rect class="cell" x="156" y="206" width="28" height="28"/>
+  <text class="txt small" x="72" y="282">每个词一个超长向量</text>
+  <text class="txt small" x="72" y="308">只有一个位置为 1</text>
+
+  <rect class="panel" x="270" y="110" width="190" height="250"/>
+  <text class="txt" x="334" y="142">词袋</text>
+  <text class="txt small" x="302" y="190">[2, 1, 0, 1, 0]</text>
+  <text class="txt small" x="292" y="282">统计词出现次数</text>
+  <text class="txt small" x="292" y="308">不关心词序</text>
+
+  <rect class="panel" x="490" y="110" width="190" height="250"/>
+  <text class="txt" x="546" y="142">TF-IDF</text>
+  <text class="txt small" x="518" y="190">[0.8, 0.2, 0, 1.5]</text>
+  <text class="txt small" x="512" y="282">常见词降权</text>
+  <text class="txt small" x="512" y="308">关键词升权</text>
+
+  <rect class="panel" x="710" y="110" width="160" height="250"/>
+  <text class="txt" x="758" y="142">词向量</text>
+  <rect class="dense" x="748" y="174" width="26" height="88"/><rect class="dense" x="780" y="154" width="26" height="108"/><rect class="dense" x="812" y="198" width="26" height="64"/>
+  <text class="txt small" x="728" y="282">低维稠密向量</text>
+  <text class="txt small" x="728" y="308">保留语义相似性</text>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">文本处理流程</title>
+  <desc id="desc">从原始文本到清洗、分词、词表、编号、向量和模型输入的流程。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#44546a"/>
+    </marker>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 16px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 13px; fill: #526173; }
+      .box { fill: #fff; stroke: #d7dee8; stroke-width: 2; rx: 8; }
+      .a { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 2; rx: 8; }
+      .b { fill: #fff4df; stroke: #d18a1f; stroke-width: 2; rx: 8; }
+      .c { fill: #eaf7ef; stroke: #3f8f5f; stroke-width: 2; rx: 8; }
+      .d { fill: #f0ecff; stroke: #7461c9; stroke-width: 2; rx: 8; }
+      .line { stroke: #44546a; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="920" height="420" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">文本处理：把自然语言变成模型能计算的数字</text>
+  <text class="txt small" x="36" y="72">Transformer 之前，最重要的是理解 token、词表、编号、向量和 mask。</text>
+
+  <rect class="a" x="42" y="150" width="120" height="82"/>
+  <text class="txt" x="70" y="184">原始文本</text>
+  <text class="txt small" x="58" y="210">“我喜欢NLP”</text>
+  <path class="line" d="M170 191 L228 191"/>
+
+  <rect class="b" x="230" y="150" width="120" height="82"/>
+  <text class="txt" x="260" y="184">清洗规范化</text>
+  <text class="txt small" x="250" y="210">大小写/空格</text>
+  <path class="line" d="M358 191 L416 191"/>
+
+  <rect class="c" x="418" y="150" width="120" height="82"/>
+  <text class="txt" x="454" y="184">分词</text>
+  <text class="txt small" x="438" y="210">tokens</text>
+  <path class="line" d="M546 191 L604 191"/>
+
+  <rect class="d" x="606" y="150" width="120" height="82"/>
+  <text class="txt" x="638" y="184">词表编号</text>
+  <text class="txt small" x="630" y="210">token ids</text>
+  <path class="line" d="M734 191 L792 191"/>
+
+  <rect class="a" x="794" y="150" width="84" height="82"/>
+  <text class="txt" x="810" y="184">向量</text>
+  <text class="txt small" x="806" y="210">embedding</text>
+
+  <rect class="box" x="190" y="286" width="540" height="66"/>
+  <text class="txt small" x="214" y="314">传统机器学习常用：词袋、TF-IDF、n-gram</text>
+  <text class="txt small" x="214" y="338">深度学习常用：token id、embedding、padding、attention mask</text>
+</svg>

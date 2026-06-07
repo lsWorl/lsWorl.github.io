@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Padding 与 Attention Mask</title>
+  <desc id="desc">不同长度句子通过 padding 补齐，并用 attention mask 标记真实 token 和填充 token。</desc>
+  <defs>
+    <style>
+      .txt { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #243447; font-size: 16px; }
+      .title { font-size: 22px; font-weight: 700; }
+      .small { font-size: 13px; fill: #526173; }
+      .token { fill: #e8f4ff; stroke: #3f79b7; stroke-width: 2; rx: 6; }
+      .pad { fill: #f1f3f6; stroke: #aab4c0; stroke-width: 2; rx: 6; }
+      .mask { fill: #eaf7ef; stroke: #3f8f5f; stroke-width: 2; rx: 6; }
+      .zero { fill: #ffecef; stroke: #c44d63; stroke-width: 2; rx: 6; }
+    </style>
+  </defs>
+  <rect width="920" height="420" fill="#f7fafc"/>
+  <text class="txt title" x="36" y="44">Padding 与 Attention Mask：批量训练必须处理长度差异</text>
+  <text class="txt small" x="36" y="72">真实 token 用 1 标记，补齐用的 [PAD] 用 0 标记，模型计算注意力时会忽略 padding。</text>
+
+  <text class="txt" x="68" y="132">句子 A</text>
+  <rect class="token" x="150" y="108" width="86" height="44"/><text class="txt small" x="178" y="135">我</text>
+  <rect class="token" x="244" y="108" width="86" height="44"/><text class="txt small" x="266" y="135">喜欢</text>
+  <rect class="token" x="338" y="108" width="86" height="44"/><text class="txt small" x="365" y="135">NLP</text>
+  <rect class="pad" x="432" y="108" width="86" height="44"/><text class="txt small" x="456" y="135">[PAD]</text>
+  <rect class="pad" x="526" y="108" width="86" height="44"/><text class="txt small" x="550" y="135">[PAD]</text>
+
+  <text class="txt" x="68" y="206">mask A</text>
+  <rect class="mask" x="150" y="182" width="86" height="44"/><text class="txt small" x="188" y="209">1</text>
+  <rect class="mask" x="244" y="182" width="86" height="44"/><text class="txt small" x="282" y="209">1</text>
+  <rect class="mask" x="338" y="182" width="86" height="44"/><text class="txt small" x="376" y="209">1</text>
+  <rect class="zero" x="432" y="182" width="86" height="44"/><text class="txt small" x="470" y="209">0</text>
+  <rect class="zero" x="526" y="182" width="86" height="44"/><text class="txt small" x="564" y="209">0</text>
+
+  <text class="txt" x="68" y="292">句子 B</text>
+  <rect class="token" x="150" y="268" width="86" height="44"/><text class="txt small" x="174" y="295">今天</text>
+  <rect class="token" x="244" y="268" width="86" height="44"/><text class="txt small" x="266" y="295">学习</text>
+  <rect class="token" x="338" y="268" width="86" height="44"/><text class="txt small" x="365" y="295">文本</text>
+  <rect class="token" x="432" y="268" width="86" height="44"/><text class="txt small" x="456" y="295">处理</text>
+  <rect class="token" x="526" y="268" width="86" height="44"/><text class="txt small" x="554" y="295">。</text>
+
+  <text class="txt" x="68" y="366">mask B</text>
+  <rect class="mask" x="150" y="342" width="86" height="44"/><text class="txt small" x="188" y="369">1</text>
+  <rect class="mask" x="244" y="342" width="86" height="44"/><text class="txt small" x="282" y="369">1</text>
+  <rect class="mask" x="338" y="342" width="86" height="44"/><text class="txt small" x="376" y="369">1</text>
+  <rect class="mask" x="432" y="342" width="86" height="44"/><text class="txt small" x="470" y="369">1</text>
+  <rect class="mask" x="526" y="342" width="86" height="44"/><text class="txt small" x="564" y="369">1</text>
+</svg>

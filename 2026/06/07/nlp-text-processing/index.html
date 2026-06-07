@@ -1,0 +1,799 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>文本处理：让自然语言变成模型能理解的数字 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从文本清洗、分词、词表、One-hot、词袋、TF-IDF、词向量、子词切分、padding 和 attention mask 几个角度理解 NLP 中文本如何变成模型输入。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文本处理：让自然语言变成模型能理解的数字">
+<meta property="og:url" content="https://lsworl.github.io/2026/06/07/nlp-text-processing/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="从文本清洗、分词、词表、One-hot、词袋、TF-IDF、词向量、子词切分、padding 和 attention mask 几个角度理解 NLP 中文本如何变成模型输入。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-06-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-07T15:14:26.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="自然语言处理">
+<meta property="article:tag" content="文本处理">
+<meta property="article:tag" content="分词">
+<meta property="article:tag" content="Transformer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "文本处理：让自然语言变成模型能理解的数字",
+  "url": "https://lsworl.github.io/2026/06/07/nlp-text-processing/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-06-06T16:00:00.000Z",
+  "dateModified": "2026-06-07T15:14:26.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/06/07/nlp-text-processing/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '文本处理：让自然语言变成模型能理解的数字',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">108</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">92</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">33</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">文本处理：让自然语言变成模型能理解的数字</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">文本处理：让自然语言变成模型能理解的数字</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-06T16:00:00.000Z" title="发表于 2026-06-07 00:00:00">2026-06-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-07T15:14:26.000Z" title="更新于 2026-06-07 23:14:26">2026-06-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>学习 Transformer 之前，有一个非常重要的前置问题：</p>
+<blockquote>
+<p>机器学习模型只能处理数字，那自然语言文本应该怎样变成数字？</p>
+</blockquote>
+<p>比如一句话：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我喜欢自然语言处理</code></pre>
+
+<p>人可以直接理解它的意思，但模型不能直接处理汉字、单词和标点。我们需要先把文本拆成一个个 token，再把 token 映射成编号或向量，最后才能送进模型。</p>
+<p>这篇文章就来系统梳理 NLP 中最基础的文本处理流程。</p>
+<span id="more"></span>
+
+<p><img src="https://lsworl.github.io/images/nlp-blog/text-processing-pipeline.svg" alt="文本处理流程"></p>
+<h2 id="1-文本处理在-NLP-中的位置"><a href="#1-文本处理在-NLP-中的位置" class="headerlink" title="1. 文本处理在 NLP 中的位置"></a>1. 文本处理在 NLP 中的位置</h2><p>在前面的机器学习文章中，我们处理的大多是结构化数据，例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">学习时长、睡眠时长、房屋面积、历史成绩</code></pre>
+
+<p>这些特征天然就是数字，或者很容易转成数字。</p>
+<p>但 NLP 处理的是文本，例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">这部电影很好看
+这个商品质量一般
+今天天气不错</code></pre>
+
+<p>模型不能直接理解这些句子，所以需要一个转换流程：</p>
+<pre class="language-text" data-language="text"><code class="language-text">原始文本
+  -> 清洗与规范化
+  -> 分词 / tokenization
+  -> 构建词表
+  -> token 转 id
+  -> id 转向量
+  -> 输入模型</code></pre>
+
+<p>传统机器学习中，文本常被转成词袋、TF-IDF 这样的稀疏向量；深度学习和 Transformer 中，文本通常先转成 token id，再通过 embedding 层变成稠密向量。</p>
+<h2 id="2-文本清洗与规范化"><a href="#2-文本清洗与规范化" class="headerlink" title="2. 文本清洗与规范化"></a>2. 文本清洗与规范化</h2><p>文本数据通常比较脏。比如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">“这个手机太好用了！！！  http://xxx.com”
+“This Movie is GREAT!!!”
+“我    喜欢    NLP”</code></pre>
+
+<p>常见清洗操作包括：</p>
+<ul>
+<li>去掉多余空格。</li>
+<li>统一大小写。</li>
+<li>去掉或保留标点符号。</li>
+<li>去掉 HTML 标签。</li>
+<li>去掉 URL、邮箱、手机号等特殊内容。</li>
+<li>中文繁简转换。</li>
+<li>表情、emoji、特殊符号处理。</li>
+</ul>
+<p>是否清洗，要看任务。</p>
+<p>例如情感分析中，感叹号和 emoji 可能很重要：</p>
+<pre class="language-text" data-language="text"><code class="language-text">太好吃了！！！
+太好吃了🙂
+太好吃了😡</code></pre>
+
+<p>这些符号可能影响情绪判断，不能随便删除。</p>
+<p>而在主题分类中，URL、HTML 标签通常没什么帮助，可以先清理。</p>
+<p>所以文本清洗没有固定标准，核心原则是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">保留对任务有用的信息，去掉会干扰模型的噪声。</code></pre>
+
+<h2 id="3-什么是分词"><a href="#3-什么是分词" class="headerlink" title="3. 什么是分词"></a>3. 什么是分词</h2><p>分词（Tokenization）就是把一段文本切成更小的单位。</p>
+<p>这些单位叫 token。</p>
+<p>英文中，最简单的分词可以按空格切：</p>
+<pre class="language-text" data-language="text"><code class="language-text">I love natural language processing</code></pre>
+
+<p>切分后：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["I", "love", "natural", "language", "processing"]</code></pre>
+
+<p>中文更麻烦，因为中文词之间没有天然空格。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我喜欢自然语言处理</code></pre>
+
+<p>可以按字切：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["我", "喜", "欢", "自", "然", "语", "言", "处", "理"]</code></pre>
+
+<p>也可以按词切：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["我", "喜欢", "自然语言处理"]</code></pre>
+
+<p>切分方式不同，模型看到的信息粒度就不同。</p>
+<h2 id="4-中文分词为什么困难"><a href="#4-中文分词为什么困难" class="headerlink" title="4. 中文分词为什么困难"></a>4. 中文分词为什么困难</h2><p>中文分词难在边界不明显。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">南京市长江大桥</code></pre>
+
+<p>可能被切成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["南京市", "长江大桥"]</code></pre>
+
+<p>也可能被误切成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["南京", "市长", "江大桥"]</code></pre>
+
+<p>同一串字，不同切法含义完全不同。</p>
+<p>再比如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">研究生命起源</code></pre>
+
+<p>可以理解为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">研究 / 生命 / 起源</code></pre>
+
+<p>也可以在某些语境下理解为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">研究生 / 命 / 起源</code></pre>
+
+<p>虽然第二种很奇怪，但它说明中文分词需要结合上下文。</p>
+<p>传统中文分词会使用词典、统计模型或机器学习模型；深度学习时代，很多 Transformer 模型使用字粒度或子词粒度，减少对传统中文分词的依赖。</p>
+<h2 id="5-词表：给每个-token-一个编号"><a href="#5-词表：给每个-token-一个编号" class="headerlink" title="5. 词表：给每个 token 一个编号"></a>5. 词表：给每个 token 一个编号</h2><p>分词以后，我们得到的是 token 列表。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["我", "喜欢", "NLP"]</code></pre>
+
+<p>接下来需要构建词表（Vocabulary）：</p>
+<table>
+<thead>
+<tr>
+<th>token</th>
+<th align="right">id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[PAD]</code></td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td><code>[UNK]</code></td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>我</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>喜欢</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td>NLP</td>
+<td align="right">4</td>
+</tr>
+<tr>
+<td>学习</td>
+<td align="right">5</td>
+</tr>
+</tbody></table>
+<p>于是句子：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 NLP</code></pre>
+
+<p>可以转换为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[2, 3, 4]</code></pre>
+
+<p>这里 <code>[UNK]</code> 表示未知词。如果遇到词表里没有的 token，就用 <code>[UNK]</code> 代替。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 Transformer</code></pre>
+
+<p>如果词表里没有 <code>Transformer</code>，就会变成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[2, 3, 1]</code></pre>
+
+<p>这也是早期词级分词的一个问题：词表不可能包含所有新词、错别字、人名、专业术语。</p>
+<h2 id="6-One-hot-编码"><a href="#6-One-hot-编码" class="headerlink" title="6. One-hot 编码"></a>6. One-hot 编码</h2><p>最简单的 token 表示方式是 One-hot。</p>
+<p>假设词表有 5 个 token：</p>
+<table>
+<thead>
+<tr>
+<th>token</th>
+<th align="right">id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>我</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>喜欢</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>NLP</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>学习</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td>文本</td>
+<td align="right">4</td>
+</tr>
+</tbody></table>
+<p>那么 <code>NLP</code> 的 One-hot 向量为：</p>
+<p>$$<br>[0,0,1,0,0]<br>$$</p>
+<p><code>喜欢</code> 的 One-hot 向量为：</p>
+<p>$$<br>[0,1,0,0,0]<br>$$</p>
+<p>One-hot 的特点是：</p>
+<ul>
+<li>向量长度等于词表大小。</li>
+<li>每个词只有一个位置是 1。</li>
+<li>不同词之间看起来完全独立。</li>
+</ul>
+<p>问题是：One-hot 没有语义相似性。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">喜欢
+热爱
+讨厌</code></pre>
+
+<p>从语义上看，“喜欢”和“热爱”更接近，但 One-hot 无法体现这种关系。</p>
+<h2 id="7-词袋模型"><a href="#7-词袋模型" class="headerlink" title="7. 词袋模型"></a>7. 词袋模型</h2><p>词袋模型（Bag of Words）不关心词序，只统计词出现次数。</p>
+<p>假设词表为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">["我", "喜欢", "学习", "NLP"]</code></pre>
+
+<p>句子：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 学习 NLP</code></pre>
+
+<p>可以表示为：</p>
+<p>$$<br>[1,1,1,1]<br>$$</p>
+<p>句子：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 喜欢 NLP</code></pre>
+
+<p>可以表示为：</p>
+<p>$$<br>[1,2,0,1]<br>$$</p>
+<p>词袋模型的优点是简单，适合和传统机器学习模型结合，例如逻辑回归、朴素贝叶斯、SVM。</p>
+<p>缺点也明显：它丢失了词序。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 你
+你 喜欢 我</code></pre>
+
+<p>词袋表示完全一样，但语义并不完全相同。</p>
+<p><img src="https://lsworl.github.io/images/nlp-blog/vectorization-methods.svg" alt="文本向量化方法对比"></p>
+<h2 id="8-n-gram：保留局部词序"><a href="#8-n-gram：保留局部词序" class="headerlink" title="8. n-gram：保留局部词序"></a>8. n-gram：保留局部词序</h2><p>为了弥补词袋模型完全丢失词序的问题，可以使用 n-gram。</p>
+<p>如果 $n&#x3D;1$，就是 unigram：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 / 喜欢 / NLP</code></pre>
+
+<p>如果 $n&#x3D;2$，就是 bigram：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢
+喜欢 NLP</code></pre>
+
+<p>如果 $n&#x3D;3$，就是 trigram：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 NLP</code></pre>
+
+<p>例如句子：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 不 喜欢 这部电影</code></pre>
+
+<p>如果只看单词：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我, 不, 喜欢, 这部电影</code></pre>
+
+<p>模型可能难以捕捉“不喜欢”这个组合。</p>
+<p>如果加入 bigram：</p>
+<pre class="language-text" data-language="text"><code class="language-text">不 喜欢</code></pre>
+
+<p>模型就更容易识别负面情绪。</p>
+<p>n-gram 的问题是特征数量会迅速膨胀。词表越大，n 越大，特征空间越大。</p>
+<h2 id="9-TF-IDF：让关键词更重要"><a href="#9-TF-IDF：让关键词更重要" class="headerlink" title="9. TF-IDF：让关键词更重要"></a>9. TF-IDF：让关键词更重要</h2><p>词袋模型只看词频，但有些词虽然出现很多，却没什么区分度。</p>
+<p>例如中文文本中常见词：</p>
+<pre class="language-text" data-language="text"><code class="language-text">的、是、了、我们、这个</code></pre>
+
+<p>这些词出现频率高，但通常不太能代表文本主题。</p>
+<p>TF-IDF 用来衡量一个词对某篇文档的重要程度。</p>
+<p>它由两部分组成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">TF：词在当前文档中出现得多不多
+IDF：词在整个语料库中稀不稀有</code></pre>
+
+<p>TF 可以写成：</p>
+<p>$$<br>TF(t,d)&#x3D;\frac{\text{词 }t\text{ 在文档 }d\text{ 中出现次数}}{\text{文档 }d\text{ 的总词数}}<br>$$</p>
+<p>IDF 可以写成：</p>
+<p>$$<br>IDF(t)&#x3D;\log\frac{N}{DF(t)+1}<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$N$ 表示总文档数。</li>
+<li>$DF(t)$ 表示包含词 $t$ 的文档数量。</li>
+<li>加 1 是为了避免分母为 0。</li>
+</ul>
+<p>TF-IDF 为：</p>
+<p>$$<br>TFIDF(t,d)&#x3D;TF(t,d)\times IDF(t)<br>$$</p>
+<h3 id="9-1-一个具体例子"><a href="#9-1-一个具体例子" class="headerlink" title="9.1 一个具体例子"></a>9.1 一个具体例子</h3><p>假设语料库有 100 篇文章。</p>
+<p>词“Transformer”只出现在 5 篇文章中：</p>
+<p>$$<br>IDF(\text{Transformer})&#x3D;\log\frac{100}{5+1}\approx2.81<br>$$</p>
+<p>词“的”出现在 90 篇文章中：</p>
+<p>$$<br>IDF(\text{的})&#x3D;\log\frac{100}{90+1}\approx0.09<br>$$</p>
+<p>如果某篇文章中两个词的 TF 都是 0.02，那么：</p>
+<p>$$<br>TFIDF(\text{Transformer})&#x3D;0.02\times2.81&#x3D;0.0562<br>$$</p>
+<p>$$<br>TFIDF(\text{的})&#x3D;0.02\times0.09&#x3D;0.0018<br>$$</p>
+<p>可以看到，“Transformer”的权重远高于“的”。</p>
+<p>这就是 TF-IDF 的直觉：当前文档中常见、但整个语料中不太常见的词，通常更重要。</p>
+<h2 id="10-词向量：让语义进入向量空间"><a href="#10-词向量：让语义进入向量空间" class="headerlink" title="10. 词向量：让语义进入向量空间"></a>10. 词向量：让语义进入向量空间</h2><p>One-hot、词袋和 TF-IDF 大多是稀疏向量。</p>
+<p>深度学习更常用稠密向量，也就是词向量（Word Embedding）。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 -> [0.12, -0.08, 0.31, ...]
+喜欢 -> [0.40, 0.22, -0.17, ...]
+NLP -> [-0.11, 0.56, 0.09, ...]</code></pre>
+
+<p>词向量的维度通常远小于词表大小，例如 100 维、300 维、768 维。</p>
+<p>它的目标是让语义相近的词在向量空间里距离更近。</p>
+<p>例如理想情况下：</p>
+<pre class="language-text" data-language="text"><code class="language-text">喜欢 和 热爱 更接近
+喜欢 和 冰箱 距离更远</code></pre>
+
+<p>这和前面 KNN 文章中的“距离”思想也能联系起来：向量空间中距离近，往往表示语义更接近。</p>
+<blockquote>
+<p>相关回顾：<a href="/2026/05/19/machine-learning-knn/">KNN：从距离到分类的直觉算法</a></p>
+</blockquote>
+<h2 id="11-Embedding-层做了什么"><a href="#11-Embedding-层做了什么" class="headerlink" title="11. Embedding 层做了什么"></a>11. Embedding 层做了什么</h2><p>在深度学习模型中，token id 本身只是编号，不包含语义。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 -> 2
+喜欢 -> 3
+NLP -> 4</code></pre>
+
+<p>数字 2、3、4 只是索引，不能直接理解成大小关系。</p>
+<p>Embedding 层可以看成一张参数表：</p>
+<table>
+<thead>
+<tr>
+<th align="right">token id</th>
+<th>embedding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">2</td>
+<td>$[0.12,-0.08,0.31]$</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td>$[0.40,0.22,-0.17]$</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td>$[-0.11,0.56,0.09]$</td>
+</tr>
+</tbody></table>
+<p>输入 token id：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[2, 3, 4]</code></pre>
+
+<p>Embedding 层查表后得到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[
+  [0.12, -0.08, 0.31],
+  [0.40, 0.22, -0.17],
+  [-0.11, 0.56, 0.09]
+]</code></pre>
+
+<p>如果 embedding 维度是 $d$，序列长度是 $L$，那么输出形状是：</p>
+<p>$$<br>L \times d<br>$$</p>
+<p>Transformer 的输入就是这样一串向量。</p>
+<h2 id="12-子词切分：为什么-Transformer-不只按词切"><a href="#12-子词切分：为什么-Transformer-不只按词切" class="headerlink" title="12. 子词切分：为什么 Transformer 不只按词切"></a>12. 子词切分：为什么 Transformer 不只按词切</h2><p>早期 NLP 常用词级分词，但词级分词有一个大问题：词表很难覆盖所有词。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Transformer
+Transformers
+Transformer-based
+unbelievable
+unbelievably</code></pre>
+
+<p>如果每个词都单独进词表，词表会很大，而且遇到新词容易变成 <code>[UNK]</code>。</p>
+<p>子词切分（Subword Tokenization）就是折中方案：</p>
+<pre class="language-text" data-language="text"><code class="language-text">既不要按字符切得太碎
+也不要按完整词切得太死</code></pre>
+
+<p>例如英文：</p>
+<pre class="language-text" data-language="text"><code class="language-text">unbelievable -> un + believe + able</code></pre>
+
+<p>中文里也可能按字、词或子词混合：</p>
+<pre class="language-text" data-language="text"><code class="language-text">自然语言处理 -> 自然 / 语言 / 处理</code></pre>
+
+<p>常见子词算法包括：</p>
+<ul>
+<li>BPE</li>
+<li>WordPiece</li>
+<li>SentencePiece</li>
+</ul>
+<p>很多 Transformer 模型都使用这类 tokenizer。</p>
+<h2 id="13-BPE-的直觉"><a href="#13-BPE-的直觉" class="headerlink" title="13. BPE 的直觉"></a>13. BPE 的直觉</h2><p>BPE（Byte Pair Encoding）的思想可以简化理解为：</p>
+<blockquote>
+<p>从字符开始，不断合并最常见的相邻片段。</p>
+</blockquote>
+<p>假设语料中经常出现：</p>
+<pre class="language-text" data-language="text"><code class="language-text">自然 语言
+自然 科学
+自然 风景</code></pre>
+
+<p>如果“自然”出现频率很高，就可以把：</p>
+<pre class="language-text" data-language="text"><code class="language-text">自 + 然</code></pre>
+
+<p>合并成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">自然</code></pre>
+
+<p>类似地，如果“语言”经常一起出现，也可以合并：</p>
+<pre class="language-text" data-language="text"><code class="language-text">语 + 言 -> 语言</code></pre>
+
+<p>最终 tokenizer 会形成一个子词词表，既能表示常见词，也能拆开不常见词。</p>
+<p>这对 Transformer 很重要，因为它减少了 <code>[UNK]</code> 的出现，也控制了词表大小。</p>
+<h2 id="14-特殊-token"><a href="#14-特殊-token" class="headerlink" title="14. 特殊 token"></a>14. 特殊 token</h2><p>Transformer 中经常会看到一些特殊 token。</p>
+<table>
+<thead>
+<tr>
+<th>token</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[PAD]</code></td>
+<td>补齐长度</td>
+</tr>
+<tr>
+<td><code>[UNK]</code></td>
+<td>未知 token</td>
+</tr>
+<tr>
+<td><code>[CLS]</code></td>
+<td>分类任务的整体表示</td>
+</tr>
+<tr>
+<td><code>[SEP]</code></td>
+<td>分隔句子</td>
+</tr>
+<tr>
+<td><code>[MASK]</code></td>
+<td>掩码语言模型中被遮住的位置</td>
+</tr>
+</tbody></table>
+<p>例如 BERT 处理句子分类时，可能会把：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 NLP</code></pre>
+
+<p>变成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[CLS] 我 喜欢 NLP [SEP]</code></pre>
+
+<p>其中 <code>[CLS]</code> 位置的输出常被用来做整个句子的分类。</p>
+<h2 id="15-Padding-与-Attention-Mask"><a href="#15-Padding-与-Attention-Mask" class="headerlink" title="15. Padding 与 Attention Mask"></a>15. Padding 与 Attention Mask</h2><p>深度学习通常会批量训练，但一个 batch 里的句子长度可能不同。</p>
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">句子 A：我 喜欢 NLP
+句子 B：今天 学习 文本 处理</code></pre>
+
+<p>为了放进同一个矩阵，需要把短句补齐：</p>
+<pre class="language-text" data-language="text"><code class="language-text">句子 A：[我, 喜欢, NLP, [PAD]]
+句子 B：[今天, 学习, 文本, 处理]</code></pre>
+
+<p>但 <code>[PAD]</code> 只是补位，不应该参与模型理解。</p>
+<p>因此需要 attention mask：</p>
+<pre class="language-text" data-language="text"><code class="language-text">句子 A mask：[1, 1, 1, 0]
+句子 B mask：[1, 1, 1, 1]</code></pre>
+
+<p>其中：</p>
+<ul>
+<li>1 表示真实 token。</li>
+<li>0 表示 padding token。</li>
+</ul>
+<p><img src="https://lsworl.github.io/images/nlp-blog/padding-attention-mask.svg" alt="Padding 与 Attention Mask"></p>
+<p>在 Transformer 中，attention mask 会告诉模型：</p>
+<pre class="language-text" data-language="text"><code class="language-text">不要关注 [PAD] 位置</code></pre>
+
+<p>这对理解 Transformer 的注意力机制非常重要。</p>
+<h2 id="16-文本处理与传统机器学习"><a href="#16-文本处理与传统机器学习" class="headerlink" title="16. 文本处理与传统机器学习"></a>16. 文本处理与传统机器学习</h2><p>在进入深度学习之前，文本也可以用传统机器学习处理。</p>
+<p>常见组合是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">文本 -> TF-IDF -> 逻辑回归 / SVM / 朴素贝叶斯</code></pre>
+
+<p>例如情感分类：</p>
+<pre class="language-text" data-language="text"><code class="language-text">输入：这个商品很好用
+输出：正面</code></pre>
+
+<p>可以先用 TF-IDF 得到向量，再用逻辑回归分类。</p>
+<p>这和前面逻辑回归文章可以联系起来：</p>
+<blockquote>
+<p>相关回顾：<a href="/2026/05/24/machine-learning-logistic-regression/">逻辑回归：从直线到概率的分类算法</a></p>
+</blockquote>
+<p>如果特征维度很高，还要注意正则化：</p>
+<blockquote>
+<p>相关回顾：<a href="/2026/06/04/machine-learning-regularization-overfitting/">正则化与过拟合：让模型不只记住训练集</a></p>
+</blockquote>
+<p>文本任务中，词表可能有几万甚至几十万个特征，过拟合风险很常见，L1&#x2F;L2 正则化会很有用。</p>
+<h2 id="17-Python-实战：词袋与-TF-IDF"><a href="#17-Python-实战：词袋与-TF-IDF" class="headerlink" title="17. Python 实战：词袋与 TF-IDF"></a>17. Python 实战：词袋与 TF-IDF</h2><p>下面用 scikit-learn 演示如何把文本转成词袋和 TF-IDF。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>feature_extraction<span class="token punctuation">.</span>text <span class="token keyword">import</span> CountVectorizer<span class="token punctuation">,</span> TfidfVectorizer
+
+texts <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token string">"我 喜欢 自然语言处理"</span><span class="token punctuation">,</span>
+    <span class="token string">"我 喜欢 机器学习"</span><span class="token punctuation">,</span>
+    <span class="token string">"自然语言处理 和 机器学习 很有趣"</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment"># 词袋模型</span>
+count_vectorizer <span class="token operator">=</span> CountVectorizer<span class="token punctuation">(</span>token_pattern<span class="token operator">=</span><span class="token string">r"(?u)\b\w+\b"</span><span class="token punctuation">)</span>
+count_matrix <span class="token operator">=</span> count_vectorizer<span class="token punctuation">.</span>fit_transform<span class="token punctuation">(</span>texts<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"词表："</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>count_vectorizer<span class="token punctuation">.</span>vocabulary_<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"词袋矩阵："</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>count_matrix<span class="token punctuation">.</span>toarray<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token comment"># TF-IDF</span>
+tfidf_vectorizer <span class="token operator">=</span> TfidfVectorizer<span class="token punctuation">(</span>token_pattern<span class="token operator">=</span><span class="token string">r"(?u)\b\w+\b"</span><span class="token punctuation">)</span>
+tfidf_matrix <span class="token operator">=</span> tfidf_vectorizer<span class="token punctuation">.</span>fit_transform<span class="token punctuation">(</span>texts<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"TF-IDF 矩阵："</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>tfidf_matrix<span class="token punctuation">.</span>toarray<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>这里为了演示，文本已经提前用空格分好了词。</p>
+<p>实际中文任务中，可以先用分词工具把句子切开，再交给 <code>CountVectorizer</code> 或 <code>TfidfVectorizer</code>。</p>
+<h2 id="18-Python-实战：文本分类-Pipeline"><a href="#18-Python-实战：文本分类-Pipeline" class="headerlink" title="18. Python 实战：文本分类 Pipeline"></a>18. Python 实战：文本分类 Pipeline</h2><p>下面用 TF-IDF + 逻辑回归做一个简单文本分类流程。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>feature_extraction<span class="token punctuation">.</span>text <span class="token keyword">import</span> TfidfVectorizer
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>linear_model <span class="token keyword">import</span> LogisticRegression
+<span class="token keyword">from</span> sklearn<span class="token punctuation">.</span>pipeline <span class="token keyword">import</span> Pipeline
+
+texts <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token string">"这个 手机 很 好用"</span><span class="token punctuation">,</span>
+    <span class="token string">"物流 很 快 包装 很 好"</span><span class="token punctuation">,</span>
+    <span class="token string">"质量 太 差 了"</span><span class="token punctuation">,</span>
+    <span class="token string">"屏幕 有 划痕 很 失望"</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment"># 1 表示正面，0 表示负面</span>
+y <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span>
+
+pipe <span class="token operator">=</span> Pipeline<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"tfidf"</span><span class="token punctuation">,</span> TfidfVectorizer<span class="token punctuation">(</span>token_pattern<span class="token operator">=</span><span class="token string">r"(?u)\b\w+\b"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"model"</span><span class="token punctuation">,</span> LogisticRegression<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+pipe<span class="token punctuation">.</span>fit<span class="token punctuation">(</span>texts<span class="token punctuation">,</span> y<span class="token punctuation">)</span>
+
+new_texts <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token string">"这个 手机 质量 很 好"</span><span class="token punctuation">,</span>
+    <span class="token string">"包装 很 差 很 失望"</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+
+pred <span class="token operator">=</span> pipe<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>new_texts<span class="token punctuation">)</span>
+proba <span class="token operator">=</span> pipe<span class="token punctuation">.</span>predict_proba<span class="token punctuation">(</span>new_texts<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>pred<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>proba<span class="token punctuation">)</span></code></pre>
+
+<p>这个流程和前面交叉验证文章中的 Pipeline 思想是一致的：</p>
+<pre class="language-text" data-language="text"><code class="language-text">预处理和模型训练应该放在同一个 Pipeline 中</code></pre>
+
+<p>这样做交叉验证时，可以避免数据泄漏。</p>
+<blockquote>
+<p>相关回顾：<a href="/2026/05/25/machine-learning-cross-validation-grid-search/">交叉验证与网格搜索：让模型选择更可靠</a></p>
+</blockquote>
+<h2 id="19-Transformer-前需要理解什么"><a href="#19-Transformer-前需要理解什么" class="headerlink" title="19. Transformer 前需要理解什么"></a>19. Transformer 前需要理解什么</h2><p>如果你正在学习 Transformer，文本处理里最重要的是下面几个概念：</p>
+<ol>
+<li>token：模型处理的基本单位。</li>
+<li>tokenizer：把文本切成 token 的工具。</li>
+<li>vocabulary：token 到 id 的映射表。</li>
+<li>input_ids：token id 序列。</li>
+<li>embedding：把 token id 映射成向量。</li>
+<li>padding：把不同长度句子补齐。</li>
+<li>attention_mask：告诉模型哪些位置是真实 token。</li>
+<li>subword：用子词减少未知词问题。</li>
+</ol>
+<p>Transformer 不直接处理文字，它处理的是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input_ids + attention_mask</code></pre>
+
+<p>然后模型内部通过 embedding 层把 <code>input_ids</code> 变成向量序列，再进入注意力层。</p>
+<h2 id="20-总结"><a href="#20-总结" class="headerlink" title="20. 总结"></a>20. 总结</h2><p>文本处理的核心问题是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">如何把自然语言变成模型能计算的数字表示？</code></pre>
+
+<p>传统 NLP 中，常见方法包括：</p>
+<ul>
+<li>One-hot</li>
+<li>词袋模型</li>
+<li>n-gram</li>
+<li>TF-IDF</li>
+</ul>
+<p>深度学习和 Transformer 中，更常见的是：</p>
+<ul>
+<li>tokenization</li>
+<li>token id</li>
+<li>embedding</li>
+<li>subword</li>
+<li>padding</li>
+<li>attention mask</li>
+</ul>
+<p>理解这些内容以后，再学习 Transformer 时就会顺很多。因为 Transformer 的注意力机制虽然很重要，但它接收的输入并不是原始文本，而是经过 tokenizer 和 embedding 处理后的向量序列。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/06/07/nlp-text-processing/">https://lsworl.github.io/2026/06/07/nlp-text-processing/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/NLP/">NLP</a><a class="post-meta__tags" href="/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a><a class="post-meta__tags" href="/tags/%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/">文本处理</a><a class="post-meta__tags" href="/tags/%E5%88%86%E8%AF%8D/">分词</a><a class="post-meta__tags" href="/tags/Transformer/">Transformer</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/06/04/machine-learning-regularization-overfitting/" title="正则化与过拟合：让模型不只记住训练集"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">正则化与过拟合：让模型不只记住训练集</div></div><div class="info-2"><div class="info-item-1">前面学习线性回归、逻辑回归、决策树、集成学习和 GBDT 时，我们一直在训练模型，让模型尽可能学到数据里的规律。 但机器学习里有一个很重要的问题：  模型在训练集上表现很好，不代表它在新数据上也表现很好。  如果模型把训练数据里的噪声、偶然样本、特殊细节都记住了，就会出现过拟合（Overfitting）。正则化（Regularization）就是用来控制模型复杂度、提升泛化能力的一类方法。    1. 什么是泛化能力机器学习真正关心的不是训练集分数，而是模型面对新数据时的表现。 例如我们训练一个模型预测学生是否通过考试。训练集中有 100 个学生，模型全部预测正确，训练准确率达到 $100%$。 这听起来很好，但如果换一批新学生，准确率只有 $65%$，说明模型可能只是记住了训练集，而没有学到稳定规律。 这种“面对新数据仍然表现好”的能力，叫泛化能力。 可以简单记住： 训练集表现好：说明模型会做旧题 测试集表现好：说明模型学到了规律  在交叉验证那篇文章里，我们已经讲过：不能只看一次训练&#x2F;测试划分，更稳妥的方式是用验证集或交叉验证评估模型。正则化则是进一步解决“模型太复...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">108</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">92</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">33</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E5%9C%A8-NLP-%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">1. 文本处理在 NLP 中的位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%96%87%E6%9C%AC%E6%B8%85%E6%B4%97%E4%B8%8E%E8%A7%84%E8%8C%83%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">2. 文本清洗与规范化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E8%AF%8D"><span class="toc-number">3.</span> <span class="toc-text">3. 什么是分词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9B%B0%E9%9A%BE"><span class="toc-number">4.</span> <span class="toc-text">4. 中文分词为什么困难</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%AF%8D%E8%A1%A8%EF%BC%9A%E7%BB%99%E6%AF%8F%E4%B8%AA-token-%E4%B8%80%E4%B8%AA%E7%BC%96%E5%8F%B7"><span class="toc-number">5.</span> <span class="toc-text">5. 词表：给每个 token 一个编号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-One-hot-%E7%BC%96%E7%A0%81"><span class="toc-number">6.</span> <span class="toc-text">6. One-hot 编码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E8%AF%8D%E8%A2%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">7.</span> <span class="toc-text">7. 词袋模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-n-gram%EF%BC%9A%E4%BF%9D%E7%95%99%E5%B1%80%E9%83%A8%E8%AF%8D%E5%BA%8F"><span class="toc-number">8.</span> <span class="toc-text">8. n-gram：保留局部词序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-TF-IDF%EF%BC%9A%E8%AE%A9%E5%85%B3%E9%94%AE%E8%AF%8D%E6%9B%B4%E9%87%8D%E8%A6%81"><span class="toc-number">9.</span> <span class="toc-text">9. TF-IDF：让关键词更重要</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E4%B8%80%E4%B8%AA%E5%85%B7%E4%BD%93%E4%BE%8B%E5%AD%90"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 一个具体例子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E8%AF%8D%E5%90%91%E9%87%8F%EF%BC%9A%E8%AE%A9%E8%AF%AD%E4%B9%89%E8%BF%9B%E5%85%A5%E5%90%91%E9%87%8F%E7%A9%BA%E9%97%B4"><span class="toc-number">10.</span> <span class="toc-text">10. 词向量：让语义进入向量空间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-Embedding-%E5%B1%82%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">11.</span> <span class="toc-text">11. Embedding 层做了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%AD%90%E8%AF%8D%E5%88%87%E5%88%86%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88-Transformer-%E4%B8%8D%E5%8F%AA%E6%8C%89%E8%AF%8D%E5%88%87"><span class="toc-number">12.</span> <span class="toc-text">12. 子词切分：为什么 Transformer 不只按词切</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-BPE-%E7%9A%84%E7%9B%B4%E8%A7%89"><span class="toc-number">13.</span> <span class="toc-text">13. BPE 的直觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E7%89%B9%E6%AE%8A-token"><span class="toc-number">14.</span> <span class="toc-text">14. 特殊 token</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-Padding-%E4%B8%8E-Attention-Mask"><span class="toc-number">15.</span> <span class="toc-text">15. Padding 与 Attention Mask</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E4%B8%8E%E4%BC%A0%E7%BB%9F%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0"><span class="toc-number">16.</span> <span class="toc-text">16. 文本处理与传统机器学习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-Python-%E5%AE%9E%E6%88%98%EF%BC%9A%E8%AF%8D%E8%A2%8B%E4%B8%8E-TF-IDF"><span class="toc-number">17.</span> <span class="toc-text">17. Python 实战：词袋与 TF-IDF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-Python-%E5%AE%9E%E6%88%98%EF%BC%9A%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB-Pipeline"><span class="toc-number">18.</span> <span class="toc-text">18. Python 实战：文本分类 Pipeline</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-Transformer-%E5%89%8D%E9%9C%80%E8%A6%81%E7%90%86%E8%A7%A3%E4%BB%80%E4%B9%88"><span class="toc-number">19.</span> <span class="toc-text">19. Transformer 前需要理解什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E6%80%BB%E7%BB%93"><span class="toc-number">20.</span> <span class="toc-text">20. 总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/07/nlp-text-processing/" title="文本处理：让自然语言变成模型能理解的数字">文本处理：让自然语言变成模型能理解的数字</a><time datetime="2026-06-06T16:00:00.000Z" title="发表于 2026-06-07 00:00:00">2026-06-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/04/machine-learning-regularization-overfitting/" title="正则化与过拟合：让模型不只记住训练集">正则化与过拟合：让模型不只记住训练集</a><time datetime="2026-06-03T16:00:00.000Z" title="发表于 2026-06-04 00:00:00">2026-06-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/machine-learning-gbdt/" title="GBDT：从残差到梯度提升树的完整理解">GBDT：从残差到梯度提升树的完整理解</a><time datetime="2026-06-01T16:00:00.000Z" title="发表于 2026-06-02 00:00:00">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/" title="AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</a><time datetime="2026-05-29T12:30:00.000Z" title="发表于 2026-05-29 20:30:00">2026-05-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定">集成学习：让多个模型一起做决定</a><time datetime="2026-05-27T16:00:00.000Z" title="发表于 2026-05-28 00:00:00">2026-05-28</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
