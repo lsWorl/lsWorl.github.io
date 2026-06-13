@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">Value iteration flow</title>
+  <desc id="desc">Value iteration initializes values, repeatedly applies Bellman optimal updates, checks convergence, and extracts a policy.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Value Iteration Workflow</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Repeated Bellman updates make values approach the optimum.</text>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <rect x="70" y="210" width="145" height="74" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="143" y="240" font-size="18" font-weight="700" fill="#222831">Initialize</text>
+    <text x="143" y="265" font-size="15" fill="#5f6b7a">V(s)=0</text>
+    <rect x="275" y="210" width="180" height="74" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="365" y="240" font-size="18" font-weight="700" fill="#222831">Bellman update</text>
+    <text x="365" y="265" font-size="15" fill="#5f6b7a">take max action</text>
+    <rect x="515" y="210" width="145" height="74" rx="8" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="588" y="240" font-size="18" font-weight="700" fill="#222831">Converged?</text>
+    <text x="588" y="265" font-size="15" fill="#5f6b7a">delta small</text>
+    <rect x="720" y="210" width="145" height="74" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="793" y="240" font-size="18" font-weight="700" fill="#222831">Extract policy</text>
+    <text x="793" y="265" font-size="15" fill="#5f6b7a">argmax action</text>
+  </g>
+  <path d="M215 247 L275 247" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M455 247 L515 247" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M660 247 L720 247" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M588 284 C588 365 365 365 365 284" stroke="#eb5757" stroke-width="3" fill="none" marker-end="url(#arrowRed)"/>
+  <text x="455" y="386" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#c0392b">No: update again</text>
+  <text x="674" y="228" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#27ae60">Yes</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#566070"/></marker>
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#eb5757"/></marker>
+  </defs>
+</svg>

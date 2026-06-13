@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">Reinforcement learning loop</title>
+  <desc id="desc">The agent observes state and reward from the environment, chooses an action, and repeats the interaction loop.</desc>
+  <rect width="900" height="430" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Reinforcement Learning Loop</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Learning happens through repeated interaction, not fixed labels.</text>
+  <rect x="96" y="170" width="240" height="104" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="169" y="214" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222831">Agent</text>
+  <text x="139" y="244" font-family="Arial, sans-serif" font-size="15" fill="#5f6b7a">policy chooses action</text>
+  <rect x="564" y="170" width="240" height="104" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+  <text x="620" y="214" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222831">Environment</text>
+  <text x="617" y="244" font-family="Arial, sans-serif" font-size="15" fill="#5f6b7a">returns state + reward</text>
+  <path d="M336 202 C410 162 490 162 564 202" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="421" y="158" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#2f80ed">action a_t</text>
+  <path d="M564 250 C490 304 410 304 336 250" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="386" y="326" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#27ae60">state s_{t+1}, reward r_{t+1}</text>
+  <rect x="310" y="360" width="280" height="36" rx="8" fill="#fff8e8" stroke="#f2c94c"/>
+  <text x="337" y="384" font-family="Arial, sans-serif" font-size="16" fill="#6b5a20">Goal: maximize long-term return</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

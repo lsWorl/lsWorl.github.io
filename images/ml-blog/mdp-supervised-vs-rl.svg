@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">Supervised learning versus reinforcement learning</title>
+  <desc id="desc">Supervised learning maps independent samples to labels, while reinforcement learning forms a state action reward trajectory.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Independent Prediction vs Sequential Decision</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">MDP is needed when today's action changes tomorrow's situation.</text>
+  <rect x="70" y="140" width="330" height="260" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="120" y="178" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Supervised Learning</text>
+  <rect x="120" y="220" width="115" height="56" rx="8" fill="#f4f8ff" stroke="#8bb8f7"/>
+  <text x="145" y="253" font-family="Arial, sans-serif" font-size="17" fill="#222831">sample x</text>
+  <rect x="255" y="220" width="95" height="56" rx="8" fill="#f0fff4" stroke="#7ad39b"/>
+  <text x="283" y="253" font-family="Arial, sans-serif" font-size="17" fill="#222831">label y</text>
+  <path d="M235 248 L255 248" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="111" y="330" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">Usually one sample can be</text>
+  <text x="111" y="356" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">understood independently.</text>
+  <rect x="500" y="140" width="330" height="260" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+  <text x="546" y="178" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Reinforcement Learning</text>
+  <text x="548" y="233" font-family="Arial, sans-serif" font-size="18" fill="#222831">s_t -> a_t -> r_{t+1} -> s_{t+1}</text>
+  <path d="M552 270 L775 270" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <circle cx="555" cy="270" r="12" fill="#2f80ed"/>
+  <circle cx="630" cy="270" r="12" fill="#f2994a"/>
+  <circle cx="705" cy="270" r="12" fill="#eb5757"/>
+  <circle cx="775" cy="270" r="12" fill="#27ae60"/>
+  <text x="548" y="330" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">Each choice changes the next</text>
+  <text x="548" y="356" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">state and future rewards.</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

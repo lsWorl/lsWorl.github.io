@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-labelledby="title desc">
+  <title id="title">Markov property</title>
+  <desc id="desc">If the current state contains enough information, the next state depends on the current state and action rather than the full past history.</desc>
+  <rect width="900" height="440" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Markov Property</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">A well-designed state summarizes the useful history.</text>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <rect x="80" y="205" width="95" height="58" rx="8" fill="#f2f4f7" stroke="#c8d0da"/>
+    <text x="128" y="241" font-size="18" fill="#5f6b7a">past</text>
+    <rect x="235" y="205" width="95" height="58" rx="8" fill="#f2f4f7" stroke="#c8d0da"/>
+    <text x="283" y="241" font-size="18" fill="#5f6b7a">past</text>
+    <rect x="390" y="190" width="115" height="88" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="448" y="228" font-size="22" font-weight="700" fill="#222831">state</text>
+    <text x="448" y="255" font-size="16" fill="#5f6b7a">summary</text>
+    <rect x="565" y="205" width="105" height="58" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="618" y="241" font-size="18" fill="#222831">action</text>
+    <rect x="730" y="190" width="115" height="88" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="788" y="228" font-size="22" font-weight="700" fill="#222831">next</text>
+    <text x="788" y="255" font-size="16" fill="#5f6b7a">state</text>
+  </g>
+  <path d="M175 234 L235 234" stroke="#b6c0cd" stroke-width="3" marker-end="url(#lightArrow)"/>
+  <path d="M330 234 L390 234" stroke="#b6c0cd" stroke-width="3" marker-end="url(#lightArrow)"/>
+  <path d="M505 234 L565 234" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M670 234 L730 234" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M120 310 C260 365 520 365 780 310" stroke="#eb5757" stroke-width="3" fill="none" stroke-dasharray="8 8"/>
+  <text x="313" y="388" font-family="Arial, sans-serif" font-size="18" fill="#c0392b">History matters only through the current state.</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#566070"/></marker>
+    <marker id="lightArrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#b6c0cd"/></marker>
+  </defs>
+</svg>

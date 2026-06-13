@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" role="img" aria-labelledby="title desc">
+  <title id="title">Small MDP with states A B T</title>
+  <desc id="desc">State A can end for reward 1 or go to B; state B can end for reward 3 or go back to A.</desc>
+  <rect width="900" height="460" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Small MDP: A, B, T</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">A direct small reward can be worse than moving toward a better future.</text>
+  <circle cx="210" cy="250" r="62" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+  <text x="190" y="262" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#222831">A</text>
+  <circle cx="470" cy="250" r="62" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/>
+  <text x="450" y="262" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#222831">B</text>
+  <circle cx="720" cy="250" r="62" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/>
+  <text x="703" y="262" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#222831">T</text>
+  <path d="M272 230 C330 194 370 194 418 230" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="326" y="188" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222831">go B, r=0</text>
+  <path d="M410 278 C348 318 304 318 258 278" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="314" y="340" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222831">go A, r=0</text>
+  <path d="M235 192 C320 115 575 112 695 192" stroke="#2f80ed" stroke-width="3" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="405" y="120" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#2f80ed">end, r=1</text>
+  <path d="M532 250 L658 250" stroke="#27ae60" stroke-width="3" marker-end="url(#arrowGreen)"/>
+  <text x="566" y="228" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#27ae60">end, r=3</text>
+  <text x="300" y="410" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222831">Best: A -> B -> T, value(A) = 0.9 x 3 = 2.7</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#566070"/></marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#2f80ed"/></marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#27ae60"/></marker>
+  </defs>
+</svg>

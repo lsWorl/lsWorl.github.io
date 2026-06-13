@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
+  <title id="title">Grid world MDP example</title>
+  <desc id="desc">A small grid world with start, goal, obstacle, rewards, and an optimal path.</desc>
+  <rect width="900" height="500" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Grid World as a Tiny MDP</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Cells are states, arrows are actions, scores are rewards.</text>
+  <g transform="translate(115 145)">
+    <rect x="0" y="0" width="110" height="110" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <rect x="110" y="0" width="110" height="110" fill="#ffffff" stroke="#c8d0da" stroke-width="3"/>
+    <rect x="220" y="0" width="110" height="110" fill="#edfff3" stroke="#27ae60" stroke-width="3"/>
+    <rect x="0" y="110" width="110" height="110" fill="#ffffff" stroke="#c8d0da" stroke-width="3"/>
+    <rect x="110" y="110" width="110" height="110" fill="#fff0f0" stroke="#eb5757" stroke-width="3"/>
+    <rect x="220" y="110" width="110" height="110" fill="#ffffff" stroke="#c8d0da" stroke-width="3"/>
+    <text x="42" y="66" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#2f80ed">S</text>
+    <text x="263" y="66" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#27ae60">G</text>
+    <text x="153" y="176" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#eb5757">X</text>
+    <path d="M65 55 L170 55 L270 55" stroke="#f2994a" stroke-width="6" fill="none" marker-end="url(#arrowOrange)"/>
+    <text x="240" y="102" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#27ae60">+10</text>
+    <text x="18" y="205" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">step cost -1</text>
+  </g>
+  <rect x="565" y="160" width="245" height="230" rx="8" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="594" y="205" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">MDP mapping</text>
+  <text x="594" y="245" font-family="Arial, sans-serif" font-size="17" fill="#222831">state: current cell</text>
+  <text x="594" y="278" font-family="Arial, sans-serif" font-size="17" fill="#222831">action: up/down/left/right</text>
+  <text x="594" y="311" font-family="Arial, sans-serif" font-size="17" fill="#222831">reward: +10 or -1</text>
+  <text x="594" y="344" font-family="Arial, sans-serif" font-size="17" fill="#222831">policy: choose directions</text>
+  <defs>
+    <marker id="arrowOrange" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#f2994a"/>
+    </marker>
+  </defs>
+</svg>

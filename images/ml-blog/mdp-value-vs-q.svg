@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
+  <title id="title">State value and action value</title>
+  <desc id="desc">State value evaluates a state, while action value evaluates taking a specific action from a state.</desc>
+  <rect width="900" height="500" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">V(s) vs Q(s, a)</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Value can attach to a state or to a state-action pair.</text>
+  <rect x="90" y="150" width="300" height="260" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="145" y="194" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#222831">State value V(s)</text>
+  <circle cx="240" cy="285" r="62" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+  <text x="227" y="294" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#222831">s</text>
+  <text x="145" y="370" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">How good is this state?</text>
+  <rect x="510" y="150" width="300" height="260" rx="8" fill="#ffffff" stroke="#f2994a" stroke-width="2"/>
+  <text x="560" y="194" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#222831">Action value Q(s,a)</text>
+  <circle cx="610" cy="285" r="50" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/>
+  <text x="599" y="293" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#222831">s</text>
+  <path d="M665 285 L760 285" stroke="#566070" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="690" y="258" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#f2994a">a</text>
+  <text x="553" y="370" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">How good is this action here?</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#566070"/></marker>
+  </defs>
+</svg>

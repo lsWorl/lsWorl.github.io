@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" role="img" aria-labelledby="title desc">
+  <title id="title">MDP five components</title>
+  <desc id="desc">The MDP tuple contains state space, action space, transition probability, reward function, and discount factor.</desc>
+  <rect width="900" height="460" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">The MDP Five-Tuple</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">A compact way to describe a sequential decision problem.</text>
+  <text x="268" y="168" font-family="Arial, sans-serif" font-size="38" font-weight="700" fill="#222831">( S, A, P, R, gamma )</text>
+  <g font-family="Arial, sans-serif" font-size="18" fill="#222831">
+    <rect x="72" y="240" width="135" height="84" rx="8" fill="#eaf3ff" stroke="#2f80ed"/>
+    <text x="122" y="274" font-weight="700">S</text><text x="93" y="302">states</text>
+    <rect x="226" y="240" width="135" height="84" rx="8" fill="#fff8e8" stroke="#f2994a"/>
+    <text x="277" y="274" font-weight="700">A</text><text x="251" y="302">actions</text>
+    <rect x="380" y="240" width="135" height="84" rx="8" fill="#f0fff4" stroke="#27ae60"/>
+    <text x="431" y="274" font-weight="700">P</text><text x="405" y="302">transition</text>
+    <rect x="534" y="240" width="135" height="84" rx="8" fill="#fff0f0" stroke="#eb5757"/>
+    <text x="586" y="274" font-weight="700">R</text><text x="565" y="302">reward</text>
+    <rect x="688" y="240" width="140" height="84" rx="8" fill="#f7f3ff" stroke="#9b51e0"/>
+    <text x="727" y="274" font-weight="700">gamma</text><text x="711" y="302">discount</text>
+  </g>
+</svg>

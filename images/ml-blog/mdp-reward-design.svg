@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">Reward design</title>
+  <desc id="desc">Reward design should align immediate feedback with the true long-term objective.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Reward Is the Learning Signal</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">A good reward points the agent toward the real objective.</text>
+  <rect x="86" y="145" width="210" height="210" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+  <text x="127" y="192" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#1f8f4d">Good signal</text>
+  <text x="125" y="240" font-family="Arial, sans-serif" font-size="19" fill="#222831">reach goal +10</text>
+  <text x="125" y="276" font-family="Arial, sans-serif" font-size="19" fill="#222831">step cost -1</text>
+  <text x="125" y="312" font-family="Arial, sans-serif" font-size="19" fill="#222831">crash penalty -5</text>
+  <rect x="345" y="145" width="210" height="210" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+  <text x="392" y="192" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#9b6500">Too narrow</text>
+  <text x="390" y="240" font-family="Arial, sans-serif" font-size="19" fill="#222831">reward speed</text>
+  <text x="390" y="276" font-family="Arial, sans-serif" font-size="19" fill="#222831">ignore safety</text>
+  <text x="390" y="312" font-family="Arial, sans-serif" font-size="19" fill="#222831">bad shortcut</text>
+  <rect x="604" y="145" width="210" height="210" rx="8" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+  <text x="654" y="192" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#c0392b">Misaligned</text>
+  <text x="649" y="240" font-family="Arial, sans-serif" font-size="19" fill="#222831">reward clicks</text>
+  <text x="649" y="276" font-family="Arial, sans-serif" font-size="19" fill="#222831">ignore quality</text>
+  <text x="649" y="312" font-family="Arial, sans-serif" font-size="19" fill="#222831">poor experience</text>
+  <text x="160" y="410" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222831">Reward should measure what you really want.</text>
+</svg>

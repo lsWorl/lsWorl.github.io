@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-labelledby="title desc">
+  <title id="title">Transition probability</title>
+  <desc id="desc">One state and action can lead to several possible next states with different probabilities.</desc>
+  <rect width="900" height="440" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Transition Probability P(s' | s, a)</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">The same action can have uncertain outcomes.</text>
+  <circle cx="190" cy="230" r="62" fill="#ffffff" stroke="#2f80ed" stroke-width="3"/>
+  <text x="176" y="238" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">s</text>
+  <rect x="330" y="196" width="120" height="68" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+  <text x="356" y="237" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222831">action a</text>
+  <circle cx="660" cy="155" r="54" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/>
+  <text x="640" y="163" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#222831">s1</text>
+  <circle cx="660" cy="315" r="54" fill="#fff0f0" stroke="#eb5757" stroke-width="3"/>
+  <text x="640" y="323" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#222831">s2</text>
+  <path d="M252 230 L330 230" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M450 215 C525 178 565 162 606 157" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M450 245 C525 282 565 304 606 313" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="510" y="160" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#27ae60">0.8</text>
+  <text x="510" y="310" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#eb5757">0.2</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

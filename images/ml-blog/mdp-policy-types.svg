@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">Policy types</title>
+  <desc id="desc">A deterministic policy maps a state to one action, while a stochastic policy gives probabilities over actions.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Policy: How the Agent Acts</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">A policy can be deterministic or stochastic.</text>
+  <rect x="80" y="145" width="330" height="250" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="132" y="190" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#222831">Deterministic</text>
+  <circle cx="170" cy="275" r="42" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="160" y="283" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">s</text>
+  <path d="M214 275 L330 275" stroke="#566070" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="250" y="248" font-family="Arial, sans-serif" font-size="18" fill="#2f80ed">pi(s)</text>
+  <text x="320" y="283" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#f2994a">Right</text>
+  <rect x="490" y="145" width="330" height="250" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+  <text x="552" y="190" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#222831">Stochastic</text>
+  <text x="558" y="238" font-family="Arial, sans-serif" font-size="18" fill="#222831">Up 0.1</text>
+  <rect x="640" y="220" width="45" height="20" fill="#9bd8ad"/>
+  <text x="558" y="278" font-family="Arial, sans-serif" font-size="18" fill="#222831">Left 0.2</text>
+  <rect x="640" y="260" width="90" height="20" fill="#9bd8ad"/>
+  <text x="558" y="318" font-family="Arial, sans-serif" font-size="18" fill="#222831">Right 0.6</text>
+  <rect x="640" y="300" width="180" height="20" fill="#27ae60"/>
+  <text x="558" y="358" font-family="Arial, sans-serif" font-size="18" fill="#222831">Down 0.1</text>
+  <rect x="640" y="340" width="45" height="20" fill="#9bd8ad"/>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#566070"/></marker>
+  </defs>
+</svg>
