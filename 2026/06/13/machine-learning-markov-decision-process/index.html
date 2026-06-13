@@ -1,0 +1,719 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>强化学习：从状态、动作到马尔可夫决策过程 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从直觉、五元组、回报、价值函数、贝尔曼方程和价值迭代几个角度理解强化学习中的马尔可夫决策过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="强化学习：从状态、动作到马尔可夫决策过程">
+<meta property="og:url" content="https://lsworl.github.io/2026/06/13/machine-learning-markov-decision-process/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="从直觉、五元组、回报、价值函数、贝尔曼方程和价值迭代几个角度理解强化学习中的马尔可夫决策过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-06-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-13T14:50:14.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="强化学习">
+<meta property="article:tag" content="马尔可夫决策过程">
+<meta property="article:tag" content="MDP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "强化学习：从状态、动作到马尔可夫决策过程",
+  "url": "https://lsworl.github.io/2026/06/13/machine-learning-markov-decision-process/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-06-12T16:00:00.000Z",
+  "dateModified": "2026-06-13T14:50:14.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/06/13/machine-learning-markov-decision-process/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '强化学习：从状态、动作到马尔可夫决策过程',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">109</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">95</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">33</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">强化学习：从状态、动作到马尔可夫决策过程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">强化学习：从状态、动作到马尔可夫决策过程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-12T16:00:00.000Z" title="发表于 2026-06-13 00:00:00">2026-06-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-13T14:50:14.000Z" title="更新于 2026-06-13 22:50:14">2026-06-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>强化学习（Reinforcement Learning，RL）研究的是：一个智能体如何在环境中不断尝试，通过奖励信号学会更好的决策。</p>
+<p>和监督学习不同，强化学习通常没有现成的标准答案。智能体每一步都要自己选择动作，然后环境会返回新的状态和奖励。</p>
+<p>例如：</p>
+<ul>
+<li>游戏角色向左走、向右走、攻击或防御。</li>
+<li>机器人选择前进、转弯、抓取物体。</li>
+<li>推荐系统选择给用户展示哪一个内容。</li>
+<li>自动驾驶系统根据路况选择加速、刹车或转向。</li>
+</ul>
+<p>这些问题都有一个共同点：当前的选择不只影响当前结果，还会影响以后能走到哪里、以后能拿到多少奖励。</p>
+<p>马尔可夫决策过程（Markov Decision Process，MDP）就是强化学习中描述这种“连续决策问题”的基础数学框架。</p>
+<p>一句话概括：</p>
+<blockquote>
+<p>MDP 描述的是：智能体在某个状态下选择动作，环境按照一定概率转移到下一个状态，并给出奖励；智能体的目标是在长期上获得尽可能多的累计奖励。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="1-为什么需要-MDP"><a href="#1-为什么需要-MDP" class="headerlink" title="1. 为什么需要 MDP"></a>1. 为什么需要 MDP</h2><p>前面学习线性回归、逻辑回归、决策树时，我们面对的问题通常是这样的：</p>
+<pre class="language-text" data-language="text"><code class="language-text">输入一个样本 -> 模型给出一个预测</code></pre>
+
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">房屋面积 -> 房价
+学习时长 -> 是否通过考试
+花瓣长度、花瓣宽度 -> 鸢尾花类别</code></pre>
+
+<p>这类问题通常可以把每个样本看成相对独立的。</p>
+<p>但强化学习的问题更像这样：</p>
+<pre class="language-text" data-language="text"><code class="language-text">当前状态 -> 选择动作 -> 得到奖励 -> 进入新状态 -> 再选择动作 -> ...</code></pre>
+
+<p>每一步不是孤立的。比如下棋时，当前一步可能没有立刻得分，但它可能让后面更容易获胜；机器人为了避开障碍物，当前可能要绕远一点，但长期看能更安全地到达目标。</p>
+<p>所以强化学习关心的不是“这一步奖励最大”这么简单，而是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">从现在开始，一直决策下去，长期总奖励能不能最大</code></pre>
+
+<p>MDP 正是用来把这件事数学化的工具。</p>
+<h2 id="2-一个直观例子：走格子"><a href="#2-一个直观例子：走格子" class="headerlink" title="2. 一个直观例子：走格子"></a>2. 一个直观例子：走格子</h2><p>假设有一个很小的网格世界：</p>
+<pre class="language-text" data-language="text"><code class="language-text">S  .  G
+.  X  .</code></pre>
+
+<p>其中：</p>
+<ul>
+<li><code>S</code> 表示起点。</li>
+<li><code>G</code> 表示目标位置。</li>
+<li><code>X</code> 表示障碍物。</li>
+<li>智能体每一步可以选择上、下、左、右。</li>
+<li>到达 <code>G</code> 得到奖励 $+10$。</li>
+<li>每走一步消耗 $-1$。</li>
+<li>撞墙或撞障碍物会留在原地，并得到 $-1$。</li>
+</ul>
+<p>如果只看当前一步，智能体可能随便走，因为每一步大多都是 $-1$。但如果看长期回报，它应该尽快找到通往 <code>G</code> 的路线。</p>
+<p>这个例子里：</p>
+<ul>
+<li>当前所在格子就是状态。</li>
+<li>上下左右就是动作。</li>
+<li>移动之后的位置就是下一个状态。</li>
+<li>每一步得到的分数就是奖励。</li>
+<li>“如何从每个格子选择动作”就是策略。</li>
+</ul>
+<p>这就是一个非常简单的 MDP。</p>
+<h2 id="3-MDP-的五元组"><a href="#3-MDP-的五元组" class="headerlink" title="3. MDP 的五元组"></a>3. MDP 的五元组</h2><p>一个标准的 MDP 通常写成五元组：</p>
+<p>$$<br>(\mathcal{S}, \mathcal{A}, P, R, \gamma)<br>$$</p>
+<p>分别表示：</p>
+<ul>
+<li>$\mathcal{S}$：状态集合（State Space）。</li>
+<li>$\mathcal{A}$：动作集合（Action Space）。</li>
+<li>$P$：状态转移概率（Transition Probability）。</li>
+<li>$R$：奖励函数（Reward Function）。</li>
+<li>$\gamma$：折扣因子（Discount Factor）。</li>
+</ul>
+<p>下面逐个理解。</p>
+<h2 id="4-状态：智能体看到的局面"><a href="#4-状态：智能体看到的局面" class="headerlink" title="4. 状态：智能体看到的局面"></a>4. 状态：智能体看到的局面</h2><p>状态用 $s$ 表示，所有可能状态组成集合 $\mathcal{S}$。</p>
+<p>在不同任务中，状态的含义不同：</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>状态例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>走格子</td>
+<td>智能体当前所在坐标</td>
+</tr>
+<tr>
+<td>下棋</td>
+<td>当前棋盘局面</td>
+</tr>
+<tr>
+<td>机器人控制</td>
+<td>位置、速度、传感器读数</td>
+</tr>
+<tr>
+<td>推荐系统</td>
+<td>用户画像、历史点击、当前页面</td>
+</tr>
+</tbody></table>
+<p>状态要尽可能包含做决策需要的信息。比如在走格子中，只知道“当前奖励”是不够的，必须知道当前在什么位置，才能判断下一步往哪里走。</p>
+<h2 id="5-动作：智能体可以做的选择"><a href="#5-动作：智能体可以做的选择" class="headerlink" title="5. 动作：智能体可以做的选择"></a>5. 动作：智能体可以做的选择</h2><p>动作用 $a$ 表示，所有可能动作组成集合 $\mathcal{A}$。</p>
+<p>例如在走格子任务中：</p>
+<p>$$<br>\mathcal{A} &#x3D; {\text{上}, \text{下}, \text{左}, \text{右}}<br>$$</p>
+<p>在实际问题中，动作可以是离散的，也可以是连续的。</p>
+<ul>
+<li>离散动作：向左、向右、跳跃、攻击。</li>
+<li>连续动作：机器人关节转动角度、车辆油门大小、机械臂施加的力。</li>
+</ul>
+<p>这篇文章先讨论离散状态、离散动作的情况，因为它最适合用来理解 MDP 的核心思想。</p>
+<h2 id="6-状态转移概率：动作不一定产生确定结果"><a href="#6-状态转移概率：动作不一定产生确定结果" class="headerlink" title="6. 状态转移概率：动作不一定产生确定结果"></a>6. 状态转移概率：动作不一定产生确定结果</h2><p>状态转移概率描述的是：在状态 $s$ 下执行动作 $a$ 后，转移到下一个状态 $s’$ 的概率。</p>
+<p>通常写成：</p>
+<p>$$<br>P(s’|s,a)&#x3D;\Pr(S_{t+1}&#x3D;s’|S_t&#x3D;s,A_t&#x3D;a)<br>$$</p>
+<p>例如在走格子中，如果环境是确定的，那么在某个位置选择“向右”，下一个状态就一定是右边那个格子。</p>
+<p>但很多现实问题不是确定的。比如机器人选择向前走，可能因为地面打滑而偏了一点；推荐系统展示一个内容，用户可能点击，也可能不点击。</p>
+<p>此时可以写成：</p>
+<p>$$<br>P(s_1|s,a)&#x3D;0.8,\quad P(s_2|s,a)&#x3D;0.2<br>$$</p>
+<p>意思是：在状态 $s$ 执行动作 $a$ 后，有 $80%$ 的概率到达 $s_1$，有 $20%$ 的概率到达 $s_2$。</p>
+<h2 id="7-奖励函数：什么结果是好的"><a href="#7-奖励函数：什么结果是好的" class="headerlink" title="7. 奖励函数：什么结果是好的"></a>7. 奖励函数：什么结果是好的</h2><p>奖励函数描述的是智能体执行动作后能得到多少反馈。</p>
+<p>一种常见写法是：</p>
+<p>$$<br>R(s,a)&#x3D;\mathbb{E}[R_{t+1}|S_t&#x3D;s,A_t&#x3D;a]<br>$$</p>
+<p>也可以把奖励写成和下一个状态有关：</p>
+<p>$$<br>R(s,a,s’)&#x3D;\mathbb{E}[R_{t+1}|S_t&#x3D;s,A_t&#x3D;a,S_{t+1}&#x3D;s’]<br>$$</p>
+<p>奖励是强化学习中的目标信号。</p>
+<p>例如：</p>
+<ul>
+<li>到达终点：$+10$</li>
+<li>每走一步：$-1$</li>
+<li>撞到障碍物：$-5$</li>
+<li>游戏获胜：$+1$</li>
+<li>游戏失败：$-1$</li>
+</ul>
+<p>奖励设计非常重要。如果奖励设计不合理，智能体可能学到一些看起来“钻空子”的行为。</p>
+<p>比如只奖励机器人“移动速度快”，却不惩罚撞墙，那么机器人可能会学会高速乱撞；只奖励推荐系统“点击率高”，却不考虑用户体验，系统可能会倾向于推荐标题夸张但质量低的内容。</p>
+<h2 id="8-折扣因子：未来奖励要不要打折"><a href="#8-折扣因子：未来奖励要不要打折" class="headerlink" title="8. 折扣因子：未来奖励要不要打折"></a>8. 折扣因子：未来奖励要不要打折</h2><p>强化学习关心长期回报，但未来太远的奖励通常要打一点折扣。</p>
+<p>折扣因子用 $\gamma$ 表示：</p>
+<p>$$<br>0 \le \gamma \le 1<br>$$</p>
+<p>如果从时刻 $t$ 开始，之后的奖励依次为：</p>
+<p>$$<br>R_{t+1}, R_{t+2}, R_{t+3}, \dots<br>$$</p>
+<p>那么累计回报定义为：</p>
+<p>$$<br>G_t &#x3D; R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$\gamma&#x3D;0$ 时，只关心下一步奖励。</li>
+<li>$\gamma$ 越接近 $1$，越重视长期奖励。</li>
+<li>$\gamma&lt;1$ 可以让无限步任务中的累计回报更容易收敛。</li>
+</ul>
+<p>举个例子，假设未来三步奖励分别是：</p>
+<p>$$<br>R_{t+1}&#x3D;1,\quad R_{t+2}&#x3D;2,\quad R_{t+3}&#x3D;10<br>$$</p>
+<p>如果 $\gamma&#x3D;0.9$，那么回报为：</p>
+<p>$$<br>G_t &#x3D; 1 + 0.9 \times 2 + 0.9^2 \times 10 &#x3D; 10.9<br>$$</p>
+<p>如果 $\gamma&#x3D;0.5$，那么回报为：</p>
+<p>$$<br>G_t &#x3D; 1 + 0.5 \times 2 + 0.5^2 \times 10 &#x3D; 4.5<br>$$</p>
+<p>可以看到，$\gamma$ 越小，越不在意远处的奖励。</p>
+<h2 id="9-马尔可夫性：未来只依赖现在"><a href="#9-马尔可夫性：未来只依赖现在" class="headerlink" title="9. 马尔可夫性：未来只依赖现在"></a>9. 马尔可夫性：未来只依赖现在</h2><p>MDP 中的“马尔可夫”来自马尔可夫性。</p>
+<p>马尔可夫性可以理解为：</p>
+<blockquote>
+<p>只要当前状态已经包含足够信息，那么未来如何变化只和当前状态、当前动作有关，不需要再追溯更早的历史。</p>
+</blockquote>
+<p>用公式表示：</p>
+<p>$$<br>\Pr(S_{t+1}&#x3D;s’|S_t&#x3D;s,A_t&#x3D;a,S_{t-1},A_{t-1},\dots)<br>&#x3D;<br>\Pr(S_{t+1}&#x3D;s’|S_t&#x3D;s,A_t&#x3D;a)<br>$$</p>
+<p>也就是说，给定当前状态 $s$ 和当前动作 $a$ 后，过去发生过什么不再额外影响下一个状态。</p>
+<p>这并不是说“历史不重要”，而是说：如果历史重要，就应该把历史中有用的信息放进当前状态里。</p>
+<p>例如在股票交易中，如果只把“当前价格”作为状态，可能不满足马尔可夫性，因为过去的价格趋势也会影响决策。此时可以把过去一段时间的价格、成交量、技术指标都加入状态，让状态包含更多信息。</p>
+<h2 id="10-策略：在每个状态下如何选择动作"><a href="#10-策略：在每个状态下如何选择动作" class="headerlink" title="10. 策略：在每个状态下如何选择动作"></a>10. 策略：在每个状态下如何选择动作</h2><p>策略（Policy）描述的是智能体的行为方式，通常用 $\pi$ 表示。</p>
+<p>确定性策略写成：</p>
+<p>$$<br>a&#x3D;\pi(s)<br>$$</p>
+<p>表示在状态 $s$ 下直接选择动作 $a$。</p>
+<p>随机策略写成：</p>
+<p>$$<br>\pi(a|s)&#x3D;\Pr(A_t&#x3D;a|S_t&#x3D;s)<br>$$</p>
+<p>表示在状态 $s$ 下选择动作 $a$ 的概率。</p>
+<p>例如在某个格子中，策略可能是：</p>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th align="right">概率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>上</td>
+<td align="right">0.1</td>
+</tr>
+<tr>
+<td>下</td>
+<td align="right">0.1</td>
+</tr>
+<tr>
+<td>左</td>
+<td align="right">0.2</td>
+</tr>
+<tr>
+<td>右</td>
+<td align="right">0.6</td>
+</tr>
+</tbody></table>
+<p>这表示智能体更倾向于向右走，但仍然保留一定探索其他动作的概率。</p>
+<p>强化学习要学习的，通常就是一个好的策略。</p>
+<h2 id="11-状态价值函数"><a href="#11-状态价值函数" class="headerlink" title="11. 状态价值函数"></a>11. 状态价值函数</h2><p>状态价值函数用 $V^\pi(s)$ 表示，意思是：</p>
+<blockquote>
+<p>如果当前处于状态 $s$，之后一直按照策略 $\pi$ 行动，期望能获得多少累计回报。</p>
+</blockquote>
+<p>公式为：</p>
+<p>$$<br>V^\pi(s)&#x3D;\mathbb{E}_\pi[G_t|S_t&#x3D;s]<br>$$</p>
+<p>把回报展开：</p>
+<p>$$<br>V^\pi(s)&#x3D;\mathbb{E}<em>\pi[R</em>{t+1}+\gamma R_{t+2}+\gamma^2R_{t+3}+\cdots|S_t&#x3D;s]<br>$$</p>
+<p>价值函数可以理解为“这个状态有多好”。</p>
+<p>在走格子任务中，离终点越近、越容易到达终点的格子，价值通常越高；离障碍物近、容易被困住的位置，价值通常较低。</p>
+<h2 id="12-动作价值函数"><a href="#12-动作价值函数" class="headerlink" title="12. 动作价值函数"></a>12. 动作价值函数</h2><p>动作价值函数用 $Q^\pi(s,a)$ 表示，意思是：</p>
+<blockquote>
+<p>如果当前处于状态 $s$，先执行动作 $a$，之后再按照策略 $\pi$ 行动，期望能获得多少累计回报。</p>
+</blockquote>
+<p>公式为：</p>
+<p>$$<br>Q^\pi(s,a)&#x3D;\mathbb{E}_\pi[G_t|S_t&#x3D;s,A_t&#x3D;a]<br>$$</p>
+<p>状态价值函数关注“状态好不好”，动作价值函数关注“在这个状态下做某个动作好不好”。</p>
+<p>二者的关系是：</p>
+<p>$$<br>V^\pi(s)&#x3D;\sum_a \pi(a|s)Q^\pi(s,a)<br>$$</p>
+<p>如果策略是确定性的，在状态 $s$ 下只选择动作 $\pi(s)$，那么：</p>
+<p>$$<br>V^\pi(s)&#x3D;Q^\pi(s,\pi(s))<br>$$</p>
+<h2 id="13-贝尔曼方程：把长期价值拆成一步"><a href="#13-贝尔曼方程：把长期价值拆成一步" class="headerlink" title="13. 贝尔曼方程：把长期价值拆成一步"></a>13. 贝尔曼方程：把长期价值拆成一步</h2><p>强化学习中最核心的公式之一就是贝尔曼方程。</p>
+<p>它的思想非常朴素：</p>
+<pre class="language-text" data-language="text"><code class="language-text">当前状态的价值 = 下一步奖励 + 下一个状态的折扣价值</code></pre>
+
+<p>对于某个策略 $\pi$，状态价值函数满足：</p>
+<p>$$<br>V^\pi(s)&#x3D;\sum_a \pi(a|s)\sum_{s’}P(s’|s,a)<br>\left[R(s,a,s’)+\gamma V^\pi(s’)\right]<br>$$</p>
+<p>这个公式看起来长，但每一部分都能对应到 MDP 的元素：</p>
+<ul>
+<li>$\pi(a|s)$：在状态 $s$ 下选择动作 $a$ 的概率。</li>
+<li>$P(s’|s,a)$：执行动作 $a$ 后到达 $s’$ 的概率。</li>
+<li>$R(s,a,s’)$：这一步得到的奖励。</li>
+<li>$\gamma V^\pi(s’)$：下一个状态的未来价值。</li>
+</ul>
+<p>贝尔曼方程的关键在于：它把“无限长的未来”拆成了“眼前一步 + 剩下的未来”。</p>
+<p>这和动态规划的思想很像：如果后面的子问题已经知道答案，那么当前问题就可以通过一步递推算出来。</p>
+<h2 id="14-最优价值函数和最优策略"><a href="#14-最优价值函数和最优策略" class="headerlink" title="14. 最优价值函数和最优策略"></a>14. 最优价值函数和最优策略</h2><p>如果我们不想评价某一个固定策略，而是想找到最好的策略，就会用到最优价值函数。</p>
+<p>最优状态价值函数定义为：</p>
+<p>$$<br>V^*(s)&#x3D;\max_\pi V^\pi(s)<br>$$</p>
+<p>意思是：在所有可能策略中，从状态 $s$ 出发能得到的最大期望回报。</p>
+<p>最优动作价值函数定义为：</p>
+<p>$$<br>Q^*(s,a)&#x3D;\max_\pi Q^\pi(s,a)<br>$$</p>
+<p>对应的最优贝尔曼方程为：</p>
+<p>$$<br>V^*(s)&#x3D;\max_a \sum_{s’}P(s’|s,a)<br>\left[R(s,a,s’)+\gamma V^*(s’)\right]<br>$$</p>
+<p>最优策略可以从最优价值函数中取出来：</p>
+<p>$$<br>\pi^*(s)&#x3D;\arg\max_a \sum_{s’}P(s’|s,a)<br>\left[R(s,a,s’)+\gamma V^*(s’)\right]<br>$$</p>
+<p>直观地说，就是在每个状态下选择能让“当前奖励 + 未来价值”最大的动作。</p>
+<h2 id="15-手工计算一个小例子"><a href="#15-手工计算一个小例子" class="headerlink" title="15. 手工计算一个小例子"></a>15. 手工计算一个小例子</h2><p>假设现在只有两个普通状态 $A$、$B$，以及一个终止状态 $T$。</p>
+<p>动作规则如下：</p>
+<table>
+<thead>
+<tr>
+<th>当前状态</th>
+<th>动作</th>
+<th>下一个状态</th>
+<th align="right">奖励</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>去 B</td>
+<td>B</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>A</td>
+<td>结束</td>
+<td>T</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>B</td>
+<td>去 A</td>
+<td>A</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>B</td>
+<td>结束</td>
+<td>T</td>
+<td align="right">3</td>
+</tr>
+</tbody></table>
+<p>设折扣因子：</p>
+<p>$$<br>\gamma&#x3D;0.9<br>$$</p>
+<p>终止状态价值为：</p>
+<p>$$<br>V^*(T)&#x3D;0<br>$$</p>
+<p>对于状态 $A$，有两个选择：</p>
+<ol>
+<li>直接结束，得到奖励 $1$。</li>
+<li>去 $B$，得到奖励 $0$，然后获得 $B$ 的未来价值。</li>
+</ol>
+<p>所以：</p>
+<p>$$<br>V^*(A)&#x3D;\max(1,;0+0.9V^*(B))<br>$$</p>
+<p>对于状态 $B$：</p>
+<p>$$<br>V^*(B)&#x3D;\max(3,;0+0.9V^*(A))<br>$$</p>
+<p>可以先猜一下：在 $B$ 直接结束可以得到 $3$，看起来很划算。</p>
+<p>如果 $V^*(B)&#x3D;3$，那么：</p>
+<p>$$<br>V^*(A)&#x3D;\max(1,;0.9\times 3)&#x3D;2.7<br>$$</p>
+<p>再代回 $B$：</p>
+<p>$$<br>V^*(B)&#x3D;\max(3,;0.9\times 2.7)&#x3D;\max(3,;2.43)&#x3D;3<br>$$</p>
+<p>所以结果稳定：</p>
+<p>$$<br>V^*(A)&#x3D;2.7,\quad V^*(B)&#x3D;3<br>$$</p>
+<p>最优策略为：</p>
+<ul>
+<li>在 $A$ 选择“去 B”。</li>
+<li>在 $B$ 选择“结束”。</li>
+</ul>
+<p>这个例子说明：状态 $A$ 直接结束只能得到 $1$，但如果先去 $B$，再结束，折扣后还能得到 $2.7$，所以更优。</p>
+<h2 id="16-价值迭代：不断逼近最优价值"><a href="#16-价值迭代：不断逼近最优价值" class="headerlink" title="16. 价值迭代：不断逼近最优价值"></a>16. 价值迭代：不断逼近最优价值</h2><p>如果状态和动作数量不大，并且已知转移概率和奖励函数，就可以使用价值迭代（Value Iteration）求解 MDP。</p>
+<p>价值迭代的更新公式来自最优贝尔曼方程：</p>
+<p>$$<br>V_{k+1}(s)&#x3D;\max_a \sum_{s’}P(s’|s,a)<br>\left[R(s,a,s’)+\gamma V_k(s’)\right]<br>$$</p>
+<p>它的思路是：</p>
+<ol>
+<li>先给每个状态的价值一个初始值，比如全是 $0$。</li>
+<li>用贝尔曼最优方程更新每个状态。</li>
+<li>重复很多轮，直到价值变化很小。</li>
+<li>根据最终价值函数选出每个状态下最好的动作。</li>
+</ol>
+<p>可以把它理解为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">先粗略估计每个状态的价值
+然后不断让每个状态参考后继状态的价值来修正自己</code></pre>
+
+<h2 id="17-Python-实现价值迭代"><a href="#17-Python-实现价值迭代" class="headerlink" title="17. Python 实现价值迭代"></a>17. Python 实现价值迭代</h2><p>下面用 Python 实现上面 $A$、$B$、$T$ 的小 MDP。</p>
+<pre class="language-python" data-language="python"><code class="language-python">states <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"A"</span><span class="token punctuation">,</span> <span class="token string">"B"</span><span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">]</span>
+actions <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">"A"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"go_B"</span><span class="token punctuation">,</span> <span class="token string">"end"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">"B"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"go_A"</span><span class="token punctuation">,</span> <span class="token string">"end"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">"T"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment"># transitions[(state, action)] = [(probability, next_state, reward)]</span>
+transitions <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token punctuation">(</span><span class="token string">"A"</span><span class="token punctuation">,</span> <span class="token string">"go_B"</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token string">"B"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"A"</span><span class="token punctuation">,</span> <span class="token string">"end"</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"B"</span><span class="token punctuation">,</span> <span class="token string">"go_A"</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token string">"A"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"B"</span><span class="token punctuation">,</span> <span class="token string">"end"</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+
+gamma <span class="token operator">=</span> <span class="token number">0.9</span>
+theta <span class="token operator">=</span> <span class="token number">1e-6</span>
+
+<span class="token comment"># 对应模块：初始化价值函数，终止状态和普通状态一开始都设为 0</span>
+V <span class="token operator">=</span> <span class="token punctuation">&#123;</span>s<span class="token punctuation">:</span> <span class="token number">0.0</span> <span class="token keyword">for</span> s <span class="token keyword">in</span> states<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+    delta <span class="token operator">=</span> <span class="token number">0.0</span>
+
+    <span class="token keyword">for</span> s <span class="token keyword">in</span> states<span class="token punctuation">:</span>
+        <span class="token comment"># 对应模块：终止状态没有动作，价值保持为 0</span>
+        <span class="token keyword">if</span> <span class="token keyword">not</span> actions<span class="token punctuation">[</span>s<span class="token punctuation">]</span><span class="token punctuation">:</span>
+            <span class="token keyword">continue</span>
+
+        old_value <span class="token operator">=</span> V<span class="token punctuation">[</span>s<span class="token punctuation">]</span>
+        action_values <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+        <span class="token keyword">for</span> a <span class="token keyword">in</span> actions<span class="token punctuation">[</span>s<span class="token punctuation">]</span><span class="token punctuation">:</span>
+            value <span class="token operator">=</span> <span class="token number">0.0</span>
+
+            <span class="token comment"># 对应模块：计算某个动作的期望价值</span>
+            <span class="token keyword">for</span> prob<span class="token punctuation">,</span> next_state<span class="token punctuation">,</span> reward <span class="token keyword">in</span> transitions<span class="token punctuation">[</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> a<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+                value <span class="token operator">+=</span> prob <span class="token operator">*</span> <span class="token punctuation">(</span>reward <span class="token operator">+</span> gamma <span class="token operator">*</span> V<span class="token punctuation">[</span>next_state<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+            action_values<span class="token punctuation">.</span>append<span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+
+        <span class="token comment"># 对应模块：贝尔曼最优更新，选择价值最大的动作</span>
+        V<span class="token punctuation">[</span>s<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>action_values<span class="token punctuation">)</span>
+        delta <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>delta<span class="token punctuation">,</span> <span class="token builtin">abs</span><span class="token punctuation">(</span>old_value <span class="token operator">-</span> V<span class="token punctuation">[</span>s<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> delta <span class="token operator">&lt;</span> theta<span class="token punctuation">:</span>
+        <span class="token keyword">break</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"最优价值函数："</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> s <span class="token keyword">in</span> states<span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token builtin">round</span><span class="token punctuation">(</span>V<span class="token punctuation">[</span>s<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"\n最优策略："</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> s <span class="token keyword">in</span> states<span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> actions<span class="token punctuation">[</span>s<span class="token punctuation">]</span><span class="token punctuation">:</span>
+        <span class="token keyword">continue</span>
+
+    best_action <span class="token operator">=</span> <span class="token boolean">None</span>
+    best_value <span class="token operator">=</span> <span class="token builtin">float</span><span class="token punctuation">(</span><span class="token string">"-inf"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> a <span class="token keyword">in</span> actions<span class="token punctuation">[</span>s<span class="token punctuation">]</span><span class="token punctuation">:</span>
+        value <span class="token operator">=</span> <span class="token number">0.0</span>
+        <span class="token keyword">for</span> prob<span class="token punctuation">,</span> next_state<span class="token punctuation">,</span> reward <span class="token keyword">in</span> transitions<span class="token punctuation">[</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> a<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            value <span class="token operator">+=</span> prob <span class="token operator">*</span> <span class="token punctuation">(</span>reward <span class="token operator">+</span> gamma <span class="token operator">*</span> V<span class="token punctuation">[</span>next_state<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> value <span class="token operator">></span> best_value<span class="token punctuation">:</span>
+            best_value <span class="token operator">=</span> value
+            best_action <span class="token operator">=</span> a
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token string">"->"</span><span class="token punctuation">,</span> best_action<span class="token punctuation">)</span></code></pre>
+
+<p>输出结果大致为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">最优价值函数：
+A 2.7
+B 3.0
+T 0.0
+
+最优策略：
+A -> go_B
+B -> end</code></pre>
+
+<p>这和前面的手工计算一致。</p>
+<h2 id="18-MDP-和强化学习算法的关系"><a href="#18-MDP-和强化学习算法的关系" class="headerlink" title="18. MDP 和强化学习算法的关系"></a>18. MDP 和强化学习算法的关系</h2><p>MDP 是问题建模框架，而强化学习算法是在这个框架上学习策略或价值函数的方法。</p>
+<p>常见算法可以这样理解：</p>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>主要学习什么</th>
+<th>依赖模型吗</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>动态规划</td>
+<td>$V(s)$ 或 $Q(s,a)$</td>
+<td>需要已知 $P$ 和 $R$</td>
+</tr>
+<tr>
+<td>蒙特卡洛方法</td>
+<td>通过完整回合估计价值</td>
+<td>不需要已知模型</td>
+</tr>
+<tr>
+<td>TD 学习</td>
+<td>用一步奖励和下一个状态估计价值</td>
+<td>不需要已知模型</td>
+</tr>
+<tr>
+<td>Q-Learning</td>
+<td>学习最优动作价值 $Q^*(s,a)$</td>
+<td>不需要已知模型</td>
+</tr>
+<tr>
+<td>SARSA</td>
+<td>学习当前策略下的动作价值</td>
+<td>不需要已知模型</td>
+</tr>
+<tr>
+<td>Policy Gradient</td>
+<td>直接优化策略参数</td>
+<td>不需要已知模型</td>
+</tr>
+</tbody></table>
+<p>如果环境的转移概率 $P$ 和奖励函数 $R$ 已知，就可以用动态规划类方法直接求解。</p>
+<p>但很多真实问题中，智能体并不知道 $P$ 和 $R$ 的完整形式，只能通过和环境交互得到样本：</p>
+<pre class="language-text" data-language="text"><code class="language-text">(s, a, r, s')</code></pre>
+
+<p>这时就需要 Q-Learning、SARSA、Policy Gradient 等强化学习算法。</p>
+<h2 id="19-MDP-中几个容易混淆的概念"><a href="#19-MDP-中几个容易混淆的概念" class="headerlink" title="19. MDP 中几个容易混淆的概念"></a>19. MDP 中几个容易混淆的概念</h2><h3 id="19-1-奖励和价值"><a href="#19-1-奖励和价值" class="headerlink" title="19.1 奖励和价值"></a>19.1 奖励和价值</h3><p>奖励是一步反馈，价值是长期回报的期望。</p>
+<p>例如在走格子中，某一步向右走可能只得到 $-1$，但如果这一步能让智能体更接近终点，那么当前状态或当前动作的价值仍然可能很高。</p>
+<p>所以：</p>
+<pre class="language-text" data-language="text"><code class="language-text">奖励看一步，价值看长期</code></pre>
+
+<h3 id="19-2-状态和观测"><a href="#19-2-状态和观测" class="headerlink" title="19.2 状态和观测"></a>19.2 状态和观测</h3><p>理论上的 MDP 假设智能体能看到完整状态。</p>
+<p>但现实中智能体经常只能看到一部分信息，这叫观测（Observation）。例如自动驾驶汽车不一定知道世界的完整真实状态，只能通过摄像头、雷达等传感器获得观测。</p>
+<p>如果观测不能完整表示状态，问题就更接近部分可观测马尔可夫决策过程（Partially Observable Markov Decision Process，POMDP）。</p>
+<h3 id="19-3-策略和价值函数"><a href="#19-3-策略和价值函数" class="headerlink" title="19.3 策略和价值函数"></a>19.3 策略和价值函数</h3><p>策略告诉智能体“怎么做”，价值函数告诉智能体“这样做长期好不好”。</p>
+<p>很多算法会先学习价值函数，再从价值函数中导出策略；也有算法直接学习策略。</p>
+<h2 id="20-实践建议"><a href="#20-实践建议" class="headerlink" title="20. 实践建议"></a>20. 实践建议</h2><p>用 MDP 思考强化学习问题时，可以按下面顺序拆解：</p>
+<ol>
+<li>明确状态是什么，状态是否包含足够决策信息。</li>
+<li>明确动作有哪些，是离散动作还是连续动作。</li>
+<li>明确奖励怎么设计，避免奖励和真实目标不一致。</li>
+<li>明确任务是否有终止状态，例如游戏结束、到达目标、失败退出。</li>
+<li>选择合适的折扣因子 $\gamma$，短期任务可以小一点，长期任务通常接近 $1$。</li>
+<li>如果已知环境模型，可以考虑动态规划；如果不知道模型，就通过交互数据学习。</li>
+<li>先从小环境验证算法，再扩展到复杂环境。</li>
+</ol>
+<h2 id="21-总结"><a href="#21-总结" class="headerlink" title="21. 总结"></a>21. 总结</h2><p>MDP 是强化学习的地基。</p>
+<p>它用状态、动作、转移概率、奖励函数和折扣因子，把连续决策问题描述成一个清晰的数学模型：</p>
+<p>$$<br>(\mathcal{S}, \mathcal{A}, P, R, \gamma)<br>$$</p>
+<p>其中，马尔可夫性要求当前状态已经包含足够信息；策略决定智能体如何行动；价值函数衡量长期回报；贝尔曼方程则把长期价值拆成“当前一步 + 未来价值”。</p>
+<p>理解 MDP 之后，再看 Q-Learning、SARSA、DQN、Policy Gradient 等算法会顺很多。因为这些算法本质上都在回答同一个问题：</p>
+<pre class="language-text" data-language="text"><code class="language-text">在这个 MDP 中，怎样选择动作，才能让长期累计奖励最大？</code></pre>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>本文主要参考了以下资料：</p>
+<ol>
+<li>Richard S. Sutton, Andrew G. Barto, <em>Reinforcement Learning: An Introduction</em>, 2nd Edition, MIT Press, 2018. 在线版：<a target="_blank" rel="noopener" href="https://incompleteideas.net/book/the-book-2nd.html">https://incompleteideas.net/book/the-book-2nd.html</a></li>
+<li>Martin L. Puterman, <em>Markov Decision Processes: Discrete Stochastic Dynamic Programming</em>, Wiley, 1994.</li>
+<li>Richard Bellman, “A Markovian Decision Process”, <em>Journal of Mathematics and Mechanics</em>, 1957.</li>
+<li>David Silver, <em>Lecture 2: Markov Decision Processes</em>, UCL Course on Reinforcement Learning, 2015. 课程资料：<a target="_blank" rel="noopener" href="http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html">http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/06/13/machine-learning-markov-decision-process/">https://lsworl.github.io/2026/06/13/machine-learning-markov-decision-process/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="post-meta__tags" href="/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/">强化学习</a><a class="post-meta__tags" href="/tags/%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/">马尔可夫决策过程</a><a class="post-meta__tags" href="/tags/MDP/">MDP</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/06/07/nlp-text-processing/" title="文本处理：让自然语言变成模型能理解的数字"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">文本处理：让自然语言变成模型能理解的数字</div></div><div class="info-2"><div class="info-item-1">学习 Transformer 之前，有一个非常重要的前置问题：  机器学习模型只能处理数字，那自然语言文本应该怎样变成数字？  比如一句话： 我喜欢自然语言处理  人可以直接理解它的意思，但模型不能直接处理汉字、单词和标点。我们需要先把文本拆成一个个 token，再把 token 映射成编号或向量，最后才能送进模型。 这篇文章就来系统梳理 NLP 中最基础的文本处理流程。    1. 文本处理在 NLP 中的位置在前面的机器学习文章中，我们处理的大多是结构化数据，例如： 学习时长、睡眠时长、房屋面积、历史成绩  这些特征天然就是数字，或者很容易转成数字。 但 NLP 处理的是文本，例如： 这部电影很好看 这个商品质量一般 今天天气不错  模型不能直接理解这些句子，所以需要一个转换流程： 原始文本   -> 清洗与规范化   -> 分词 / tokenization   -> 构建词表   -> token 转 id   -> id 转向量   -> 输入模型  传统机器学习中，文本常被转成词袋、TF-IDF 这样的稀疏向量；深度学习和 Transformer 中，文本通常先转成 ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/05/24/machine-learning-logistic-regression/" title="逻辑回归：从直线到概率的分类算法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-24</div><div class="info-item-2">逻辑回归：从直线到概率的分类算法</div></div><div class="info-2"><div class="info-item-1">逻辑回归（Logistic Regression）名字里有“回归”，但它最常用于分类任务，尤其是二分类问题（逻辑回归说白了就是在线性回归的基础上使用Sigmoid 函数将原先结果转为概率的形式，然后根据设定的阈值来判断是否是正类）。 它要回答的问题不是“这个样本的数值是多少”，而是“这个样本属于某一类的概率有多大”。例如：  一封邮件是垃圾邮件的概率是多少？ 一个用户会不会点击广告？ 一个肿瘤样本是恶性的概率是多少？ 一个学生是否能通过考试？  逻辑回归的核心思想可以概括为一句话：先用一条直线算出一个分数，再用 Sigmoid 函数把这个分数压缩成 $0$ 到 $1$ 之间的概率。    1. 从线性回归说起在线性回归中，我们用一个线性函数预测连续值： $$z &#x3D; wx + b$$ 如果是多个特征（w可以看作权重），可以写成： $$z &#x3D; \mathbf{w}^{T}\mathbf{x} + b$$ 这里的 $z$ 可以理解为模型给样本打出的“原始分数”。 但是分类问题不能直接使用这个分数。比如判断一封邮件是不是垃圾邮件时，我们希望模型输出的是： $$P(y&...</div></div></div></a><a class="pagination-related" href="/2026/05/19/machine-learning-knn/" title="K 近邻算法：KNN（K-Nearest Neighbors）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-19</div><div class="info-item-2">K 近邻算法：KNN（K-Nearest Neighbors）</div></div><div class="info-2"><div class="info-item-1">KNN（K-Nearest Neighbors，K 近邻）是一种非常直观的监督学习算法：一个样本属于什么类别，可以参考它在特征空间中最近的 $K$ 个邻居。 在分类任务中，KNN 通常采用“多数投票”：最近的 $K$ 个样本里哪个类别最多，就预测为哪个类别；在回归任务中，KNN 通常取最近 $K$ 个样本标签值的平均值或加权平均值。   1. KNN 的直觉可以把 KNN 想象成“向邻居打听答案”。 假设小区里新搬来一户人家，你想判断他们更像“高收入家庭”还是“普通收入家庭”。最直接的方式，是观察离他们最近的几户邻居：如果最近的 5 户里有 3 户都是高收入家庭，那么你可能会猜测这户新邻居也更接近高收入家庭。 机器学习里的 KNN 做的是类似的事情：  输入：一个尚未标记类别的新样本。 过程：在训练集中找到距离它最近的 $K$ 个已知样本。 输出：分类时进行多数投票，回归时进行平均或加权平均。  KNN 本质上没有显式的训练过程，它把训练数据保存下来，预测时再计算新样本与训练样本之间的距离。因此它也被称为惰性学习（Lazy Learning）。 2. 数学原理KNN 要解决两个核...</div></div></div></a><a class="pagination-related" href="/2026/06/04/machine-learning-regularization-overfitting/" title="正则化与过拟合：让模型不只记住训练集"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-04</div><div class="info-item-2">正则化与过拟合：让模型不只记住训练集</div></div><div class="info-2"><div class="info-item-1">前面学习线性回归、逻辑回归、决策树、集成学习和 GBDT 时，我们一直在训练模型，让模型尽可能学到数据里的规律。 但机器学习里有一个很重要的问题：  模型在训练集上表现很好，不代表它在新数据上也表现很好。  如果模型把训练数据里的噪声、偶然样本、特殊细节都记住了，就会出现过拟合（Overfitting）。正则化（Regularization）就是用来控制模型复杂度、提升泛化能力的一类方法。    1. 什么是泛化能力机器学习真正关心的不是训练集分数，而是模型面对新数据时的表现。 例如我们训练一个模型预测学生是否通过考试。训练集中有 100 个学生，模型全部预测正确，训练准确率达到 $100%$。 这听起来很好，但如果换一批新学生，准确率只有 $65%$，说明模型可能只是记住了训练集，而没有学到稳定规律。 这种“面对新数据仍然表现好”的能力，叫泛化能力。 可以简单记住： 训练集表现好：说明模型会做旧题 测试集表现好：说明模型学到了规律  在交叉验证那篇文章里，我们已经讲过：不能只看一次训练&#x2F;测试划分，更稳妥的方式是用验证集或交叉验证评估模型。正则化则是进一步解决“模型太复...</div></div></div></a><a class="pagination-related" href="/2026/05/26/machine-learning-gradient-descent/" title="梯度下降法：机器学习如何一步步找到最优解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="info-item-2">梯度下降法：机器学习如何一步步找到最优解</div></div><div class="info-2"><div class="info-item-1">在机器学习中，我们经常会说一句话：模型训练的目标，是让损失函数尽可能小（在深度学习中也经常使用梯度下降）。 但问题是：参数那么多，损失函数又可能很复杂，模型到底应该怎样找到那个“比较好”的参数呢？ 梯度下降法就是最常用的答案之一。它的思想并不神秘：先站在一个位置，看哪里下降最快，然后朝那个方向走一小步；重复很多次以后，就逐渐接近损失函数的低谷（梯度下降就是通过多元求极值的方式来求最小值）。   1. 为什么需要梯度下降以线性回归为例，模型可以写成： $$\hat{y} &#x3D; wx + b$$ 其中：  $x$ 是输入特征。 $\hat{y}$ 是模型预测值。 $w$ 是权重。 $b$ 是偏置。  我们希望预测值 $\hat{y}$ 尽量接近真实值 $y$，因此可以使用均方误差作为损失函数： $$J(w, b) &#x3D; \frac{1}{m}\sum_{i&#x3D;1}^{m}(\hat{y}^{(i)} - y^{(i)})^2$$ 因为 $\hat{y}^{(i)} &#x3D; wx^{(i)} + b$，所以也可以写成： $$J(w, b) &#x3D; \...</div></div></div></a><a class="pagination-related" href="/2026/05/25/machine-learning-cross-validation-grid-search/" title="交叉验证与网格搜索：让模型选择更可靠"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-25</div><div class="info-item-2">交叉验证与网格搜索：让模型选择更可靠</div></div><div class="info-2"><div class="info-item-1">训练机器学习模型时，我们经常会遇到两个问题：  这个模型到底是不是真的好？ 参数应该怎么选，比如 KNN 的 $K$、逻辑回归的正则化强度、决策树的最大深度？  如果只把数据随便分成一次训练集和测试集，然后看一次准确率，很容易被偶然性误导。交叉验证（Cross Validation）就是为了解决“评估不稳定”的问题；网格搜索（Grid Search）则是为了解决“超参数怎么选”的问题。    1. 为什么不能只划分一次数据假设我们有一份数据集，要判断一个模型效果如何。最常见的做法是： 训练集：用来训练模型 测试集：用来评估模型  这听起来很合理，但有一个问题：一次划分可能有运气成分。 如果测试集刚好比较简单，模型分数会偏高；如果测试集刚好比较困难，模型分数会偏低。也就是说，一次测试结果可能不能代表模型的真实水平。 可以把它想象成考试：  只考一张卷子，可能刚好考到你熟悉的题。 多考几张不同卷子，平均成绩才更接近真实水平。  交叉验证的思想就是：让模型多考几次，再看平均表现。 2. 什么是 K 折交叉验证K 折交叉验证（K-Fold Cross Validation）会把数据分成 ...</div></div></div></a><a class="pagination-related" href="/2026/05/28/machine-learning-ensemble-learning/" title="集成学习：让多个模型一起做决定"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-28</div><div class="info-item-2">集成学习：让多个模型一起做决定</div></div><div class="info-2"><div class="info-item-1">前面学习决策树时，我们提到过一个问题：单棵决策树虽然直观、可解释，但很容易过拟合，也很容易受到数据扰动影响。 集成学习（Ensemble Learning）就是为了解决这类问题而出现的思想。它不再把希望全部压在一个模型身上，而是训练多个模型，再把它们的结果组合起来。 可以把它理解成：一个人判断可能会偏，很多人从不同角度判断，再投票或取平均，结果通常更稳定。    1. 什么是集成学习集成学习的核心思想很简单：  训练多个基模型，再把这些模型的预测结果组合成最终结果。  这里的基模型也叫弱学习器（Weak Learner）或基学习器（Base Learner）。它不一定真的很弱，只是相对于最终组合模型来说，每个单独模型只负责贡献一部分判断。 例如一个分类任务中，我们训练了 5 个模型，它们分别预测： 模型 1：通过 模型 2：通过 模型 3：不通过 模型 4：通过 模型 5：通过  如果使用多数投票，最终结果就是“通过”。 如果是回归任务，例如预测房价，多个模型分别预测： 90 万、94 万、92 万、96 万、93 万  最终可以取平均值： $$\hat{y}&#x3D;\fra...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">109</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">95</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">33</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-MDP"><span class="toc-number">1.</span> <span class="toc-text">1. 为什么需要 MDP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%80%E4%B8%AA%E7%9B%B4%E8%A7%82%E4%BE%8B%E5%AD%90%EF%BC%9A%E8%B5%B0%E6%A0%BC%E5%AD%90"><span class="toc-number">2.</span> <span class="toc-text">2. 一个直观例子：走格子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-MDP-%E7%9A%84%E4%BA%94%E5%85%83%E7%BB%84"><span class="toc-number">3.</span> <span class="toc-text">3. MDP 的五元组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%8A%B6%E6%80%81%EF%BC%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%9C%8B%E5%88%B0%E7%9A%84%E5%B1%80%E9%9D%A2"><span class="toc-number">4.</span> <span class="toc-text">4. 状态：智能体看到的局面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%8A%A8%E4%BD%9C%EF%BC%9A%E6%99%BA%E8%83%BD%E4%BD%93%E5%8F%AF%E4%BB%A5%E5%81%9A%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">5.</span> <span class="toc-text">5. 动作：智能体可以做的选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E6%A6%82%E7%8E%87%EF%BC%9A%E5%8A%A8%E4%BD%9C%E4%B8%8D%E4%B8%80%E5%AE%9A%E4%BA%A7%E7%94%9F%E7%A1%AE%E5%AE%9A%E7%BB%93%E6%9E%9C"><span class="toc-number">6.</span> <span class="toc-text">6. 状态转移概率：动作不一定产生确定结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%A5%96%E5%8A%B1%E5%87%BD%E6%95%B0%EF%BC%9A%E4%BB%80%E4%B9%88%E7%BB%93%E6%9E%9C%E6%98%AF%E5%A5%BD%E7%9A%84"><span class="toc-number">7.</span> <span class="toc-text">7. 奖励函数：什么结果是好的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%8A%98%E6%89%A3%E5%9B%A0%E5%AD%90%EF%BC%9A%E6%9C%AA%E6%9D%A5%E5%A5%96%E5%8A%B1%E8%A6%81%E4%B8%8D%E8%A6%81%E6%89%93%E6%8A%98"><span class="toc-number">8.</span> <span class="toc-text">8. 折扣因子：未来奖励要不要打折</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E6%80%A7%EF%BC%9A%E6%9C%AA%E6%9D%A5%E5%8F%AA%E4%BE%9D%E8%B5%96%E7%8E%B0%E5%9C%A8"><span class="toc-number">9.</span> <span class="toc-text">9. 马尔可夫性：未来只依赖现在</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E7%AD%96%E7%95%A5%EF%BC%9A%E5%9C%A8%E6%AF%8F%E4%B8%AA%E7%8A%B6%E6%80%81%E4%B8%8B%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%8A%A8%E4%BD%9C"><span class="toc-number">10.</span> <span class="toc-text">10. 策略：在每个状态下如何选择动作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%8A%B6%E6%80%81%E4%BB%B7%E5%80%BC%E5%87%BD%E6%95%B0"><span class="toc-number">11.</span> <span class="toc-text">11. 状态价值函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%8A%A8%E4%BD%9C%E4%BB%B7%E5%80%BC%E5%87%BD%E6%95%B0"><span class="toc-number">12.</span> <span class="toc-text">12. 动作价值函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E8%B4%9D%E5%B0%94%E6%9B%BC%E6%96%B9%E7%A8%8B%EF%BC%9A%E6%8A%8A%E9%95%BF%E6%9C%9F%E4%BB%B7%E5%80%BC%E6%8B%86%E6%88%90%E4%B8%80%E6%AD%A5"><span class="toc-number">13.</span> <span class="toc-text">13. 贝尔曼方程：把长期价值拆成一步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E6%9C%80%E4%BC%98%E4%BB%B7%E5%80%BC%E5%87%BD%E6%95%B0%E5%92%8C%E6%9C%80%E4%BC%98%E7%AD%96%E7%95%A5"><span class="toc-number">14.</span> <span class="toc-text">14. 最优价值函数和最优策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E6%89%8B%E5%B7%A5%E8%AE%A1%E7%AE%97%E4%B8%80%E4%B8%AA%E5%B0%8F%E4%BE%8B%E5%AD%90"><span class="toc-number">15.</span> <span class="toc-text">15. 手工计算一个小例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E4%BB%B7%E5%80%BC%E8%BF%AD%E4%BB%A3%EF%BC%9A%E4%B8%8D%E6%96%AD%E9%80%BC%E8%BF%91%E6%9C%80%E4%BC%98%E4%BB%B7%E5%80%BC"><span class="toc-number">16.</span> <span class="toc-text">16. 价值迭代：不断逼近最优价值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-Python-%E5%AE%9E%E7%8E%B0%E4%BB%B7%E5%80%BC%E8%BF%AD%E4%BB%A3"><span class="toc-number">17.</span> <span class="toc-text">17. Python 实现价值迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-MDP-%E5%92%8C%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">18.</span> <span class="toc-text">18. MDP 和强化学习算法的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-MDP-%E4%B8%AD%E5%87%A0%E4%B8%AA%E5%AE%B9%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">19.</span> <span class="toc-text">19. MDP 中几个容易混淆的概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E5%A5%96%E5%8A%B1%E5%92%8C%E4%BB%B7%E5%80%BC"><span class="toc-number">19.1.</span> <span class="toc-text">19.1 奖励和价值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E7%8A%B6%E6%80%81%E5%92%8C%E8%A7%82%E6%B5%8B"><span class="toc-number">19.2.</span> <span class="toc-text">19.2 状态和观测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-3-%E7%AD%96%E7%95%A5%E5%92%8C%E4%BB%B7%E5%80%BC%E5%87%BD%E6%95%B0"><span class="toc-number">19.3.</span> <span class="toc-text">19.3 策略和价值函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE"><span class="toc-number">20.</span> <span class="toc-text">20. 实践建议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E6%80%BB%E7%BB%93"><span class="toc-number">21.</span> <span class="toc-text">21. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">22.</span> <span class="toc-text">参考文献</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/13/machine-learning-markov-decision-process/" title="强化学习：从状态、动作到马尔可夫决策过程">强化学习：从状态、动作到马尔可夫决策过程</a><time datetime="2026-06-12T16:00:00.000Z" title="发表于 2026-06-13 00:00:00">2026-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/07/nlp-text-processing/" title="文本处理：让自然语言变成模型能理解的数字">文本处理：让自然语言变成模型能理解的数字</a><time datetime="2026-06-06T16:00:00.000Z" title="发表于 2026-06-07 00:00:00">2026-06-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/04/machine-learning-regularization-overfitting/" title="正则化与过拟合：让模型不只记住训练集">正则化与过拟合：让模型不只记住训练集</a><time datetime="2026-06-03T16:00:00.000Z" title="发表于 2026-06-04 00:00:00">2026-06-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/machine-learning-gbdt/" title="GBDT：从残差到梯度提升树的完整理解">GBDT：从残差到梯度提升树的完整理解</a><time datetime="2026-06-01T16:00:00.000Z" title="发表于 2026-06-02 00:00:00">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/29/aicompanion-devlog-04-llm-diagnostics-emotional-interaction/" title="AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准">AICompanion 开发日志 04：真实模型接入诊断与情感交互方向校准</a><time datetime="2026-05-29T12:30:00.000Z" title="发表于 2026-05-29 20:30:00">2026-05-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
