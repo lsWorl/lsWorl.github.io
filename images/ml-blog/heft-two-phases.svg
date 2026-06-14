@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="450" viewBox="0 0 900 450" role="img" aria-labelledby="title desc">
+  <title id="title">HEFT two phases</title>
+  <desc id="desc">HEFT first prioritizes tasks with upward rank, then assigns each task to the processor with the earliest finish time.</desc>
+  <rect width="900" height="450" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">HEFT Has Two Main Phases</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">First decide task order, then decide processor placement.</text>
+  <rect x="95" y="160" width="285" height="150" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="150" y="205" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222831">1. Prioritize</text>
+  <text x="135" y="245" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">compute upward rank</text>
+  <text x="135" y="275" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">sort tasks descending</text>
+  <rect x="520" y="160" width="285" height="150" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+  <text x="575" y="205" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222831">2. Schedule</text>
+  <text x="560" y="245" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">try each processor</text>
+  <text x="560" y="275" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">choose earliest finish</text>
+  <path d="M380 235 L520 235" stroke="#566070" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="415" y="217" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#566070">ranked list</text>
+  <rect x="300" y="350" width="300" height="42" rx="8" fill="#fff8e8" stroke="#f2c94c"/>
+  <text x="333" y="377" font-family="Arial, sans-serif" font-size="17" fill="#6b5a20">greedy, fast, and usually effective</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>
