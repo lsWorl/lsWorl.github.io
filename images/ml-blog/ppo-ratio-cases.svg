@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">PPO ratio and advantage cases</title>
+  <desc id="desc">PPO interprets positive and negative advantage differently and uses clipping to avoid overly large probability changes.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">How Ratio and Advantage Interact</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Good actions should become more likely, bad actions less likely, but not too aggressively.</text>
+  <rect x="90" y="155" width="320" height="220" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+  <text x="132" y="200" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#1f8f4d">A &gt; 0</text>
+  <text x="132" y="238" font-family="Arial, sans-serif" font-size="18" fill="#222831">action was better than expected</text>
+  <text x="132" y="276" font-family="Arial, sans-serif" font-size="18" fill="#222831">increase its probability</text>
+  <text x="132" y="314" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">clip blocks excessive increase</text>
+  <rect x="490" y="155" width="320" height="220" rx="8" fill="#ffffff" stroke="#eb5757" stroke-width="2"/>
+  <text x="532" y="200" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#c0392b">A &lt; 0</text>
+  <text x="532" y="238" font-family="Arial, sans-serif" font-size="18" fill="#222831">action was worse than expected</text>
+  <text x="532" y="276" font-family="Arial, sans-serif" font-size="18" fill="#222831">decrease its probability</text>
+  <text x="532" y="314" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">clip blocks excessive decrease</text>
+  <rect x="300" y="405" width="300" height="38" rx="8" fill="#fff8e8" stroke="#f2994a"/>
+  <text x="334" y="430" font-family="Arial, sans-serif" font-size="16" fill="#6b5a20">ratio = new probability / old probability</text>
+</svg>

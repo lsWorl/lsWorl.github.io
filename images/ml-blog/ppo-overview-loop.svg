@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">PPO overview loop</title>
+  <desc id="desc">PPO alternates between collecting trajectories with the current policy and updating actor and critic networks with clipped objectives.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">PPO: Collect Data, Then Make a Safe Policy Update</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">The policy improves through repeated interaction and constrained optimization.</text>
+  <rect x="80" y="170" width="205" height="90" rx="8" fill="#ffffff" stroke="#2f80ed" stroke-width="2"/>
+  <text x="122" y="205" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Policy</text>
+  <text x="114" y="232" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">pi_theta(a|s)</text>
+  <rect x="365" y="170" width="205" height="90" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+  <text x="407" y="205" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Environment</text>
+  <text x="410" y="232" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">states + rewards</text>
+  <rect x="650" y="170" width="205" height="90" rx="8" fill="#ffffff" stroke="#f2994a" stroke-width="2"/>
+  <text x="704" y="205" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222831">Buffer</text>
+  <text x="681" y="232" font-family="Arial, sans-serif" font-size="16" fill="#5f6b7a">trajectories</text>
+  <path d="M285 215 L365 215" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M570 215 L650 215" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M752 260 C735 342 235 342 182 260" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="363" y="358" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#566070">clipped update</text>
+  <rect x="300" y="385" width="300" height="40" rx="8" fill="#f7f3ff" stroke="#9b51e0"/>
+  <text x="338" y="411" font-family="Arial, sans-serif" font-size="17" fill="#4d2a72">actor + critic are updated together</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

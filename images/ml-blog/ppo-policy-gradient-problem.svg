@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" role="img" aria-labelledby="title desc">
+  <title id="title">Policy update step size problem</title>
+  <desc id="desc">Small policy updates learn slowly, while overly large updates can destroy a good policy.</desc>
+  <rect width="900" height="460" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Policy Gradient Needs a Reasonable Step Size</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">PPO tries to improve the policy without moving too far in one update.</text>
+  <line x1="130" y1="330" x2="770" y2="330" stroke="#c8d0da" stroke-width="2"/>
+  <path d="M150 300 C250 210 345 185 450 210 C565 240 650 178 750 130" stroke="#2f80ed" stroke-width="4" fill="none"/>
+  <circle cx="330" cy="200" r="10" fill="#27ae60"/>
+  <text x="280" y="178" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#27ae60">old policy</text>
+  <circle cx="395" cy="206" r="10" fill="#f2994a"/>
+  <text x="405" y="190" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#f2994a">safe update</text>
+  <circle cx="690" cy="160" r="10" fill="#eb5757"/>
+  <text x="620" y="122" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#eb5757">too large</text>
+  <path d="M340 200 L385 205" stroke="#27ae60" stroke-width="3" marker-end="url(#greenArrow)"/>
+  <path d="M340 200 C470 125 570 112 680 157" stroke="#eb5757" stroke-width="3" fill="none" stroke-dasharray="8 7" marker-end="url(#redArrow)"/>
+  <text x="170" y="380" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7a">The objective is only reliable near the data-collecting policy.</text>
+  <defs>
+    <marker id="greenArrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#27ae60"/></marker>
+    <marker id="redArrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#eb5757"/></marker>
+  </defs>
+</svg>
