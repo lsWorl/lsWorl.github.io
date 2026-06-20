@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
+  <title id="title">GraphSAGE sampling and aggregation</title>
+  <desc id="desc">GraphSAGE samples a fixed number of neighbors and aggregates their features to scale to large graphs.</desc>
+  <rect width="900" height="480" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">GraphSAGE: Sample, Aggregate, Generalize</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Instead of using all neighbors, sample a manageable neighborhood.</text>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <circle cx="150" cy="240" r="45" fill="#f7f3ff" stroke="#9b51e0" stroke-width="4"/>
+    <text x="150" y="247" font-size="20" font-weight="700" fill="#222831">target</text>
+    <circle cx="310" cy="150" r="34" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="310" y="157" font-size="17" font-weight="700" fill="#222831">n1</text>
+    <circle cx="310" cy="240" r="34" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/>
+    <text x="310" y="247" font-size="17" font-weight="700" fill="#222831">n2</text>
+    <circle cx="310" cy="330" r="34" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/>
+    <text x="310" y="337" font-size="17" font-weight="700" fill="#222831">n3</text>
+    <circle cx="440" cy="110" r="24" fill="#ffffff" stroke="#c8d0da" stroke-width="2"/>
+    <circle cx="440" cy="195" r="24" fill="#ffffff" stroke="#c8d0da" stroke-width="2"/>
+    <circle cx="440" cy="285" r="24" fill="#ffffff" stroke="#c8d0da" stroke-width="2"/>
+    <circle cx="440" cy="370" r="24" fill="#ffffff" stroke="#c8d0da" stroke-width="2"/>
+    <rect x="560" y="190" width="150" height="92" rx="8" fill="#ffffff" stroke="#27ae60" stroke-width="2"/>
+    <text x="635" y="226" font-size="20" font-weight="700" fill="#222831">Aggregator</text>
+    <text x="635" y="253" font-size="15" fill="#5f6b7a">mean / LSTM / pool</text>
+    <rect x="760" y="200" width="95" height="72" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="808" y="232" font-size="20" font-weight="700" fill="#222831">new h</text>
+  </g>
+  <g stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M194 220 L278 164"/>
+    <path d="M195 240 L276 240"/>
+    <path d="M194 260 L278 318"/>
+    <path d="M345 240 L560 236"/>
+    <path d="M710 236 L760 236"/>
+  </g>
+  <text x="372" y="412" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">sample fixed-size neighbors to handle large graphs</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

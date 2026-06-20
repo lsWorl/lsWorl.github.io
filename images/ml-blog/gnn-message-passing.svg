@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
+  <title id="title">GNN message passing</title>
+  <desc id="desc">A node receives messages from neighboring nodes, aggregates them, and updates its own embedding.</desc>
+  <rect width="900" height="480" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Message Passing: Neighbors Talk to the Center Node</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Each layer lets a node absorb information from one-hop neighbors.</text>
+  <g stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M260 170 L420 240"/>
+    <path d="M260 310 L420 250"/>
+    <path d="M590 170 L480 240"/>
+    <path d="M590 310 L480 250"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <circle cx="250" cy="165" r="42" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="250" y="172" font-size="20" font-weight="700" fill="#222831">h_a</text>
+    <circle cx="250" cy="315" r="42" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/>
+    <text x="250" y="322" font-size="20" font-weight="700" fill="#222831">h_b</text>
+    <circle cx="600" cy="165" r="42" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/>
+    <text x="600" y="172" font-size="20" font-weight="700" fill="#222831">h_c</text>
+    <circle cx="600" cy="315" r="42" fill="#fff0f0" stroke="#eb5757" stroke-width="3"/>
+    <text x="600" y="322" font-size="20" font-weight="700" fill="#222831">h_d</text>
+    <circle cx="450" cy="245" r="58" fill="#f7f3ff" stroke="#9b51e0" stroke-width="4"/>
+    <text x="450" y="238" font-size="22" font-weight="700" fill="#222831">center</text>
+    <text x="450" y="265" font-size="17" fill="#5f6b7a">update</text>
+  </g>
+  <rect x="205" y="390" width="490" height="42" rx="8" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="235" y="417" font-family="Arial, sans-serif" font-size="17" fill="#222831">aggregate neighbor messages, then combine with self feature</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

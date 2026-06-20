@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">Graph data overview</title>
+  <desc id="desc">Graph data consists of nodes, edges, node features, and graph structure.</desc>
+  <rect width="900" height="470" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Graph Data: Features + Relationships</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">GNNs learn from both node attributes and graph topology.</text>
+  <g stroke="#566070" stroke-width="3">
+    <line x1="220" y1="190" x2="360" y2="145"/>
+    <line x1="220" y1="190" x2="360" y2="285"/>
+    <line x1="360" y1="145" x2="520" y2="205"/>
+    <line x1="360" y1="285" x2="520" y2="205"/>
+    <line x1="520" y1="205" x2="650" y2="145"/>
+    <line x1="520" y1="205" x2="650" y2="295"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <circle cx="220" cy="190" r="38" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="220" y="197" font-size="20" font-weight="700" fill="#222831">u</text>
+    <circle cx="360" cy="145" r="38" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/>
+    <text x="360" y="152" font-size="20" font-weight="700" fill="#222831">v</text>
+    <circle cx="360" cy="285" r="38" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/>
+    <text x="360" y="292" font-size="20" font-weight="700" fill="#222831">w</text>
+    <circle cx="520" cy="205" r="38" fill="#f7f3ff" stroke="#9b51e0" stroke-width="3"/>
+    <text x="520" y="212" font-size="20" font-weight="700" fill="#222831">x</text>
+    <circle cx="650" cy="145" r="38" fill="#fff0f0" stroke="#eb5757" stroke-width="3"/>
+    <text x="650" y="152" font-size="20" font-weight="700" fill="#222831">y</text>
+    <circle cx="650" cy="295" r="38" fill="#ffffff" stroke="#6b7280" stroke-width="3"/>
+    <text x="650" y="302" font-size="20" font-weight="700" fill="#222831">z</text>
+  </g>
+  <rect x="130" y="370" width="640" height="48" rx="8" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="182" y="401" font-family="Arial, sans-serif" font-size="17" fill="#222831">node feature X + edge list E + adjacency A -> graph representation</text>
+</svg>
