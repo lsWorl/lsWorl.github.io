@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
+  <title id="title">PyTorch training loop</title>
+  <desc id="desc">A PyTorch training loop moves from data to forward pass, loss, backward pass, optimizer step, and gradient clearing.</desc>
+  <rect width="900" height="480" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">PyTorch Training Loop</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Most training code repeats these same steps.</text>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <rect x="55" y="205" width="120" height="74" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="115" y="235" font-size="18" font-weight="700" fill="#222831">Batch</text>
+    <text x="115" y="260" font-size="15" fill="#5f6b7a">x, y</text>
+    <rect x="225" y="205" width="130" height="74" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="290" y="235" font-size="18" font-weight="700" fill="#222831">Forward</text>
+    <text x="290" y="260" font-size="15" fill="#5f6b7a">model(x)</text>
+    <rect x="405" y="205" width="120" height="74" rx="8" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="465" y="235" font-size="18" font-weight="700" fill="#222831">Loss</text>
+    <text x="465" y="260" font-size="15" fill="#5f6b7a">criterion</text>
+    <rect x="575" y="205" width="120" height="74" rx="8" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="635" y="235" font-size="18" font-weight="700" fill="#222831">Backward</text>
+    <text x="635" y="260" font-size="15" fill="#5f6b7a">loss.backward</text>
+    <rect x="745" y="205" width="120" height="74" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="805" y="235" font-size="18" font-weight="700" fill="#222831">Step</text>
+    <text x="805" y="260" font-size="15" fill="#5f6b7a">optimizer</text>
+  </g>
+  <g stroke="#566070" stroke-width="3" marker-end="url(#arrow)">
+    <line x1="175" y1="242" x2="225" y2="242"/>
+    <line x1="355" y1="242" x2="405" y2="242"/>
+    <line x1="525" y1="242" x2="575" y2="242"/>
+    <line x1="695" y1="242" x2="745" y2="242"/>
+  </g>
+  <path d="M805 279 C770 390 140 390 115 279" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="332" y="407" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#566070">zero_grad before the next backward pass</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

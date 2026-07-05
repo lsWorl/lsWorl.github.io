@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="450" viewBox="0 0 900 450" role="img" aria-labelledby="title desc">
+  <title id="title">MLP forward computation</title>
+  <desc id="desc">An MLP layer computes z equals xW plus b, then applies an activation function.</desc>
+  <rect width="900" height="450" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">One MLP Layer: Linear + Activation</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Without activation functions, stacked linear layers are still just one linear layer.</text>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <rect x="75" y="185" width="130" height="72" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="140" y="229" font-size="22" font-weight="700" fill="#222831">x</text>
+    <rect x="290" y="185" width="155" height="72" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="368" y="216" font-size="20" font-weight="700" fill="#222831">z = xW + b</text>
+    <text x="368" y="241" font-size="15" fill="#5f6b7a">linear</text>
+    <rect x="530" y="185" width="155" height="72" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="608" y="216" font-size="20" font-weight="700" fill="#222831">a = ReLU(z)</text>
+    <text x="608" y="241" font-size="15" fill="#5f6b7a">non-linear</text>
+    <rect x="760" y="185" width="95" height="72" rx="8" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="808" y="229" font-size="22" font-weight="700" fill="#222831">a</text>
+  </g>
+  <path d="M205 221 L290 221" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M445 221 L530 221" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M685 221 L760 221" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="218" y="330" width="465" height="42" rx="8" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="258" y="357" font-family="Arial, sans-serif" font-size="17" fill="#222831">PyTorch: nn.Linear -> nn.ReLU -> nn.Linear -> ...</text>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    </marker>
+  </defs>
+</svg>

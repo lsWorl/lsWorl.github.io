@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
+  <title id="title">MLP architecture</title>
+  <desc id="desc">A multilayer perceptron maps input features through hidden layers to output predictions.</desc>
+  <rect width="900" height="500" fill="#fbfbfd"/>
+  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">MLP: Input -> Hidden Layers -> Output</text>
+  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Each layer applies a linear transformation followed by a non-linear activation.</text>
+  <g stroke="#c8d0da" stroke-width="2">
+    <line x1="170" y1="170" x2="350" y2="140"/><line x1="170" y1="170" x2="350" y2="220"/><line x1="170" y1="170" x2="350" y2="300"/>
+    <line x1="170" y1="250" x2="350" y2="140"/><line x1="170" y1="250" x2="350" y2="220"/><line x1="170" y1="250" x2="350" y2="300"/>
+    <line x1="170" y1="330" x2="350" y2="140"/><line x1="170" y1="330" x2="350" y2="220"/><line x1="170" y1="330" x2="350" y2="300"/>
+    <line x1="350" y1="140" x2="530" y2="170"/><line x1="350" y1="140" x2="530" y2="250"/><line x1="350" y1="140" x2="530" y2="330"/>
+    <line x1="350" y1="220" x2="530" y2="170"/><line x1="350" y1="220" x2="530" y2="250"/><line x1="350" y1="220" x2="530" y2="330"/>
+    <line x1="350" y1="300" x2="530" y2="170"/><line x1="350" y1="300" x2="530" y2="250"/><line x1="350" y1="300" x2="530" y2="330"/>
+    <line x1="530" y1="170" x2="705" y2="210"/><line x1="530" y1="170" x2="705" y2="290"/>
+    <line x1="530" y1="250" x2="705" y2="210"/><line x1="530" y1="250" x2="705" y2="290"/>
+    <line x1="530" y1="330" x2="705" y2="210"/><line x1="530" y1="330" x2="705" y2="290"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <circle cx="170" cy="170" r="26" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/><circle cx="170" cy="250" r="26" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/><circle cx="170" cy="330" r="26" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <circle cx="350" cy="140" r="26" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/><circle cx="350" cy="220" r="26" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/><circle cx="350" cy="300" r="26" fill="#fff8e8" stroke="#f2994a" stroke-width="3"/>
+    <circle cx="530" cy="170" r="26" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/><circle cx="530" cy="250" r="26" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/><circle cx="530" cy="330" r="26" fill="#f0fff4" stroke="#27ae60" stroke-width="3"/>
+    <circle cx="705" cy="210" r="28" fill="#f7f3ff" stroke="#9b51e0" stroke-width="3"/><circle cx="705" cy="290" r="28" fill="#f7f3ff" stroke="#9b51e0" stroke-width="3"/>
+    <text x="170" y="405" font-size="18" font-weight="700" fill="#222831">Input</text>
+    <text x="350" y="405" font-size="18" font-weight="700" fill="#222831">Hidden 1</text>
+    <text x="530" y="405" font-size="18" font-weight="700" fill="#222831">Hidden 2</text>
+    <text x="705" y="405" font-size="18" font-weight="700" fill="#222831">Output</text>
+  </g>
+</svg>
