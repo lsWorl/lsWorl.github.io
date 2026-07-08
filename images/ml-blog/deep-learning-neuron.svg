@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-labelledby="title desc">
+  <title id="title">单个神经元计算过程</title>
+  <desc id="desc">展示输入特征经过加权求和、加偏置、激活函数得到输出的过程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2b5d68"/>
+    </marker>
+  </defs>
+  <rect width="980" height="520" rx="20" fill="#fbfcf7"/>
+  <text x="490" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#22343a">一个神经元到底在算什么</text>
+  <text x="490" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#60727a">先做线性加权，再通过非线性激活函数</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" fill="#22343a">
+    <circle cx="120" cy="160" r="36" fill="#e7f4f6" stroke="#8fc8d1" stroke-width="2"/>
+    <text x="120" y="167" text-anchor="middle">x1</text>
+    <circle cx="120" cy="260" r="36" fill="#e7f4f6" stroke="#8fc8d1" stroke-width="2"/>
+    <text x="120" y="267" text-anchor="middle">x2</text>
+    <circle cx="120" cy="360" r="36" fill="#e7f4f6" stroke="#8fc8d1" stroke-width="2"/>
+    <text x="120" y="367" text-anchor="middle">x3</text>
+  </g>
+
+  <path d="M156 160 C236 160 255 218 316 238" stroke="#2b5d68" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M156 260 H310" stroke="#2b5d68" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M156 360 C236 360 255 302 316 282" stroke="#2b5d68" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="232" y="142" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#c45f32">乘 w1</text>
+  <text x="222" y="250" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#c45f32">乘 w2</text>
+  <text x="232" y="384" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#c45f32">乘 w3</text>
+
+  <g>
+    <rect x="330" y="192" width="220" height="136" rx="18" fill="#ffffff" stroke="#efd1aa" stroke-width="2"/>
+    <text x="440" y="232" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="700" fill="#22343a">线性部分</text>
+    <text x="440" y="275" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="25" fill="#22343a">z = xW + b</text>
+    <text x="440" y="306" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#60727a">加权求和后加偏置</text>
+  </g>
+
+  <path d="M550 260 H625" stroke="#2b5d68" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="640" y="192" width="170" height="136" rx="18" fill="#ffffff" stroke="#acd7be" stroke-width="2"/>
+    <text x="725" y="232" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="700" fill="#22343a">激活函数</text>
+    <text x="725" y="275" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="25" fill="#22343a">a = σ(z)</text>
+    <text x="725" y="306" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#60727a">引入非线性能力</text>
+  </g>
+
+  <path d="M810 260 H875" stroke="#2b5d68" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <circle cx="912" cy="260" r="42" fill="#eaf2ff" stroke="#9dbbe7" stroke-width="2"/>
+  <text x="912" y="268" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#22343a">输出</text>
+
+  <rect x="216" y="432" width="548" height="48" rx="12" fill="#ffffff" stroke="#dde7ea"/>
+  <text x="490" y="463" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#22343a">多层神经网络就是把很多这样的神经元按层堆叠起来</text>
+</svg>

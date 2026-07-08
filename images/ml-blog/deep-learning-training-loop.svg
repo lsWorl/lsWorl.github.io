@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img" aria-labelledby="title desc">
+  <title id="title">深度学习训练闭环</title>
+  <desc id="desc">展示一次训练迭代从数据输入、前向传播、计算损失、反向传播到参数更新的流程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#315c6b"/>
+    </marker>
+  </defs>
+  <rect width="980" height="560" rx="20" fill="#f8fbf7"/>
+  <text x="490" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#1e333b">训练神经网络的核心闭环</text>
+  <text x="490" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#60727a">模型不是被手写规则教会的，而是在这个循环里不断调参数</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <rect x="95" y="166" width="150" height="86" rx="14" fill="#e8f4f7" stroke="#9dccd7" stroke-width="2"/>
+    <text x="170" y="200" text-anchor="middle" font-size="20" font-weight="700" fill="#1e333b">1. 数据批次</text>
+    <text x="170" y="226" text-anchor="middle" font-size="14" fill="#60727a">x, y</text>
+
+    <rect x="320" y="166" width="150" height="86" rx="14" fill="#ffffff" stroke="#f0c894" stroke-width="2"/>
+    <text x="395" y="200" text-anchor="middle" font-size="20" font-weight="700" fill="#1e333b">2. 前向传播</text>
+    <text x="395" y="226" text-anchor="middle" font-size="14" fill="#60727a">得到预测 y_hat</text>
+
+    <rect x="545" y="166" width="150" height="86" rx="14" fill="#ffffff" stroke="#d7bfe7" stroke-width="2"/>
+    <text x="620" y="200" text-anchor="middle" font-size="20" font-weight="700" fill="#1e333b">3. 计算损失</text>
+    <text x="620" y="226" text-anchor="middle" font-size="14" fill="#60727a">loss 越小越好</text>
+
+    <rect x="735" y="324" width="150" height="86" rx="14" fill="#fff4e9" stroke="#f0c894" stroke-width="2"/>
+    <text x="810" y="358" text-anchor="middle" font-size="20" font-weight="700" fill="#1e333b">4. 反向传播</text>
+    <text x="810" y="384" text-anchor="middle" font-size="14" fill="#60727a">求每个参数梯度</text>
+
+    <rect x="455" y="324" width="150" height="86" rx="14" fill="#edf8ee" stroke="#aed6b3" stroke-width="2"/>
+    <text x="530" y="358" text-anchor="middle" font-size="20" font-weight="700" fill="#1e333b">5. 参数更新</text>
+    <text x="530" y="384" text-anchor="middle" font-size="14" fill="#60727a">W = W - lr * grad</text>
+
+    <rect x="200" y="324" width="150" height="86" rx="14" fill="#ffffff" stroke="#9dccd7" stroke-width="2"/>
+    <text x="275" y="358" text-anchor="middle" font-size="20" font-weight="700" fill="#1e333b">6. 下一批</text>
+    <text x="275" y="384" text-anchor="middle" font-size="14" fill="#60727a">重复很多轮</text>
+  </g>
+
+  <path d="M245 209 H311" stroke="#315c6b" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M470 209 H536" stroke="#315c6b" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M695 209 C790 210 810 250 810 314" fill="none" stroke="#315c6b" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M735 367 H614" stroke="#315c6b" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M455 367 H359" stroke="#315c6b" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M275 324 C275 272 155 285 170 258" fill="none" stroke="#315c6b" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="196" y="470" width="588" height="48" rx="12" fill="#ffffff" stroke="#dde7ea"/>
+  <text x="490" y="501" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#1e333b">前向传播负责算预测，反向传播负责知道参数该往哪个方向改</text>
+</svg>

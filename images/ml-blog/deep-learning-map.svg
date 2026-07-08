@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img" aria-labelledby="title desc">
+  <title id="title">深度学习知识地图</title>
+  <desc id="desc">展示深度学习从数据、神经网络、训练方法到典型任务的整体关系。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f5f73"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#134e5e" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="980" height="560" rx="20" fill="#f7fbfc"/>
+  <text x="490" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#17323c">深度学习入门：先建立一张地图</text>
+  <text x="490" y="86" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#55717b">深度学习不是单个算法，而是一套用多层神经网络从数据中学习表示的方法</text>
+
+  <g filter="url(#shadow)">
+    <rect x="76" y="142" width="178" height="98" rx="14" fill="#ffffff" stroke="#9ed1df"/>
+    <text x="165" y="179" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#17323c">数据</text>
+    <text x="165" y="207" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">图片 / 文本 / 表格 / 图</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="305" y="142" width="178" height="98" rx="14" fill="#ffffff" stroke="#9ed1df"/>
+    <text x="394" y="179" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#17323c">神经网络</text>
+    <text x="394" y="207" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">线性层 + 激活函数</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="534" y="142" width="178" height="98" rx="14" fill="#ffffff" stroke="#9ed1df"/>
+    <text x="623" y="179" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#17323c">训练</text>
+    <text x="623" y="207" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">损失函数 + 反向传播</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="763" y="142" width="142" height="98" rx="14" fill="#ffffff" stroke="#9ed1df"/>
+    <text x="834" y="179" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#17323c">预测</text>
+    <text x="834" y="207" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">分类 / 回归 / 生成</text>
+  </g>
+
+  <path d="M254 191 H296" stroke="#2f5f73" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M483 191 H525" stroke="#2f5f73" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M712 191 H754" stroke="#2f5f73" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <path d="M623 244 C623 322 394 322 394 250" fill="none" stroke="#ef7b45" stroke-width="3" stroke-dasharray="8 8" marker-end="url(#arrow)"/>
+  <text x="510" y="318" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#b75c31">根据误差更新参数</text>
+
+  <g>
+    <rect x="96" y="374" width="178" height="82" rx="12" fill="#e9f6f9" stroke="#b6dce6"/>
+    <text x="185" y="407" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#17323c">CV</text>
+    <text x="185" y="433" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">CNN / ViT</text>
+  </g>
+  <g>
+    <rect x="305" y="374" width="178" height="82" rx="12" fill="#fff4e9" stroke="#f4c590"/>
+    <text x="394" y="407" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#17323c">NLP</text>
+    <text x="394" y="433" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">RNN / Transformer</text>
+  </g>
+  <g>
+    <rect x="514" y="374" width="178" height="82" rx="12" fill="#eef7ee" stroke="#bddfbd"/>
+    <text x="603" y="407" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#17323c">推荐 / 图</text>
+    <text x="603" y="433" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">Embedding / GNN</text>
+  </g>
+  <g>
+    <rect x="723" y="374" width="178" height="82" rx="12" fill="#f4effb" stroke="#d2c1eb"/>
+    <text x="812" y="407" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#17323c">生成式 AI</text>
+    <text x="812" y="433" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#526b74">扩散模型 / 大模型</text>
+  </g>
+  <text x="490" y="510" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#55717b">学习顺序：先理解 MLP 和训练流程，再按任务方向学习 CNN、RNN、Transformer、GNN 等结构</text>
+</svg>
