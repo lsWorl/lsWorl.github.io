@@ -1,37 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
-  <title id="title">PyTorch training loop</title>
-  <desc id="desc">A PyTorch training loop moves from data to forward pass, loss, backward pass, optimizer step, and gradient clearing.</desc>
-  <rect width="900" height="480" fill="#fbfbfd"/>
-  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">PyTorch Training Loop</text>
-  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">Most training code repeats these same steps.</text>
-  <g font-family="Arial, sans-serif" text-anchor="middle">
-    <rect x="55" y="205" width="120" height="74" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
-    <text x="115" y="235" font-size="18" font-weight="700" fill="#222831">Batch</text>
-    <text x="115" y="260" font-size="15" fill="#5f6b7a">x, y</text>
-    <rect x="225" y="205" width="130" height="74" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
-    <text x="290" y="235" font-size="18" font-weight="700" fill="#222831">Forward</text>
-    <text x="290" y="260" font-size="15" fill="#5f6b7a">model(x)</text>
-    <rect x="405" y="205" width="120" height="74" rx="8" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
-    <text x="465" y="235" font-size="18" font-weight="700" fill="#222831">Loss</text>
-    <text x="465" y="260" font-size="15" fill="#5f6b7a">criterion</text>
-    <rect x="575" y="205" width="120" height="74" rx="8" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
-    <text x="635" y="235" font-size="18" font-weight="700" fill="#222831">Backward</text>
-    <text x="635" y="260" font-size="15" fill="#5f6b7a">loss.backward</text>
-    <rect x="745" y="205" width="120" height="74" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
-    <text x="805" y="235" font-size="18" font-weight="700" fill="#222831">Step</text>
-    <text x="805" y="260" font-size="15" fill="#5f6b7a">optimizer</text>
-  </g>
-  <g stroke="#566070" stroke-width="3" marker-end="url(#arrow)">
-    <line x1="175" y1="242" x2="225" y2="242"/>
-    <line x1="355" y1="242" x2="405" y2="242"/>
-    <line x1="525" y1="242" x2="575" y2="242"/>
-    <line x1="695" y1="242" x2="745" y2="242"/>
-  </g>
-  <path d="M805 279 C770 390 140 390 115 279" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
-  <text x="332" y="407" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#566070">zero_grad before the next backward pass</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520" role="img" aria-labelledby="title desc">
+  <title id="title">PyTorch 训练循环</title>
+  <desc id="desc">PyTorch 训练循环包含读取批次、前向传播、计算损失、清空梯度、反向传播和优化器更新。</desc>
   <defs>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#566070"/>
     </marker>
   </defs>
+  <rect width="1000" height="520" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">PyTorch 训练循环</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">大多数训练代码都在重复同一组步骤</text>
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="54" y="190" width="132" height="82" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="120" y="224" font-size="18" font-weight="700" fill="#222831">数据批次</text>
+    <text x="120" y="250" font-size="14" fill="#5f6b7a">x, y</text>
+    <rect x="240" y="190" width="142" height="82" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="311" y="224" font-size="18" font-weight="700" fill="#222831">前向传播</text>
+    <text x="311" y="250" font-size="14" fill="#5f6b7a">model(x)</text>
+    <rect x="436" y="190" width="132" height="82" rx="10" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="502" y="224" font-size="18" font-weight="700" fill="#222831">计算损失</text>
+    <text x="502" y="250" font-size="14" fill="#5f6b7a">loss_fn</text>
+    <rect x="622" y="190" width="142" height="82" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="693" y="224" font-size="18" font-weight="700" fill="#222831">反向传播</text>
+    <text x="693" y="250" font-size="14" fill="#5f6b7a">loss.backward()</text>
+    <rect x="818" y="190" width="132" height="82" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="884" y="224" font-size="18" font-weight="700" fill="#222831">更新参数</text>
+    <text x="884" y="250" font-size="14" fill="#5f6b7a">optimizer.step()</text>
+  </g>
+  <path d="M186 231 H229" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M382 231 H425" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M568 231 H611" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M764 231 H807" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M884 272 C835 400 165 400 120 276" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <rect x="280" y="378" width="440" height="48" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#222831">下一轮 backward 前要先 optimizer.zero_grad()</text>
 </svg>

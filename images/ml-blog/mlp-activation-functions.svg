@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">常见激活函数对比</title>
+  <desc id="desc">展示 ReLU、Sigmoid、Tanh、GELU 的输出范围和使用场景。</desc>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">常见激活函数对比</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">激活函数决定一层网络如何引入非线性，也会影响梯度传播</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <rect x="70" y="132" width="400" height="150" rx="12" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="100" y="172" font-size="24" font-weight="700" fill="#222831">ReLU</text>
+    <text x="100" y="207" font-size="18" fill="#222831">f(x) = max(0, x)</text>
+    <text x="100" y="238" font-size="15" fill="#5f6b7a">负数直接变 0，正数保持不变</text>
+    <text x="100" y="262" font-size="15" fill="#5f6b7a">普通 MLP 隐藏层的默认选择</text>
+
+    <rect x="530" y="132" width="400" height="150" rx="12" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="560" y="172" font-size="24" font-weight="700" fill="#222831">Sigmoid</text>
+    <text x="560" y="207" font-size="18" fill="#222831">输出范围：(0, 1)</text>
+    <text x="560" y="238" font-size="15" fill="#5f6b7a">适合表示概率或门控值</text>
+    <text x="560" y="262" font-size="15" fill="#5f6b7a">输入过大或过小时容易梯度变小</text>
+
+    <rect x="70" y="326" width="400" height="150" rx="12" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="100" y="366" font-size="24" font-weight="700" fill="#222831">Tanh</text>
+    <text x="100" y="401" font-size="18" fill="#222831">输出范围：(-1, 1)</text>
+    <text x="100" y="432" font-size="15" fill="#5f6b7a">以 0 为中心，可以输出负值</text>
+    <text x="100" y="456" font-size="15" fill="#5f6b7a">RNN / LSTM 中常见，也有饱和问题</text>
+
+    <rect x="530" y="326" width="400" height="150" rx="12" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="560" y="366" font-size="24" font-weight="700" fill="#222831">GELU</text>
+    <text x="560" y="401" font-size="18" fill="#222831">f(x) = xΦ(x)</text>
+    <text x="560" y="432" font-size="15" fill="#5f6b7a">平滑地保留正值和少量负值信息</text>
+    <text x="560" y="456" font-size="15" fill="#5f6b7a">Transformer 前馈层中很常见</text>
+  </g>
+</svg>

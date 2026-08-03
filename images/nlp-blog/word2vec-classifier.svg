@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">词向量到神经网络分类器</title>
+  <desc id="desc">文本经过 token id、Embedding、池化、线性层和 softmax 完成分类。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">从词向量过渡到神经网络分类器</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">词向量把每个词变成向量，分类器再把整句话变成类别</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="54" y="205" width="132" height="86" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="120" y="239" font-size="18" font-weight="700" fill="#222831">文本</text>
+    <text x="120" y="266" font-size="14" fill="#5f6b7a">电影 很 好看</text>
+
+    <rect x="238" y="205" width="132" height="86" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="304" y="239" font-size="18" font-weight="700" fill="#222831">Token ID</text>
+    <text x="304" y="266" font-size="14" fill="#5f6b7a">[12, 37, 58]</text>
+
+    <rect x="422" y="205" width="148" height="86" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="496" y="239" font-size="18" font-weight="700" fill="#222831">Embedding</text>
+    <text x="496" y="266" font-size="14" fill="#5f6b7a">查表得到词向量</text>
+
+    <rect x="622" y="205" width="132" height="86" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="688" y="239" font-size="18" font-weight="700" fill="#222831">Pooling</text>
+    <text x="688" y="266" font-size="14" fill="#5f6b7a">平均 / 最大</text>
+
+    <rect x="806" y="205" width="132" height="86" rx="10" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="872" y="239" font-size="18" font-weight="700" fill="#222831">分类层</text>
+    <text x="872" y="266" font-size="14" fill="#5f6b7a">Linear + Softmax</text>
+  </g>
+
+  <path d="M186 248 H227" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M370 248 H411" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M570 248 H611" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M754 248 H795" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="258" y="380" width="484" height="56" rx="12" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="415" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#222831">Embedding 层可以用 word2vec 初始化，也可以跟分类器一起继续微调</text>
+</svg>

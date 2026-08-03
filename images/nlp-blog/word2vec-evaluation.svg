@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">词向量评价方法</title>
+  <desc id="desc">词向量可以用相似词、类比关系、聚类可视化和下游任务效果评价。</desc>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">词向量训练好以后怎么评价</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">不要只看 loss，也要看向量是否真的编码了语义和任务信息</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <rect x="82" y="142" width="380" height="135" rx="14" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="112" y="182" font-size="22" font-weight="700" fill="#222831">1. 最近邻词</text>
+    <text x="112" y="216" font-size="16" fill="#5f6b7a">看“国王”附近是否是“王后、王子、皇帝”</text>
+    <text x="112" y="246" font-size="16" fill="#5f6b7a">常用余弦相似度 cosine similarity</text>
+
+    <rect x="538" y="142" width="380" height="135" rx="14" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="568" y="182" font-size="22" font-weight="700" fill="#222831">2. 词类比</text>
+    <text x="568" y="216" font-size="16" fill="#5f6b7a">国王 - 男人 + 女人 ≈ 王后</text>
+    <text x="568" y="246" font-size="16" fill="#5f6b7a">检查向量空间中的方向关系</text>
+
+    <rect x="82" y="322" width="380" height="135" rx="14" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="112" y="362" font-size="22" font-weight="700" fill="#222831">3. 可视化与聚类</text>
+    <text x="112" y="396" font-size="16" fill="#5f6b7a">用 PCA / t-SNE / UMAP 降维</text>
+    <text x="112" y="426" font-size="16" fill="#5f6b7a">观察同类词是否聚到一起</text>
+
+    <rect x="538" y="322" width="380" height="135" rx="14" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="568" y="362" font-size="22" font-weight="700" fill="#222831">4. 下游任务</text>
+    <text x="568" y="396" font-size="16" fill="#5f6b7a">把词向量放进分类器、检索、推荐系统</text>
+    <text x="568" y="426" font-size="16" fill="#5f6b7a">最终看任务指标是否提升</text>
+  </g>
+
+  <text x="500" y="512" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">内在评价看向量空间是否合理；外在评价看它能不能帮真实任务变好</text>
+</svg>

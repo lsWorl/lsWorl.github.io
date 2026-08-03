@@ -1,36 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
-  <title id="title">PyTorch neural network components</title>
-  <desc id="desc">Common PyTorch neural network components include tensors, modules, losses, optimizers, dataloaders, and train eval modes.</desc>
-  <rect width="900" height="500" fill="#fbfbfd"/>
-  <text x="52" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222831">Common PyTorch Neural Network Components</text>
-  <text x="52" y="90" font-family="Arial, sans-serif" font-size="17" fill="#5f6b7a">A model is more than layers: data, loss, gradients, and optimization all work together.</text>
-  <g font-family="Arial, sans-serif" text-anchor="middle">
-    <rect x="80" y="145" width="190" height="82" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
-    <text x="175" y="178" font-size="20" font-weight="700" fill="#222831">Tensor</text>
-    <text x="175" y="204" font-size="15" fill="#5f6b7a">data + grad flag</text>
-    <rect x="355" y="145" width="190" height="82" rx="8" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
-    <text x="450" y="178" font-size="20" font-weight="700" fill="#222831">nn.Module</text>
-    <text x="450" y="204" font-size="15" fill="#5f6b7a">layers + forward</text>
-    <rect x="630" y="145" width="190" height="82" rx="8" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
-    <text x="725" y="178" font-size="20" font-weight="700" fill="#222831">Loss</text>
-    <text x="725" y="204" font-size="15" fill="#5f6b7a">training objective</text>
-    <rect x="80" y="300" width="190" height="82" rx="8" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
-    <text x="175" y="333" font-size="20" font-weight="700" fill="#222831">Autograd</text>
-    <text x="175" y="359" font-size="15" fill="#5f6b7a">chain rule</text>
-    <rect x="355" y="300" width="190" height="82" rx="8" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
-    <text x="450" y="333" font-size="20" font-weight="700" fill="#222831">Optimizer</text>
-    <text x="450" y="359" font-size="15" fill="#5f6b7a">update params</text>
-    <rect x="630" y="300" width="190" height="82" rx="8" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
-    <text x="725" y="333" font-size="20" font-weight="700" fill="#222831">DataLoader</text>
-    <text x="725" y="359" font-size="15" fill="#5f6b7a">mini-batches</text>
-  </g>
-  <path d="M270 186 L355 186" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
-  <path d="M545 186 L630 186" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
-  <path d="M725 227 C725 420 175 420 175 382" stroke="#566070" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
-  <path d="M270 341 L355 341" stroke="#566070" stroke-width="3" marker-end="url(#arrow)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">PyTorch 神经网络常用组件</title>
+  <desc id="desc">展示 Tensor、nn.Module、Loss、Autograd、Optimizer、DataLoader 在训练流程中的关系。</desc>
   <defs>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#566070"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
     </marker>
   </defs>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">PyTorch 神经网络常用组件</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">模型训练不是只有层结构，还包括数据、损失、梯度和参数更新</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="70" y="150" width="170" height="86" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="155" y="184" font-size="20" font-weight="700" fill="#222831">Tensor</text>
+    <text x="155" y="211" font-size="14" fill="#5f6b7a">数据与梯度标记</text>
+
+    <rect x="300" y="150" width="180" height="86" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="390" y="184" font-size="20" font-weight="700" fill="#222831">nn.Module</text>
+    <text x="390" y="211" font-size="14" fill="#5f6b7a">层、参数、forward</text>
+
+    <rect x="540" y="150" width="170" height="86" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="625" y="184" font-size="20" font-weight="700" fill="#222831">Loss</text>
+    <text x="625" y="211" font-size="14" fill="#5f6b7a">衡量预测误差</text>
+
+    <rect x="760" y="150" width="170" height="86" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="845" y="184" font-size="20" font-weight="700" fill="#222831">Autograd</text>
+    <text x="845" y="211" font-size="14" fill="#5f6b7a">反向传播求梯度</text>
+
+    <rect x="420" y="330" width="180" height="86" rx="10" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="510" y="364" font-size="20" font-weight="700" fill="#222831">Optimizer</text>
+    <text x="510" y="391" font-size="14" fill="#5f6b7a">根据梯度更新参数</text>
+
+    <rect x="70" y="330" width="190" height="86" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
+    <text x="165" y="364" font-size="20" font-weight="700" fill="#222831">Dataset / DataLoader</text>
+    <text x="165" y="391" font-size="14" fill="#5f6b7a">组织 mini-batch</text>
+  </g>
+
+  <path d="M240 193 H290" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M480 193 H530" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M710 193 H750" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M845 236 C845 305 610 305 560 330" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M420 373 H270" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M165 330 C150 290 138 260 150 238" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="252" y="465" width="496" height="46" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="494" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#222831">核心顺序：数据 -> 模型 -> 损失 -> 梯度 -> 优化器 -> 下一批数据</text>
 </svg>

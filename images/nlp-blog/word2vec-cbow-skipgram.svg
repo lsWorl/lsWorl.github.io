@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600" role="img" aria-labelledby="title desc">
+  <title id="title">CBOW 与 Skip-gram 对比</title>
+  <desc id="desc">CBOW 用上下文预测中心词，Skip-gram 用中心词预测上下文。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="600" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">word2vec 的两种训练方式</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">CBOW 和 Skip-gram 的方向相反，但目标都是让相关词的向量靠近</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="80" y="130" width="380" height="390" rx="16" fill="#ffffff" stroke="#9dccd7" stroke-width="2"/>
+    <text x="270" y="170" font-size="24" font-weight="700" fill="#222831">CBOW</text>
+    <text x="270" y="198" font-size="15" fill="#5f6b7a">用上下文词预测中心词</text>
+
+    <rect x="125" y="245" width="92" height="46" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="171" y="274" font-size="16" fill="#222831">我</text>
+    <rect x="125" y="315" width="92" height="46" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="171" y="344" font-size="16" fill="#222831">自然语言</text>
+    <rect x="125" y="385" width="92" height="46" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="171" y="414" font-size="16" fill="#222831">处理</text>
+
+    <rect x="318" y="300" width="96" height="58" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="366" y="335" font-size="18" font-weight="700" fill="#222831">喜欢</text>
+    <path d="M217 268 C250 268 270 306 308 318" stroke="#52616f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M217 338 H307" stroke="#52616f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M217 408 C250 408 270 352 308 340" stroke="#52616f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+    <rect x="540" y="130" width="380" height="390" rx="16" fill="#ffffff" stroke="#d2c1eb" stroke-width="2"/>
+    <text x="730" y="170" font-size="24" font-weight="700" fill="#222831">Skip-gram</text>
+    <text x="730" y="198" font-size="15" fill="#5f6b7a">用中心词预测上下文词</text>
+
+    <rect x="585" y="300" width="96" height="58" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="633" y="335" font-size="18" font-weight="700" fill="#222831">喜欢</text>
+    <rect x="780" y="245" width="92" height="46" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="826" y="274" font-size="16" fill="#222831">我</text>
+    <rect x="780" y="315" width="92" height="46" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="826" y="344" font-size="16" fill="#222831">自然语言</text>
+    <rect x="780" y="385" width="92" height="46" rx="8" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="826" y="414" font-size="16" fill="#222831">处理</text>
+
+    <path d="M681 318 C720 306 740 268 770 268" stroke="#52616f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M681 338 H770" stroke="#52616f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M681 340 C720 352 740 408 770 408" stroke="#52616f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  </g>
+
+  <text x="500" y="560" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">例句：“我 喜欢 自然语言 处理”，窗口大小为 1 或 2 时可以构造不同训练样本</text>
+</svg>
