@@ -37,6 +37,6 @@
   <path d="M570 248 H611" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
   <path d="M754 248 H795" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
 
-  <rect x="258" y="380" width="484" height="56" rx="12" fill="#ffffff" stroke="#d4dbe5"/>
+  <rect x="230" y="380" width="538" height="56" rx="12" fill="#ffffff" stroke="#d4dbe5"/>
   <text x="500" y="415" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#222831">Embedding 层可以用 word2vec 初始化，也可以跟分类器一起继续微调</text>
 </svg>
