@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">Adam 优化器整体流程</title>
+  <desc id="desc">梯度分别进入一阶矩和二阶矩估计，经过偏差修正后更新参数。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Adam 优化器：一次参数更新</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">同时估计梯度方向和梯度尺度，再为每个参数计算有效步长</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="70" y="215" width="150" height="90" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="145" y="252" font-size="20" font-weight="700" fill="#222831">当前梯度</text>
+    <text x="145" y="281" font-size="18" fill="#334155">g<tspan baseline-shift="sub" font-size="13">t</tspan></text>
+
+    <rect x="310" y="135" width="210" height="100" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="415" y="174" font-size="20" font-weight="700" fill="#222831">一阶矩 m<tspan baseline-shift="sub" font-size="13">t</tspan></text>
+    <text x="415" y="205" font-size="15" fill="#5f6b7a">平滑近期梯度方向</text>
+
+    <rect x="310" y="305" width="210" height="100" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="415" y="344" font-size="20" font-weight="700" fill="#222831">二阶矩 v<tspan baseline-shift="sub" font-size="13">t</tspan></text>
+    <text x="415" y="375" font-size="15" fill="#5f6b7a">平滑近期梯度平方</text>
+
+    <rect x="610" y="215" width="180" height="90" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="700" y="252" font-size="20" font-weight="700" fill="#222831">偏差修正</text>
+    <text x="700" y="281" font-size="15" fill="#5f6b7a">m̂<tspan baseline-shift="sub" font-size="12">t</tspan> 与 v̂<tspan baseline-shift="sub" font-size="12">t</tspan></text>
+
+    <rect x="860" y="215" width="100" height="90" rx="10" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="910" y="251" font-size="18" font-weight="700" fill="#222831">更新</text>
+    <text x="910" y="281" font-size="16" fill="#334155">θ<tspan baseline-shift="sub" font-size="12">t</tspan></text>
+  </g>
+
+  <path d="M220 250 C260 225 275 190 299 185" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M220 270 C260 295 275 350 299 355" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M520 185 C570 185 575 235 599 245" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M520 355 C570 355 575 285 599 275" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M790 260 H849" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="190" y="455" width="620" height="50" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="486" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#222831">m̂ 决定主要方向，√v̂ 缩放每个参数的有效更新步长</text>
+</svg>

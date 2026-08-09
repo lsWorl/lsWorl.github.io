@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="540" viewBox="0 0 1000 540" role="img" aria-labelledby="title desc">
+  <title id="title">Adam 偏差修正</title>
+  <desc id="desc">移动平均初始化为零会导致训练初期估计偏小，偏差修正将估计恢复到合理尺度。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="540" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">为什么 Adam 需要偏差修正</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">m₀ 和 v₀ 从 0 开始，训练初期的移动平均会被拉向 0</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="60" y="175" width="190" height="120" rx="11" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="155" y="218" font-size="21" font-weight="700" fill="#222831">真实梯度</text>
+    <text x="155" y="258" font-size="23" fill="#334155">g₁ = 2</text>
+
+    <rect x="330" y="140" width="260" height="190" rx="11" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="460" y="182" font-size="21" font-weight="700" fill="#222831">未经修正</text>
+    <text x="460" y="224" font-size="18" fill="#334155">m₁ = 0.1 × 2 = 0.2</text>
+    <text x="460" y="260" font-size="18" fill="#334155">v₁ = 0.001 × 2² = 0.004</text>
+    <text x="460" y="300" font-size="15" fill="#b45309">估计明显偏向初始值 0</text>
+
+    <rect x="680" y="140" width="260" height="190" rx="11" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="810" y="182" font-size="21" font-weight="700" fill="#222831">偏差修正后</text>
+    <text x="810" y="224" font-size="18" fill="#334155">m̂₁ = 0.2 / 0.1 = 2</text>
+    <text x="810" y="260" font-size="18" fill="#334155">v̂₁ = 0.004 / 0.001 = 4</text>
+    <text x="810" y="300" font-size="15" fill="#15803d">恢复到合理的初始尺度</text>
+  </g>
+
+  <path d="M250 235 H319" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M590 235 H669" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="630" y="217" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#52616f">除以 1 - βᵗ</text>
+
+  <rect x="190" y="405" width="620" height="55" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="439" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#222831">随着训练步数增大，βᵗ 接近 0，偏差修正的影响逐渐减弱</text>
+</svg>

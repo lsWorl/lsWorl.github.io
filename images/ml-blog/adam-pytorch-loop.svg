@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">PyTorch Adam 训练循环</title>
+  <desc id="desc">前向传播计算损失，反向传播填充梯度，Adam 读取梯度和历史状态后更新参数。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">PyTorch 中 Adam 如何参与训练</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">Autograd 负责求梯度，Adam 负责依据梯度和历史状态更新参数</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="55" y="185" width="150" height="92" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="130" y="221" font-size="19" font-weight="700" fill="#222831">前向传播</text>
+    <text x="130" y="250" font-size="14" fill="#5f6b7a">logits = model(x)</text>
+
+    <rect x="255" y="185" width="150" height="92" rx="10" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="330" y="221" font-size="19" font-weight="700" fill="#222831">计算损失</text>
+    <text x="330" y="250" font-size="14" fill="#5f6b7a">loss_fn(logits, y)</text>
+
+    <rect x="455" y="185" width="160" height="92" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="535" y="221" font-size="19" font-weight="700" fill="#222831">反向传播</text>
+    <text x="535" y="250" font-size="14" fill="#5f6b7a">loss.backward()</text>
+
+    <rect x="675" y="160" width="270" height="142" rx="12" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="810" y="199" font-size="21" font-weight="700" fill="#222831">optimizer.step()</text>
+    <text x="810" y="232" font-size="15" fill="#334155">读取 parameter.grad</text>
+    <text x="810" y="260" font-size="15" fill="#334155">更新 m、v、step 和参数</text>
+    <text x="810" y="285" font-size="14" fill="#5f6b7a">这些状态保存在 optimizer 中</text>
+  </g>
+
+  <path d="M205 231 H244" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M405 231 H444" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M615 231 H664" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M810 302 C780 405 180 405 130 288" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="270" y="392" width="460" height="48" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="422" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#222831">下一轮开始前：optimizer.zero_grad(set_to_none=True)</text>
+  <text x="500" y="493" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#5f6b7a">不要在每个 epoch 内重新创建 Adam，否则一阶矩和二阶矩会被重置</text>
+</svg>

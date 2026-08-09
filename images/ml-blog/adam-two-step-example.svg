@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="580" viewBox="0 0 1000 580" role="img" aria-labelledby="title desc">
+  <title id="title">两步 Adam 手算示例</title>
+  <desc id="desc">参数从一开始，分别使用梯度二和梯度一进行两次 Adam 更新。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="580" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">手工计算两步 Adam 更新</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">α=0.001，β₁=0.9，β₂=0.999，忽略极小的 ε</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <circle cx="95" cy="285" r="52" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="95" y="278" font-size="18" font-weight="700" fill="#222831">初始参数</text>
+    <text x="95" y="307" font-size="18" fill="#334155">θ₀ = 1</text>
+
+    <rect x="220" y="155" width="275" height="260" rx="12" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="358" y="198" font-size="23" font-weight="700" fill="#222831">第 1 步：g₁ = 2</text>
+    <text x="358" y="240" font-size="17" fill="#334155">m₁ = 0.2，v₁ = 0.004</text>
+    <text x="358" y="278" font-size="17" fill="#334155">m̂₁ = 2，v̂₁ = 4</text>
+    <text x="358" y="316" font-size="17" fill="#334155">更新量 = 0.001</text>
+    <rect x="278" y="345" width="160" height="42" rx="8" fill="#ffffff" stroke="#efd3a9"/>
+    <text x="358" y="372" font-size="18" font-weight="700" fill="#b45309">θ₁ = 0.999</text>
+
+    <rect x="625" y="155" width="300" height="260" rx="12" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="775" y="198" font-size="23" font-weight="700" fill="#222831">第 2 步：g₂ = 1</text>
+    <text x="775" y="240" font-size="17" fill="#334155">m₂ = 0.28，v₂ = 0.004996</text>
+    <text x="775" y="278" font-size="17" fill="#334155">m̂₂ ≈ 1.4737</text>
+    <text x="775" y="310" font-size="17" fill="#334155">v̂₂ ≈ 2.4992</text>
+    <text x="775" y="342" font-size="17" fill="#334155">更新量 ≈ 0.000932</text>
+    <rect x="690" y="360" width="170" height="42" rx="8" fill="#ffffff" stroke="#b9ddc4"/>
+    <text x="775" y="387" font-size="18" font-weight="700" fill="#15803d">θ₂ ≈ 0.998068</text>
+  </g>
+
+  <path d="M147 285 H209" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M495 285 H614" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="215" y="485" width="570" height="50" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="516" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#222831">当前梯度变小后，历史的一阶矩和二阶矩仍会共同影响更新量</text>
+</svg>
