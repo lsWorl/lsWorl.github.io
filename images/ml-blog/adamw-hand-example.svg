@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="550" viewBox="0 0 1000 550" role="img" aria-labelledby="title desc">
+  <title id="title">AdamW 单步手算</title>
+  <desc id="desc">参数一分别减去 Adam 梯度更新量和独立权重衰减量，得到零点九九八九九。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="550" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">手算一次 AdamW 参数更新</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">θ₀=1，g₁=2，α=0.001，λ=0.01，忽略极小的 ε</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <circle cx="105" cy="275" r="58" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="105" y="267" font-size="18" font-weight="700" fill="#222831">初始参数</text>
+    <text x="105" y="299" font-size="20" fill="#334155">θ₀ = 1</text>
+
+    <rect x="255" y="145" width="265" height="125" rx="11" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="388" y="184" font-size="21" font-weight="700" fill="#222831">Adam 梯度路径</text>
+    <text x="388" y="219" font-size="17" fill="#334155">0.001 × 2 / √4</text>
+    <text x="388" y="249" font-size="18" font-weight="700" fill="#b45309">更新量 = 0.001</text>
+
+    <rect x="255" y="320" width="265" height="125" rx="11" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="388" y="359" font-size="21" font-weight="700" fill="#222831">权重衰减路径</text>
+    <text x="388" y="394" font-size="17" fill="#334155">0.001 × 0.01 × 1</text>
+    <text x="388" y="424" font-size="18" font-weight="700" fill="#15803d">衰减量 = 0.00001</text>
+
+    <rect x="675" y="200" width="260" height="150" rx="12" fill="#f7f3ff" stroke="#9b51e0" stroke-width="3"/>
+    <text x="805" y="244" font-size="22" font-weight="700" fill="#222831">两条路径相减</text>
+    <text x="805" y="283" font-size="18" fill="#334155">1 - 0.001 - 0.00001</text>
+    <rect x="725" y="305" width="160" height="32" rx="7" fill="#ffffff" stroke="#d2c1eb"/>
+    <text x="805" y="328" font-size="19" font-weight="700" fill="#6b21a8">θ₁ = 0.99899</text>
+  </g>
+
+  <path d="M163 260 C205 245 215 215 244 208" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M163 290 C205 310 215 375 244 382" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M520 208 C590 208 615 245 664 255" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M520 382 C590 382 615 315 664 300" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="500" y="505" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">解耦后，每一部分对参数更新的贡献都可以单独解释</text>
+</svg>

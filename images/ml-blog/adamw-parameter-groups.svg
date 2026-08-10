@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="570" viewBox="0 0 1000 570" role="img" aria-labelledby="title desc">
+  <title id="title">AdamW 参数分组</title>
+  <desc id="desc">模型参数被划分为应用权重衰减的矩阵参数，以及不应用衰减的偏置和归一化参数。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="570" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">AdamW：为不同参数设置不同衰减</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">参数组必须互不重叠，每个可训练参数只出现一次</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="60" y="205" width="190" height="100" rx="11" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="155" y="245" font-size="21" font-weight="700" fill="#222831">model</text>
+    <text x="155" y="278" font-size="15" fill="#5f6b7a">named_parameters()</text>
+
+    <rect x="355" y="130" width="270" height="150" rx="12" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="490" y="172" font-size="22" font-weight="700" fill="#222831">decay_params</text>
+    <text x="490" y="208" font-size="16" fill="#334155">Linear / Conv 权重矩阵</text>
+    <text x="490" y="240" font-size="16" fill="#15803d">weight_decay = 1e-2</text>
+
+    <rect x="355" y="335" width="270" height="150" rx="12" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="490" y="377" font-size="22" font-weight="700" fill="#222831">no_decay_params</text>
+    <text x="490" y="413" font-size="16" fill="#334155">bias / Norm 参数</text>
+    <text x="490" y="445" font-size="16" fill="#b45309">weight_decay = 0</text>
+
+    <rect x="735" y="205" width="210" height="100" rx="11" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="840" y="245" font-size="21" font-weight="700" fill="#222831">AdamW</text>
+    <text x="840" y="278" font-size="15" fill="#5f6b7a">两个 parameter groups</text>
+  </g>
+
+  <path d="M250 245 C300 230 315 200 344 195" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M250 275 C300 300 315 405 344 410" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M625 205 C675 205 690 235 724 245" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M625 410 C690 410 685 290 724 275" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="225" y="515" width="550" height="36" rx="8" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="539" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#222831">是否排除某类参数是实验配置，应结合模型结构和验证集结果判断</text>
+</svg>

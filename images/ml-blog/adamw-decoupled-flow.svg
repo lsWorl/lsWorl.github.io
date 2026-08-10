@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">AdamW 解耦更新流程</title>
+  <desc id="desc">数据梯度进入 Adam 的矩估计，权重衰减从另一条路径直接作用于参数。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52616f"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">AdamW：梯度更新与权重衰减解耦</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">两条路径最终共同更新参数，但衰减项不会进入一阶矩和二阶矩</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="60" y="145" width="180" height="90" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="150" y="181" font-size="20" font-weight="700" fill="#222831">数据梯度</text>
+    <text x="150" y="211" font-size="17" fill="#334155">g<tspan baseline-shift="sub" font-size="12">t</tspan> = ∇L</text>
+
+    <rect x="340" y="135" width="240" height="110" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="460" y="176" font-size="21" font-weight="700" fill="#222831">Adam 矩估计</text>
+    <text x="460" y="210" font-size="16" fill="#5f6b7a">更新 m<tspan baseline-shift="sub" font-size="11">t</tspan> 与 v<tspan baseline-shift="sub" font-size="11">t</tspan></text>
+
+    <rect x="680" y="145" width="250" height="90" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="805" y="181" font-size="20" font-weight="700" fill="#222831">自适应梯度更新</text>
+    <text x="805" y="211" font-size="16" fill="#334155">αm̂ / (√v̂ + ε)</text>
+
+    <rect x="170" y="335" width="210" height="90" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="275" y="371" font-size="20" font-weight="700" fill="#222831">独立权重衰减</text>
+    <text x="275" y="401" font-size="17" fill="#334155">αλθ</text>
+
+    <rect x="670" y="335" width="260" height="90" rx="10" fill="#fff0f0" stroke="#eb5757" stroke-width="2"/>
+    <text x="800" y="371" font-size="20" font-weight="700" fill="#222831">更新后的参数</text>
+    <text x="800" y="401" font-size="17" fill="#334155">θ<tspan baseline-shift="sub" font-size="12">t</tspan></text>
+  </g>
+
+  <path d="M240 190 H329" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M580 190 H669" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M805 235 C805 275 800 300 800 324" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M380 380 H659" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M150 235 C150 290 190 325 230 335" fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="7 7"/>
+  <text x="500" y="370" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#15803d">不进入 m 和 v</text>
+
+  <rect x="205" y="475" width="590" height="48" rx="10" fill="#ffffff" stroke="#d4dbe5"/>
+  <text x="500" y="505" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#222831">θₜ = θₜ₋₁ - AdamUpdate - αλθₜ₋₁</text>
+</svg>

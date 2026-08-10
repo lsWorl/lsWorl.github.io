@@ -1,0 +1,707 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AdamW Optimizer：为什么要把权重衰减与梯度更新解耦 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从 L2 正则化与权重衰减的区别出发，理解 AdamW 的解耦思想、更新公式、手算过程、参数分组和 PyTorch 完整训练方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AdamW Optimizer：为什么要把权重衰减与梯度更新解耦">
+<meta property="og:url" content="https://lsworl.github.io/2026/08/10/machine-learning-adamw-optimizer/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="从 L2 正则化与权重衰减的区别出发，理解 AdamW 的解耦思想、更新公式、手算过程、参数分组和 PyTorch 完整训练方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-08-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-10T08:54:56.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="优化算法">
+<meta property="article:tag" content="AdamW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AdamW Optimizer：为什么要把权重衰减与梯度更新解耦",
+  "url": "https://lsworl.github.io/2026/08/10/machine-learning-adamw-optimizer/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-08-09T16:00:00.000Z",
+  "dateModified": "2026-08-10T08:54:56.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/08/10/machine-learning-adamw-optimizer/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AdamW Optimizer：为什么要把权重衰减与梯度更新解耦',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">117</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">115</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">AdamW Optimizer：为什么要把权重衰减与梯度更新解耦</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">AdamW Optimizer：为什么要把权重衰减与梯度更新解耦</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-10T08:54:56.000Z" title="更新于 2026-08-10 16:54:56">2026-08-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>在上一篇 Adam Optimizer 文章中，我们知道 Adam 会同时维护梯度的一阶矩和二阶矩，并根据历史梯度为不同参数调整有效步长。</p>
+<p>当模型出现过拟合时，我们还希望限制参数变得过大，于是经常会为优化器设置 <code>weight_decay</code>：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    lr<span class="token operator">=</span><span class="token number">1e-3</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span><span class="token number">1e-2</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这里为什么常用 AdamW，而不是简单地给 Adam 加一个 L2 正则项？AdamW 中的字母 W 又代表什么？</p>
+<p>一句话概括：</p>
+<blockquote>
+<p>AdamW 把权重衰减从 Adam 的梯度与矩估计中分离出来，让“根据损失优化参数”和“按比例缩小参数”成为两件独立的事。</p>
+</blockquote>
+<span id="more"></span>
+
+<p><img src="https://lsworl.github.io/images/ml-blog/adamw-decoupled-flow.svg" alt="AdamW 将梯度更新和权重衰减拆成两条路径"></p>
+<h2 id="1-先回顾-Adam"><a href="#1-先回顾-Adam" class="headerlink" title="1. 先回顾 Adam"></a>1. 先回顾 Adam</h2><p>Adam 对当前梯度 $g_t$ 维护两种状态。</p>
+<p>一阶矩：</p>
+<p>$$<br>m_t&#x3D;\beta_1m_{t-1}+(1-\beta_1)g_t<br>$$</p>
+<p>二阶矩：</p>
+<p>$$<br>v_t&#x3D;\beta_2v_{t-1}+(1-\beta_2)g_t^2<br>$$</p>
+<p>经过偏差修正后：</p>
+<p>$$<br>\hat{m}_t&#x3D;\frac{m_t}{1-\beta_1^t}<br>$$</p>
+<p>$$<br>\hat{v}_t&#x3D;\frac{v_t}{1-\beta_2^t}<br>$$</p>
+<p>Adam 的参数更新为：</p>
+<p>$$<br>\theta_t<br>&#x3D;\theta_{t-1}<br>-\alpha\frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$\theta$ 是模型参数。</li>
+<li>$\alpha$ 是学习率。</li>
+<li>$m_t$ 记录近期梯度方向。</li>
+<li>$v_t$ 记录近期梯度平方的尺度。</li>
+</ul>
+<p>如果对 Adam 本身还不熟悉，可以先阅读上一篇文章：</p>
+<p><a href="https://lsworl.github.io/2026/08/09/machine-learning-adam-optimizer/">Adam Optimizer：从梯度下降到自适应学习率</a></p>
+<h2 id="2-为什么需要限制权重大小"><a href="#2-为什么需要限制权重大小" class="headerlink" title="2. 为什么需要限制权重大小"></a>2. 为什么需要限制权重大小</h2><p>神经网络参数很多，模型可能把训练数据中的细节甚至噪声也记住。</p>
+<p>一种常见思路是：在保证拟合数据的同时，不希望权重无限增大。</p>
+<p>较小的权重并不自动等于更好的模型，但限制权重规模通常可以：</p>
+<ul>
+<li>减少模型对个别输入特征的过度依赖。</li>
+<li>缓解过拟合。</li>
+<li>让参数更新更加平稳。</li>
+<li>改善部分任务上的验证集表现。</li>
+</ul>
+<p>实现这一目标时，经常会遇到两个容易混淆的概念：</p>
+<ul>
+<li>L2 正则化。</li>
+<li>权重衰减（Weight Decay）。</li>
+</ul>
+<h2 id="3-L2-正则化是什么"><a href="#3-L2-正则化是什么" class="headerlink" title="3. L2 正则化是什么"></a>3. L2 正则化是什么</h2><p>L2 正则化会在原始损失后面增加参数平方惩罚项：</p>
+<p>$$<br>L_{total}(\theta)<br>&#x3D;L_{data}(\theta)<br>+\frac{\lambda}{2}\lVert\theta\rVert_2^2<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$L_{data}$ 是模型在训练数据上的原始损失。</li>
+<li>$\lambda$ 控制正则化强度。</li>
+<li>$\lVert\theta\rVert_2^2$ 是参数平方和。</li>
+</ul>
+<p>对参数求导：</p>
+<p>$$<br>\nabla_\theta L_{total}<br>&#x3D;\nabla_\theta L_{data}+\lambda\theta<br>$$</p>
+<p>如果把数据损失产生的梯度记为 $g_t$，加入 L2 后，送给优化器的梯度就变成：</p>
+<p>$$<br>g_t^{L2}&#x3D;g_t+\lambda\theta_{t-1}<br>$$</p>
+<p>也就是说，L2 正则化通过“修改梯度”来影响参数。</p>
+<h2 id="4-权重衰减是什么"><a href="#4-权重衰减是什么" class="headerlink" title="4. 权重衰减是什么"></a>4. 权重衰减是什么</h2><p>权重衰减的直觉更加直接：每次更新时，都让参数按比例缩小一点。</p>
+<p>如果暂时不考虑损失梯度，可以写成：</p>
+<p>$$<br>\theta_t&#x3D;(1-\alpha\lambda)\theta_{t-1}<br>$$</p>
+<p>例如：</p>
+<p>$$<br>\theta&#x3D;10,\quad \alpha&#x3D;0.1,\quad \lambda&#x3D;0.01<br>$$</p>
+<p>那么衰减一次后：</p>
+<p>$$<br>\theta’&#x3D;(1-0.1\times0.01)\times10&#x3D;9.99<br>$$</p>
+<p>参数每一步都按固定比例衰减，而不是把衰减项混入损失梯度。</p>
+<h2 id="5-为什么在普通-SGD-中两者看起来一样"><a href="#5-为什么在普通-SGD-中两者看起来一样" class="headerlink" title="5. 为什么在普通 SGD 中两者看起来一样"></a>5. 为什么在普通 SGD 中两者看起来一样</h2><p>普通 SGD 加 L2 后：</p>
+<p>$$<br>\theta_t<br>&#x3D;\theta_{t-1}-\alpha(g_t+\lambda\theta_{t-1})<br>$$</p>
+<p>展开：</p>
+<p>$$<br>\theta_t<br>&#x3D;(1-\alpha\lambda)\theta_{t-1}<br>-\alpha g_t<br>$$</p>
+<p>这个式子恰好可以拆成两部分：</p>
+<ol>
+<li>$(1-\alpha\lambda)\theta_{t-1}$：缩小原参数。</li>
+<li>$-\alpha g_t$：根据损失梯度更新参数。</li>
+</ol>
+<p>因此，对于不带自适应缩放的普通 SGD，在常见设置下，L2 正则化和权重衰减可以得到等价的更新形式。</p>
+<p>这也导致很多代码和资料把二者混在一起讨论。</p>
+<h2 id="6-为什么到了-Adam-中就不一样了"><a href="#6-为什么到了-Adam-中就不一样了" class="headerlink" title="6. 为什么到了 Adam 中就不一样了"></a>6. 为什么到了 Adam 中就不一样了</h2><p>Adam 不会直接使用梯度 $g_t$，而是先用它更新 $m_t$ 和 $v_t$。</p>
+<p>如果直接把 L2 项加入梯度：</p>
+<p>$$<br>g_t’&#x3D;g_t+\lambda\theta_{t-1}<br>$$</p>
+<p>那么 Adam 实际记录的是：</p>
+<p>$$<br>m_t&#x3D;\beta_1m_{t-1}+(1-\beta_1)g_t’<br>$$</p>
+<p>$$<br>v_t&#x3D;\beta_2v_{t-1}+(1-\beta_2)(g_t’)^2<br>$$</p>
+<p>这意味着 $\lambda\theta$ 不只是缩小参数，它还会：</p>
+<ul>
+<li>进入一阶矩，影响历史更新方向。</li>
+<li>进入二阶矩，影响自适应缩放尺度。</li>
+<li>与真正的数据梯度混合。</li>
+<li>对不同参数产生不同的有效衰减程度。</li>
+</ul>
+<p>因此，在 Adam 这类自适应优化器中，“把 L2 项加入梯度”与“直接按比例衰减参数”不再等价。</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/adamw-vs-adam-l2.svg" alt="Adam 加 L2 与 AdamW 的核心区别"></p>
+<h2 id="7-AdamW-的解耦更新"><a href="#7-AdamW-的解耦更新" class="headerlink" title="7. AdamW 的解耦更新"></a>7. AdamW 的解耦更新</h2><p>AdamW 仍然使用原始数据梯度更新一阶矩和二阶矩：</p>
+<p>$$<br>g_t&#x3D;\nabla_\theta L_{data}<br>$$</p>
+<p>$$<br>m_t&#x3D;\beta_1m_{t-1}+(1-\beta_1)g_t<br>$$</p>
+<p>$$<br>v_t&#x3D;\beta_2v_{t-1}+(1-\beta_2)g_t^2<br>$$</p>
+<p>然后将 Adam 更新和权重衰减分开执行：</p>
+<p>$$<br>\theta_t<br>&#x3D;\theta_{t-1}<br>-\alpha\frac{\hat{m}_t}{\sqrt{\hat{v}<em>t}+\epsilon}<br>-\alpha\lambda\theta</em>{t-1}<br>$$</p>
+<p>也可以写成：</p>
+<p>$$<br>\theta_t<br>&#x3D;(1-\alpha\lambda)\theta_{t-1}<br>-\alpha\frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}<br>$$</p>
+<p>这里的关键不是多减了一项，而是：</p>
+<blockquote>
+<p>权重衰减项不进入 $m_t$ 和 $v_t$，因此不会污染 Adam 对梯度方向和梯度尺度的估计。</p>
+</blockquote>
+<p>字母 W 就来自 Weight Decay。</p>
+<h2 id="8-用“零梯度”理解解耦"><a href="#8-用“零梯度”理解解耦" class="headerlink" title="8. 用“零梯度”理解解耦"></a>8. 用“零梯度”理解解耦</h2><p>假设某一步数据损失对参数的梯度刚好为 0：</p>
+<p>$$<br>g_t&#x3D;0<br>$$</p>
+<h3 id="Adam-L2"><a href="#Adam-L2" class="headerlink" title="Adam + L2"></a>Adam + L2</h3><p>加入 L2 后，优化器看到的梯度仍然不是 0：</p>
+<p>$$<br>g_t’&#x3D;\lambda\theta<br>$$</p>
+<p>它会进入一阶矩和二阶矩，并受到 Adam 自适应缩放的影响。</p>
+<h3 id="AdamW"><a href="#AdamW" class="headerlink" title="AdamW"></a>AdamW</h3><p>AdamW 的梯度路径仍然看到 $g_t&#x3D;0$，而权重衰减独立执行：</p>
+<p>$$<br>\theta_t&#x3D;(1-\alpha\lambda)\theta_{t-1}<br>$$</p>
+<p>这种行为更容易解释：即使当前数据梯度为 0，参数仍按照设定比例衰减，但优化器的矩估计不会把衰减误认为数据梯度。</p>
+<h2 id="9-手算一次-AdamW-更新"><a href="#9-手算一次-AdamW-更新" class="headerlink" title="9. 手算一次 AdamW 更新"></a>9. 手算一次 AdamW 更新</h2><p>假设：</p>
+<p>$$<br>\theta_0&#x3D;1,\quad<br>g_1&#x3D;2<br>$$</p>
+<p>设置：</p>
+<p>$$<br>\alpha&#x3D;0.001,\quad<br>\lambda&#x3D;0.01,\quad<br>\beta_1&#x3D;0.9,\quad<br>\beta_2&#x3D;0.999<br>$$</p>
+<p>为了方便手算，暂时忽略非常小的 $\epsilon$。</p>
+<p>第一步 Adam 的偏差修正结果为：</p>
+<p>$$<br>\hat{m}_1&#x3D;2<br>$$</p>
+<p>$$<br>\hat{v}_1&#x3D;4<br>$$</p>
+<p>Adam 梯度更新量：</p>
+<p>$$<br>\alpha\frac{\hat{m}_1}{\sqrt{\hat{v}_1}}<br>&#x3D;0.001\times\frac{2}{2}<br>&#x3D;0.001<br>$$</p>
+<p>独立权重衰减量：</p>
+<p>$$<br>\alpha\lambda\theta_0<br>&#x3D;0.001\times0.01\times1<br>&#x3D;0.00001<br>$$</p>
+<p>最终参数：</p>
+<p>$$<br>\theta_1<br>&#x3D;1-0.001-0.00001<br>&#x3D;0.99899<br>$$</p>
+<p>可以看到，梯度更新和权重衰减各自有清晰的来源。</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/adamw-hand-example.svg" alt="AdamW 一次参数更新的手算结果"></p>
+<h2 id="10-Adam、Adam-L2-和-AdamW-对比"><a href="#10-Adam、Adam-L2-和-AdamW-对比" class="headerlink" title="10. Adam、Adam + L2 和 AdamW 对比"></a>10. Adam、Adam + L2 和 AdamW 对比</h2><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>矩估计使用的梯度</th>
+<th>参数是否直接衰减</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Adam</td>
+<td>$g_t$</td>
+<td>否</td>
+<td>没有额外正则化</td>
+</tr>
+<tr>
+<td>Adam + L2</td>
+<td>$g_t+\lambda\theta$</td>
+<td>否</td>
+<td>L2 项也进入一阶矩和二阶矩</td>
+</tr>
+<tr>
+<td>AdamW</td>
+<td>$g_t$</td>
+<td>是</td>
+<td>梯度更新与权重衰减解耦</td>
+</tr>
+</tbody></table>
+<p>如果 <code>weight_decay=0</code>，AdamW 不执行参数衰减，其核心梯度更新与 Adam 对齐。</p>
+<p>AdamW 的优势并不是“比 Adam 多一个字母”，而是让正则化强度不再被自适应梯度缩放隐式改变。</p>
+<h2 id="11-PyTorch-中如何使用-AdamW"><a href="#11-PyTorch-中如何使用-AdamW" class="headerlink" title="11. PyTorch 中如何使用 AdamW"></a>11. PyTorch 中如何使用 AdamW</h2><p>最常见的写法：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    lr<span class="token operator">=</span><span class="token number">1e-3</span><span class="token punctuation">,</span>
+    betas<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">0.9</span><span class="token punctuation">,</span> <span class="token number">0.999</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    eps<span class="token operator">=</span><span class="token number">1e-8</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span><span class="token number">1e-2</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>当前 PyTorch 官方接口中，AdamW 的常见默认值包括：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th align="right">常见默认值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lr</code></td>
+<td align="right"><code>1e-3</code></td>
+<td>基础学习率</td>
+</tr>
+<tr>
+<td><code>betas</code></td>
+<td align="right"><code>(0.9, 0.999)</code></td>
+<td>一阶矩和二阶矩的衰减系数</td>
+</tr>
+<tr>
+<td><code>eps</code></td>
+<td align="right"><code>1e-8</code></td>
+<td>数值稳定项</td>
+</tr>
+<tr>
+<td><code>weight_decay</code></td>
+<td align="right"><code>1e-2</code></td>
+<td>解耦式权重衰减强度</td>
+</tr>
+<tr>
+<td><code>amsgrad</code></td>
+<td align="right"><code>False</code></td>
+<td>是否使用 AMSGrad 变体</td>
+</tr>
+</tbody></table>
+<p>即使库提供默认值，实践中也建议显式写出 <code>lr</code> 和 <code>weight_decay</code>，让实验配置更加清楚。</p>
+<h2 id="12-使用-AdamW-完整训练一个-MLP"><a href="#12-使用-AdamW-完整训练一个-MLP" class="headerlink" title="12. 使用 AdamW 完整训练一个 MLP"></a>12. 使用 AdamW 完整训练一个 MLP</h2><p>下面继续使用 XOR 二分类任务：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> torch
+<span class="token keyword">from</span> torch <span class="token keyword">import</span> nn
+
+
+torch<span class="token punctuation">.</span>manual_seed<span class="token punctuation">(</span><span class="token number">42</span><span class="token punctuation">)</span>
+
+X <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">[</span><span class="token number">0.0</span><span class="token punctuation">,</span> <span class="token number">0.0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token number">0.0</span><span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token number">0.0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token number">1.0</span><span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+y <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">XORNet</span><span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>net <span class="token operator">=</span> nn<span class="token punctuation">.</span>Sequential<span class="token punctuation">(</span>
+            nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            nn<span class="token punctuation">.</span>Tanh<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> x<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>net<span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+
+
+model <span class="token operator">=</span> XORNet<span class="token punctuation">(</span><span class="token punctuation">)</span>
+loss_fn <span class="token operator">=</span> nn<span class="token punctuation">.</span>CrossEntropyLoss<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    lr<span class="token operator">=</span><span class="token number">1e-2</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span><span class="token number">1e-2</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> epoch <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    model<span class="token punctuation">.</span>train<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    logits <span class="token operator">=</span> model<span class="token punctuation">(</span>X<span class="token punctuation">)</span>
+    loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>logits<span class="token punctuation">,</span> y<span class="token punctuation">)</span>
+
+    optimizer<span class="token punctuation">.</span>zero_grad<span class="token punctuation">(</span>set_to_none<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    loss<span class="token punctuation">.</span>backward<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    optimizer<span class="token punctuation">.</span>step<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> epoch <span class="token operator">%</span> <span class="token number">200</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"epoch=</span><span class="token interpolation"><span class="token punctuation">&#123;</span>epoch<span class="token punctuation">&#125;</span></span><span class="token string">, loss=</span><span class="token interpolation"><span class="token punctuation">&#123;</span>loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token format-spec">.6f</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">with</span> torch<span class="token punctuation">.</span>no_grad<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    logits <span class="token operator">=</span> model<span class="token punctuation">(</span>X<span class="token punctuation">)</span>
+    predictions <span class="token operator">=</span> logits<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"predictions:"</span><span class="token punctuation">,</span> predictions<span class="token punctuation">.</span>tolist<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>训练正常时，预测结果应接近：</p>
+<pre class="language-text" data-language="text"><code class="language-text">predictions: [0, 1, 1, 0]</code></pre>
+
+<p>训练循环和 Adam 完全相同。AdamW 的解耦逻辑已经封装在 <code>optimizer.step()</code> 中，不需要手动修改损失函数。</p>
+<h2 id="13-哪些参数通常不做权重衰减"><a href="#13-哪些参数通常不做权重衰减" class="headerlink" title="13. 哪些参数通常不做权重衰减"></a>13. 哪些参数通常不做权重衰减</h2><p>一个常见实践是：对全连接层、卷积层等权重矩阵进行衰减，但对下面这些参数关闭衰减：</p>
+<ul>
+<li>偏置 <code>bias</code>。</li>
+<li>LayerNorm、BatchNorm 等归一化层的缩放和偏移参数。</li>
+<li>某些任务中特殊定义的标量参数。</li>
+</ul>
+<p>原因主要是：</p>
+<ul>
+<li>偏置和归一化参数通常维度较低。</li>
+<li>它们的作用不同于大规模权重矩阵。</li>
+<li>对它们衰减未必带来期望的正则化效果。</li>
+</ul>
+<p>这不是不可违反的数学定律，而是一种常见实验配置。是否排除仍应以验证集结果为准。</p>
+<h2 id="14-用参数组排除-bias-和归一化参数"><a href="#14-用参数组排除-bias-和归一化参数" class="headerlink" title="14. 用参数组排除 bias 和归一化参数"></a>14. 用参数组排除 bias 和归一化参数</h2><p>可以根据参数名称进行分组：</p>
+<pre class="language-python" data-language="python"><code class="language-python">decay_params <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+no_decay_params <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+<span class="token keyword">for</span> name<span class="token punctuation">,</span> param <span class="token keyword">in</span> model<span class="token punctuation">.</span>named_parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> param<span class="token punctuation">.</span>requires_grad<span class="token punctuation">:</span>
+        <span class="token keyword">continue</span>
+
+    is_bias <span class="token operator">=</span> name<span class="token punctuation">.</span>endswith<span class="token punctuation">(</span><span class="token string">"bias"</span><span class="token punctuation">)</span>
+    is_norm <span class="token operator">=</span> <span class="token string">"norm"</span> <span class="token keyword">in</span> name<span class="token punctuation">.</span>lower<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> is_bias <span class="token keyword">or</span> is_norm<span class="token punctuation">:</span>
+        no_decay_params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>param<span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        decay_params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>param<span class="token punctuation">)</span>
+
+optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token string">"params"</span><span class="token punctuation">:</span> decay_params<span class="token punctuation">,</span>
+            <span class="token string">"weight_decay"</span><span class="token punctuation">:</span> <span class="token number">1e-2</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token string">"params"</span><span class="token punctuation">:</span> no_decay_params<span class="token punctuation">,</span>
+            <span class="token string">"weight_decay"</span><span class="token punctuation">:</span> <span class="token number">0.0</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    lr<span class="token operator">=</span><span class="token number">1e-3</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>对于结构复杂的模型，只根据名称中是否包含 <code>norm</code> 进行判断可能不够严谨。</p>
+<p>还可以使用一个简单经验：一维参数通常是偏置或归一化参数，二维及以上参数通常是权重矩阵。</p>
+<pre class="language-python" data-language="python"><code class="language-python">decay_params <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+no_decay_params <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+<span class="token keyword">for</span> param <span class="token keyword">in</span> model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> param<span class="token punctuation">.</span>requires_grad<span class="token punctuation">:</span>
+        <span class="token keyword">continue</span>
+
+    <span class="token keyword">if</span> param<span class="token punctuation">.</span>ndim <span class="token operator">>=</span> <span class="token number">2</span><span class="token punctuation">:</span>
+        decay_params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>param<span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        no_decay_params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>param<span class="token punctuation">)</span></code></pre>
+
+<p>这种方法也不是对所有模型都绝对正确，但在 Transformer 风格模型中很常见。</p>
+<p><img src="https://lsworl.github.io/images/ml-blog/adamw-parameter-groups.svg" alt="AdamW 参数组中的衰减与不衰减参数"></p>
+<h2 id="15-参数组中不能重复加入同一个参数"><a href="#15-参数组中不能重复加入同一个参数" class="headerlink" title="15. 参数组中不能重复加入同一个参数"></a>15. 参数组中不能重复加入同一个参数</h2><p>每个可训练参数只能出现在一个参数组里。</p>
+<p>错误示例：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"params"</span><span class="token punctuation">:</span> model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"weight_decay"</span><span class="token punctuation">:</span> <span class="token number">1e-2</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"params"</span><span class="token punctuation">:</span> model<span class="token punctuation">.</span>classifier<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"weight_decay"</span><span class="token punctuation">:</span> <span class="token number">0.0</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+
+<p>如果 <code>classifier</code> 本来就在 <code>model.parameters()</code> 中，它就被重复加入了。</p>
+<p>正确做法是先把参数划分成互不重叠的集合，再创建优化器。</p>
+<h2 id="16-AdamW-与学习率调度"><a href="#16-AdamW-与学习率调度" class="headerlink" title="16. AdamW 与学习率调度"></a>16. AdamW 与学习率调度</h2><p>AdamW 仍然需要合理的学习率策略。</p>
+<p>常见组合包括：</p>
+<ul>
+<li>AdamW + warmup。</li>
+<li>AdamW + cosine decay。</li>
+<li>AdamW + linear decay。</li>
+</ul>
+<p>例如使用余弦退火：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    lr<span class="token operator">=</span><span class="token number">1e-3</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span><span class="token number">1e-2</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+scheduler <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>lr_scheduler<span class="token punctuation">.</span>CosineAnnealingLR<span class="token punctuation">(</span>
+    optimizer<span class="token punctuation">,</span>
+    T_max<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> epoch <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    train_one_epoch<span class="token punctuation">(</span>model<span class="token punctuation">,</span> optimizer<span class="token punctuation">)</span>
+    scheduler<span class="token punctuation">.</span>step<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>因为 AdamW 的衰减量中包含学习率：</p>
+<p>$$<br>\alpha\lambda\theta<br>$$</p>
+<p>所以学习率随训练变化时，每一步实际施加的衰减量也会随之变化。</p>
+<h2 id="17-如何选择-weight-decay"><a href="#17-如何选择-weight-decay" class="headerlink" title="17. 如何选择 weight_decay"></a>17. 如何选择 <code>weight_decay</code></h2><p>没有一个适合所有任务的固定值。</p>
+<p>可以把下面的值作为搜索起点：</p>
+<pre class="language-text" data-language="text"><code class="language-text">0
+1e-4
+1e-3
+1e-2
+1e-1</code></pre>
+
+<p>常见现象：</p>
+<ul>
+<li><code>weight_decay</code> 太小：正则化效果不明显。</li>
+<li><code>weight_decay</code> 太大：参数被过度压缩，训练集都难以拟合。</li>
+<li>训练集很好、验证集较差：可以尝试适当增大。</li>
+<li>训练集和验证集都较差：先检查模型容量、学习率和训练过程，不要只靠增大衰减解决。</li>
+</ul>
+<p><code>lr</code> 和 <code>weight_decay</code> 会相互影响，最好联合调节，而不是只搜索其中一个。</p>
+<h2 id="18-保存与恢复-AdamW-状态"><a href="#18-保存与恢复-AdamW-状态" class="headerlink" title="18. 保存与恢复 AdamW 状态"></a>18. 保存与恢复 AdamW 状态</h2><p>AdamW 和 Adam 一样，需要保存一阶矩、二阶矩和更新步数。</p>
+<pre class="language-python" data-language="python"><code class="language-python">torch<span class="token punctuation">.</span>save<span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token string">"model"</span><span class="token punctuation">:</span> model<span class="token punctuation">.</span>state_dict<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string">"optimizer"</span><span class="token punctuation">:</span> optimizer<span class="token punctuation">.</span>state_dict<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string">"scheduler"</span><span class="token punctuation">:</span> scheduler<span class="token punctuation">.</span>state_dict<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string">"epoch"</span><span class="token punctuation">:</span> epoch<span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token string">"checkpoint.pth"</span><span class="token punctuation">)</span></code></pre>
+
+<p>恢复时：</p>
+<pre class="language-python" data-language="python"><code class="language-python">checkpoint <span class="token operator">=</span> torch<span class="token punctuation">.</span>load<span class="token punctuation">(</span><span class="token string">"checkpoint.pth"</span><span class="token punctuation">)</span>
+
+model<span class="token punctuation">.</span>load_state_dict<span class="token punctuation">(</span>checkpoint<span class="token punctuation">[</span><span class="token string">"model"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+optimizer<span class="token punctuation">.</span>load_state_dict<span class="token punctuation">(</span>checkpoint<span class="token punctuation">[</span><span class="token string">"optimizer"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+scheduler<span class="token punctuation">.</span>load_state_dict<span class="token punctuation">(</span>checkpoint<span class="token punctuation">[</span><span class="token string">"scheduler"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+start_epoch <span class="token operator">=</span> checkpoint<span class="token punctuation">[</span><span class="token string">"epoch"</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span></code></pre>
+
+<p>只恢复模型而不恢复优化器，AdamW 的历史矩估计会重新开始，训练轨迹可能发生变化。</p>
+<h2 id="19-常见错误"><a href="#19-常见错误" class="headerlink" title="19. 常见错误"></a>19. 常见错误</h2><h3 id="19-1-同时手动加-L2-又设置-AdamW-衰减"><a href="#19-1-同时手动加-L2-又设置-AdamW-衰减" class="headerlink" title="19.1 同时手动加 L2 又设置 AdamW 衰减"></a>19.1 同时手动加 L2 又设置 AdamW 衰减</h3><p>例如既在损失中加入参数平方和：</p>
+<pre class="language-python" data-language="python"><code class="language-python">loss <span class="token operator">=</span> data_loss <span class="token operator">+</span> lambda_ <span class="token operator">*</span> l2_penalty</code></pre>
+
+<p>又设置：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span>lambda_<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这会同时施加两种正则化。如果不是有意设计，通常属于重复计算。</p>
+<h3 id="19-2-认为-AdamW-一定优于-Adam"><a href="#19-2-认为-AdamW-一定优于-Adam" class="headerlink" title="19.2 认为 AdamW 一定优于 Adam"></a>19.2 认为 AdamW 一定优于 Adam</h3><p>如果 <code>weight_decay=0</code>，两者没有解耦衰减上的差异。</p>
+<p>如果任务本身不需要额外权重衰减，AdamW 不会凭空带来提升。</p>
+<h3 id="19-3-直接照搬别人的-weight-decay"><a href="#19-3-直接照搬别人的-weight-decay" class="headerlink" title="19.3 直接照搬别人的 weight_decay"></a>19.3 直接照搬别人的 <code>weight_decay</code></h3><p>合适的衰减强度与下面因素有关：</p>
+<ul>
+<li>学习率。</li>
+<li>训练步数。</li>
+<li>模型规模。</li>
+<li>数据量。</li>
+<li>是否使用归一化层。</li>
+<li>学习率调度方式。</li>
+</ul>
+<p>所以应通过验证集或交叉验证选择，而不是机械照搬。</p>
+<h3 id="19-4-对所有参数一视同仁"><a href="#19-4-对所有参数一视同仁" class="headerlink" title="19.4 对所有参数一视同仁"></a>19.4 对所有参数一视同仁</h3><p>简单任务可以直接传入 <code>model.parameters()</code>，但大型模型通常值得认真区分权重矩阵、偏置和归一化参数。</p>
+<h3 id="19-5-在训练循环中重新创建优化器"><a href="#19-5-在训练循环中重新创建优化器" class="headerlink" title="19.5 在训练循环中重新创建优化器"></a>19.5 在训练循环中重新创建优化器</h3><p>错误写法：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">for</span> epoch <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>这会不断丢失一阶矩、二阶矩和更新步数。优化器通常只在训练循环外创建一次。</p>
+<h2 id="20-AdamW-适合哪些场景"><a href="#20-AdamW-适合哪些场景" class="headerlink" title="20. AdamW 适合哪些场景"></a>20. AdamW 适合哪些场景</h2><p>AdamW 经常作为这些任务的优化器起点：</p>
+<ul>
+<li>Transformer。</li>
+<li>BERT、GPT 等语言模型。</li>
+<li>Vision Transformer。</li>
+<li>需要 Adam 自适应更新并希望使用权重衰减的任务。</li>
+<li>预训练模型微调。</li>
+</ul>
+<p>不过它并不限定于 Transformer。普通 MLP、CNN 或其他模型只要适合 Adam，并且需要解耦权重衰减，也可以使用 AdamW。</p>
+<h2 id="21-总结"><a href="#21-总结" class="headerlink" title="21. 总结"></a>21. 总结</h2><p>L2 正则化和权重衰减的目标看起来相似，都是限制参数规模，但它们的实现路径不同：</p>
+<pre class="language-text" data-language="text"><code class="language-text">L2 正则化
+  -> 修改损失和梯度
+  -> 正则项进入 Adam 的一阶矩与二阶矩
+
+AdamW
+  -> 使用原始数据梯度计算矩估计
+  -> 单独按比例衰减参数</code></pre>
+
+<p>最重要的结论是：</p>
+<ul>
+<li>在普通 SGD 中，L2 正则化和权重衰减在常见设置下可以等价。</li>
+<li>在 Adam 中，把 L2 项加入梯度会受到自适应缩放影响。</li>
+<li>AdamW 把权重衰减从梯度路径中解耦。</li>
+<li>AdamW 的 <code>weight_decay</code> 仍然需要根据验证集调节。</li>
+<li>大型模型中通常会对权重矩阵衰减，而排除偏置和归一化参数。</li>
+</ul>
+<p>PyTorch 中的基础写法是：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>AdamW<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    lr<span class="token operator">=</span><span class="token number">1e-3</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span><span class="token number">1e-2</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这行代码虽然简单，但理解“解耦”以后，才真正知道它与 Adam + L2 的区别。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Ilya Loshchilov, Frank Hutter, <em>Decoupled Weight Decay Regularization</em>: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1711.05101">https://arxiv.org/abs/1711.05101</a></li>
+<li>PyTorch Documentation, <code>torch.optim.AdamW</code>: <a target="_blank" rel="noopener" href="https://docs.pytorch.org/docs/stable/generated/torch.optim.adamw.AdamW_class.html">https://docs.pytorch.org/docs/stable/generated/torch.optim.adamw.AdamW_class.html</a></li>
+<li>PyTorch Documentation, <code>torch.optim</code>: <a target="_blank" rel="noopener" href="https://docs.pytorch.org/docs/stable/optim.html">https://docs.pytorch.org/docs/stable/optim.html</a></li>
+<li>Diederik P. Kingma, Jimmy Ba, <em>Adam: A Method for Stochastic Optimization</em>: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1412.6980">https://arxiv.org/abs/1412.6980</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/08/10/machine-learning-adamw-optimizer/">https://lsworl.github.io/2026/08/10/machine-learning-adamw-optimizer/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a><a class="post-meta__tags" href="/tags/PyTorch/">PyTorch</a><a class="post-meta__tags" href="/tags/%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95/">优化算法</a><a class="post-meta__tags" href="/tags/AdamW/">AdamW</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/09/machine-learning-adam-optimizer/" title="Adam Optimizer：从梯度下降到自适应学习率"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Adam Optimizer：从梯度下降到自适应学习率</div></div><div class="info-2"><div class="info-item-1">训练神经网络时，我们经常会看到下面这行代码： optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  它很短，却承担着一个关键任务：根据反向传播得到的梯度，不断更新模型中的权重和偏置。 Adam 的全称是 Adaptive Moment Estimation，可以翻译为“自适应矩估计”。它同时利用梯度的移动平均和梯度平方的移动平均，为不同参数自动调整更新方向与步长。 一句话概括：  Adam 在动量方法的基础上记录梯度方向，又根据历史梯度大小为每个参数调整学习率，因此通常比普通 SGD 更容易上手。     1. 优化器到底负责什么神经网络训练通常包含三个核心步骤： optimizer.zero_grad() loss.backward() optimizer.step()  它们的职责并不相同：    代码 作用    optimizer.zero_grad() 清空上一轮保存在参数上的梯度   loss.backward() 根据计算图和链式法则计算梯度   optimizer.step() 根据梯度和优化算法更...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/09/machine-learning-adam-optimizer/" title="Adam Optimizer：从梯度下降到自适应学习率"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-09</div><div class="info-item-2">Adam Optimizer：从梯度下降到自适应学习率</div></div><div class="info-2"><div class="info-item-1">训练神经网络时，我们经常会看到下面这行代码： optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  它很短，却承担着一个关键任务：根据反向传播得到的梯度，不断更新模型中的权重和偏置。 Adam 的全称是 Adaptive Moment Estimation，可以翻译为“自适应矩估计”。它同时利用梯度的移动平均和梯度平方的移动平均，为不同参数自动调整更新方向与步长。 一句话概括：  Adam 在动量方法的基础上记录梯度方向，又根据历史梯度大小为每个参数调整学习率，因此通常比普通 SGD 更容易上手。     1. 优化器到底负责什么神经网络训练通常包含三个核心步骤： optimizer.zero_grad() loss.backward() optimizer.step()  它们的职责并不相同：    代码 作用    optimizer.zero_grad() 清空上一轮保存在参数上的梯度   loss.backward() 根据计算图和链式法则计算梯度   optimizer.step() 根据梯度和优化算法更...</div></div></div></a><a class="pagination-related" href="/2026/07/08/deep-learning-introduction-roadmap/" title="深度学习入门：从神经网络到学习路线"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-08</div><div class="info-item-2">深度学习入门：从神经网络到学习路线</div></div><div class="info-2"><div class="info-item-1">学习深度学习时，很多人一上来就会被一堆名词淹没：神经网络、反向传播、CNN、RNN、Transformer、Embedding、优化器、损失函数、过拟合、预训练、微调…… 这些概念当然重要，但如果一开始没有一张地图，就很容易出现一种感觉：每个词好像都看过，但不知道它们之间到底是什么关系。 所以这篇文章不急着推公式，也不急着写复杂代码，而是先回答几个更基础的问题：  深度学习到底在学什么？ 神经网络为什么可以拟合复杂关系？ 一个模型是如何被训练出来的？ 入门之后应该按什么顺序继续学？  一句话概括：  深度学习就是用多层神经网络从数据中自动学习特征表示，再用这些表示完成分类、回归、生成、推荐、预测等任务。     1. 深度学习是什么在传统机器学习中，我们经常需要手动设计特征。 比如要判断一封邮件是不是垃圾邮件，可能会人工提取这些特征：  是否包含“免费”“中奖”“限时”等关键词。 邮件长度是多少。 是否包含很多链接。 发件人是否陌生。  这些特征再送入逻辑回归、决策树、随机森林、GBDT 等模型中进行预测。 深度学习的思路稍微不一样。它希望模型自己从原始数据中逐层学习特征。 以图...</div></div></div></a><a class="pagination-related" href="/2026/07/05/machine-learning-mlp-pytorch/" title="MLP多层感知机：从原理到PyTorch实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-05</div><div class="info-item-2">MLP多层感知机：从原理到PyTorch实现</div></div><div class="info-2"><div class="info-item-1">MLP（Multilayer Perceptron，多层感知机）是最基础也最重要的神经网络之一。 如果说线性回归、逻辑回归只有一层线性变换，那么 MLP 就是在多层线性变换之间加入非线性激活函数，让模型能够拟合更复杂的关系。 它的结构并不神秘： 输入特征 -> 隐藏层 -> 激活函数 -> 隐藏层 -> 激活函数 -> 输出层  一句话概括：  MLP 用多个全连接层和非线性激活函数，把输入特征一步步变换成适合分类或回归的输出。     1. 为什么需要 MLP前面学习线性回归时，模型大致是： $$\hat{y}&#x3D;wx+b$$ 对于多维输入，可以写成： $$\hat{y}&#x3D;xW+b$$ 这类模型只能表达线性关系。 例如下面这种问题，线性模型就比较吃力： 两个特征单独看都不能决定类别， 但它们组合起来以后才有意义。  经典例子是 XOR：    $x_1$ $x_2$ 标签    0 0 0   0 1 1   1 0 1   1 1 0   这四个点无法用一条直线完美分开。 MLP 的作用就是：先通过隐藏层把原始特征映射到新的空间，再在新空间里完成分类或回归。...</div></div></div></a><a class="pagination-related" href="/2026/05/26/machine-learning-gradient-descent/" title="梯度下降法：机器学习如何一步步找到最优解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="info-item-2">梯度下降法：机器学习如何一步步找到最优解</div></div><div class="info-2"><div class="info-item-1">在机器学习中，我们经常会说一句话：模型训练的目标，是让损失函数尽可能小（在深度学习中也经常使用梯度下降）。 但问题是：参数那么多，损失函数又可能很复杂，模型到底应该怎样找到那个“比较好”的参数呢？ 梯度下降法就是最常用的答案之一。它的思想并不神秘：先站在一个位置，看哪里下降最快，然后朝那个方向走一小步；重复很多次以后，就逐渐接近损失函数的低谷（梯度下降就是通过多元求极值的方式来求最小值）。   1. 为什么需要梯度下降以线性回归为例，模型可以写成： $$\hat{y} &#x3D; wx + b$$ 其中：  $x$ 是输入特征。 $\hat{y}$ 是模型预测值。 $w$ 是权重。 $b$ 是偏置。  我们希望预测值 $\hat{y}$ 尽量接近真实值 $y$，因此可以使用均方误差作为损失函数： $$J(w, b) &#x3D; \frac{1}{m}\sum_{i&#x3D;1}^{m}(\hat{y}^{(i)} - y^{(i)})^2$$ 因为 $\hat{y}^{(i)} &#x3D; wx^{(i)} + b$，所以也可以写成： $$J(w, b) &#x3D; \...</div></div></div></a><a class="pagination-related" href="/2026/06/20/machine-learning-gnn/" title="图神经网络GNN：让模型学会理解关系数据"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-20</div><div class="info-item-2">图神经网络GNN：让模型学会理解关系数据</div></div><div class="info-2"><div class="info-item-1">前面学习线性回归、逻辑回归、决策树、GBDT 这类模型时，我们面对的数据通常是表格、向量或图片。每个样本大多可以单独看待。 但现实中还有很多数据天然带有“关系”：  社交网络中，用户之间有好友关系。 推荐系统中，用户、商品、点击、购买构成交互图。 分子结构中，原子是节点，化学键是边。 交通网络中，路口是节点，道路是边。 知识图谱中，实体和实体之间有语义关系。  这些数据的重点不只在于“单个对象有什么特征”，还在于“对象之间如何连接”。图神经网络（Graph Neural Network，GNN）就是专门用来处理这类图结构数据的神经网络。 一句话概括：  GNN 让每个节点不断接收邻居的信息，更新自己的表示，从而把节点特征和图结构一起编码进向量里。     1. 为什么普通神经网络不够用假设我们要判断一个社交网络用户是否可能对某个话题感兴趣。 如果只看用户自己的特征，例如年龄、地区、历史点击，当然能得到一些信息。 但在社交网络里，用户的邻居也很重要：  他的朋友是否都关注这个话题？ 他是否处在某个兴趣社区中？ 他和哪些关键用户有连接？ 他在网络中的位置是否特殊？  普通全连接神经网...</div></div></div></a><a class="pagination-related" href="/2026/05/27/machine-learning-decision-tree/" title="决策树：像做选择题一样理解分类与回归"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-27</div><div class="info-item-2">决策树：像做选择题一样理解分类与回归</div></div><div class="info-2"><div class="info-item-1">决策树（Decision Tree）是一种非常符合人类直觉的机器学习算法。它的预测过程就像做选择题：先问一个问题，根据答案走到下一步，再继续问问题，直到得到最终结论。 例如判断一个学生考试是否通过，可以问：  学习时间是否大于 3 小时？ 睡眠时间是否大于 7 小时？ 是否完成复习？  最后走到某个叶子节点，得到“通过”或“不通过”的预测结果。    1. 决策树的基本思想决策树的核心思想是：不断选择一个最合适的特征，把数据集切分得越来越“纯”。 这里的“纯”可以理解为：一个节点里的样本类别越统一，就越纯。 例如一个节点里有 10 个样本：  如果 10 个都是“通过”，这个节点非常纯。 如果 5 个“通过”、5 个“不通过”，这个节点就很混乱。  训练决策树时，算法会不断寻找最佳划分条件，例如： 学习时间 >= 3 小时？  如果这个问题能把“通过”和“不通过”分得更开，就说明它是一个不错的划分。 2. 决策树由哪些部分组成一棵决策树通常包含三类节点：    结构 含义    根节点 整棵树的起点，包含全部训练数据   内部节点 一个判断条件，例如“年龄是否大于 18”   叶...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">117</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">115</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E5%9B%9E%E9%A1%BE-Adam"><span class="toc-number">1.</span> <span class="toc-text">1. 先回顾 Adam</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E9%99%90%E5%88%B6%E6%9D%83%E9%87%8D%E5%A4%A7%E5%B0%8F"><span class="toc-number">2.</span> <span class="toc-text">2. 为什么需要限制权重大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-L2-%E6%AD%A3%E5%88%99%E5%8C%96%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">3.</span> <span class="toc-text">3. L2 正则化是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%9D%83%E9%87%8D%E8%A1%B0%E5%87%8F%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">4.</span> <span class="toc-text">4. 权重衰减是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9C%A8%E6%99%AE%E9%80%9A-SGD-%E4%B8%AD%E4%B8%A4%E8%80%85%E7%9C%8B%E8%B5%B7%E6%9D%A5%E4%B8%80%E6%A0%B7"><span class="toc-number">5.</span> <span class="toc-text">5. 为什么在普通 SGD 中两者看起来一样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%88%B0%E4%BA%86-Adam-%E4%B8%AD%E5%B0%B1%E4%B8%8D%E4%B8%80%E6%A0%B7%E4%BA%86"><span class="toc-number">6.</span> <span class="toc-text">6. 为什么到了 Adam 中就不一样了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-AdamW-%E7%9A%84%E8%A7%A3%E8%80%A6%E6%9B%B4%E6%96%B0"><span class="toc-number">7.</span> <span class="toc-text">7. AdamW 的解耦更新</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E7%94%A8%E2%80%9C%E9%9B%B6%E6%A2%AF%E5%BA%A6%E2%80%9D%E7%90%86%E8%A7%A3%E8%A7%A3%E8%80%A6"><span class="toc-number">8.</span> <span class="toc-text">8. 用“零梯度”理解解耦</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Adam-L2"><span class="toc-number">8.1.</span> <span class="toc-text">Adam + L2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AdamW"><span class="toc-number">8.2.</span> <span class="toc-text">AdamW</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%89%8B%E7%AE%97%E4%B8%80%E6%AC%A1-AdamW-%E6%9B%B4%E6%96%B0"><span class="toc-number">9.</span> <span class="toc-text">9. 手算一次 AdamW 更新</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-Adam%E3%80%81Adam-L2-%E5%92%8C-AdamW-%E5%AF%B9%E6%AF%94"><span class="toc-number">10.</span> <span class="toc-text">10. Adam、Adam + L2 和 AdamW 对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-PyTorch-%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-AdamW"><span class="toc-number">11.</span> <span class="toc-text">11. PyTorch 中如何使用 AdamW</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E4%BD%BF%E7%94%A8-AdamW-%E5%AE%8C%E6%95%B4%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA-MLP"><span class="toc-number">12.</span> <span class="toc-text">12. 使用 AdamW 完整训练一个 MLP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E5%93%AA%E4%BA%9B%E5%8F%82%E6%95%B0%E9%80%9A%E5%B8%B8%E4%B8%8D%E5%81%9A%E6%9D%83%E9%87%8D%E8%A1%B0%E5%87%8F"><span class="toc-number">13.</span> <span class="toc-text">13. 哪些参数通常不做权重衰减</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E7%94%A8%E5%8F%82%E6%95%B0%E7%BB%84%E6%8E%92%E9%99%A4-bias-%E5%92%8C%E5%BD%92%E4%B8%80%E5%8C%96%E5%8F%82%E6%95%B0"><span class="toc-number">14.</span> <span class="toc-text">14. 用参数组排除 bias 和归一化参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E5%8F%82%E6%95%B0%E7%BB%84%E4%B8%AD%E4%B8%8D%E8%83%BD%E9%87%8D%E5%A4%8D%E5%8A%A0%E5%85%A5%E5%90%8C%E4%B8%80%E4%B8%AA%E5%8F%82%E6%95%B0"><span class="toc-number">15.</span> <span class="toc-text">15. 参数组中不能重复加入同一个参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-AdamW-%E4%B8%8E%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6"><span class="toc-number">16.</span> <span class="toc-text">16. AdamW 与学习率调度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9-weight-decay"><span class="toc-number">17.</span> <span class="toc-text">17. 如何选择 weight_decay</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E4%BF%9D%E5%AD%98%E4%B8%8E%E6%81%A2%E5%A4%8D-AdamW-%E7%8A%B6%E6%80%81"><span class="toc-number">18.</span> <span class="toc-text">18. 保存与恢复 AdamW 状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">19.</span> <span class="toc-text">19. 常见错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E5%90%8C%E6%97%B6%E6%89%8B%E5%8A%A8%E5%8A%A0-L2-%E5%8F%88%E8%AE%BE%E7%BD%AE-AdamW-%E8%A1%B0%E5%87%8F"><span class="toc-number">19.1.</span> <span class="toc-text">19.1 同时手动加 L2 又设置 AdamW 衰减</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E8%AE%A4%E4%B8%BA-AdamW-%E4%B8%80%E5%AE%9A%E4%BC%98%E4%BA%8E-Adam"><span class="toc-number">19.2.</span> <span class="toc-text">19.2 认为 AdamW 一定优于 Adam</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-3-%E7%9B%B4%E6%8E%A5%E7%85%A7%E6%90%AC%E5%88%AB%E4%BA%BA%E7%9A%84-weight-decay"><span class="toc-number">19.3.</span> <span class="toc-text">19.3 直接照搬别人的 weight_decay</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-4-%E5%AF%B9%E6%89%80%E6%9C%89%E5%8F%82%E6%95%B0%E4%B8%80%E8%A7%86%E5%90%8C%E4%BB%81"><span class="toc-number">19.4.</span> <span class="toc-text">19.4 对所有参数一视同仁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-5-%E5%9C%A8%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF%E4%B8%AD%E9%87%8D%E6%96%B0%E5%88%9B%E5%BB%BA%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-number">19.5.</span> <span class="toc-text">19.5 在训练循环中重新创建优化器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-AdamW-%E9%80%82%E5%90%88%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF"><span class="toc-number">20.</span> <span class="toc-text">20. AdamW 适合哪些场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E6%80%BB%E7%BB%93"><span class="toc-number">21.</span> <span class="toc-text">21. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">22.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/machine-learning-adamw-optimizer/" title="AdamW Optimizer：为什么要把权重衰减与梯度更新解耦">AdamW Optimizer：为什么要把权重衰减与梯度更新解耦</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/machine-learning-adam-optimizer/" title="Adam Optimizer：从梯度下降到自适应学习率">Adam Optimizer：从梯度下降到自适应学习率</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/03/nlp-word2vec-embedding-classifier/" title="Word2Vec：从词向量训练到神经网络分类器">Word2Vec：从词向量训练到神经网络分类器</a><time datetime="2026-08-02T16:00:00.000Z" title="发表于 2026-08-03 00:00:00">2026-08-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/08/deep-learning-introduction-roadmap/" title="深度学习入门：从神经网络到学习路线">深度学习入门：从神经网络到学习路线</a><time datetime="2026-07-07T16:00:00.000Z" title="发表于 2026-07-08 00:00:00">2026-07-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/05/machine-learning-mlp-pytorch/" title="MLP多层感知机：从原理到PyTorch实现">MLP多层感知机：从原理到PyTorch实现</a><time datetime="2026-07-04T16:00:00.000Z" title="发表于 2026-07-05 00:00:00">2026-07-05</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
