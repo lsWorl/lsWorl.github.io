@@ -1,0 +1,933 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从序列到序列任务出发，理解Encoder-Decoder、隐藏状态、Teacher Forcing、训练与推理差异、Attention，并用PyTorch GRU实现一个完整Seq2Seq模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现">
+<meta property="og:url" content="https://lsworl.github.io/2026/08/10/nlp-seq2seq-encoder-decoder/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="从序列到序列任务出发，理解Encoder-Decoder、隐藏状态、Teacher Forcing、训练与推理差异、Attention，并用PyTorch GRU实现一个完整Seq2Seq模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-08-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-10T12:38:54.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="自然语言处理">
+<meta property="article:tag" content="Seq2Seq">
+<meta property="article:tag" content="Encoder-Decoder">
+<meta property="article:tag" content="RNN">
+<meta property="article:tag" content="GRU">
+<meta property="article:tag" content="Attention">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现",
+  "url": "https://lsworl.github.io/2026/08/10/nlp-seq2seq-encoder-decoder/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-08-09T16:00:00.000Z",
+  "dateModified": "2026-08-10T12:38:54.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/08/10/nlp-seq2seq-encoder-decoder/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">119</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">122</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-10T12:38:54.000Z" title="更新于 2026-08-10 20:38:54">2026-08-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>前面的文本处理和 Word2Vec 文章主要解决了两个问题：</p>
+<ul>
+<li>如何把文本转换成 token id。</li>
+<li>如何把 token id 转换成词向量。</li>
+</ul>
+<p>但很多自然语言处理任务不是“输入一句话，输出一个类别”，而是“输入一个序列，输出另一个序列”。</p>
+<p>例如机器翻译：</p>
+<pre class="language-text" data-language="text"><code class="language-text">输入：我 喜欢 自然语言处理
+输出：I like natural language processing</code></pre>
+
+<p>输入和输出的长度可能不同，词序也可能不同。普通 MLP 或单纯的文本分类器很难直接处理这种映射。</p>
+<p>Seq2Seq，全称 Sequence to Sequence，就是专门学习“序列到序列”映射的一类模型框架。</p>
+<p>一句话概括：</p>
+<blockquote>
+<p>Seq2Seq 先用 Encoder 理解整个输入序列，再让 Decoder 根据编码结果逐步生成输出序列。</p>
+</blockquote>
+<span id="more"></span>
+
+<p><img src="https://lsworl.github.io/images/nlp-blog/seq2seq-overview.svg" alt="Seq2Seq Encoder-Decoder整体结构"></p>
+<h2 id="1-什么是序列到序列任务"><a href="#1-什么是序列到序列任务" class="headerlink" title="1. 什么是序列到序列任务"></a>1. 什么是序列到序列任务</h2><p>Seq2Seq 的输入和输出都是有顺序的元素序列：</p>
+<p>$$<br>X&#x3D;(x_1,x_2,\ldots,x_{T_x})<br>$$</p>
+<p>$$<br>Y&#x3D;(y_1,y_2,\ldots,y_{T_y})<br>$$</p>
+<p>其中输入长度 $T_x$ 与输出长度 $T_y$ 不必相同。</p>
+<p>常见任务包括：</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>输入序列</th>
+<th>输出序列</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>机器翻译</td>
+<td>中文 token</td>
+<td>英文 token</td>
+</tr>
+<tr>
+<td>文本摘要</td>
+<td>长文章 token</td>
+<td>摘要 token</td>
+</tr>
+<tr>
+<td>对话生成</td>
+<td>用户问题 token</td>
+<td>回复 token</td>
+</tr>
+<tr>
+<td>语音识别</td>
+<td>音频特征帧</td>
+<td>文本 token</td>
+</tr>
+<tr>
+<td>拼写纠正</td>
+<td>含错误的字符序列</td>
+<td>正确字符序列</td>
+</tr>
+<tr>
+<td>时间序列预测</td>
+<td>历史数值序列</td>
+<td>未来数值序列</td>
+</tr>
+</tbody></table>
+<p>Seq2Seq 不是某一种固定网络层，而是一种结构思想。</p>
+<p>Encoder 和 Decoder 可以使用：</p>
+<ul>
+<li>RNN。</li>
+<li>LSTM。</li>
+<li>GRU。</li>
+<li>CNN。</li>
+<li>Transformer。</li>
+</ul>
+<p>这篇文章先从经典的 RNN&#x2F;GRU Encoder-Decoder 讲起，因为它最容易看清序列生成的本质。</p>
+<h2 id="2-为什么普通神经网络不够用"><a href="#2-为什么普通神经网络不够用" class="headerlink" title="2. 为什么普通神经网络不够用"></a>2. 为什么普通神经网络不够用</h2><p>假设使用 MLP 做翻译，首先会遇到输入长度不固定的问题：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 爱 你
+我 非常 喜欢 学习 自然语言处理</code></pre>
+
+<p>两句话包含的 token 数不同，而普通全连接层通常需要固定长度输入。</p>
+<p>即使通过 padding 把长度补齐，MLP 也不会天然理解：</p>
+<ul>
+<li>token 的先后顺序。</li>
+<li>当前词与前面词之间的依赖。</li>
+<li>输出应该在什么时候结束。</li>
+<li>输入和输出之间的对齐关系。</li>
+</ul>
+<p>循环神经网络会按顺序读取 token，并不断更新隐藏状态：</p>
+<p>$$<br>h_t&#x3D;f(x_t,h_{t-1})<br>$$</p>
+<p>$h_t$ 同时包含当前输入和之前序列的信息，因此适合处理序列。</p>
+<h2 id="3-Seq2Seq-的整体结构"><a href="#3-Seq2Seq-的整体结构" class="headerlink" title="3. Seq2Seq 的整体结构"></a>3. Seq2Seq 的整体结构</h2><p>经典 Seq2Seq 由两部分组成。</p>
+<h3 id="3-1-Encoder"><a href="#3-1-Encoder" class="headerlink" title="3.1 Encoder"></a>3.1 Encoder</h3><p>Encoder 按顺序读取输入 token：</p>
+<pre class="language-text" data-language="text"><code class="language-text">x1 -> x2 -> x3 -> ... -> xTx</code></pre>
+
+<p>每一步都会更新隐藏状态：</p>
+<p>$$<br>h_t^{enc}&#x3D;f_{enc}(E_x(x_t),h_{t-1}^{enc})<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$E_x$ 是源语言 Embedding。</li>
+<li>$x_t$ 是第 $t$ 个输入 token id。</li>
+<li>$h_t^{enc}$ 是 Encoder 在第 $t$ 步的隐藏状态。</li>
+</ul>
+<p>基础 Seq2Seq 通常把最后隐藏状态作为整个输入序列的表示：</p>
+<p>$$<br>c&#x3D;h_{T_x}^{enc}<br>$$</p>
+<p>$c$ 常被称为上下文向量或语义向量。</p>
+<h3 id="3-2-Decoder"><a href="#3-2-Decoder" class="headerlink" title="3.2 Decoder"></a>3.2 Decoder</h3><p>Decoder 使用 Encoder 给出的上下文向量作为初始状态，然后逐步生成输出：</p>
+<p>$$<br>s_t&#x3D;f_{dec}(E_y(y_{t-1}),s_{t-1})<br>$$</p>
+<p>$$<br>P(y_t\mid y_{&lt;t},X)&#x3D;\text{softmax}(Ws_t+b)<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$s_t$ 是 Decoder 隐藏状态。</li>
+<li>$y_{t-1}$ 是上一步 token。</li>
+<li>$y_{&lt;t}$ 表示已经生成的所有 token。</li>
+<li>输出分布表示下一个 token 的概率。</li>
+</ul>
+<p>Decoder 一次只生成一个 token，再把这个 token 作为下一步输入。</p>
+<h2 id="4-lt-BOS-gt-、-lt-EOS-gt-和-lt-PAD-gt"><a href="#4-lt-BOS-gt-、-lt-EOS-gt-和-lt-PAD-gt" class="headerlink" title="4. &lt;BOS&gt;、&lt;EOS&gt; 和 &lt;PAD&gt;"></a>4. <code>&lt;BOS&gt;</code>、<code>&lt;EOS&gt;</code> 和 <code>&lt;PAD&gt;</code></h2><p>Seq2Seq 通常需要几个特殊 token。</p>
+<table>
+<thead>
+<tr>
+<th>token</th>
+<th>含义</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;BOS&gt;</code></td>
+<td>Begin of Sequence</td>
+<td>告诉 Decoder 开始生成</td>
+</tr>
+<tr>
+<td><code>&lt;EOS&gt;</code></td>
+<td>End of Sequence</td>
+<td>告诉 Decoder 序列已经结束</td>
+</tr>
+<tr>
+<td><code>&lt;PAD&gt;</code></td>
+<td>Padding</td>
+<td>将不同长度序列补成相同长度</td>
+</tr>
+<tr>
+<td><code>&lt;UNK&gt;</code></td>
+<td>Unknown</td>
+<td>表示词表中没有的 token</td>
+</tr>
+</tbody></table>
+<p>假设目标句子是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">I like NLP</code></pre>
+
+<p>训练时通常会处理成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">&lt;BOS> I like NLP &lt;EOS></code></pre>
+
+<p>Decoder 的输入和预测目标会错开一位：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Decoder 输入：&lt;BOS> I    like NLP
+预测目标：      I     like NLP  &lt;EOS></code></pre>
+
+<p>模型因此学会：</p>
+<ul>
+<li>看到 <code>&lt;BOS&gt;</code> 后应该输出第一个词。</li>
+<li>看到前面的正确 token 后应该输出下一个词。</li>
+<li>句子完成后应该输出 <code>&lt;EOS&gt;</code>。</li>
+</ul>
+<h2 id="5-一次翻译是怎样生成的"><a href="#5-一次翻译是怎样生成的" class="headerlink" title="5. 一次翻译是怎样生成的"></a>5. 一次翻译是怎样生成的</h2><p>假设输入是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 学习</code></pre>
+
+<p>Encoder 读取完整输入后得到上下文向量 $c$。</p>
+<p>Decoder 的生成过程可能是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">输入 &lt;BOS> -> 输出 I
+输入 I     -> 输出 like
+输入 like  -> 输出 studying
+输入 studying -> 输出 &lt;EOS></code></pre>
+
+<p>得到完整结果：</p>
+<pre class="language-text" data-language="text"><code class="language-text">I like studying</code></pre>
+
+<p>这个过程是自回归生成：每一步依赖此前已经生成的结果。</p>
+<p>联合概率可以拆成：</p>
+<p>$$<br>P(Y\mid X)<br>&#x3D;\prod_{t&#x3D;1}^{T_y}<br>P(y_t\mid y_1,\ldots,y_{t-1},X)<br>$$</p>
+<p>训练目标是让正确目标序列的条件概率尽可能大，等价地，也可以最小化每一步 token 的交叉熵损失。</p>
+<h2 id="6-手工理解一次-Encoder-计算"><a href="#6-手工理解一次-Encoder-计算" class="headerlink" title="6. 手工理解一次 Encoder 计算"></a>6. 手工理解一次 Encoder 计算</h2><p>真实 GRU 和 LSTM 内部有多个门控，直接手算较长。为了先理解信息如何逐步积累，可以使用一个简化 RNN：</p>
+<p>$$<br>h_t&#x3D;\tanh(x_t+h_{t-1})<br>$$</p>
+<p>假设输入三个 token 的一维 Embedding 分别为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我   -> 0.2
+喜欢 -> 0.5
+学习 -> 0.8</code></pre>
+
+<p>初始隐藏状态：</p>
+<p>$$<br>h_0&#x3D;0<br>$$</p>
+<p>读取“我”：</p>
+<p>$$<br>h_1&#x3D;\tanh(0.2+0)\approx0.197<br>$$</p>
+<p>读取“喜欢”：</p>
+<p>$$<br>h_2&#x3D;\tanh(0.5+0.197)\approx0.602<br>$$</p>
+<p>读取“学习”：</p>
+<p>$$<br>h_3&#x3D;\tanh(0.8+0.602)\approx0.886<br>$$</p>
+<p>最后的 $h_3$ 同时受到三个输入的影响，因此可以作为输入序列的压缩表示。</p>
+<p>真实模型会使用多维向量和可学习矩阵：</p>
+<p>$$<br>h_t&#x3D;\tanh(W_xx_t+W_hh_{t-1}+b)<br>$$</p>
+<p>训练过程中，模型会自己学会哪些信息应该保留在隐藏状态中。</p>
+<h2 id="7-为什么常用-LSTM-或-GRU"><a href="#7-为什么常用-LSTM-或-GRU" class="headerlink" title="7. 为什么常用 LSTM 或 GRU"></a>7. 为什么常用 LSTM 或 GRU</h2><p>普通 RNN 在长序列中容易出现梯度消失或梯度爆炸，较早位置的信息很难传到后面。</p>
+<p>LSTM 和 GRU 通过门控机制控制信息流动。</p>
+<p>以 GRU 为例，它包含：</p>
+<ul>
+<li>更新门：决定保留多少旧状态。</li>
+<li>重置门：决定计算候选状态时参考多少旧信息。</li>
+<li>候选隐藏状态：融合当前输入与历史信息。</li>
+</ul>
+<p>简化公式如下：</p>
+<p>$$<br>z_t&#x3D;\sigma(W_zx_t+U_zh_{t-1})<br>$$</p>
+<p>$$<br>r_t&#x3D;\sigma(W_rx_t+U_rh_{t-1})<br>$$</p>
+<p>$$<br>\tilde{h}<em>t&#x3D;\tanh(W_hx_t+U_h(r_t\odot h</em>{t-1}))<br>$$</p>
+<p>$$<br>h_t&#x3D;(1-z_t)\odot\tilde{h}<em>t+z_t\odot h</em>{t-1}<br>$$</p>
+<p>GRU 比 LSTM 少一个独立的细胞状态，结构相对简洁。在 PyTorch 中，两者都可以直接作为 Encoder 和 Decoder 的核心层。</p>
+<h2 id="8-Teacher-Forcing-是什么"><a href="#8-Teacher-Forcing-是什么" class="headerlink" title="8. Teacher Forcing 是什么"></a>8. Teacher Forcing 是什么</h2><p>Decoder 在第 $t$ 步需要一个“上一步 token”作为输入。</p>
+<p>训练时有两种选择。</p>
+<h3 id="使用模型自己的预测"><a href="#使用模型自己的预测" class="headerlink" title="使用模型自己的预测"></a>使用模型自己的预测</h3><pre class="language-text" data-language="text"><code class="language-text">模型预测 yt-1 -> 作为下一步输入</code></pre>
+
+<p>如果前面预测错了，后面可能连续出错，训练初期尤其困难。</p>
+<h3 id="使用真实目标-token"><a href="#使用真实目标-token" class="headerlink" title="使用真实目标 token"></a>使用真实目标 token</h3><pre class="language-text" data-language="text"><code class="language-text">真实标签 yt-1 -> 作为下一步输入</code></pre>
+
+<p>这就是 Teacher Forcing。</p>
+<p><img src="https://lsworl.github.io/images/nlp-blog/seq2seq-teacher-forcing.svg" alt="Teacher Forcing与自回归输入的区别"></p>
+<p>代码中常通过概率决定使用哪一种：</p>
+<pre class="language-python" data-language="python"><code class="language-python">use_teacher <span class="token operator">=</span> torch<span class="token punctuation">.</span>rand<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> teacher_forcing_ratio
+
+<span class="token keyword">if</span> use_teacher<span class="token punctuation">:</span>
+    decoder_input <span class="token operator">=</span> target<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> t<span class="token punctuation">]</span>
+<span class="token keyword">else</span><span class="token punctuation">:</span>
+    decoder_input <span class="token operator">=</span> logits<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span></code></pre>
+
+<p>例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">teacher_forcing_ratio = 0.5</code></pre>
+
+<p>表示每一步有 50% 概率使用真实 token。</p>
+<p>Teacher Forcing 可以加快训练，但也会带来训练和推理不一致的问题。</p>
+<h2 id="9-训练与推理为什么不同"><a href="#9-训练与推理为什么不同" class="headerlink" title="9. 训练与推理为什么不同"></a>9. 训练与推理为什么不同</h2><p>训练时，我们拥有完整目标序列，可以使用 Teacher Forcing。</p>
+<p>推理时没有标准答案，只能使用模型自己的预测：</p>
+<pre class="language-text" data-language="text"><code class="language-text">&lt;BOS>
+  -> 预测 y1
+  -> 用 y1 预测 y2
+  -> 用 y2 预测 y3
+  -> ...
+  -> 生成 &lt;EOS></code></pre>
+
+<p><img src="https://lsworl.github.io/images/nlp-blog/seq2seq-training-inference.svg" alt="Seq2Seq训练与推理流程对比"></p>
+<p>训练时总能看到正确历史，推理时却可能看到自己生成的错误历史。这种差异通常称为 Exposure Bias。</p>
+<p>常见缓解方式包括：</p>
+<ul>
+<li>逐步降低 Teacher Forcing 比例。</li>
+<li>Scheduled Sampling。</li>
+<li>使用更强的 Decoder 或 Attention。</li>
+<li>序列级训练目标。</li>
+</ul>
+<p>入门时先理解问题即可，不必一次加入所有技巧。</p>
+<h2 id="10-Seq2Seq-的损失函数"><a href="#10-Seq2Seq-的损失函数" class="headerlink" title="10. Seq2Seq 的损失函数"></a>10. Seq2Seq 的损失函数</h2><p>假设 Decoder 在每一步输出词表上的 logits：</p>
+<p>$$<br>Z\in\mathbb{R}^{B\times T\times V}<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$B$ 是 batch size。</li>
+<li>$T$ 是目标序列长度。</li>
+<li>$V$ 是目标词表大小。</li>
+</ul>
+<p>目标 token id 的形状是：</p>
+<p>$$<br>Y\in\mathbb{R}^{B\times T}<br>$$</p>
+<p>训练时可以把前两维展平：</p>
+<pre class="language-python" data-language="python"><code class="language-python">loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>
+    logits<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> vocab_size<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    target<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>如果目标序列包含 padding，需要忽略 <code>&lt;PAD&gt;</code>：</p>
+<pre class="language-python" data-language="python"><code class="language-python">loss_fn <span class="token operator">=</span> nn<span class="token punctuation">.</span>CrossEntropyLoss<span class="token punctuation">(</span>ignore_index<span class="token operator">=</span>PAD_ID<span class="token punctuation">)</span></code></pre>
+
+<p><code>CrossEntropyLoss</code> 直接接收 logits，不需要先手动执行 softmax。</p>
+<h2 id="11-基础-Seq2Seq-的固定向量瓶颈"><a href="#11-基础-Seq2Seq-的固定向量瓶颈" class="headerlink" title="11. 基础 Seq2Seq 的固定向量瓶颈"></a>11. 基础 Seq2Seq 的固定向量瓶颈</h2><p>基础模型把整个输入序列压缩进最后一个隐藏状态：</p>
+<p>$$<br>c&#x3D;h_{T_x}^{enc}<br>$$</p>
+<p>对于短句可能足够，但输入变长后，单个固定长度向量需要记住：</p>
+<ul>
+<li>每个输入词的信息。</li>
+<li>词序。</li>
+<li>长距离依赖。</li>
+<li>对生成不同目标词有用的细节。</li>
+</ul>
+<p>这会形成信息瓶颈。句子越长，前面信息越容易丢失。</p>
+<h2 id="12-Attention-如何改进-Seq2Seq（Attention会专门用一篇文章介绍）"><a href="#12-Attention-如何改进-Seq2Seq（Attention会专门用一篇文章介绍）" class="headerlink" title="12. Attention 如何改进 Seq2Seq（Attention会专门用一篇文章介绍）"></a>12. Attention 如何改进 Seq2Seq（Attention会专门用一篇文章介绍）</h2><p>Attention 不再要求 Decoder 只依赖最后一个 Encoder 状态，而是保留所有 Encoder 输出：</p>
+<p>$$<br>H&#x3D;(h_1^{enc},h_2^{enc},\ldots,h_{T_x}^{enc})<br>$$</p>
+<p>Decoder 在第 $t$ 步计算自己与每个输入位置的相关性：</p>
+<p>$$<br>e_{t,i}&#x3D;score(s_{t-1},h_i^{enc})<br>$$</p>
+<p>经过 softmax 得到注意力权重：</p>
+<p>$$<br>\alpha_{t,i}<br>&#x3D;\frac{\exp(e_{t,i})}<br>{\sum_j\exp(e_{t,j})}<br>$$</p>
+<p>再对 Encoder 状态加权求和：</p>
+<p>$$<br>c_t&#x3D;\sum_i\alpha_{t,i}h_i^{enc}<br>$$</p>
+<p>每生成一个目标 token，Decoder 都可以重新选择当前最相关的输入位置。</p>
+<p><img src="https://lsworl.github.io/images/nlp-blog/seq2seq-attention.svg" alt="Attention让Decoder在每一步查看不同输入位置"></p>
+<p>例如生成英文单词 <code>like</code> 时，模型可能重点关注中文“喜欢”；生成 <code>NLP</code> 时，可能重点关注“自然语言处理”。</p>
+<p>Attention 既缓解了固定向量瓶颈，也提供了输入输出之间的软对齐关系。</p>
+<h2 id="13-PyTorch-中-GRU-的输入输出形状"><a href="#13-PyTorch-中-GRU-的输入输出形状" class="headerlink" title="13. PyTorch 中 GRU 的输入输出形状"></a>13. PyTorch 中 GRU 的输入输出形状</h2><p>下面的实现使用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">nn<span class="token punctuation">.</span>GRU<span class="token punctuation">(</span>
+    input_size<span class="token operator">=</span>embed_dim<span class="token punctuation">,</span>
+    hidden_size<span class="token operator">=</span>hidden_dim<span class="token punctuation">,</span>
+    batch_first<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>当 <code>batch_first=True</code> 时：</p>
+<table>
+<thead>
+<tr>
+<th>张量</th>
+<th>形状</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入 Embedding</td>
+<td><code>[batch, seq_len, embed_dim]</code></td>
+<td>每个 token 的向量</td>
+</tr>
+<tr>
+<td>GRU outputs</td>
+<td><code>[batch, seq_len, hidden_dim]</code></td>
+<td>每个时间步的输出</td>
+</tr>
+<tr>
+<td>GRU hidden</td>
+<td><code>[num_layers, batch, hidden_dim]</code></td>
+<td>最后隐藏状态</td>
+</tr>
+</tbody></table>
+<p>注意：即使设置了 <code>batch_first=True</code>，hidden 的维度顺序仍然是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[num_layers, batch, hidden_dim]</code></pre>
+
+<p>Decoder 每次只处理一个 token，因此它的 Embedding 可以整理成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">[batch, 1, embed_dim]</code></pre>
+
+<p><img src="https://lsworl.github.io/images/nlp-blog/seq2seq-pytorch-shapes.svg" alt="PyTorch Seq2Seq中的主要张量形状"></p>
+<h2 id="14-PyTorch-实现-Encoder"><a href="#14-PyTorch-实现-Encoder" class="headerlink" title="14. PyTorch 实现 Encoder"></a>14. PyTorch 实现 Encoder</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> torch
+<span class="token keyword">from</span> torch <span class="token keyword">import</span> nn
+
+
+<span class="token keyword">class</span> <span class="token class-name">Encoder</span><span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> vocab_size<span class="token punctuation">,</span> embed_dim<span class="token punctuation">,</span> hidden_dim<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>embedding <span class="token operator">=</span> nn<span class="token punctuation">.</span>Embedding<span class="token punctuation">(</span>vocab_size<span class="token punctuation">,</span> embed_dim<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>gru <span class="token operator">=</span> nn<span class="token punctuation">.</span>GRU<span class="token punctuation">(</span>
+            input_size<span class="token operator">=</span>embed_dim<span class="token punctuation">,</span>
+            hidden_size<span class="token operator">=</span>hidden_dim<span class="token punctuation">,</span>
+            batch_first<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> src<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># src: [batch, src_len]</span>
+        embedded <span class="token operator">=</span> self<span class="token punctuation">.</span>embedding<span class="token punctuation">(</span>src<span class="token punctuation">)</span>
+        <span class="token comment"># embedded: [batch, src_len, embed_dim]</span>
+
+        outputs<span class="token punctuation">,</span> hidden <span class="token operator">=</span> self<span class="token punctuation">.</span>gru<span class="token punctuation">(</span>embedded<span class="token punctuation">)</span>
+        <span class="token comment"># outputs: [batch, src_len, hidden_dim]</span>
+        <span class="token comment"># hidden:  [1, batch, hidden_dim]</span>
+
+        <span class="token keyword">return</span> outputs<span class="token punctuation">,</span> hidden</code></pre>
+
+<p>基础 Seq2Seq 只需要最后的 <code>hidden</code> 初始化 Decoder。</p>
+<p>这里仍然返回 <code>outputs</code>，是为了以后扩展 Attention，因为 Attention 需要所有时间步的 Encoder 输出。</p>
+<h2 id="15-PyTorch-实现-Decoder"><a href="#15-PyTorch-实现-Decoder" class="headerlink" title="15. PyTorch 实现 Decoder"></a>15. PyTorch 实现 Decoder</h2><p>Decoder 每次接收一个 token：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Decoder</span><span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> vocab_size<span class="token punctuation">,</span> embed_dim<span class="token punctuation">,</span> hidden_dim<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>embedding <span class="token operator">=</span> nn<span class="token punctuation">.</span>Embedding<span class="token punctuation">(</span>vocab_size<span class="token punctuation">,</span> embed_dim<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>gru <span class="token operator">=</span> nn<span class="token punctuation">.</span>GRU<span class="token punctuation">(</span>
+            input_size<span class="token operator">=</span>embed_dim<span class="token punctuation">,</span>
+            hidden_size<span class="token operator">=</span>hidden_dim<span class="token punctuation">,</span>
+            batch_first<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>output_layer <span class="token operator">=</span> nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span>hidden_dim<span class="token punctuation">,</span> vocab_size<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> token<span class="token punctuation">,</span> hidden<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># token: [batch]</span>
+        embedded <span class="token operator">=</span> self<span class="token punctuation">.</span>embedding<span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">.</span>unsqueeze<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+        <span class="token comment"># embedded: [batch, 1, embed_dim]</span>
+
+        output<span class="token punctuation">,</span> hidden <span class="token operator">=</span> self<span class="token punctuation">.</span>gru<span class="token punctuation">(</span>embedded<span class="token punctuation">,</span> hidden<span class="token punctuation">)</span>
+        <span class="token comment"># output: [batch, 1, hidden_dim]</span>
+
+        logits <span class="token operator">=</span> self<span class="token punctuation">.</span>output_layer<span class="token punctuation">(</span>output<span class="token punctuation">.</span>squeeze<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token comment"># logits: [batch, vocab_size]</span>
+
+        <span class="token keyword">return</span> logits<span class="token punctuation">,</span> hidden</code></pre>
+
+<p><code>output_layer</code> 把 Decoder 隐藏状态映射为词表上的 logits。</p>
+<h2 id="16-组合成-Seq2Seq-模型"><a href="#16-组合成-Seq2Seq-模型" class="headerlink" title="16. 组合成 Seq2Seq 模型"></a>16. 组合成 Seq2Seq 模型</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Seq2Seq</span><span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> encoder<span class="token punctuation">,</span> decoder<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>encoder <span class="token operator">=</span> encoder
+        self<span class="token punctuation">.</span>decoder <span class="token operator">=</span> decoder
+
+    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> src<span class="token punctuation">,</span> target<span class="token punctuation">,</span> teacher_forcing_ratio<span class="token operator">=</span><span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># target: [batch, target_len]，第一个 token 是 BOS</span>
+        _<span class="token punctuation">,</span> hidden <span class="token operator">=</span> self<span class="token punctuation">.</span>encoder<span class="token punctuation">(</span>src<span class="token punctuation">)</span>
+
+        decoder_input <span class="token operator">=</span> target<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span>
+        step_logits <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+        <span class="token keyword">for</span> t <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> target<span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            logits<span class="token punctuation">,</span> hidden <span class="token operator">=</span> self<span class="token punctuation">.</span>decoder<span class="token punctuation">(</span>decoder_input<span class="token punctuation">,</span> hidden<span class="token punctuation">)</span>
+            step_logits<span class="token punctuation">.</span>append<span class="token punctuation">(</span>logits<span class="token punctuation">)</span>
+
+            predicted_token <span class="token operator">=</span> logits<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+            use_teacher <span class="token operator">=</span> torch<span class="token punctuation">.</span>rand<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> teacher_forcing_ratio
+
+            <span class="token keyword">if</span> use_teacher<span class="token punctuation">:</span>
+                decoder_input <span class="token operator">=</span> target<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> t<span class="token punctuation">]</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                decoder_input <span class="token operator">=</span> predicted_token
+
+        <span class="token comment"># [batch, target_len - 1, vocab_size]</span>
+        <span class="token keyword">return</span> torch<span class="token punctuation">.</span>stack<span class="token punctuation">(</span>step_logits<span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span></code></pre>
+
+<p>这里从 <code>t=1</code> 开始，是因为 <code>target[:, 0]</code> 已经作为初始 <code>&lt;BOS&gt;</code> 输入。</p>
+<p>模型预测的是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">target[:, 1:]</code></pre>
+
+<p>也就是 <code>&lt;BOS&gt;</code> 后面的所有 token，包括最后的 <code>&lt;EOS&gt;</code>。</p>
+<h2 id="17-完整例子：学习反转数字序列"><a href="#17-完整例子：学习反转数字序列" class="headerlink" title="17. 完整例子：学习反转数字序列"></a>17. 完整例子：学习反转数字序列</h2><p>为了把注意力放在 Seq2Seq 本身，不引入分词器和真实翻译语料，下面训练一个序列反转任务。</p>
+<p>输入：</p>
+<pre class="language-text" data-language="text"><code class="language-text">3 7 5 9</code></pre>
+
+<p>目标：</p>
+<pre class="language-text" data-language="text"><code class="language-text">&lt;BOS> 9 5 7 3 &lt;EOS></code></pre>
+
+<h3 id="17-1-定义词表和数据"><a href="#17-1-定义词表和数据" class="headerlink" title="17.1 定义词表和数据"></a>17.1 定义词表和数据</h3><pre class="language-python" data-language="python"><code class="language-python">PAD_ID <span class="token operator">=</span> <span class="token number">0</span>
+BOS_ID <span class="token operator">=</span> <span class="token number">1</span>
+EOS_ID <span class="token operator">=</span> <span class="token number">2</span>
+
+<span class="token comment"># 3 到 12 表示十种普通 token</span>
+VOCAB_SIZE <span class="token operator">=</span> <span class="token number">13</span>
+SEQ_LEN <span class="token operator">=</span> <span class="token number">4</span>
+
+
+<span class="token keyword">def</span> <span class="token function">make_batch</span><span class="token punctuation">(</span>batch_size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    src <span class="token operator">=</span> torch<span class="token punctuation">.</span>randint<span class="token punctuation">(</span>
+        low<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+        high<span class="token operator">=</span>VOCAB_SIZE<span class="token punctuation">,</span>
+        size<span class="token operator">=</span><span class="token punctuation">(</span>batch_size<span class="token punctuation">,</span> SEQ_LEN<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    reversed_src <span class="token operator">=</span> torch<span class="token punctuation">.</span>flip<span class="token punctuation">(</span>src<span class="token punctuation">,</span> dims<span class="token operator">=</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+    bos <span class="token operator">=</span> torch<span class="token punctuation">.</span>full<span class="token punctuation">(</span><span class="token punctuation">(</span>batch_size<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> BOS_ID<span class="token punctuation">)</span>
+    eos <span class="token operator">=</span> torch<span class="token punctuation">.</span>full<span class="token punctuation">(</span><span class="token punctuation">(</span>batch_size<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> EOS_ID<span class="token punctuation">)</span>
+
+    target <span class="token operator">=</span> torch<span class="token punctuation">.</span>cat<span class="token punctuation">(</span><span class="token punctuation">[</span>bos<span class="token punctuation">,</span> reversed_src<span class="token punctuation">,</span> eos<span class="token punctuation">]</span><span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> src<span class="token punctuation">,</span> target</code></pre>
+
+<h3 id="17-2-创建模型和优化器"><a href="#17-2-创建模型和优化器" class="headerlink" title="17.2 创建模型和优化器"></a>17.2 创建模型和优化器</h3><pre class="language-python" data-language="python"><code class="language-python">torch<span class="token punctuation">.</span>manual_seed<span class="token punctuation">(</span><span class="token number">42</span><span class="token punctuation">)</span>
+
+encoder <span class="token operator">=</span> Encoder<span class="token punctuation">(</span>
+    vocab_size<span class="token operator">=</span>VOCAB_SIZE<span class="token punctuation">,</span>
+    embed_dim<span class="token operator">=</span><span class="token number">32</span><span class="token punctuation">,</span>
+    hidden_dim<span class="token operator">=</span><span class="token number">64</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+decoder <span class="token operator">=</span> Decoder<span class="token punctuation">(</span>
+    vocab_size<span class="token operator">=</span>VOCAB_SIZE<span class="token punctuation">,</span>
+    embed_dim<span class="token operator">=</span><span class="token number">32</span><span class="token punctuation">,</span>
+    hidden_dim<span class="token operator">=</span><span class="token number">64</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> Seq2Seq<span class="token punctuation">(</span>encoder<span class="token punctuation">,</span> decoder<span class="token punctuation">)</span>
+
+loss_fn <span class="token operator">=</span> nn<span class="token punctuation">.</span>CrossEntropyLoss<span class="token punctuation">(</span>ignore_index<span class="token operator">=</span>PAD_ID<span class="token punctuation">)</span>
+optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>Adam<span class="token punctuation">(</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> lr<span class="token operator">=</span><span class="token number">3e-3</span><span class="token punctuation">)</span></code></pre>
+
+<p>Encoder 和 Decoder 的 <code>hidden_dim</code> 必须一致，这样 Encoder 最后的 hidden 才能直接作为 Decoder 初始 hidden。</p>
+<h3 id="17-3-训练模型"><a href="#17-3-训练模型" class="headerlink" title="17.3 训练模型"></a>17.3 训练模型</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">for</span> step <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1500</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    src<span class="token punctuation">,</span> target <span class="token operator">=</span> make_batch<span class="token punctuation">(</span>batch_size<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+    logits <span class="token operator">=</span> model<span class="token punctuation">(</span>
+        src<span class="token punctuation">,</span>
+        target<span class="token punctuation">,</span>
+        teacher_forcing_ratio<span class="token operator">=</span><span class="token number">0.5</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    expected <span class="token operator">=</span> target<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+
+    loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>
+        logits<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> VOCAB_SIZE<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        expected<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    optimizer<span class="token punctuation">.</span>zero_grad<span class="token punctuation">(</span>set_to_none<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    loss<span class="token punctuation">.</span>backward<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 循环网络中常用梯度裁剪缓解梯度爆炸</span>
+    nn<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>clip_grad_norm_<span class="token punctuation">(</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> max_norm<span class="token operator">=</span><span class="token number">1.0</span><span class="token punctuation">)</span>
+
+    optimizer<span class="token punctuation">.</span>step<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> step <span class="token operator">%</span> <span class="token number">300</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"step=</span><span class="token interpolation"><span class="token punctuation">&#123;</span>step<span class="token punctuation">&#125;</span></span><span class="token string">, loss=</span><span class="token interpolation"><span class="token punctuation">&#123;</span>loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token format-spec">.4f</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span></code></pre>
+
+<p>这里使用随机生成的数据，所以每一步都会看到新的数字序列。</p>
+<h3 id="17-4-编写贪心解码"><a href="#17-4-编写贪心解码" class="headerlink" title="17.4 编写贪心解码"></a>17.4 编写贪心解码</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@torch<span class="token punctuation">.</span>no_grad</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">greedy_decode</span><span class="token punctuation">(</span>model<span class="token punctuation">,</span> src<span class="token punctuation">,</span> max_len<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    _<span class="token punctuation">,</span> hidden <span class="token operator">=</span> model<span class="token punctuation">.</span>encoder<span class="token punctuation">(</span>src<span class="token punctuation">)</span>
+
+    batch_size <span class="token operator">=</span> src<span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+    decoder_input <span class="token operator">=</span> torch<span class="token punctuation">.</span>full<span class="token punctuation">(</span>
+        <span class="token punctuation">(</span>batch_size<span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        BOS_ID<span class="token punctuation">,</span>
+        dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    generated <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    finished <span class="token operator">=</span> torch<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span>batch_size<span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">bool</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> _ <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>max_len<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        logits<span class="token punctuation">,</span> hidden <span class="token operator">=</span> model<span class="token punctuation">.</span>decoder<span class="token punctuation">(</span>decoder_input<span class="token punctuation">,</span> hidden<span class="token punctuation">)</span>
+        next_token <span class="token operator">=</span> logits<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+        generated<span class="token punctuation">.</span>append<span class="token punctuation">(</span>next_token<span class="token punctuation">)</span>
+        finished <span class="token operator">|</span><span class="token operator">=</span> next_token<span class="token punctuation">.</span>eq<span class="token punctuation">(</span>EOS_ID<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> finished<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">break</span>
+
+        decoder_input <span class="token operator">=</span> next_token
+
+    <span class="token keyword">return</span> torch<span class="token punctuation">.</span>stack<span class="token punctuation">(</span>generated<span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span></code></pre>
+
+<h3 id="17-5-测试结果"><a href="#17-5-测试结果" class="headerlink" title="17.5 测试结果"></a>17.5 测试结果</h3><pre class="language-python" data-language="python"><code class="language-python">test_src <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+generated <span class="token operator">=</span> greedy_decode<span class="token punctuation">(</span>
+    model<span class="token punctuation">,</span>
+    test_src<span class="token punctuation">,</span>
+    max_len<span class="token operator">=</span>SEQ_LEN <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"input:\n"</span><span class="token punctuation">,</span> test_src<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"generated:\n"</span><span class="token punctuation">,</span> generated<span class="token punctuation">)</span></code></pre>
+
+<p>理想输出应该接近：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input:
+tensor([[3, 7, 5, 9],
+        [4, 4, 8, 6]])
+
+generated:
+tensor([[9, 5, 7, 3, 2],
+        [6, 8, 4, 4, 2]])</code></pre>
+
+<p>其中最后的 <code>2</code> 就是 <code>&lt;EOS&gt;</code>。</p>
+<h2 id="18-为什么要进行梯度裁剪"><a href="#18-为什么要进行梯度裁剪" class="headerlink" title="18. 为什么要进行梯度裁剪"></a>18. 为什么要进行梯度裁剪</h2><p>循环网络会在多个时间步上反复应用相同参数。反向传播时，梯度也要沿时间展开的计算图不断传播。</p>
+<p>这可能导致梯度爆炸：</p>
+<pre class="language-text" data-language="text"><code class="language-text">梯度越来越大 -> 参数更新过猛 -> loss 变成 NaN</code></pre>
+
+<p>PyTorch 中可以限制整体梯度范数：</p>
+<pre class="language-python" data-language="python"><code class="language-python">nn<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>clip_grad_norm_<span class="token punctuation">(</span>
+    model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    max_norm<span class="token operator">=</span><span class="token number">1.0</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>梯度裁剪通常放在：</p>
+<pre class="language-text" data-language="text"><code class="language-text">loss.backward() 之后
+optimizer.step() 之前</code></pre>
+
+<p>它不能解决所有训练问题，但在 RNN、LSTM、GRU 训练中很常见。</p>
+<h2 id="19-贪心搜索与-Beam-Search"><a href="#19-贪心搜索与-Beam-Search" class="headerlink" title="19. 贪心搜索与 Beam Search"></a>19. 贪心搜索与 Beam Search</h2><p>前面的推理代码每一步都选择概率最大的 token：</p>
+<pre class="language-python" data-language="python"><code class="language-python">next_token <span class="token operator">=</span> logits<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span></code></pre>
+
+<p>这叫贪心搜索。</p>
+<p>它速度快，但当前看起来最好的 token 不一定能组成整体概率最高的序列。</p>
+<p>Beam Search 会同时保留多个候选序列：</p>
+<pre class="language-text" data-language="text"><code class="language-text">第 1 步：保留分数最高的 k 个 token
+第 2 步：扩展这 k 个候选，再保留总分最高的 k 个
+...
+直到生成 EOS 或达到最大长度</code></pre>
+
+<p>$k$ 称为 beam size。</p>
+<p>Beam Search 通常能得到更好的序列，但计算和内存开销也更大。</p>
+<h2 id="20-变长序列、Padding-与-Mask"><a href="#20-变长序列、Padding-与-Mask" class="headerlink" title="20. 变长序列、Padding 与 Mask"></a>20. 变长序列、Padding 与 Mask</h2><p>真实数据中的句子长度不同，需要 padding：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我 喜欢 NLP &lt;EOS> &lt;PAD>
+今天天气 很 好 &lt;EOS></code></pre>
+
+<p>需要处理两个地方。</p>
+<h3 id="损失中忽略-PAD"><a href="#损失中忽略-PAD" class="headerlink" title="损失中忽略 PAD"></a>损失中忽略 PAD</h3><pre class="language-python" data-language="python"><code class="language-python">loss_fn <span class="token operator">=</span> nn<span class="token punctuation">.</span>CrossEntropyLoss<span class="token punctuation">(</span>ignore_index<span class="token operator">=</span>PAD_ID<span class="token punctuation">)</span></code></pre>
+
+<h3 id="Encoder-中避免让-GRU-处理无效-PAD"><a href="#Encoder-中避免让-GRU-处理无效-PAD" class="headerlink" title="Encoder 中避免让 GRU 处理无效 PAD"></a>Encoder 中避免让 GRU 处理无效 PAD</h3><p>可以使用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">nn<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>rnn<span class="token punctuation">.</span>pack_padded_sequence</code></pre>
+
+<p>它根据真实长度压缩 batch，让循环网络跳过 padding 位置。</p>
+<p>如果加入 Attention，还需要对 padding 位置进行 mask，防止 Decoder 把注意力分配给 <code>&lt;PAD&gt;</code>。</p>
+<h2 id="21-Seq2Seq-如何评价"><a href="#21-Seq2Seq-如何评价" class="headerlink" title="21. Seq2Seq 如何评价"></a>21. Seq2Seq 如何评价</h2><p>不同任务使用不同指标。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>常见指标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>机器翻译</td>
+<td>BLEU、COMET</td>
+</tr>
+<tr>
+<td>文本摘要</td>
+<td>ROUGE</td>
+</tr>
+<tr>
+<td>语音识别</td>
+<td>WER、CER</td>
+</tr>
+<tr>
+<td>序列反转</td>
+<td>Exact Match、token accuracy</td>
+</tr>
+<tr>
+<td>时间序列预测</td>
+<td>MAE、MSE、RMSE</td>
+</tr>
+</tbody></table>
+<p>只看训练 loss 不够，还需要在验证集上使用与任务目标一致的指标。</p>
+<p>对于生成任务，也应人工查看一些输出，因为单个自动指标不一定能完整反映流畅度和语义正确性。</p>
+<h2 id="22-常见错误"><a href="#22-常见错误" class="headerlink" title="22. 常见错误"></a>22. 常见错误</h2><h3 id="22-1-Decoder-输入与目标没有错开"><a href="#22-1-Decoder-输入与目标没有错开" class="headerlink" title="22.1 Decoder 输入与目标没有错开"></a>22.1 Decoder 输入与目标没有错开</h3><p>正确关系：</p>
+<pre class="language-text" data-language="text"><code class="language-text">输入：&lt;BOS> y1 y2 y3
+目标：y1    y2 y3 &lt;EOS></code></pre>
+
+<p>如果输入和目标完全相同，模型可能只学会复制当前 token。</p>
+<h3 id="22-2-训练时忘记预测-EOS"><a href="#22-2-训练时忘记预测-EOS" class="headerlink" title="22.2 训练时忘记预测 EOS"></a>22.2 训练时忘记预测 EOS</h3><p>目标序列必须包含 <code>&lt;EOS&gt;</code>，否则模型不知道何时停止。</p>
+<h3 id="22-3-对-logits-先做-softmax-再传给交叉熵"><a href="#22-3-对-logits-先做-softmax-再传给交叉熵" class="headerlink" title="22.3 对 logits 先做 softmax 再传给交叉熵"></a>22.3 对 logits 先做 softmax 再传给交叉熵</h3><p>错误：</p>
+<pre class="language-python" data-language="python"><code class="language-python">loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>torch<span class="token punctuation">.</span>softmax<span class="token punctuation">(</span>logits<span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> target<span class="token punctuation">)</span></code></pre>
+
+<p>正确：</p>
+<pre class="language-python" data-language="python"><code class="language-python">loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>logits<span class="token punctuation">,</span> target<span class="token punctuation">)</span></code></pre>
+
+<h3 id="22-4-忘记忽略-PAD"><a href="#22-4-忘记忽略-PAD" class="headerlink" title="22.4 忘记忽略 PAD"></a>22.4 忘记忽略 PAD</h3><p>如果 padding 也参与损失，模型会花大量精力预测 <code>&lt;PAD&gt;</code>，指标也会失真。</p>
+<h3 id="22-5-Teacher-Forcing-比例始终为-1"><a href="#22-5-Teacher-Forcing-比例始终为-1" class="headerlink" title="22.5 Teacher Forcing 比例始终为 1"></a>22.5 Teacher Forcing 比例始终为 1</h3><p>模型训练时永远只看到正确历史，推理时面对自己的预测可能表现骤降。</p>
+<p>可以从较高比例开始，再根据任务逐步降低。</p>
+<h3 id="22-6-Encoder-和-Decoder-隐藏维度不一致"><a href="#22-6-Encoder-和-Decoder-隐藏维度不一致" class="headerlink" title="22.6 Encoder 和 Decoder 隐藏维度不一致"></a>22.6 Encoder 和 Decoder 隐藏维度不一致</h3><p>如果直接把 Encoder hidden 传给 Decoder，两者的层数和隐藏维度必须兼容。</p>
+<p>如果不一致，需要增加线性映射或其他桥接层。</p>
+<h3 id="22-7-推理没有最大长度限制"><a href="#22-7-推理没有最大长度限制" class="headerlink" title="22.7 推理没有最大长度限制"></a>22.7 推理没有最大长度限制</h3><p>模型可能迟迟不生成 <code>&lt;EOS&gt;</code>。推理循环必须同时设置：</p>
+<ul>
+<li>遇到 <code>&lt;EOS&gt;</code> 停止。</li>
+<li>达到 <code>max_len</code> 强制停止。</li>
+</ul>
+<h2 id="23-Seq2Seq-与-Transformer-的关系"><a href="#23-Seq2Seq-与-Transformer-的关系" class="headerlink" title="23. Seq2Seq 与 Transformer 的关系"></a>23. Seq2Seq 与 Transformer 的关系</h2><p>Transformer 也可以采用 Encoder-Decoder 结构，因此它同样属于广义 Seq2Seq 模型。</p>
+<p>经典 RNN Seq2Seq：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Encoder RNN/GRU/LSTM
+  -> 隐藏状态或 Attention
+  -> Decoder RNN/GRU/LSTM</code></pre>
+
+<p>Transformer Seq2Seq：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Transformer Encoder
+  -> Cross-Attention
+  -> Transformer Decoder</code></pre>
+
+<p>两者的共同点包括：</p>
+<ul>
+<li>输入输出都是序列。</li>
+<li>Decoder 自回归生成。</li>
+<li>使用 <code>&lt;BOS&gt;</code>、<code>&lt;EOS&gt;</code> 和 padding mask。</li>
+<li>训练时目标 token 向右错位。</li>
+<li>推理时使用贪心或 Beam Search。</li>
+</ul>
+<p>主要区别是 Transformer 使用 Attention 并行处理序列，不再依赖逐时间步递归，因此更容易扩展到大规模训练。</p>
+<h2 id="24-总结"><a href="#24-总结" class="headerlink" title="24. 总结"></a>24. 总结</h2><p>Seq2Seq 的核心主线是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">输入 token
+  -> Encoder 逐步提取序列信息
+  -> 得到上下文表示
+  -> Decoder 从 BOS 开始逐步生成
+  -> 生成 EOS 后停止</code></pre>
+
+<p>需要重点掌握：</p>
+<ul>
+<li>Encoder 负责理解输入序列。</li>
+<li>Decoder 根据上下文和历史输出预测下一个 token。</li>
+<li>Teacher Forcing 使用真实历史帮助训练。</li>
+<li>推理时只能使用模型自己的预测。</li>
+<li>基础 Seq2Seq 的固定长度向量存在信息瓶颈。</li>
+<li>Attention 让 Decoder 每一步查看不同输入位置。</li>
+<li>PyTorch GRU 的 output 和 hidden 形状不同。</li>
+<li>训练时需要处理 padding、梯度裁剪和输入目标错位。</li>
+</ul>
+<p>理解经典 Seq2Seq 后，再学习 Attention、Transformer、机器翻译和文本生成时，很多概念都会自然连接起来。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Ilya Sutskever, Oriol Vinyals, Quoc V. Le, <em>Sequence to Sequence Learning with Neural Networks</em>: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1409.3215">https://arxiv.org/abs/1409.3215</a></li>
+<li>Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio, <em>Neural Machine Translation by Jointly Learning to Align and Translate</em>: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1409.0473">https://arxiv.org/abs/1409.0473</a></li>
+<li>PyTorch Documentation, <code>torch.nn.GRU</code>: <a target="_blank" rel="noopener" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.GRU.html">https://docs.pytorch.org/docs/stable/generated/torch.nn.GRU.html</a></li>
+<li>PyTorch Documentation, <code>pack_padded_sequence</code>: <a target="_blank" rel="noopener" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pack_padded_sequence.html">https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pack_padded_sequence.html</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/08/10/nlp-seq2seq-encoder-decoder/">https://lsworl.github.io/2026/08/10/nlp-seq2seq-encoder-decoder/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/PyTorch/">PyTorch</a><a class="post-meta__tags" href="/tags/NLP/">NLP</a><a class="post-meta__tags" href="/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a><a class="post-meta__tags" href="/tags/Seq2Seq/">Seq2Seq</a><a class="post-meta__tags" href="/tags/Encoder-Decoder/">Encoder-Decoder</a><a class="post-meta__tags" href="/tags/RNN/">RNN</a><a class="post-meta__tags" href="/tags/GRU/">GRU</a><a class="post-meta__tags" href="/tags/Attention/">Attention</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/11/nlp-transformer-attention-pytorch/" title="Transformer详解：从自注意力手算到PyTorch完整实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Transformer详解：从自注意力手算到PyTorch完整实现</div></div><div class="info-2"><div class="info-item-1">上一篇 Seq2Seq 文章中，我们使用 GRU 构造了 Encoder-Decoder，并通过 Attention 缓解“把整句话压缩成一个向量”的信息瓶颈。 不过，RNN、LSTM 和 GRU 还有一个很难绕开的特点：  必须按照时间顺序逐步计算，后一个位置需要等待前一个位置的隐藏状态。  假设一句话有 100 个 token，RNN 需要从第 1 个 token 一直算到第 100 个 token。即使 GPU 很擅长矩阵并行，也不能完全消除这种前后依赖。 Transformer 改变了处理序列的方式：  不再使用循环逐步传递信息，而是让每个 token 直接通过 Attention 查看序列中的其他 token。  这样一来，训练时可以并行处理整段序列，也更容易建模相距很远的词之间的关系。    1. Transformer 要解决什么问题先看一句话： 小明 把 苹果 放在 桌子 上，因为 他 刚刚 买了 它  理解这句话时，需要建立多处联系：  “他”更可能指向“小明”。 “它”更可能指向“苹果”。 “放在”与“桌子上”共同表达一个位置关系。  在 RNN 中，前面的信...</div></div></div></a><a class="pagination-related" href="/2026/08/10/machine-learning-adamw-optimizer/" title="AdamW Optimizer：为什么要把权重衰减与梯度更新解耦"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">AdamW Optimizer：为什么要把权重衰减与梯度更新解耦</div></div><div class="info-2"><div class="info-item-1">在上一篇 Adam Optimizer 文章中，我们知道 Adam 会同时维护梯度的一阶矩和二阶矩，并根据历史梯度为不同参数调整有效步长。 当模型出现过拟合时，我们还希望限制参数避免变得过大，于是经常会为优化器设置 weight_decay： optimizer = torch.optim.AdamW(     model.parameters(),     lr=1e-3,     weight_decay=1e-2, )  这里为什么常用 AdamW，而不是简单地给 Adam 加一个 L2 正则项？AdamW 中的字母 W 又代表什么？ 一句话概括：  AdamW 把权重衰减从 Adam 的梯度与矩估计中分离出来，让“根据损失优化参数”和“按比例缩小参数”成为两件独立的事。     1. 先回顾 AdamAdam 对当前梯度 $g_t$ 维护两种状态。 一阶矩： $$m_t&#x3D;\beta_1m_{t-1}+(1-\beta_1)g_t$$ 二阶矩： $$v_t&#x3D;\beta_2v_{t-1}+(1-\beta_2)g_t^2$$ 经过偏差修正后： $$\hat...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/11/nlp-transformer-attention-pytorch/" title="Transformer详解：从自注意力手算到PyTorch完整实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-11</div><div class="info-item-2">Transformer详解：从自注意力手算到PyTorch完整实现</div></div><div class="info-2"><div class="info-item-1">上一篇 Seq2Seq 文章中，我们使用 GRU 构造了 Encoder-Decoder，并通过 Attention 缓解“把整句话压缩成一个向量”的信息瓶颈。 不过，RNN、LSTM 和 GRU 还有一个很难绕开的特点：  必须按照时间顺序逐步计算，后一个位置需要等待前一个位置的隐藏状态。  假设一句话有 100 个 token，RNN 需要从第 1 个 token 一直算到第 100 个 token。即使 GPU 很擅长矩阵并行，也不能完全消除这种前后依赖。 Transformer 改变了处理序列的方式：  不再使用循环逐步传递信息，而是让每个 token 直接通过 Attention 查看序列中的其他 token。  这样一来，训练时可以并行处理整段序列，也更容易建模相距很远的词之间的关系。    1. Transformer 要解决什么问题先看一句话： 小明 把 苹果 放在 桌子 上，因为 他 刚刚 买了 它  理解这句话时，需要建立多处联系：  “他”更可能指向“小明”。 “它”更可能指向“苹果”。 “放在”与“桌子上”共同表达一个位置关系。  在 RNN 中，前面的信...</div></div></div></a><a class="pagination-related" href="/2026/08/03/nlp-word2vec-embedding-classifier/" title="Word2Vec：从词向量训练到神经网络分类器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-03</div><div class="info-item-2">Word2Vec：从词向量训练到神经网络分类器</div></div><div class="info-2"><div class="info-item-1">前面学习文本处理时，我们已经知道：自然语言不能直接送进模型，必须先变成数字。 最朴素的方法是 One-hot。比如词表里有 10000 个词，每个词就用一个长度为 10000 的向量表示，属于自己的位置为 1，其他位置为 0。 但 One-hot 有两个明显问题：  向量太稀疏，绝大多数位置都是 0。 词和词之间没有语义关系，“国王”和“王后”在 One-hot 空间里并不比“国王”和“香蕉”更接近。  word2vec 要解决的就是这个问题：  把词表示成低维、稠密、带有语义关系的向量。  例如： 国王 -> [0.32, -0.18, 0.71, ...] 王后 -> [0.29, -0.15, 0.69, ...] 香蕉 -> [-0.44, 0.83, 0.12, ...]  如果训练得好，“国王”和“王后”的向量会更接近，而“国王”和“香蕉”的向量会更远。 这篇文章就从 word2vec 出发，理解词向量是怎么训练出来的、怎么改进和评价词向量，并进一步过渡到神经网络文本分类器。    1. 词向量到底是什么词向量，也叫 word embedding，本质上就是给每个词分...</div></div></div></a><a class="pagination-related" href="/2026/06/07/nlp-text-processing/" title="文本处理：让自然语言变成模型能理解的数字"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-07</div><div class="info-item-2">文本处理：让自然语言变成模型能理解的数字</div></div><div class="info-2"><div class="info-item-1">学习 Transformer 之前，有一个非常重要的前置问题：  机器学习模型只能处理数字，那自然语言文本应该怎样变成数字？  比如一句话： 我喜欢自然语言处理  人可以直接理解它的意思，但模型不能直接处理汉字、单词和标点。我们需要先把文本拆成一个个 token，再把 token 映射成编号或向量，最后才能送进模型。 这篇文章就来系统梳理 NLP 中最基础的文本处理流程。    1. 文本处理在 NLP 中的位置在前面的机器学习文章中，我们处理的大多是结构化数据，例如： 学习时长、睡眠时长、房屋面积、历史成绩  这些特征天然就是数字，或者很容易转成数字。 但 NLP 处理的是文本，例如： 这部电影很好看 这个商品质量一般 今天天气不错  模型不能直接理解这些句子，所以需要一个转换流程： 原始文本   -> 清洗与规范化   -> 分词 / tokenization   -> 构建词表   -> token 转 id   -> id 转向量   -> 输入模型  传统机器学习中，文本常被转成词袋、TF-IDF 这样的稀疏向量；深度学习和 Transformer 中，文本通常先转成 ...</div></div></div></a><a class="pagination-related" href="/2026/08/10/machine-learning-adamw-optimizer/" title="AdamW Optimizer：为什么要把权重衰减与梯度更新解耦"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-10</div><div class="info-item-2">AdamW Optimizer：为什么要把权重衰减与梯度更新解耦</div></div><div class="info-2"><div class="info-item-1">在上一篇 Adam Optimizer 文章中，我们知道 Adam 会同时维护梯度的一阶矩和二阶矩，并根据历史梯度为不同参数调整有效步长。 当模型出现过拟合时，我们还希望限制参数避免变得过大，于是经常会为优化器设置 weight_decay： optimizer = torch.optim.AdamW(     model.parameters(),     lr=1e-3,     weight_decay=1e-2, )  这里为什么常用 AdamW，而不是简单地给 Adam 加一个 L2 正则项？AdamW 中的字母 W 又代表什么？ 一句话概括：  AdamW 把权重衰减从 Adam 的梯度与矩估计中分离出来，让“根据损失优化参数”和“按比例缩小参数”成为两件独立的事。     1. 先回顾 AdamAdam 对当前梯度 $g_t$ 维护两种状态。 一阶矩： $$m_t&#x3D;\beta_1m_{t-1}+(1-\beta_1)g_t$$ 二阶矩： $$v_t&#x3D;\beta_2v_{t-1}+(1-\beta_2)g_t^2$$ 经过偏差修正后： $$\hat...</div></div></div></a><a class="pagination-related" href="/2026/07/08/deep-learning-introduction-roadmap/" title="深度学习入门：从神经网络到学习路线"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-08</div><div class="info-item-2">深度学习入门：从神经网络到学习路线</div></div><div class="info-2"><div class="info-item-1">学习深度学习时，很多人一上来就会被一堆名词淹没：神经网络、反向传播、CNN、RNN、Transformer、Embedding、优化器、损失函数、过拟合、预训练、微调…… 这些概念当然重要，但如果一开始没有一张地图，就很容易出现一种感觉：每个词好像都看过，但不知道它们之间到底是什么关系。 所以这篇文章不急着推公式，也不急着写复杂代码，而是先回答几个更基础的问题：  深度学习到底在学什么？ 神经网络为什么可以拟合复杂关系？ 一个模型是如何被训练出来的？ 入门之后应该按什么顺序继续学？  一句话概括：  深度学习就是用多层神经网络从数据中自动学习特征表示，再用这些表示完成分类、回归、生成、推荐、预测等任务。     1. 深度学习是什么在传统机器学习中，我们经常需要手动设计特征。 比如要判断一封邮件是不是垃圾邮件，可能会人工提取这些特征：  是否包含“免费”“中奖”“限时”等关键词。 邮件长度是多少。 是否包含很多链接。 发件人是否陌生。  这些特征再送入逻辑回归、决策树、随机森林、GBDT 等模型中进行预测。 深度学习的思路稍微不一样。它希望模型自己从原始数据中逐层学习特征。 以图...</div></div></div></a><a class="pagination-related" href="/2026/08/09/machine-learning-adam-optimizer/" title="Adam Optimizer：从梯度下降到自适应学习率"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-09</div><div class="info-item-2">Adam Optimizer：从梯度下降到自适应学习率</div></div><div class="info-2"><div class="info-item-1">训练神经网络时，我们经常会看到下面这行代码： optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  它很短，却承担着一个关键任务：根据反向传播得到的梯度，不断更新模型中的权重和偏置。 Adam 的全称是 Adaptive Moment Estimation，可以翻译为“自适应矩估计”。它同时利用梯度的移动平均和梯度平方的移动平均，为不同参数自动调整更新方向与步长。 一句话概括：  Adam 在动量方法的基础上记录梯度方向，又根据历史梯度大小为每个参数调整学习率，因此通常比普通 SGD 更容易上手。     1. 优化器到底负责什么神经网络训练通常包含三个核心步骤： optimizer.zero_grad() loss.backward() optimizer.step()  它们的职责并不相同：    代码 作用    optimizer.zero_grad() 清空上一轮保存在参数上的梯度   loss.backward() 根据计算图和链式法则计算梯度   optimizer.step() 根据梯度和优化算法更...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">119</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">122</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BA%8F%E5%88%97%E5%88%B0%E5%BA%8F%E5%88%97%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.</span> <span class="toc-text">1. 什么是序列到序列任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%99%AE%E9%80%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B8%8D%E5%A4%9F%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">2. 为什么普通神经网络不够用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Seq2Seq-%E7%9A%84%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">3. Seq2Seq 的整体结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Encoder"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 Encoder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Decoder"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Decoder</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-lt-BOS-gt-%E3%80%81-lt-EOS-gt-%E5%92%8C-lt-PAD-gt"><span class="toc-number">4.</span> <span class="toc-text">4. &lt;BOS&gt;、&lt;EOS&gt; 和 &lt;PAD&gt;</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%80%E6%AC%A1%E7%BF%BB%E8%AF%91%E6%98%AF%E6%80%8E%E6%A0%B7%E7%94%9F%E6%88%90%E7%9A%84"><span class="toc-number">5.</span> <span class="toc-text">5. 一次翻译是怎样生成的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%8B%E5%B7%A5%E7%90%86%E8%A7%A3%E4%B8%80%E6%AC%A1-Encoder-%E8%AE%A1%E7%AE%97"><span class="toc-number">6.</span> <span class="toc-text">6. 手工理解一次 Encoder 计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%B8%B8%E7%94%A8-LSTM-%E6%88%96-GRU"><span class="toc-number">7.</span> <span class="toc-text">7. 为什么常用 LSTM 或 GRU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-Teacher-Forcing-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">8.</span> <span class="toc-text">8. Teacher Forcing 是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A2%84%E6%B5%8B"><span class="toc-number">8.1.</span> <span class="toc-text">使用模型自己的预测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%9C%9F%E5%AE%9E%E7%9B%AE%E6%A0%87-token"><span class="toc-number">8.2.</span> <span class="toc-text">使用真实目标 token</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C"><span class="toc-number">9.</span> <span class="toc-text">9. 训练与推理为什么不同</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-Seq2Seq-%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">10.</span> <span class="toc-text">10. Seq2Seq 的损失函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%9F%BA%E7%A1%80-Seq2Seq-%E7%9A%84%E5%9B%BA%E5%AE%9A%E5%90%91%E9%87%8F%E7%93%B6%E9%A2%88"><span class="toc-number">11.</span> <span class="toc-text">11. 基础 Seq2Seq 的固定向量瓶颈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-Attention-%E5%A6%82%E4%BD%95%E6%94%B9%E8%BF%9B-Seq2Seq%EF%BC%88Attention%E4%BC%9A%E4%B8%93%E9%97%A8%E7%94%A8%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BB%8B%E7%BB%8D%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">12. Attention 如何改进 Seq2Seq（Attention会专门用一篇文章介绍）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-PyTorch-%E4%B8%AD-GRU-%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E5%BD%A2%E7%8A%B6"><span class="toc-number">13.</span> <span class="toc-text">13. PyTorch 中 GRU 的输入输出形状</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-PyTorch-%E5%AE%9E%E7%8E%B0-Encoder"><span class="toc-number">14.</span> <span class="toc-text">14. PyTorch 实现 Encoder</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-PyTorch-%E5%AE%9E%E7%8E%B0-Decoder"><span class="toc-number">15.</span> <span class="toc-text">15. PyTorch 实现 Decoder</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%BB%84%E5%90%88%E6%88%90-Seq2Seq-%E6%A8%A1%E5%9E%8B"><span class="toc-number">16.</span> <span class="toc-text">16. 组合成 Seq2Seq 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E5%AE%8C%E6%95%B4%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%AD%A6%E4%B9%A0%E5%8F%8D%E8%BD%AC%E6%95%B0%E5%AD%97%E5%BA%8F%E5%88%97"><span class="toc-number">17.</span> <span class="toc-text">17. 完整例子：学习反转数字序列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E5%AE%9A%E4%B9%89%E8%AF%8D%E8%A1%A8%E5%92%8C%E6%95%B0%E6%8D%AE"><span class="toc-number">17.1.</span> <span class="toc-text">17.1 定义词表和数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B%E5%92%8C%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-number">17.2.</span> <span class="toc-text">17.2 创建模型和优化器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-3-%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">17.3.</span> <span class="toc-text">17.3 训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-4-%E7%BC%96%E5%86%99%E8%B4%AA%E5%BF%83%E8%A7%A3%E7%A0%81"><span class="toc-number">17.4.</span> <span class="toc-text">17.4 编写贪心解码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-5-%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-number">17.5.</span> <span class="toc-text">17.5 测试结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%9B%E8%A1%8C%E6%A2%AF%E5%BA%A6%E8%A3%81%E5%89%AA"><span class="toc-number">18.</span> <span class="toc-text">18. 为什么要进行梯度裁剪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E8%B4%AA%E5%BF%83%E6%90%9C%E7%B4%A2%E4%B8%8E-Beam-Search"><span class="toc-number">19.</span> <span class="toc-text">19. 贪心搜索与 Beam Search</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%8F%98%E9%95%BF%E5%BA%8F%E5%88%97%E3%80%81Padding-%E4%B8%8E-Mask"><span class="toc-number">20.</span> <span class="toc-text">20. 变长序列、Padding 与 Mask</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8D%9F%E5%A4%B1%E4%B8%AD%E5%BF%BD%E7%95%A5-PAD"><span class="toc-number">20.1.</span> <span class="toc-text">损失中忽略 PAD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Encoder-%E4%B8%AD%E9%81%BF%E5%85%8D%E8%AE%A9-GRU-%E5%A4%84%E7%90%86%E6%97%A0%E6%95%88-PAD"><span class="toc-number">20.2.</span> <span class="toc-text">Encoder 中避免让 GRU 处理无效 PAD</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-Seq2Seq-%E5%A6%82%E4%BD%95%E8%AF%84%E4%BB%B7"><span class="toc-number">21.</span> <span class="toc-text">21. Seq2Seq 如何评价</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">22.</span> <span class="toc-text">22. 常见错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-Decoder-%E8%BE%93%E5%85%A5%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%B2%A1%E6%9C%89%E9%94%99%E5%BC%80"><span class="toc-number">22.1.</span> <span class="toc-text">22.1 Decoder 输入与目标没有错开</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E8%AE%AD%E7%BB%83%E6%97%B6%E5%BF%98%E8%AE%B0%E9%A2%84%E6%B5%8B-EOS"><span class="toc-number">22.2.</span> <span class="toc-text">22.2 训练时忘记预测 EOS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-3-%E5%AF%B9-logits-%E5%85%88%E5%81%9A-softmax-%E5%86%8D%E4%BC%A0%E7%BB%99%E4%BA%A4%E5%8F%89%E7%86%B5"><span class="toc-number">22.3.</span> <span class="toc-text">22.3 对 logits 先做 softmax 再传给交叉熵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-4-%E5%BF%98%E8%AE%B0%E5%BF%BD%E7%95%A5-PAD"><span class="toc-number">22.4.</span> <span class="toc-text">22.4 忘记忽略 PAD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-5-Teacher-Forcing-%E6%AF%94%E4%BE%8B%E5%A7%8B%E7%BB%88%E4%B8%BA-1"><span class="toc-number">22.5.</span> <span class="toc-text">22.5 Teacher Forcing 比例始终为 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-6-Encoder-%E5%92%8C-Decoder-%E9%9A%90%E8%97%8F%E7%BB%B4%E5%BA%A6%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">22.6.</span> <span class="toc-text">22.6 Encoder 和 Decoder 隐藏维度不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-7-%E6%8E%A8%E7%90%86%E6%B2%A1%E6%9C%89%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6"><span class="toc-number">22.7.</span> <span class="toc-text">22.7 推理没有最大长度限制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-Seq2Seq-%E4%B8%8E-Transformer-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">23.</span> <span class="toc-text">23. Seq2Seq 与 Transformer 的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E6%80%BB%E7%BB%93"><span class="toc-number">24.</span> <span class="toc-text">24. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">25.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/11/nlp-transformer-attention-pytorch/" title="Transformer详解：从自注意力手算到PyTorch完整实现">Transformer详解：从自注意力手算到PyTorch完整实现</a><time datetime="2026-08-10T16:00:00.000Z" title="发表于 2026-08-11 00:00:00">2026-08-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/machine-learning-adamw-optimizer/" title="AdamW Optimizer：为什么要把权重衰减与梯度更新解耦">AdamW Optimizer：为什么要把权重衰减与梯度更新解耦</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/nlp-seq2seq-encoder-decoder/" title="Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现">Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/machine-learning-adam-optimizer/" title="Adam Optimizer：从梯度下降到自适应学习率">Adam Optimizer：从梯度下降到自适应学习率</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/03/nlp-word2vec-embedding-classifier/" title="Word2Vec：从词向量训练到神经网络分类器">Word2Vec：从词向量训练到神经网络分类器</a><time datetime="2026-08-02T16:00:00.000Z" title="发表于 2026-08-03 00:00:00">2026-08-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

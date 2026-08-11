@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc">
+  <title id="title">Multi-Head Attention拆头与合并</title>
+  <desc id="desc">d_model维输入投影后拆成多个注意力头，各头并行计算，再拼接并通过输出投影。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="650" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Multi-Head Attention：拆分、并行、拼接</text>
+  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">示例：d_model = 512，8 个头，每个 head_dim = 64</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="350" y="120" width="300" height="62" rx="10" fill="#fff" stroke="#52616f" stroke-width="2"/>
+    <text x="500" y="148" font-size="19" font-weight="700" fill="#1f2937">输入 Q、K、V</text>
+    <text x="500" y="171" font-size="14" fill="#52616f">最后一维均为 512</text>
+
+    <rect x="100" y="235" width="170" height="108" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="185" y="269" font-size="18" font-weight="700" fill="#1f2937">Head 1</text>
+    <text x="185" y="296" font-size="14" fill="#52616f">Q₁、K₁、V₁</text>
+    <text x="185" y="321" font-size="14" fill="#2f80ed">64 维</text>
+    <rect x="310" y="235" width="170" height="108" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="395" y="269" font-size="18" font-weight="700" fill="#1f2937">Head 2</text>
+    <text x="395" y="296" font-size="14" fill="#52616f">Q₂、K₂、V₂</text>
+    <text x="395" y="321" font-size="14" fill="#d97706">64 维</text>
+    <rect x="520" y="235" width="170" height="108" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="605" y="269" font-size="18" font-weight="700" fill="#1f2937">Head ...</text>
+    <text x="605" y="296" font-size="14" fill="#52616f">各自计算 Attention</text>
+    <text x="605" y="321" font-size="14" fill="#7e22ce">64 维</text>
+    <rect x="730" y="235" width="170" height="108" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="815" y="269" font-size="18" font-weight="700" fill="#1f2937">Head 8</text>
+    <text x="815" y="296" font-size="14" fill="#52616f">Q₈、K₈、V₈</text>
+    <text x="815" y="321" font-size="14" fill="#16803a">64 维</text>
+
+    <rect x="255" y="415" width="490" height="70" rx="10" fill="#fff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="500" y="444" font-size="19" font-weight="700" fill="#1f2937">Concat(head₁, head₂, ..., head₈)</text>
+    <text x="500" y="471" font-size="15" fill="#6b21a8">8 × 64 = 512 维</text>
+    <rect x="350" y="535" width="300" height="66" rx="10" fill="#eefbf3" stroke="#27ae60" stroke-width="2"/>
+    <text x="500" y="563" font-size="19" font-weight="700" fill="#1f2937">输出投影 Wᴼ</text>
+    <text x="500" y="588" font-size="14" fill="#52616f">输出仍为 d_model = 512</text>
+  </g>
+
+  <path d="M455 182C420 210 230 200 195 225" fill="none" stroke="#52616f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M480 182C455 205 410 205 400 225" fill="none" stroke="#52616f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M520 182C545 205 590 205 600 225" fill="none" stroke="#52616f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M545 182C580 210 770 200 805 225" fill="none" stroke="#52616f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M185 343C200 385 320 386 365 405" fill="none" stroke="#2f80ed" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M395 343C400 380 440 390 455 405" fill="none" stroke="#f2994a" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M605 343C600 380 560 390 545 405" fill="none" stroke="#9b51e0" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M815 343C800 385 680 386 635 405" fill="none" stroke="#27ae60" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M500 485V525" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

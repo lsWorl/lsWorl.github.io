@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc">
+  <title id="title">Decoder Causal Mask</title>
+  <desc id="desc">因果遮罩只允许每个目标位置查看自己和过去位置，未来位置被遮住并在Softmax后获得零权重。</desc>
+  <rect width="1000" height="650" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Causal Mask：只能看过去，不能偷看未来</text>
+  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">行表示 Query 位置，列表示它准备查看的 Key 位置</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <text x="500" y="132" font-size="17" font-weight="700" fill="#1f2937">Key 位置</text>
+    <text x="117" y="330" font-size="17" font-weight="700" fill="#1f2937" transform="rotate(-90 117 330)">Query 位置</text>
+
+    <text x="294" y="170" font-size="15" fill="#334155">BOS</text>
+    <text x="414" y="170" font-size="15" fill="#334155">I</text>
+    <text x="534" y="170" font-size="15" fill="#334155">like</text>
+    <text x="654" y="170" font-size="15" fill="#334155">NLP</text>
+    <text x="190" y="235" font-size="15" fill="#334155">BOS</text>
+    <text x="190" y="335" font-size="15" fill="#334155">I</text>
+    <text x="190" y="435" font-size="15" fill="#334155">like</text>
+    <text x="190" y="535" font-size="15" fill="#334155">NLP</text>
+
+    <rect x="240" y="185" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="294" y="233" font-size="22" fill="#166534">✓</text>
+    <rect x="360" y="185" width="108" height="80" fill="#fce8e8" stroke="#fff" stroke-width="2"/><text x="414" y="233" font-size="22" fill="#b42318">×</text>
+    <rect x="480" y="185" width="108" height="80" fill="#fce8e8" stroke="#fff" stroke-width="2"/><text x="534" y="233" font-size="22" fill="#b42318">×</text>
+    <rect x="600" y="185" width="108" height="80" fill="#fce8e8" stroke="#fff" stroke-width="2"/><text x="654" y="233" font-size="22" fill="#b42318">×</text>
+
+    <rect x="240" y="285" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="294" y="333" font-size="22" fill="#166534">✓</text>
+    <rect x="360" y="285" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="414" y="333" font-size="22" fill="#166534">✓</text>
+    <rect x="480" y="285" width="108" height="80" fill="#fce8e8" stroke="#fff" stroke-width="2"/><text x="534" y="333" font-size="22" fill="#b42318">×</text>
+    <rect x="600" y="285" width="108" height="80" fill="#fce8e8" stroke="#fff" stroke-width="2"/><text x="654" y="333" font-size="22" fill="#b42318">×</text>
+
+    <rect x="240" y="385" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="294" y="433" font-size="22" fill="#166534">✓</text>
+    <rect x="360" y="385" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="414" y="433" font-size="22" fill="#166534">✓</text>
+    <rect x="480" y="385" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="534" y="433" font-size="22" fill="#166534">✓</text>
+    <rect x="600" y="385" width="108" height="80" fill="#fce8e8" stroke="#fff" stroke-width="2"/><text x="654" y="433" font-size="22" fill="#b42318">×</text>
+
+    <rect x="240" y="485" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="294" y="533" font-size="22" fill="#166534">✓</text>
+    <rect x="360" y="485" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="414" y="533" font-size="22" fill="#166534">✓</text>
+    <rect x="480" y="485" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="534" y="533" font-size="22" fill="#166534">✓</text>
+    <rect x="600" y="485" width="108" height="80" fill="#def7e6" stroke="#fff" stroke-width="2"/><text x="654" y="533" font-size="22" fill="#166534">✓</text>
+
+    <rect x="760" y="210" width="185" height="105" rx="10" fill="#def7e6" stroke="#27ae60"/>
+    <text x="852" y="247" font-size="18" font-weight="700" fill="#166534">允许查看</text>
+    <text x="852" y="279" font-size="15" fill="#52616f">Mask 值为 0</text>
+    <rect x="760" y="355" width="185" height="105" rx="10" fill="#fce8e8" stroke="#d64545"/>
+    <text x="852" y="392" font-size="18" font-weight="700" fill="#b42318">禁止查看</text>
+    <text x="852" y="424" font-size="15" fill="#52616f">Mask 值为 -∞</text>
+    <text x="500" y="610" font-size="16" fill="#6b21a8">Softmax 后，红色区域的注意力权重变为 0</text>
+  </g>
+</svg>

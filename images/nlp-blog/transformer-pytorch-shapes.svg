@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680" role="img" aria-labelledby="title desc">
+  <title id="title">PyTorch Transformer张量形状</title>
+  <desc id="desc">batch_first为True时，源序列和目标序列经过Embedding、Transformer和输出层的形状变化，以及两类Mask的形状。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="680" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">PyTorch Transformer：把形状先对齐</text>
+  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">以下使用 batch_first=True，B=batch，S=源长度，T=目标长度</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="45" y="130" width="190" height="72" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="140" y="160" font-size="19" font-weight="700" fill="#1f2937">src token id</text>
+    <text x="140" y="187" font-size="16" fill="#2f80ed">[B, S]</text>
+    <rect x="285" y="130" width="220" height="72" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="395" y="160" font-size="18" font-weight="700" fill="#1f2937">src Embedding + PE</text>
+    <text x="395" y="187" font-size="16" fill="#2f80ed">[B, S, E]</text>
+    <rect x="545" y="130" width="190" height="72" rx="10" fill="#dcecff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="640" y="160" font-size="19" font-weight="700" fill="#1f2937">Encoder</text>
+    <text x="640" y="187" font-size="16" fill="#2f80ed">Memory [B, S, E]</text>
+
+    <rect x="45" y="285" width="190" height="72" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="140" y="315" font-size="19" font-weight="700" fill="#1f2937">tgt_in token id</text>
+    <text x="140" y="342" font-size="16" fill="#16803a">[B, T]</text>
+    <rect x="285" y="285" width="220" height="72" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="395" y="315" font-size="18" font-weight="700" fill="#1f2937">tgt Embedding + PE</text>
+    <text x="395" y="342" font-size="16" fill="#16803a">[B, T, E]</text>
+    <rect x="545" y="285" width="190" height="72" rx="10" fill="#def7e6" stroke="#27ae60" stroke-width="2"/>
+    <text x="640" y="315" font-size="19" font-weight="700" fill="#1f2937">Decoder</text>
+    <text x="640" y="342" font-size="16" fill="#16803a">[B, T, E]</text>
+    <rect x="785" y="285" width="170" height="72" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="870" y="315" font-size="18" font-weight="700" fill="#1f2937">Linear</text>
+    <text x="870" y="342" font-size="16" fill="#7e22ce">[B, T, V]</text>
+
+    <rect x="80" y="455" width="250" height="92" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="205" y="488" font-size="18" font-weight="700" fill="#1f2937">src padding mask</text>
+    <text x="205" y="518" font-size="16" fill="#52616f">[B, S]</text>
+    <rect x="375" y="455" width="250" height="92" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="500" y="488" font-size="18" font-weight="700" fill="#1f2937">tgt padding mask</text>
+    <text x="500" y="518" font-size="16" fill="#52616f">[B, T]</text>
+    <rect x="670" y="455" width="250" height="92" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="795" y="488" font-size="18" font-weight="700" fill="#1f2937">tgt causal mask</text>
+    <text x="795" y="518" font-size="16" fill="#d97706">[T, T]</text>
+
+    <rect x="165" y="595" width="670" height="48" rx="9" fill="#fff" stroke="#d4dbe5"/>
+    <text x="500" y="625" font-size="16" fill="#334155">E = d_model，V = vocab_size；Embedding 输入是整数 id，Transformer 输入是浮点向量</text>
+  </g>
+
+  <path d="M235 166H275" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M505 166H535" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M235 321H275" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M505 321H535" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M735 321H775" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M640 202V275" stroke="#9b51e0" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="673" y="244" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#7e22ce">K、V</text>
+</svg>

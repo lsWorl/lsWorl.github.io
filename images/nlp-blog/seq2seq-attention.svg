@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="590" viewBox="0 0 1000 590" role="img" aria-labelledby="title desc">
+  <title id="title">Seq2Seq Attention</title>
+  <desc id="desc">Decoder生成不同目标词时，对各个Encoder输出分配不同注意力权重。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="590" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Attention：每一步重新查看输入序列</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">不再把全部信息压缩到唯一的固定长度向量</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <text x="115" y="145" font-size="18" font-weight="700" fill="#222831">Encoder 输出</text>
+    <rect x="210" y="120" width="105" height="68" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/><text x="262" y="148" font-size="17" fill="#334155">我</text><text x="262" y="174" font-size="14" fill="#5f6b7a">h₁</text>
+    <rect x="375" y="120" width="105" height="68" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/><text x="427" y="148" font-size="17" fill="#334155">喜欢</text><text x="427" y="174" font-size="14" fill="#5f6b7a">h₂</text>
+    <rect x="540" y="120" width="130" height="68" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/><text x="605" y="148" font-size="17" fill="#334155">自然语言</text><text x="605" y="174" font-size="14" fill="#5f6b7a">h₃</text>
+    <rect x="730" y="120" width="105" height="68" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/><text x="782" y="148" font-size="17" fill="#334155">处理</text><text x="782" y="174" font-size="14" fill="#5f6b7a">h₄</text>
+
+    <rect x="350" y="290" width="300" height="95" rx="12" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="500" y="327" font-size="21" font-weight="700" fill="#222831">注意力加权求和</text><text x="500" y="359" font-size="17" fill="#334155">cₜ = Σ αₜ,ᵢ hᵢ</text>
+
+    <rect x="405" y="470" width="190" height="75" rx="11" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="500" y="501" font-size="20" font-weight="700" fill="#222831">Decoder 第 t 步</text><text x="500" y="528" font-size="15" fill="#5f6b7a">生成当前目标 token</text>
+  </g>
+
+  <path d="M262 188C280 240 390 260 430 280" fill="none" stroke="#9b51e0" stroke-width="2" opacity="0.35" marker-end="url(#arrow)"/>
+  <path d="M427 188C430 235 455 260 470 280" fill="none" stroke="#9b51e0" stroke-width="6" opacity="0.9" marker-end="url(#arrow)"/>
+  <path d="M605 188C590 235 550 260 530 280" fill="none" stroke="#9b51e0" stroke-width="3" opacity="0.55" marker-end="url(#arrow)"/>
+  <path d="M782 188C740 235 620 260 570 280" fill="none" stroke="#9b51e0" stroke-width="2" opacity="0.3" marker-end="url(#arrow)"/>
+  <path d="M500 385V459" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="720" y="335" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#6b21a8">线条越粗，注意力权重越高</text>
+</svg>

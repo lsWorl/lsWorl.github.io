@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-labelledby="title desc">
+  <title id="title">Teacher Forcing</title>
+  <desc id="desc">训练时下一步可以使用真实目标词或模型上一时刻的预测词。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="560" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Teacher Forcing：下一步输入从哪里来</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">真实 token 帮助稳定训练，预测 token 更接近实际推理</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="70" y="215" width="180" height="90" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="160" y="251" font-size="20" font-weight="700" fill="#222831">Decoder 第 t 步</text><text x="160" y="280" font-size="15" fill="#5f6b7a">输出 logits</text>
+    <rect x="365" y="130" width="230" height="100" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="480" y="169" font-size="20" font-weight="700" fill="#222831">真实目标 token</text><text x="480" y="201" font-size="16" fill="#15803d">Teacher Forcing</text>
+    <rect x="365" y="330" width="230" height="100" rx="10" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="480" y="369" font-size="20" font-weight="700" fill="#222831">模型预测 token</text><text x="480" y="401" font-size="16" fill="#b45309">argmax(logits)</text>
+    <rect x="735" y="215" width="200" height="90" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="835" y="251" font-size="20" font-weight="700" fill="#222831">Decoder 第 t+1 步</text><text x="835" y="280" font-size="15" fill="#5f6b7a">接收选中的 token</text>
+  </g>
+
+  <path d="M250 245C310 230 310 180 354 180" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M250 275C310 290 310 380 354 380" fill="none" stroke="#f2994a" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M595 180C680 180 680 235 724 245" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M595 380C680 380 680 285 724 275" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="225" y="475" width="550" height="46" rx="10" fill="#fff" stroke="#d4dbe5"/>
+  <text x="500" y="504" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#222831">teacher_forcing_ratio 控制两条路径被选择的概率</text>
+</svg>

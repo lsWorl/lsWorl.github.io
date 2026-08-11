@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc">
+  <title id="title">缩放点积注意力手算流程</title>
+  <desc id="desc">三个二维token先计算QK转置，缩放和Softmax后得到注意力矩阵，再与V相乘获得上下文输出。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="650" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">一次完整的 Self-Attention 矩阵计算</text>
+  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">示例令 Q = K = V = X，dk = 2</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="55" y="135" width="185" height="180" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="147" y="168" font-size="20" font-weight="700" fill="#1f2937">输入 X</text>
+    <text x="147" y="211" font-size="17" fill="#334155">[ 1   0 ]</text>
+    <text x="147" y="244" font-size="17" fill="#334155">[ 0   1 ]</text>
+    <text x="147" y="277" font-size="17" fill="#334155">[ 1   1 ]</text>
+
+    <rect x="292" y="135" width="210" height="180" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="397" y="168" font-size="20" font-weight="700" fill="#1f2937">QKᵀ / √2</text>
+    <text x="397" y="211" font-size="16" fill="#334155">[ .707   0    .707 ]</text>
+    <text x="397" y="244" font-size="16" fill="#334155">[ 0    .707   .707 ]</text>
+    <text x="397" y="277" font-size="16" fill="#334155">[ .707 .707  1.414 ]</text>
+
+    <rect x="554" y="135" width="210" height="180" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="659" y="168" font-size="20" font-weight="700" fill="#1f2937">Softmax 权重 A</text>
+    <text x="659" y="211" font-size="16" fill="#334155">[ .401 .198 .401 ]</text>
+    <text x="659" y="244" font-size="16" fill="#334155">[ .198 .401 .401 ]</text>
+    <text x="659" y="277" font-size="16" fill="#334155">[ .248 .248 .503 ]</text>
+
+    <rect x="816" y="135" width="145" height="180" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="888" y="168" font-size="20" font-weight="700" fill="#1f2937">O = AV</text>
+    <text x="888" y="211" font-size="15" fill="#334155">[.802 .599]</text>
+    <text x="888" y="244" font-size="15" fill="#334155">[.599 .802]</text>
+    <text x="888" y="277" font-size="15" fill="#334155">[.752 .752]</text>
+
+    <rect x="125" y="400" width="750" height="170" rx="12" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="500" y="438" font-size="21" font-weight="700" fill="#1f2937">第一行是怎样得到第一个输出的？</text>
+    <rect x="170" y="472" width="140" height="55" rx="8" fill="#eaf3ff" stroke="#9bbce8"/>
+    <text x="240" y="505" font-size="16" fill="#334155">0.401 × [1,0]</text>
+    <text x="337" y="505" font-size="22" fill="#52616f">+</text>
+    <rect x="365" y="472" width="140" height="55" rx="8" fill="#fff7e6" stroke="#f3c48e"/>
+    <text x="435" y="505" font-size="16" fill="#334155">0.198 × [0,1]</text>
+    <text x="532" y="505" font-size="22" fill="#52616f">+</text>
+    <rect x="560" y="472" width="140" height="55" rx="8" fill="#f0fff4" stroke="#9ed2ad"/>
+    <text x="630" y="505" font-size="16" fill="#334155">0.401 × [1,1]</text>
+    <text x="728" y="505" font-size="22" fill="#52616f">=</text>
+    <text x="793" y="505" font-size="18" font-weight="700" fill="#166534">[.802,.599]</text>
+  </g>
+
+  <path d="M240 225H282" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M502 225H544" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M764 225H806" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="523" y="346" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" fill="#6b21a8">每一行权重之和等于 1</text>
+</svg>

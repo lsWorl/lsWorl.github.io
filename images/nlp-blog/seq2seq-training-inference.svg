@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600" role="img" aria-labelledby="title desc">
+  <title id="title">Seq2Seq训练与推理对比</title>
+  <desc id="desc">训练时可以使用真实目标序列，推理时只能使用模型自身输出并在结束符处停止。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="600" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Seq2Seq：训练与推理不是同一条路</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">差异来自 Decoder 下一步输入是否能看到真实答案</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="55" y="130" width="890" height="175" rx="13" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="115" y="170" font-size="22" font-weight="700" fill="#15803d">训练</text>
+    <rect x="170" y="195" width="105" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="222" y="230" font-size="15" fill="#334155">BOS</text>
+    <rect x="340" y="195" width="105" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="392" y="230" font-size="17" fill="#334155">真实 y₁</text>
+    <rect x="510" y="195" width="105" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="562" y="230" font-size="17" fill="#334155">真实 y₂</text>
+    <rect x="680" y="195" width="105" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="732" y="230" font-size="15" fill="#334155">EOS</text>
+    <text x="500" y="284" font-size="15" fill="#5f6b7a">可以使用标准答案作为下一步输入</text>
+
+    <rect x="55" y="350" width="890" height="175" rx="13" fill="#fff8e8" stroke="#f2994a" stroke-width="2"/>
+    <text x="115" y="390" font-size="22" font-weight="700" fill="#b45309">推理</text>
+    <rect x="170" y="415" width="105" height="58" rx="8" fill="#fff" stroke="#efd3a9"/><text x="222" y="450" font-size="15" fill="#334155">BOS</text>
+    <rect x="340" y="415" width="105" height="58" rx="8" fill="#fff" stroke="#efd3a9"/><text x="392" y="450" font-size="17" fill="#334155">预测 ŷ₁</text>
+    <rect x="510" y="415" width="105" height="58" rx="8" fill="#fff" stroke="#efd3a9"/><text x="562" y="450" font-size="17" fill="#334155">预测 ŷ₂</text>
+    <rect x="680" y="415" width="105" height="58" rx="8" fill="#fff" stroke="#efd3a9"/><text x="732" y="450" font-size="15" fill="#334155">EOS</text>
+    <text x="500" y="504" font-size="15" fill="#5f6b7a">只能把自己的预测作为下一步输入</text>
+  </g>
+  <path d="M275 224H329M445 224H499M615 224H669M275 444H329M445 444H499M615 444H669" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="500" y="566" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#c2410c">前面一步预测错误，推理时可能继续影响后续生成，这就是 Exposure Bias</text>
+</svg>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620" role="img" aria-labelledby="title desc">
+  <title id="title">位置编码加入词向量</title>
+  <desc id="desc">词向量表示token内容，位置编码表示顺序，两者逐元素相加后送入Transformer。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="620" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">位置编码：给内容向量加上顺序</text>
+  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">Attention 按内容交互，Positional Encoding 告诉模型 token 在哪里</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="80" y="135" width="300" height="155" rx="12" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="230" y="171" font-size="21" font-weight="700" fill="#1f2937">Token Embedding</text>
+    <text x="230" y="202" font-size="16" fill="#52616f">“学习”的语义内容</text>
+    <rect x="120" y="225" width="220" height="42" rx="7" fill="#fff" stroke="#9bbce8"/>
+    <text x="230" y="252" font-size="16" fill="#334155">[0.3, -0.2, 0.7, 0.1]</text>
+
+    <rect x="620" y="135" width="300" height="155" rx="12" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="770" y="171" font-size="21" font-weight="700" fill="#1f2937">Position Encoding</text>
+    <text x="770" y="202" font-size="16" fill="#52616f">pos = 2，d_model = 4</text>
+    <rect x="650" y="225" width="240" height="42" rx="7" fill="#fff" stroke="#f3c48e"/>
+    <text x="770" y="252" font-size="15" fill="#334155">[.909, -.416, .020, 1.000]</text>
+
+    <circle cx="500" cy="225" r="38" fill="#fff" stroke="#9b51e0" stroke-width="3"/>
+    <text x="500" y="235" font-size="33" font-weight="700" fill="#7e22ce">+</text>
+
+    <rect x="270" y="390" width="460" height="115" rx="12" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="500" y="426" font-size="22" font-weight="700" fill="#1f2937">Transformer 输入表示</text>
+    <text x="500" y="461" font-size="17" fill="#166534">[1.209, -0.616, 0.720, 1.100]</text>
+    <text x="500" y="488" font-size="14" fill="#52616f">形状保持为 [batch, length, d_model]</text>
+
+    <rect x="160" y="550" width="680" height="42" rx="8" fill="#fff" stroke="#d4dbe5"/>
+    <text x="500" y="577" font-size="16" fill="#334155">同一个 token 出现在不同位置时，得到不同的最终输入表示</text>
+  </g>
+
+  <path d="M380 225H452" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M620 225H548" stroke="#f2994a" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M500 263V380" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

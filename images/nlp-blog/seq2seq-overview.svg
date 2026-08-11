@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="570" viewBox="0 0 1000 570" role="img" aria-labelledby="title desc">
+  <title id="title">Seq2Seq Encoder-Decoder结构</title>
+  <desc id="desc">Encoder读取输入序列并产生上下文表示，Decoder从起始符开始逐步生成输出直到结束符。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="570" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="54" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Seq2Seq：Encoder 理解，Decoder 生成</text>
+  <text x="500" y="88" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">输入长度和输出长度可以不同</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="45" y="145" width="430" height="260" rx="14" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="260" y="185" font-size="24" font-weight="700" fill="#222831">Encoder</text>
+    <text x="260" y="215" font-size="15" fill="#5f6b7a">按顺序读取输入 token</text>
+    <rect x="75" y="275" width="75" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="112" y="310" font-size="17" fill="#334155">我</text>
+    <rect x="180" y="275" width="75" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="217" y="310" font-size="17" fill="#334155">喜欢</text>
+    <rect x="285" y="275" width="75" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="322" y="310" font-size="17" fill="#334155">学习</text>
+    <rect x="390" y="275" width="55" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="417" y="310" font-size="19" fill="#334155">h</text>
+
+    <rect x="525" y="145" width="430" height="260" rx="14" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="740" y="185" font-size="24" font-weight="700" fill="#222831">Decoder</text>
+    <text x="740" y="215" font-size="15" fill="#5f6b7a">根据历史输出逐步生成</text>
+    <rect x="555" y="275" width="75" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="592" y="310" font-size="15" fill="#334155">BOS</text>
+    <rect x="660" y="275" width="75" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="697" y="310" font-size="17" fill="#334155">I</text>
+    <rect x="765" y="275" width="75" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="802" y="310" font-size="17" fill="#334155">like</text>
+    <rect x="870" y="275" width="55" height="58" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="897" y="310" font-size="14" fill="#334155">EOS</text>
+  </g>
+
+  <path d="M150 304H169M255 304H274M360 304H379" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M445 304C480 304 490 245 515 245" fill="none" stroke="#9b51e0" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="500" y="225" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" fill="#6b21a8">上下文表示</text>
+  <path d="M630 304H649M735 304H754M840 304H859" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="185" y="465" width="630" height="50" rx="10" fill="#fff" stroke="#d4dbe5"/>
+  <text x="500" y="496" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#222831">P(Y|X) = ∏ P(yₜ | y₁,...,yₜ₋₁,X)</text>
+</svg>

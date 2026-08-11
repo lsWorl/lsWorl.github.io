@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600" role="img" aria-labelledby="title desc">
+  <title id="title">Self-Attention中的Query Key Value</title>
+  <desc id="desc">同一个输入X经过三组不同的线性投影得到Q、K、V，Q与K计算权重后聚合V。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="600" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">Self-Attention：同一输入，三种不同角色</text>
+  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">Q 负责查询，K 负责匹配，V 提供被聚合的内容</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="390" y="120" width="220" height="70" rx="10" fill="#fff" stroke="#52616f" stroke-width="2"/>
+    <text x="500" y="150" font-size="22" font-weight="700" fill="#1f2937">输入矩阵 X</text>
+    <text x="500" y="177" font-size="14" fill="#52616f">[batch, length, d_model]</text>
+
+    <rect x="90" y="270" width="220" height="94" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="200" y="304" font-size="20" font-weight="700" fill="#1f2937">Q = XWQ</text>
+    <text x="200" y="333" font-size="15" fill="#52616f">“我想找什么？”</text>
+    <rect x="390" y="270" width="220" height="94" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="500" y="304" font-size="20" font-weight="700" fill="#1f2937">K = XWK</text>
+    <text x="500" y="333" font-size="15" fill="#52616f">“我适合怎样被检索？”</text>
+    <rect x="690" y="270" width="220" height="94" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="800" y="304" font-size="20" font-weight="700" fill="#1f2937">V = XWV</text>
+    <text x="800" y="333" font-size="15" fill="#52616f">“我真正提供什么？”</text>
+
+    <rect x="170" y="445" width="300" height="82" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="320" y="478" font-size="18" font-weight="700" fill="#1f2937">匹配并归一化</text>
+    <text x="320" y="506" font-size="16" fill="#6b21a8">A = softmax(QKᵀ / √dk)</text>
+    <rect x="560" y="445" width="270" height="82" rx="10" fill="#eefbf3" stroke="#27ae60" stroke-width="2"/>
+    <text x="695" y="478" font-size="18" font-weight="700" fill="#1f2937">聚合内容</text>
+    <text x="695" y="506" font-size="16" fill="#166534">O = AV</text>
+  </g>
+
+  <path d="M455 190C430 220 250 220 210 260" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M500 190V260" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M545 190C570 220 750 220 790 260" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M200 364C200 405 260 414 290 435" fill="none" stroke="#2f80ed" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M500 364C500 405 390 414 355 435" fill="none" stroke="#f2994a" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M470 486H550" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M800 364V425" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>
