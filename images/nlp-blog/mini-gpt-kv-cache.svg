@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="660" viewBox="0 0 1000 660" role="img" aria-labelledby="title desc">
+  <title id="title">Mini-GPT KV Cache</title><desc id="desc">无缓存时每一步重复计算整个前缀，有缓存时只计算新token的QKV，并把新K和V追加到各层缓存。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1000" height="660" rx="18" fill="#fbfbfd"/><text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">KV Cache：保存历史 Key 和 Value，避免重复计算</text><text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">以额外显存换取更快的自回归推理</text>
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="45" y="125" width="410" height="205" rx="13" fill="#fce8e8" stroke="#d64545" stroke-width="2"/><text x="250" y="161" font-size="22" font-weight="700" fill="#1f2937">没有 KV Cache</text><text x="250" y="193" font-size="15" fill="#52616f">每一步重新前向整个前缀</text>
+    <rect x="85" y="225" width="330" height="55" rx="8" fill="#fff" stroke="#e6aaaa"/><text x="250" y="259" font-size="16" fill="#334155">x₁ x₂ x₃ x₄ → 重算全部 Q、K、V</text><text x="250" y="307" font-size="14" fill="#b42318">历史 token 的 K、V 被反复计算</text>
+    <rect x="545" y="125" width="410" height="205" rx="13" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/><text x="750" y="161" font-size="22" font-weight="700" fill="#1f2937">使用 KV Cache</text><text x="750" y="193" font-size="15" fill="#52616f">每一步只计算新 token</text>
+    <rect x="585" y="225" width="330" height="55" rx="8" fill="#fff" stroke="#9ed2ad"/><text x="750" y="259" font-size="16" fill="#334155">x₄ → 只计算 q₄、k₄、v₄</text><text x="750" y="307" font-size="14" fill="#166534">历史 K、V 直接从缓存读取</text>
+
+    <rect x="75" y="405" width="210" height="85" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/><text x="180" y="438" font-size="18" font-weight="700" fill="#1f2937">当前 Query</text><text x="180" y="468" font-size="16" fill="#2f80ed">qₜ [B,H,1,D]</text>
+    <rect x="365" y="380" width="270" height="135" rx="11" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/><text x="500" y="414" font-size="19" font-weight="700" fill="#1f2937">每层历史缓存</text><text x="500" y="449" font-size="16" fill="#6b21a8">K₁:ₜ = [K₁:ₜ₋₁ ; kₜ]</text><text x="500" y="481" font-size="16" fill="#6b21a8">V₁:ₜ = [V₁:ₜ₋₁ ; vₜ]</text>
+    <rect x="715" y="405" width="210" height="85" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/><text x="820" y="438" font-size="18" font-weight="700" fill="#1f2937">当前输出</text><text x="820" y="468" font-size="15" fill="#16803a">Attn(qₜ,K₁:ₜ,V₁:ₜ)</text>
+    <rect x="155" y="570" width="690" height="52" rx="9" fill="#fff" stroke="#d4dbe5"/><text x="500" y="591" font-size="16" font-weight="700" fill="#1f2937">缓存元素数量约为 2 × L × B × H × T × D</text><text x="500" y="613" font-size="13" fill="#52616f">2 表示 Key 与 Value；上下文越长，缓存显存越大</text>
+  </g>
+  <path d="M285 448H355" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M635 448H705" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

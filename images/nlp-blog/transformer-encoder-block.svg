@@ -4,7 +4,7 @@
   <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
   <rect width="1000" height="650" rx="18" fill="#fbfbfd"/>
   <text x="500" y="52" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">一个 Transformer Encoder Layer</text>
-  <text x="500" y="84" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">Attention 负责位置间交互，FFN 负责每个位置内部变换</text>
+  <text x="500" y="630" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">Attention 负责位置间交互，FFN 负责每个位置内部变换</text>
 
   <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
     <rect x="380" y="555" width="240" height="54" rx="9" fill="#fff" stroke="#52616f" stroke-width="2"/>
@@ -14,19 +14,19 @@
     <text x="500" y="455" font-size="20" font-weight="700" fill="#1f2937">Multi-Head Self-Attention</text>
     <text x="500" y="482" font-size="14" fill="#52616f">Q、K、V 都来自同一输入</text>
 
-    <circle cx="500" cy="355" r="27" fill="#fff" stroke="#9b51e0" stroke-width="2"/>
-    <text x="500" y="364" font-size="27" font-weight="700" fill="#7e22ce">+</text>
-    <rect x="330" y="292" width="340" height="42" rx="8" fill="#f7f3ff" stroke="#9b51e0"/>
-    <text x="500" y="319" font-size="16" fill="#6b21a8">LayerNorm</text>
+    <circle cx="500" cy="365" r="27" fill="#fff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="500" y="374" font-size="27" font-weight="700" fill="#7e22ce">+</text>
+    <rect x="330" y="262" width="340" height="42" rx="8" fill="#f7f3ff" stroke="#9b51e0"/>
+    <text x="500" y="290" font-size="16" fill="#6b21a8">LayerNorm</text>
 
-    <rect x="330" y="175" width="340" height="72" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
-    <text x="500" y="205" font-size="20" font-weight="700" fill="#1f2937">Position-wise FFN</text>
-    <text x="500" y="232" font-size="14" fill="#52616f">Linear -> Activation -> Linear</text>
+    <rect x="330" y="185" width="340" height="72" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="500" y="215" font-size="20" font-weight="700" fill="#1f2937">Position-wise FFN</text>
+    <text x="500" y="242" font-size="14" fill="#52616f">Linear -> Activation -> Linear</text>
 
-    <circle cx="500" cy="125" r="27" fill="#fff" stroke="#27ae60" stroke-width="2"/>
-    <text x="500" y="134" font-size="27" font-weight="700" fill="#16803a">+</text>
-    <rect x="330" y="70" width="340" height="42" rx="8" fill="#f0fff4" stroke="#27ae60"/>
-    <text x="500" y="97" font-size="16" fill="#166534">LayerNorm -> Encoder 输出</text>
+    <circle cx="500" cy="135" r="27" fill="#fff" stroke="#27ae60" stroke-width="2"/>
+    <text x="500" y="144" font-size="27" font-weight="700" fill="#16803a">+</text>
+    <rect x="330" y="60" width="340" height="42" rx="8" fill="#f0fff4" stroke="#27ae60"/>
+    <text x="500" y="87" font-size="16" fill="#166534">LayerNorm -> Encoder 输出</text>
 
     <text x="165" y="373" font-size="15" font-weight="700" fill="#7e22ce">残差路径 1</text>
     <text x="835" y="142" font-size="15" font-weight="700" fill="#16803a">残差路径 2</text>
@@ -34,8 +34,8 @@
 
   <path d="M500 555V507" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
   <path d="M500 425V392" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
-  <path d="M500 328V257" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
-  <path d="M500 175V152" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M500 338V300" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M500 185V162" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
   <path d="M380 582C195 582 195 355 463 355" fill="none" stroke="#9b51e0" stroke-width="3" marker-end="url(#arrow)"/>
-  <path d="M670 313C820 313 820 125 537 125" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M670 293C820 330 820 125 527 150" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
 </svg>
