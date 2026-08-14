@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 1000 760" role="img" aria-labelledby="title desc">
+  <title id="title">从Prompt春天手算下一个Token</title>
+  <desc id="desc">Prompt春天经过Tokenizer、Embedding、因果注意力、残差与MLP、语言模型头和Softmax，最终预测下一个token为来。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker>
+  </defs>
+  <rect width="1000" height="760" rx="18" fill="#fbfbfd"/>
+  <text x="500" y="50" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#222831">手算一次：Prompt“春天”如何预测出“来”</text>
+  <text x="500" y="82" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#5f6b7a">教学模型：V=4，C=2，H=1，L=1；计算顺序与完整 Mini-GPT 相同</text>
+
+  <g font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <rect x="40" y="125" width="190" height="78" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="135" y="155" font-size="18" font-weight="700" fill="#1f2937">输入 Prompt</text>
+    <text x="135" y="184" font-size="20" fill="#2f80ed">春天</text>
+
+    <rect x="285" y="125" width="190" height="78" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="380" y="155" font-size="18" font-weight="700" fill="#1f2937">Tokenizer</text>
+    <text x="380" y="184" font-size="18" fill="#2f80ed">[0, 1]</text>
+
+    <rect x="530" y="115" width="210" height="98" rx="9" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="635" y="145" font-size="18" font-weight="700" fill="#1f2937">Token + Position</text>
+    <text x="635" y="174" font-size="15" fill="#d97706">[[1.1, 0],</text>
+    <text x="635" y="197" font-size="15" fill="#d97706"> [0, 1.1]]</text>
+
+    <rect x="795" y="115" width="165" height="98" rx="9" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="877" y="145" font-size="18" font-weight="700" fill="#1f2937">Pre-LN</text>
+    <text x="877" y="174" font-size="15" fill="#6b21a8">[[1, -1],</text>
+    <text x="877" y="197" font-size="15" fill="#6b21a8"> [-1, 1]]</text>
+
+    <rect x="75" y="310" width="235" height="112" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="192" y="340" font-size="18" font-weight="700" fill="#1f2937">Q = K = V</text>
+    <text x="192" y="369" font-size="15" fill="#2f80ed">WQ = WK = WV = I</text>
+    <text x="192" y="398" font-size="14" fill="#52616f">最后 Query：[-1, 1]</text>
+
+    <rect x="380" y="300" width="240" height="132" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="500" y="330" font-size="18" font-weight="700" fill="#1f2937">Causal Attention</text>
+    <text x="500" y="360" font-size="15" fill="#d97706">权重：[0.0558, 0.9442]</text>
+    <text x="500" y="390" font-size="15" fill="#d97706">输出：[-0.8884, 0.8884]</text>
+    <text x="500" y="416" font-size="13" fill="#52616f">“天”只能查看“春”和自己</text>
+
+    <rect x="690" y="300" width="235" height="132" rx="10" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+    <text x="807" y="330" font-size="18" font-weight="700" fill="#1f2937">Residual + MLP</text>
+    <text x="807" y="360" font-size="14" fill="#16803a">残差后：[-0.8884, 1.9884]</text>
+    <text x="807" y="388" font-size="14" fill="#16803a">MLP：[-0.1587, 0.8413]</text>
+    <text x="807" y="416" font-size="14" fill="#16803a">Block：[-1.0471, 2.8297]</text>
+
+    <rect x="70" y="535" width="210" height="96" rx="10" fill="#f7f3ff" stroke="#9b51e0" stroke-width="2"/>
+    <text x="175" y="566" font-size="18" font-weight="700" fill="#1f2937">Final LayerNorm</text>
+    <text x="175" y="601" font-size="18" fill="#6b21a8">h = [-1, 1]</text>
+
+    <rect x="335" y="525" width="220" height="116" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="445" y="556" font-size="18" font-weight="700" fill="#1f2937">LM Head</text>
+    <text x="445" y="584" font-size="15" fill="#d97706">春  天  来  了</text>
+    <text x="445" y="613" font-size="17" fill="#d97706">[-1, 1, 2, -2]</text>
+
+    <rect x="610" y="525" width="210" height="116" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="715" y="556" font-size="18" font-weight="700" fill="#1f2937">Softmax</text>
+    <text x="715" y="584" font-size="14" fill="#2f80ed">春 3.47% · 天 25.62%</text>
+    <text x="715" y="613" font-size="14" fill="#2f80ed">来 69.64% · 了 1.28%</text>
+
+    <rect x="865" y="515" width="105" height="136" rx="10" fill="#def7e6" stroke="#27ae60" stroke-width="3"/>
+    <text x="917" y="551" font-size="17" font-weight="700" fill="#1f2937">Greedy</text>
+    <text x="917" y="585" font-size="15" fill="#52616f">argmax</text>
+    <text x="917" y="627" font-size="32" font-weight="700" fill="#16803a">来</text>
+
+    <rect x="210" y="690" width="580" height="48" rx="9" fill="#fff" stroke="#d4dbe5"/>
+    <text x="500" y="720" font-size="18" fill="#334155">新上下文：[0, 1, 2] = “春天来”，然后重复整套流程</text>
+  </g>
+
+  <path d="M230 164H275" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M475 164H520" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M740 164H785" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M877 213C877 260 230 258 205 300" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M310 366H370" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M620 366H680" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M807 432C807 485 205 475 185 525" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M280 583H325" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M555 583H600" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M820 583H855" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M917 651C917 680 770 680 745 686" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

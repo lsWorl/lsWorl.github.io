@@ -7,12 +7,16 @@
     <rect x="360" y="515" width="280" height="48" rx="8" fill="#eaf3ff" stroke="#2f80ed"/><text x="500" y="546" font-size="17" font-weight="700" fill="#1f2937">LayerNorm 1</text>
     <rect x="320" y="415" width="360" height="64" rx="9" fill="#dcecff" stroke="#2f80ed" stroke-width="2"/><text x="500" y="443" font-size="19" font-weight="700" fill="#1f2937">Causal Multi-Head Attention</text><text x="500" y="466" font-size="13" fill="#52616f">只能汇总当前位置和过去位置</text>
     <circle cx="500" cy="355" r="27" fill="#fff" stroke="#9b51e0" stroke-width="2"/><text x="500" y="364" font-size="27" font-weight="700" fill="#7e22ce">+</text>
-    <rect x="360" y="285" width="280" height="48" rx="8" fill="#fff7e6" stroke="#f2994a"/><text x="500" y="316" font-size="17" font-weight="700" fill="#1f2937">LayerNorm 2</text>
+    <rect x="360" y="275" width="280" height="48" rx="8" fill="#fff7e6" stroke="#f2994a"/><text x="500" y="306" font-size="17" font-weight="700" fill="#1f2937">LayerNorm 2</text>
     <rect x="320" y="185" width="360" height="64" rx="9" fill="#ffefd8" stroke="#f2994a" stroke-width="2"/><text x="500" y="213" font-size="19" font-weight="700" fill="#1f2937">MLP</text><text x="500" y="236" font-size="13" fill="#52616f">C → 4C → GELU → C</text>
-    <circle cx="500" cy="125" r="27" fill="#fff" stroke="#27ae60" stroke-width="2"/><text x="500" y="134" font-size="27" font-weight="700" fill="#16803a">+</text>
+    <circle cx="500" cy="135" r="27" fill="#fff" stroke="#27ae60" stroke-width="2"/><text x="500" y="144" font-size="27" font-weight="700" fill="#16803a">+</text>
     <rect x="360" y="55" width="280" height="42" rx="8" fill="#f0fff4" stroke="#27ae60"/><text x="500" y="82" font-size="17" font-weight="700" fill="#166534">Block 输出 y</text>
     <text x="185" y="374" font-size="15" font-weight="700" fill="#7e22ce">Residual 1</text><text x="815" y="143" font-size="15" font-weight="700" fill="#16803a">Residual 2</text>
   </g>
-  <path d="M500 600V573" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M500 515V489" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M500 415V392" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M500 328V259" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M500 185V162" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M500 98V97" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M500 600V563" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/><path d="M500 515V489" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M500 415V392" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M500 270V249" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M500 185V162" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M500 98V97" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
   <path d="M380 626C185 626 185 355 463 355" fill="none" stroke="#9b51e0" stroke-width="3" marker-end="url(#arrow)"/><path d="M537 355C815 355 815 125 537 125" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
 </svg>
