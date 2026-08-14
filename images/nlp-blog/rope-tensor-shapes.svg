@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">RoPE 的张量形状流</title>
+  <desc id="desc">输入经过线性投影和拆头后，对查询和键使用可广播的位置余弦正弦张量，之后进入缩放点积注意力。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1200" height="680" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="600" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">从 [B,T,C] 到 RoPE Attention</text>
+    <text x="600" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">示例：B=2，T=128，C=512，H=8，D=64</text>
+
+    <rect x="40" y="135" width="170" height="85" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="125" y="167" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">输入 X</text>
+    <text x="125" y="197" text-anchor="middle" font-size="16" fill="#2f5f9e">[2,128,512]</text>
+    <path d="M210 178H252" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="265" y="120" width="195" height="115" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="362" y="153" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">QKV Linear</text>
+    <text x="362" y="183" text-anchor="middle" font-size="15" fill="#52616f">[2,128,1536]</text>
+    <text x="362" y="210" text-anchor="middle" font-size="14" fill="#52616f">再 chunk(3)</text>
+    <path d="M460 178H502" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="515" y="115" width="215" height="125" rx="9" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="622" y="148" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">拆头 + 转置</text>
+    <text x="622" y="178" text-anchor="middle" font-size="15" fill="#52616f">Q [2,8,128,64]</text>
+    <text x="622" y="202" text-anchor="middle" font-size="15" fill="#52616f">K [2,8,128,64]</text>
+    <text x="622" y="226" text-anchor="middle" font-size="15" fill="#52616f">V [2,8,128,64]</text>
+
+    <path d="M730 178H785" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="798" y="110" width="235" height="135" rx="9" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="915" y="143" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">对 Q、K 应用 RoPE</text>
+    <text x="915" y="173" text-anchor="middle" font-size="15" fill="#9a5a12">cos/sin [2,1,128,64]</text>
+    <text x="915" y="201" text-anchor="middle" font-size="15" fill="#52616f">广播到 8 个头</text>
+    <text x="915" y="226" text-anchor="middle" font-size="14" fill="#52616f">形状保持不变</text>
+
+    <path d="M1033 178H1072" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="1085" y="125" width="90" height="105" rx="9" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="1130" y="158" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">SDPA</text>
+    <text x="1130" y="184" text-anchor="middle" font-size="13" fill="#166534">QKᵀ</text>
+    <text x="1130" y="208" text-anchor="middle" font-size="13" fill="#166534">× V</text>
+
+    <rect x="80" y="315" width="295" height="190" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="227" y="350" text-anchor="middle" font-size="20" font-weight="700" fill="#334155">位置张量</text>
+    <text x="110" y="390" font-size="16" fill="#52616f">position_ids</text>
+    <text x="345" y="390" text-anchor="end" font-size="16" fill="#2f5f9e">[2,128]</text>
+    <text x="110" y="425" font-size="16" fill="#52616f">inv_freq</text>
+    <text x="345" y="425" text-anchor="end" font-size="16" fill="#2f5f9e">[32]</text>
+    <text x="110" y="460" font-size="16" fill="#52616f">angles</text>
+    <text x="345" y="460" text-anchor="end" font-size="16" fill="#2f5f9e">[2,128,32]</text>
+    <text x="110" y="490" font-size="16" fill="#52616f">repeat pairs</text>
+    <text x="345" y="490" text-anchor="end" font-size="16" fill="#2f5f9e">[2,128,64]</text>
+
+    <path d="M375 410H470V275H895V245" fill="none" stroke="#f2994a" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+
+    <rect x="455" y="335" width="295" height="150" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="602" y="371" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">旋转公式</text>
+    <text x="602" y="411" text-anchor="middle" font-size="18" fill="#6b3fa0">x cosφ + rotate(x) sinφ</text>
+    <text x="602" y="447" text-anchor="middle" font-size="15" fill="#52616f">最后一维两两配对</text>
+
+    <rect x="830" y="325" width="305" height="175" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="982" y="360" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Attention 输出</text>
+    <text x="982" y="398" text-anchor="middle" font-size="16" fill="#166534">[2,8,128,64]</text>
+    <text x="982" y="430" text-anchor="middle" font-size="15" fill="#52616f">transpose + contiguous</text>
+    <text x="982" y="459" text-anchor="middle" font-size="16" fill="#166534">[2,128,512]</text>
+    <text x="982" y="484" text-anchor="middle" font-size="14" fill="#52616f">合并 8 个头</text>
+
+    <rect x="120" y="560" width="960" height="70" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="600" y="590" text-anchor="middle" font-size="17" font-weight="700" fill="#334155">RoPE 不增加 batch、序列、头或特征维度</text>
+    <text x="600" y="616" text-anchor="middle" font-size="15" fill="#52616f">最常见的错误来自 T、H 维放反，或 cos/sin 没有扩展到成对坐标</text>
+  </g>
+</svg>

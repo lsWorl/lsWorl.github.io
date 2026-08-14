@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700" role="img" aria-labelledby="title desc">
+  <title id="title">RoPE 把注意力头拆成多个频率对</title>
+  <desc id="desc">八维注意力头被拆成四个二维平面，每组使用从高到低的不同旋转频率。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1100" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="550" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">一个注意力头，多个旋转频率</text>
+    <text x="550" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">示例 head_dim = 8：每两个坐标组成一个二维旋转平面</text>
+
+    <rect x="65" y="120" width="970" height="92" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="105" y="154" font-size="17" font-weight="700" fill="#1f2937">Q 或 K</text>
+    <g text-anchor="middle" font-size="17" fill="#334155">
+      <rect x="225" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="266" y="169">x₀</text>
+      <rect x="315" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="356" y="169">x₁</text>
+      <rect x="420" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="461" y="169">x₂</text>
+      <rect x="510" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="551" y="169">x₃</text>
+      <rect x="615" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="656" y="169">x₄</text>
+      <rect x="705" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="746" y="169">x₅</text>
+      <rect x="810" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="851" y="169">x₆</text>
+      <rect x="900" y="139" width="82" height="48" rx="6" fill="#fff" stroke="#9bbce8"/><text x="941" y="169">x₇</text>
+    </g>
+
+    <path d="M311 212V252" stroke="#52616f" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M506 212V252" stroke="#52616f" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M701 212V252" stroke="#52616f" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M896 212V252" stroke="#52616f" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect x="190" y="265" width="240" height="150" rx="10" fill="#fff2eb" stroke="#eb5757" stroke-width="2"/>
+    <rect x="445" y="265" width="240" height="150" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <rect x="700" y="265" width="160" height="150" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <rect x="875" y="265" width="160" height="150" rx="10" fill="#eef7ff" stroke="#2d9cdb" stroke-width="2"/>
+
+    <text x="310" y="302" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">第 0 对 (x₀,x₁)</text>
+    <text x="310" y="335" text-anchor="middle" font-size="17" fill="#a83737">θ₀ = base⁰ = 1</text>
+    <text x="310" y="366" text-anchor="middle" font-size="15" fill="#52616f">旋转最快</text>
+    <text x="310" y="392" text-anchor="middle" font-size="14" fill="#52616f">对邻近位置敏感</text>
+
+    <text x="565" y="302" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">第 1 对 (x₂,x₃)</text>
+    <text x="565" y="335" text-anchor="middle" font-size="17" fill="#9a5a12">θ₁ = base⁻²⁄ᴰ</text>
+    <text x="565" y="366" text-anchor="middle" font-size="15" fill="#52616f">中高频</text>
+    <text x="565" y="392" text-anchor="middle" font-size="14" fill="#52616f">表达较短尺度</text>
+
+    <text x="780" y="302" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">第 2 对</text>
+    <text x="780" y="335" text-anchor="middle" font-size="16" fill="#166534">中低频</text>
+    <text x="780" y="370" text-anchor="middle" font-size="14" fill="#52616f">变化更慢</text>
+
+    <text x="955" y="302" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">第 3 对</text>
+    <text x="955" y="335" text-anchor="middle" font-size="16" fill="#176b8d">最低频</text>
+    <text x="955" y="370" text-anchor="middle" font-size="14" fill="#52616f">更长尺度</text>
+
+    <text x="80" y="485" font-size="18" font-weight="700" fill="#334155">位置 m 的角度：</text>
+    <rect x="245" y="452" width="790" height="64" rx="9" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="640" y="492" text-anchor="middle" font-size="21" fill="#6b3fa0">φₘ,ⱼ = m θⱼ，θⱼ = base⁻²ʲ⁄ᴰ</text>
+
+    <rect x="75" y="560" width="950" height="88" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="550" y="594" text-anchor="middle" font-size="18" font-weight="700" fill="#334155">多尺度位置表示</text>
+    <text x="550" y="623" text-anchor="middle" font-size="15" fill="#52616f">高频像秒针，低频像时针；多个尺度共同描述 token 之间的相对距离</text>
+  </g>
+</svg>

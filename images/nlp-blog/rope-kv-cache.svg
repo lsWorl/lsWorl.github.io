@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700" role="img" aria-labelledby="title desc">
+  <title id="title">RoPE 与 KV Cache 的生成流程</title>
+  <desc id="desc">历史旋转后的键和值被缓存，新 token 使用缓存长度作为绝对位置，旋转新查询和键后与全部缓存交互。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">自回归生成中的 RoPE 与 KV Cache</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">历史长度 t=4，本轮只输入一个新 token，但它的绝对位置是 4</text>
+
+    <rect x="55" y="125" width="250" height="110" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="180" y="160" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">新 Token x₄</text>
+    <text x="180" y="191" text-anchor="middle" font-size="15" fill="#52616f">输入形状 [B,1,C]</text>
+    <text x="180" y="216" text-anchor="middle" font-size="15" fill="#2f5f9e">position_id = cache_len = 4</text>
+
+    <path d="M305 180H360" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="375" y="120" width="230" height="120" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="490" y="155" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">投影新 Q₄、K₄、V₄</text>
+    <text x="490" y="188" text-anchor="middle" font-size="15" fill="#52616f">每个序列维都只有 1</text>
+    <text x="490" y="216" text-anchor="middle" font-size="14" fill="#52616f">内容投影不读取旧 token</text>
+
+    <path d="M605 180H660" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="675" y="112" width="250" height="136" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="800" y="148" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">使用位置 4 的 RoPE</text>
+    <text x="800" y="182" text-anchor="middle" font-size="17" fill="#9a5a12">Q̃₄ = R₄Q₄</text>
+    <text x="800" y="211" text-anchor="middle" font-size="17" fill="#9a5a12">K̃₄ = R₄K₄</text>
+    <text x="800" y="235" text-anchor="middle" font-size="14" fill="#52616f">V₄ 不旋转</text>
+
+    <path d="M925 180H982" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="995" y="125" width="120" height="110" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="1055" y="160" text-anchor="middle" font-size="17" font-weight="700" fill="#1f2937">追加缓存</text>
+    <text x="1055" y="190" text-anchor="middle" font-size="14" fill="#166534">K̃₄</text>
+    <text x="1055" y="216" text-anchor="middle" font-size="14" fill="#166534">V₄</text>
+
+    <rect x="70" y="330" width="540" height="155" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="340" y="366" text-anchor="middle" font-size="20" font-weight="700" fill="#334155">进入本轮之前的历史 Cache</text>
+    <g text-anchor="middle" font-size="15">
+      <rect x="105" y="395" width="105" height="52" rx="7" fill="#fff7e6" stroke="#f2994a"/><text x="157" y="426" fill="#9a5a12">K̃₀ / V₀</text>
+      <rect x="225" y="395" width="105" height="52" rx="7" fill="#fff7e6" stroke="#f2994a"/><text x="277" y="426" fill="#9a5a12">K̃₁ / V₁</text>
+      <rect x="345" y="395" width="105" height="52" rx="7" fill="#fff7e6" stroke="#f2994a"/><text x="397" y="426" fill="#9a5a12">K̃₂ / V₂</text>
+      <rect x="465" y="395" width="105" height="52" rx="7" fill="#fff7e6" stroke="#f2994a"/><text x="517" y="426" fill="#9a5a12">K̃₃ / V₃</text>
+    </g>
+    <text x="340" y="472" text-anchor="middle" font-size="14" fill="#52616f">历史 Key 已按各自绝对位置旋转，无需重复计算</text>
+
+    <path d="M1055 235V285H665V365" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M610 407H665" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="680" y="330" width="400" height="155" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="880" y="365" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">本轮 Attention</text>
+    <text x="880" y="399" text-anchor="middle" font-size="17" fill="#166534">Q̃₄ 对 [K̃₀,K̃₁,K̃₂,K̃₃,K̃₄]</text>
+    <text x="880" y="432" text-anchor="middle" font-size="15" fill="#52616f">得到 5 个权重</text>
+    <text x="880" y="460" text-anchor="middle" font-size="15" fill="#52616f">再聚合 [V₀,V₁,V₂,V₃,V₄]</text>
+
+    <path d="M880 485V535" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="305" y="550" width="705" height="90" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="657" y="584" text-anchor="middle" font-size="18" font-weight="700" fill="#6b3fa0">下一轮：cache_len = 5，新 token 使用 position_id = 5</text>
+    <text x="657" y="615" text-anchor="middle" font-size="15" fill="#52616f">局部张量长度可以仍为 1，绝对位置必须持续递增</text>
+  </g>
+</svg>

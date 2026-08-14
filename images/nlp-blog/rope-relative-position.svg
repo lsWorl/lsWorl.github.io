@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 0 1100 650" role="img" aria-labelledby="title desc">
+  <title id="title">绝对位置旋转产生相对位置</title>
+  <desc id="desc">查询和键分别按绝对位置旋转，点积可化为只依赖两个位置之差的相对旋转。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1100" height="650" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="550" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">两个绝对旋转，为什么只剩相对距离</text>
+    <text x="550" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">核心恒等式：R(mθ)ᵀ R(nθ) = R((n-m)θ)</text>
+
+    <rect x="70" y="125" width="230" height="90" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="185" y="159" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Query 内容 qₘ</text>
+    <text x="185" y="187" text-anchor="middle" font-size="15" fill="#52616f">绝对位置 m</text>
+
+    <rect x="70" y="360" width="230" height="90" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="185" y="394" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Key 内容 kₙ</text>
+    <text x="185" y="422" text-anchor="middle" font-size="15" fill="#52616f">绝对位置 n</text>
+
+    <path d="M300 170H372" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M300 405H372" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="385" y="120" width="250" height="100" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="510" y="157" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">R(mθ) qₘ</text>
+    <text x="510" y="187" text-anchor="middle" font-size="15" fill="#9a5a12">按位置 m 旋转</text>
+
+    <rect x="385" y="355" width="250" height="100" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="510" y="392" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">R(nθ) kₙ</text>
+    <text x="510" y="422" text-anchor="middle" font-size="15" fill="#9a5a12">按位置 n 旋转</text>
+
+    <path d="M635 170H720V252" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M635 405H720V328" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <circle cx="720" cy="290" r="48" fill="#f4effb" stroke="#9b51e0" stroke-width="3"/>
+    <text x="720" y="283" text-anchor="middle" font-size="17" font-weight="700" fill="#6b3fa0">Dot</text>
+    <text x="720" y="307" text-anchor="middle" font-size="15" fill="#6b3fa0">Product</text>
+
+    <path d="M768 290H827" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="840" y="210" width="220" height="160" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="950" y="248" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Attention Score</text>
+    <text x="950" y="285" text-anchor="middle" font-size="17" fill="#166534">qₘᵀ R((n-m)θ) kₙ</text>
+    <line x1="875" y1="306" x2="1025" y2="306" stroke="#b9ddc4" stroke-width="2"/>
+    <text x="950" y="337" text-anchor="middle" font-size="16" font-weight="700" fill="#166534">只显式依赖 n-m</text>
+
+    <rect x="120" y="515" width="860" height="90" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="550" y="549" text-anchor="middle" font-size="18" font-weight="700" fill="#334155">位置对 (1, 3) 与 (5, 7)</text>
+    <text x="550" y="578" text-anchor="middle" font-size="16" fill="#52616f">二者的 n-m 都等于 2，因此相同基础 q、k 会得到相同的位置作用</text>
+  </g>
+</svg>
