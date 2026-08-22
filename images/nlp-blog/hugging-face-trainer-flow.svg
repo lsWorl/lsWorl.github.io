@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="740" viewBox="0 0 1150 740" role="img" aria-labelledby="title desc">
+  <title id="title">Trainer 微调数据流</title>
+  <desc id="desc">原始数据经过 Dataset map 和 Data Collator 形成批次，模型计算损失并反向更新，验证阶段计算指标和保存最佳检查点。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="740" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Trainer 如何组织一次完整微调</text>
+    <text x="575" y="81" text-anchor="middle" font-size="16" fill="#5f6b7a">数据处理、训练循环、验证指标和 Checkpoint 是四个不同职责</text>
+
+    <rect x="55" y="125" width="200" height="95" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="155" y="160" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">原始 Dataset</text>
+    <text x="155" y="190" text-anchor="middle" font-size="15" fill="#52616f">text + label</text>
+    <path d="M255 173H305" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="320" y="115" width="220" height="115" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="430" y="150" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Dataset.map</text>
+    <text x="430" y="182" text-anchor="middle" font-size="15" fill="#6b3fa0">Tokenizer 批量分词</text>
+    <text x="430" y="207" text-anchor="middle" font-size="14" fill="#52616f">长度暂时不固定</text>
+    <path d="M540 173H590" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="605" y="115" width="230" height="115" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="720" y="150" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Data Collator</text>
+    <text x="720" y="182" text-anchor="middle" font-size="15" fill="#8a5418">当前 batch 动态 Padding</text>
+    <text x="720" y="207" text-anchor="middle" font-size="14" fill="#52616f">返回 PyTorch 张量</text>
+    <path d="M835 173H885" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="900" y="115" width="200" height="115" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="1000" y="150" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Batch</text>
+    <text x="1000" y="180" text-anchor="middle" font-size="14" fill="#2f5f9e">input_ids / mask</text>
+    <text x="1000" y="205" text-anchor="middle" font-size="14" fill="#2f5f9e">labels</text>
+
+    <path d="M1000 230V280H790" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="420" y="295" width="390" height="150" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="615" y="332" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">AutoModelForSequenceClassification</text>
+    <text x="615" y="369" text-anchor="middle" font-size="16" fill="#2f5f9e">Backbone -> 分类头 -> logits</text>
+    <text x="615" y="403" text-anchor="middle" font-size="16" fill="#2f5f9e">logits + labels -> CrossEntropyLoss</text>
+    <text x="615" y="428" text-anchor="middle" font-size="14" fill="#52616f">model(**batch)</text>
+
+    <path d="M420 370H350" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="65" y="300" width="270" height="140" rx="10" fill="#fff2eb" stroke="#eb5757" stroke-width="2"/>
+    <text x="200" y="337" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">训练分支</text>
+    <text x="200" y="370" text-anchor="middle" font-size="15" fill="#a83737">loss.backward()</text>
+    <text x="200" y="398" text-anchor="middle" font-size="15" fill="#a83737">optimizer.step()</text>
+    <text x="200" y="424" text-anchor="middle" font-size="14" fill="#52616f">更新模型参数</text>
+
+    <path d="M810 370H880" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="895" y="300" width="200" height="140" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="995" y="337" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">验证分支</text>
+    <text x="995" y="370" text-anchor="middle" font-size="15" fill="#166534">收集 logits</text>
+    <text x="995" y="398" text-anchor="middle" font-size="15" fill="#166534">compute_metrics</text>
+    <text x="995" y="424" text-anchor="middle" font-size="14" fill="#52616f">不更新参数</text>
+
+    <path d="M200 440V505H470" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M995 440V505H760" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="485" y="485" width="260" height="105" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="615" y="520" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Trainer 控制器</text>
+    <text x="615" y="550" text-anchor="middle" font-size="15" fill="#8a5418">epoch / 日志 / 调度器</text>
+    <text x="615" y="575" text-anchor="middle" font-size="14" fill="#52616f">何时训练、评估和保存</text>
+
+    <path d="M615 590V625" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="285" y="640" width="660" height="65" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="615" y="669" text-anchor="middle" font-size="17" font-weight="700" fill="#334155">Checkpoint + 最佳指标 + 最终模型</text>
+    <text x="615" y="692" text-anchor="middle" font-size="14" fill="#52616f">Trainer 减少样板代码，但任务与评估责任仍属于使用者</text>
+  </g>
+</svg>

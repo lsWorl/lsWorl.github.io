@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">Hugging Face Pipeline 内部三阶段</title>
+  <desc id="desc">Pipeline 将原始文本依次经过预处理、模型前向和后处理，最终返回标签和分数。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1100" height="620" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="550" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">pipeline() 把推理封装成三个阶段</text>
+    <text x="550" y="81" text-anchor="middle" font-size="16" fill="#5f6b7a">高级 API 没有改变模型数学，只是组织了输入与输出</text>
+
+    <rect x="55" y="155" width="180" height="100" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="145" y="191" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">原始输入</text>
+    <text x="145" y="224" text-anchor="middle" font-size="15" fill="#52616f">“商品很好用”</text>
+    <path d="M235 205H280" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="295" y="125" width="230" height="160" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="410" y="161" text-anchor="middle" font-size="21" font-weight="700" fill="#1f2937">1. Preprocess</text>
+    <text x="410" y="195" text-anchor="middle" font-size="16" fill="#8a5418">Tokenizer / Processor</text>
+    <text x="410" y="225" text-anchor="middle" font-size="14" fill="#52616f">切分、查表、Padding</text>
+    <text x="410" y="251" text-anchor="middle" font-size="14" fill="#52616f">生成 input_ids 和 mask</text>
+    <path d="M525 205H570" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="585" y="125" width="230" height="160" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="700" y="161" text-anchor="middle" font-size="21" font-weight="700" fill="#1f2937">2. Forward</text>
+    <text x="700" y="195" text-anchor="middle" font-size="16" fill="#2f5f9e">PyTorch Model</text>
+    <text x="700" y="225" text-anchor="middle" font-size="14" fill="#52616f">Transformer Backbone</text>
+    <text x="700" y="251" text-anchor="middle" font-size="14" fill="#52616f">分类头输出 logits</text>
+    <path d="M815 205H860" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="875" y="125" width="180" height="160" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="965" y="161" text-anchor="middle" font-size="21" font-weight="700" fill="#1f2937">3. Postprocess</text>
+    <text x="965" y="195" text-anchor="middle" font-size="16" fill="#166534">Softmax</text>
+    <text x="965" y="225" text-anchor="middle" font-size="14" fill="#52616f">argmax + id2label</text>
+    <text x="965" y="251" text-anchor="middle" font-size="14" fill="#52616f">标签与置信分数</text>
+
+    <path d="M965 285V335" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="725" y="350" width="330" height="96" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="890" y="384" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">结构化输出</text>
+    <text x="890" y="418" text-anchor="middle" font-size="16" fill="#166534">{label: POSITIVE, score: 0.98}</text>
+
+    <rect x="85" y="350" width="540" height="160" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="355" y="385" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">何时继续下潜到 Auto* API</text>
+    <text x="120" y="421" font-size="15" fill="#52616f">• 需要查看 input_ids、attention_mask 和 logits</text>
+    <text x="120" y="451" font-size="15" fill="#52616f">• 需要自定义 loss、任务头或批处理逻辑</text>
+    <text x="120" y="481" font-size="15" fill="#52616f">• 需要训练、调试设备或分析中间表示</text>
+
+    <text x="550" y="566" text-anchor="middle" font-size="16" fill="#334155">pipeline 适合快速推理，AutoTokenizer + AutoModel 提供更细粒度控制</text>
+  </g>
+</svg>

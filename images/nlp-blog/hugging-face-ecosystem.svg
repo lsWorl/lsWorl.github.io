@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700" role="img" aria-labelledby="title desc">
+  <title id="title">Hugging Face 生态总览</title>
+  <desc id="desc">Hub 提供模型数据集和应用资产，Transformers、Datasets、Hub Client 与 Accelerate 等库将这些资产连接到 PyTorch 项目。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker>
+  </defs>
+  <rect width="1100" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="550" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Hugging Face 不是单个库，而是一套生态</text>
+    <text x="550" y="81" text-anchor="middle" font-size="16" fill="#5f6b7a">资产平台 + Python 工具 + 深度学习框架</text>
+
+    <rect x="65" y="120" width="970" height="180" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="550" y="154" text-anchor="middle" font-size="23" font-weight="700" fill="#1f2937">Hugging Face Hub</text>
+    <text x="550" y="180" text-anchor="middle" font-size="15" fill="#8a5418">发现、版本管理、下载与分享机器学习资产</text>
+
+    <rect x="105" y="205" width="250" height="65" rx="8" fill="#fff" stroke="#e9b872"/>
+    <rect x="425" y="205" width="250" height="65" rx="8" fill="#fff" stroke="#e9b872"/>
+    <rect x="745" y="205" width="250" height="65" rx="8" fill="#fff" stroke="#e9b872"/>
+    <text x="230" y="235" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">Models</text>
+    <text x="230" y="257" text-anchor="middle" font-size="14" fill="#52616f">配置、Tokenizer、权重</text>
+    <text x="550" y="235" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">Datasets</text>
+    <text x="550" y="257" text-anchor="middle" font-size="14" fill="#52616f">数据、特征、说明文档</text>
+    <text x="870" y="235" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">Spaces</text>
+    <text x="870" y="257" text-anchor="middle" font-size="14" fill="#52616f">可运行的演示与应用</text>
+
+    <path d="M550 300V348" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="65" y="360" width="970" height="150" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="550" y="394" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Python 库</text>
+    <g text-anchor="middle">
+      <rect x="95" y="420" width="175" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="182" y="455" font-size="17" font-weight="700" fill="#2f5f9e">transformers</text>
+      <rect x="285" y="420" width="155" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="362" y="455" font-size="17" font-weight="700" fill="#2f5f9e">datasets</text>
+      <rect x="455" y="420" width="190" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="550" y="455" font-size="17" font-weight="700" fill="#2f5f9e">huggingface_hub</text>
+      <rect x="660" y="420" width="155" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="737" y="455" font-size="17" font-weight="700" fill="#2f5f9e">accelerate</text>
+      <rect x="830" y="420" width="175" height="58" rx="8" fill="#fff" stroke="#9bbce8"/><text x="917" y="455" font-size="17" font-weight="700" fill="#2f5f9e">tokenizers</text>
+    </g>
+
+    <path d="M550 510V555" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="170" y="570" width="760" height="82" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="550" y="604" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">PyTorch / TensorFlow / JAX 项目</text>
+    <text x="550" y="632" text-anchor="middle" font-size="15" fill="#166534">张量计算、自动微分、训练和推理真正发生的地方</text>
+  </g>
+</svg>
