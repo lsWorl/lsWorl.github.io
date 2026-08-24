@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="660" viewBox="0 0 1150 660" role="img" aria-labelledby="title desc">
+  <title id="title">SFT 中的 Label Shift 与 Loss 位置</title>
+  <desc id="desc">模型在每个位置输出 logits，内部用前一个位置预测下一个标签，Prompt 标签为负一百，只有回答和 EOS 参与损失。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="660" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Labels 与 input_ids 等长，Loss 内部错开一位</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">位置 t 的 logits 用来预测位置 t+1 的 token</text>
+
+    <text x="85" y="145" font-size="17" font-weight="700" fill="#334155">位置</text>
+    <g text-anchor="middle" font-size="15" fill="#52616f">
+      <text x="245" y="145">0</text><text x="365" y="145">1</text><text x="485" y="145">2</text><text x="605" y="145">3</text><text x="725" y="145">4</text><text x="845" y="145">5</text><text x="965" y="145">6</text>
+    </g>
+    <text x="65" y="205" font-size="17" font-weight="700" fill="#334155">input_ids</text>
+    <g text-anchor="middle" font-size="15">
+      <rect x="190" y="170" width="110" height="55" rx="7" fill="#eaf3ff"/><text x="245" y="204" fill="#2f5f9e">&lt;user&gt;</text>
+      <rect x="310" y="170" width="110" height="55" rx="7" fill="#eaf3ff"/><text x="365" y="204" fill="#2f5f9e">问题</text>
+      <rect x="430" y="170" width="110" height="55" rx="7" fill="#fff7e6"/><text x="485" y="204" fill="#8a5418">&lt;asst&gt;</text>
+      <rect x="550" y="170" width="110" height="55" rx="7" fill="#eefaf2"/><text x="605" y="204" fill="#166534">回答1</text>
+      <rect x="670" y="170" width="110" height="55" rx="7" fill="#eefaf2"/><text x="725" y="204" fill="#166534">回答2</text>
+      <rect x="790" y="170" width="110" height="55" rx="7" fill="#eefaf2"/><text x="845" y="204" fill="#166534">EOS</text>
+      <rect x="910" y="170" width="110" height="55" rx="7" fill="#f1f3f5"/><text x="965" y="204" fill="#6b7280">PAD</text>
+    </g>
+
+    <text x="65" y="310" font-size="17" font-weight="700" fill="#334155">labels</text>
+    <g text-anchor="middle" font-size="15">
+      <rect x="190" y="275" width="110" height="55" rx="7" fill="#f1f3f5"/><text x="245" y="309" fill="#6b7280">-100</text>
+      <rect x="310" y="275" width="110" height="55" rx="7" fill="#f1f3f5"/><text x="365" y="309" fill="#6b7280">-100</text>
+      <rect x="430" y="275" width="110" height="55" rx="7" fill="#f1f3f5"/><text x="485" y="309" fill="#6b7280">-100</text>
+      <rect x="550" y="275" width="110" height="55" rx="7" fill="#eefaf2"/><text x="605" y="309" fill="#166534">回答1</text>
+      <rect x="670" y="275" width="110" height="55" rx="7" fill="#eefaf2"/><text x="725" y="309" fill="#166534">回答2</text>
+      <rect x="790" y="275" width="110" height="55" rx="7" fill="#eefaf2"/><text x="845" y="309" fill="#166534">EOS</text>
+      <rect x="910" y="275" width="110" height="55" rx="7" fill="#f1f3f5"/><text x="965" y="309" fill="#6b7280">-100</text>
+    </g>
+
+    <path d="M485 350V405H605" fill="none" stroke="#f2994a" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M605 350V405H725" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M725 350V405H845" fill="none" stroke="#27ae60" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <text x="65" y="455" font-size="17" font-weight="700" fill="#334155">比较</text>
+    <g text-anchor="middle" font-size="15">
+      <rect x="550" y="420" width="110" height="55" rx="7" fill="#fff7e6" stroke="#f2994a"/><text x="605" y="453" fill="#8a5418">logits@2</text>
+      <rect x="670" y="420" width="110" height="55" rx="7" fill="#eefaf2" stroke="#27ae60"/><text x="725" y="453" fill="#166534">logits@3</text>
+      <rect x="790" y="420" width="110" height="55" rx="7" fill="#eefaf2" stroke="#27ae60"/><text x="845" y="453" fill="#166534">logits@4</text>
+    </g>
+    <text x="605" y="505" text-anchor="middle" font-size="14" fill="#8a5418">预测 回答1</text>
+    <text x="725" y="505" text-anchor="middle" font-size="14" fill="#166534">预测 回答2</text>
+    <text x="845" y="505" text-anchor="middle" font-size="14" fill="#166534">预测 EOS</text>
+
+    <rect x="190" y="555" width="830" height="65" rx="9" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="605" y="583" text-anchor="middle" font-size="17" font-weight="700" fill="#334155">shift_logits = logits[..., :-1, :]</text>
+    <text x="605" y="608" text-anchor="middle" font-size="16" fill="#52616f">shift_labels = labels[..., 1:]，ignore_index = -100</text>
+  </g>
+</svg>

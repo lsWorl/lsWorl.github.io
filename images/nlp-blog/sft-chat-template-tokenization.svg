@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700" role="img" aria-labelledby="title desc">
+  <title id="title">对话数据经过 Chat Template 和 Tokenizer</title>
+  <desc id="desc">结构化 messages 先由 Chat Template 插入角色和消息边界，再由 Tokenizer 生成 input ids、attention mask 和 labels。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">角色字典不是模型输入，Token 才是</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">Chat Template 定义角色协议，Tokenizer 定义整数表示</text>
+
+    <rect x="45" y="125" width="285" height="420" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="187" y="163" text-anchor="middle" font-size="22" font-weight="700" fill="#334155">messages</text>
+    <rect x="75" y="190" width="225" height="80" rx="8" fill="#f4effb" stroke="#9b51e0"/>
+    <text x="92" y="218" font-size="15" font-weight="700" fill="#6b3fa0">system</text>
+    <text x="92" y="246" font-size="15" fill="#52616f">你是一名机器学习助教</text>
+    <rect x="75" y="290" width="225" height="80" rx="8" fill="#eaf3ff" stroke="#2f80ed"/>
+    <text x="92" y="318" font-size="15" font-weight="700" fill="#2f5f9e">user</text>
+    <text x="92" y="346" font-size="15" fill="#52616f">什么是梯度下降？</text>
+    <rect x="75" y="390" width="225" height="115" rx="8" fill="#eefaf2" stroke="#27ae60"/>
+    <text x="92" y="418" font-size="15" font-weight="700" fill="#166534">assistant</text>
+    <text x="92" y="446" font-size="14" fill="#52616f">梯度下降沿负梯度方向</text>
+    <text x="92" y="472" font-size="14" fill="#52616f">更新参数并减小损失</text>
+
+    <path d="M330 335H390" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="405" y="125" width="330" height="420" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="570" y="163" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Chat Template</text>
+    <text x="435" y="210" font-size="15" fill="#8a5418">&lt;|system|&gt;</text>
+    <text x="435" y="238" font-size="15" fill="#52616f">你是一名机器学习助教</text>
+    <text x="435" y="266" font-size="15" fill="#8a5418">&lt;|end|&gt;</text>
+    <text x="435" y="310" font-size="15" fill="#2f5f9e">&lt;|user|&gt;</text>
+    <text x="435" y="338" font-size="15" fill="#52616f">什么是梯度下降？</text>
+    <text x="435" y="366" font-size="15" fill="#2f5f9e">&lt;|end|&gt;</text>
+    <text x="435" y="410" font-size="15" fill="#166534">&lt;|assistant|&gt;</text>
+    <text x="435" y="438" font-size="14" fill="#52616f">梯度下降沿负梯度方向……</text>
+    <text x="435" y="466" font-size="15" fill="#166534">&lt;|end|&gt;</text>
+    <text x="570" y="515" text-anchor="middle" font-size="14" fill="#8a5418">角色、边界和 EOS 必须与模型一致</text>
+
+    <path d="M735 335H795" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="810" y="125" width="295" height="420" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="957" y="163" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Tokenizer 输出</text>
+    <text x="840" y="212" font-size="16" font-weight="700" fill="#2f5f9e">input_ids</text>
+    <rect x="840" y="230" width="235" height="52" rx="7" fill="#fff" stroke="#bad1ef"/>
+    <text x="957" y="263" text-anchor="middle" font-size="14" fill="#52616f">[10, 81, 92, ..., 11, 2]</text>
+    <text x="840" y="326" font-size="16" font-weight="700" fill="#2f5f9e">attention_mask</text>
+    <rect x="840" y="344" width="235" height="52" rx="7" fill="#fff" stroke="#bad1ef"/>
+    <text x="957" y="377" text-anchor="middle" font-size="14" fill="#52616f">[1, 1, 1, ..., 1, 1]</text>
+    <text x="840" y="440" font-size="16" font-weight="700" fill="#2f5f9e">labels</text>
+    <rect x="840" y="458" width="235" height="52" rx="7" fill="#fff" stroke="#bad1ef"/>
+    <text x="957" y="491" text-anchor="middle" font-size="14" fill="#52616f">[-100, ..., 35, 72, 2]</text>
+
+    <rect x="140" y="600" width="870" height="60" rx="9" fill="#fff" stroke="#d4dbe5"/>
+    <text x="575" y="637" text-anchor="middle" font-size="17" fill="#334155">模型只接收张量；对话角色的含义来自模板生成的控制 token</text>
+  </g>
+</svg>

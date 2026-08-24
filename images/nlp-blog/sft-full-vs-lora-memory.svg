@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="690" viewBox="0 0 1150 690" role="img" aria-labelledby="title desc">
+  <title id="title">Full Fine-tuning 与 LoRA 显存组成对比</title>
+  <desc id="desc">全参数微调需要为全部参数保存梯度和优化器状态，LoRA 只为 Adapter 保存这些状态，但两者都要加载主干权重并保留激活。</desc>
+  <rect width="1150" height="690" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">LoRA 主要减少梯度与优化器状态，不会消除全部显存</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">示意面积用于解释组成，不代表固定比例</text>
+
+    <rect x="70" y="120" width="470" height="500" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="305" y="163" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2937">Full Fine-tuning</text>
+    <rect x="125" y="205" width="360" height="95" rx="8" fill="#eaf3ff" stroke="#2f80ed"/>
+    <text x="305" y="243" text-anchor="middle" font-size="18" font-weight="700" fill="#2f5f9e">全部模型参数</text>
+    <text x="305" y="273" text-anchor="middle" font-size="14" fill="#52616f">Base weights</text>
+    <rect x="125" y="315" width="360" height="80" rx="8" fill="#fff2eb" stroke="#eb5757"/>
+    <text x="305" y="352" text-anchor="middle" font-size="18" font-weight="700" fill="#a83737">全部参数梯度</text>
+    <text x="305" y="378" text-anchor="middle" font-size="14" fill="#52616f">grad for every trainable weight</text>
+    <rect x="125" y="410" width="360" height="100" rx="8" fill="#f4effb" stroke="#9b51e0"/>
+    <text x="305" y="449" text-anchor="middle" font-size="18" font-weight="700" fill="#6b3fa0">全部 AdamW 状态</text>
+    <text x="305" y="478" text-anchor="middle" font-size="14" fill="#52616f">first moment + second moment</text>
+    <rect x="125" y="525" width="360" height="65" rx="8" fill="#fff7e6" stroke="#f2994a"/>
+    <text x="305" y="565" text-anchor="middle" font-size="17" font-weight="700" fill="#8a5418">激活、logits 与临时张量</text>
+
+    <rect x="610" y="120" width="470" height="500" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="845" y="163" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2937">LoRA Fine-tuning</text>
+    <rect x="665" y="205" width="360" height="95" rx="8" fill="#eaf3ff" stroke="#2f80ed"/>
+    <text x="845" y="243" text-anchor="middle" font-size="18" font-weight="700" fill="#2f5f9e">Base Model 仍要加载</text>
+    <text x="845" y="273" text-anchor="middle" font-size="14" fill="#52616f">frozen weights</text>
+    <rect x="665" y="315" width="170" height="80" rx="8" fill="#eefaf2" stroke="#27ae60"/>
+    <text x="750" y="348" text-anchor="middle" font-size="17" font-weight="700" fill="#166534">LoRA 参数</text>
+    <text x="750" y="376" text-anchor="middle" font-size="13" fill="#52616f">A / B</text>
+    <rect x="855" y="315" width="170" height="80" rx="8" fill="#fff2eb" stroke="#eb5757"/>
+    <text x="940" y="348" text-anchor="middle" font-size="17" font-weight="700" fill="#a83737">LoRA 梯度</text>
+    <text x="940" y="376" text-anchor="middle" font-size="13" fill="#52616f">small set</text>
+    <rect x="665" y="410" width="360" height="65" rx="8" fill="#f4effb" stroke="#9b51e0"/>
+    <text x="845" y="450" text-anchor="middle" font-size="17" font-weight="700" fill="#6b3fa0">仅 LoRA 的 AdamW 状态</text>
+    <rect x="665" y="490" width="360" height="100" rx="8" fill="#fff7e6" stroke="#f2994a"/>
+    <text x="845" y="529" text-anchor="middle" font-size="17" font-weight="700" fill="#8a5418">激活、logits 与临时张量</text>
+    <text x="845" y="558" text-anchor="middle" font-size="14" fill="#52616f">仍随 batch 与 sequence length 增长</text>
+
+    <text x="575" y="660" text-anchor="middle" font-size="16" fill="#334155">序列过长时，即使只训练 LoRA，也可能因激活或 Attention 中间结果 OOM</text>
+  </g>
+</svg>

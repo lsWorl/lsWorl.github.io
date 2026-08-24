@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700" role="img" aria-labelledby="title desc">
+  <title id="title">SFT 动态 Padding 后的 Batch 张量</title>
+  <desc id="desc">两条不同长度样本补到当前批次最长长度，input ids 使用 pad id，attention mask 使用零，labels 使用负一百。</desc>
+  <rect width="1150" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">同一个 Padding 位置，在三组张量中含义不同</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">当前 batch 最长为 8，短样本只补齐到 8</text>
+
+    <rect x="55" y="125" width="1040" height="135" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="90" y="166" font-size="20" font-weight="700" fill="#1f2937">input_ids</text>
+    <text x="90" y="196" font-size="14" fill="#2f5f9e">真实 token：词表中的 id</text>
+    <text x="90" y="217" font-size="14" fill="#2f5f9e">Padding：pad_token_id = 0</text>
+    <g text-anchor="middle" font-size="14">
+      <text x="300" y="160" fill="#334155">sample 1</text>
+      <rect x="385" y="135" width="65" height="45" rx="6" fill="#fff"/><text x="417" y="163" fill="#52616f">101</text>
+      <rect x="458" y="135" width="65" height="45" rx="6" fill="#fff"/><text x="490" y="163" fill="#52616f">34</text>
+      <rect x="531" y="135" width="65" height="45" rx="6" fill="#fff"/><text x="563" y="163" fill="#52616f">52</text>
+      <rect x="604" y="135" width="65" height="45" rx="6" fill="#fff"/><text x="636" y="163" fill="#52616f">2</text>
+      <rect x="677" y="135" width="65" height="45" rx="6" fill="#f1f3f5"/><text x="709" y="163" fill="#6b7280">0</text>
+      <rect x="750" y="135" width="65" height="45" rx="6" fill="#f1f3f5"/><text x="782" y="163" fill="#6b7280">0</text>
+      <rect x="823" y="135" width="65" height="45" rx="6" fill="#f1f3f5"/><text x="855" y="163" fill="#6b7280">0</text>
+      <rect x="896" y="135" width="65" height="45" rx="6" fill="#f1f3f5"/><text x="928" y="163" fill="#6b7280">0</text>
+      <text x="300" y="229" fill="#334155">sample 2</text>
+      <rect x="385" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="417" y="223" fill="#52616f">101</text>
+      <rect x="458" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="490" y="223" fill="#52616f">81</text>
+      <rect x="531" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="563" y="223" fill="#52616f">93</text>
+      <rect x="604" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="636" y="223" fill="#52616f">35</text>
+      <rect x="677" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="709" y="223" fill="#52616f">72</text>
+      <rect x="750" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="782" y="223" fill="#52616f">66</text>
+      <rect x="823" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="855" y="223" fill="#52616f">51</text>
+      <rect x="896" y="195" width="65" height="45" rx="6" fill="#fff"/><text x="928" y="223" fill="#52616f">2</text>
+    </g>
+
+    <rect x="55" y="285" width="1040" height="135" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="90" y="326" font-size="20" font-weight="700" fill="#1f2937">attention_mask</text>
+    <text x="90" y="364" font-size="15" fill="#6b3fa0">真实 token 为 1，Padding 为 0</text>
+    <text x="385" y="329" font-size="16" fill="#52616f">sample 1:</text><text x="500" y="329" font-size="16" fill="#6b3fa0">[1, 1, 1, 1, 0, 0, 0, 0]</text>
+    <text x="385" y="384" font-size="16" fill="#52616f">sample 2:</text><text x="500" y="384" font-size="16" fill="#6b3fa0">[1, 1, 1, 1, 1, 1, 1, 1]</text>
+
+    <rect x="55" y="445" width="1040" height="165" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="90" y="486" font-size="20" font-weight="700" fill="#1f2937">labels</text>
+    <text x="90" y="524" font-size="15" fill="#166534">Prompt 与 Padding 都为 -100，Answer 使用真实 token id</text>
+    <text x="385" y="488" font-size="16" fill="#52616f">sample 1:</text><text x="500" y="488" font-size="16" fill="#166534">[-100, -100, 52, 2, -100, -100, -100, -100]</text>
+    <text x="385" y="550" font-size="16" fill="#52616f">sample 2:</text><text x="500" y="550" font-size="16" fill="#166534">[-100, -100, -100, 35, 72, 66, 51, 2]</text>
+    <text x="575" y="590" text-anchor="middle" font-size="14" fill="#52616f">三个张量最终形状都为 [batch_size=2, sequence_length=8]</text>
+
+    <rect x="175" y="640" width="800" height="38" rx="7" fill="#fff" stroke="#d4dbe5"/>
+    <text x="575" y="665" text-anchor="middle" font-size="15" fill="#334155">动态 Padding 减少无效 token，但不改变 Completion-only Loss 规则</text>
+  </g>
+</svg>

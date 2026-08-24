@@ -1,0 +1,1012 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SFT（二）：用Hugging Face Transformers手写监督微调 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="不依赖TRL，从prompt-completion数据出发，使用Hugging Face Transformers亲手构造input_ids、attention_mask与labels，实现Completion-only loss、动态Padding、Trainer训练、保存和GenerationConfig推理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SFT（二）：用Hugging Face Transformers手写监督微调">
+<meta property="og:url" content="https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="不依赖TRL，从prompt-completion数据出发，使用Hugging Face Transformers亲手构造input_ids、attention_mask与labels，实现Completion-only loss、动态Padding、Trainer训练、保存和GenerationConfig推理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-08-24T15:10:58.000Z">
+<meta property="article:modified_time" content="2026-08-24T15:58:26.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="自然语言处理">
+<meta property="article:tag" content="Hugging Face">
+<meta property="article:tag" content="Transformers">
+<meta property="article:tag" content="Trainer">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="SFT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SFT（二）：用Hugging Face Transformers手写监督微调",
+  "url": "https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-08-24T15:10:58.000Z",
+  "dateModified": "2026-08-24T15:58:26.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SFT（二）：用Hugging Face Transformers手写监督微调',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">125</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">140</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">SFT（二）：用Hugging Face Transformers手写监督微调</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SFT（二）：用Hugging Face Transformers手写监督微调</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-24T15:10:58.000Z" title="发表于 2026-08-24 23:10:58">2026-08-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-24T15:58:26.000Z" title="更新于 2026-08-24 23:58:26">2026-08-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>上一篇 <a href="https://lsworl.github.io/2026/08/24/nlp-sft-principles/">SFT 原理篇</a>已经把监督微调还原成 next-token prediction：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Prompt 与标准答案
+  -> 一串 Causal LM token
+  -> Prompt 对应 labels 设为 -100
+  -> 模型内部进行 one-token shift
+  -> 只在 Answer token 上计算交叉熵</code></pre>
+
+<p>这一篇不使用 TRL 的 <code>SFTTrainer</code>，而只部分的 Hugging Face 组件：</p>
+<ul>
+<li><code>Dataset</code>。</li>
+<li><code>AutoTokenizer</code>。</li>
+<li><code>AutoModelForCausalLM</code>。</li>
+<li><code>forward()</code>。</li>
+<li><code>Trainer</code> 与 <code>TrainingArguments</code>。</li>
+<li><code>GenerationConfig</code> 与 <code>generate()</code>。</li>
+</ul>
+<p>目标不是重复造一个完善的训练框架，而是让我能亲眼看到 SFT 中最重要的三组张量：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input_ids
+attention_mask
+labels</code></pre>
+
+<p>等这些张量完全对上后，下一篇再使用 <code>TRL SFTTrainer + LoRA</code>，就不会把自动化误认为魔法。</p>
+<span id="more"></span>
+
+<p><img src="/images/nlp-blog/sft-transformers-pipeline.svg" alt="原生Transformers实现SFT的完整流程"></p>
+<h2 id="1-本篇要训练什么"><a href="#1-本篇要训练什么" class="headerlink" title="1. 本篇要训练什么"></a>1. 本篇要训练什么</h2><p>我们使用一个小型 Causal Language Model，让它学习一组中文机器学习问答。</p>
+<p>示例：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Instruction:
+用一句话解释什么是过拟合。
+
+Response:
+过拟合是模型过度记忆训练数据，导致在未见数据上泛化较差的现象。</code></pre>
+
+<p>为了让流程容易检查，训练数据直接写在 Python 文件中。</p>
+<p>这份数据只能验证代码链路，不能训练出真正可靠的领域助手。</p>
+<p>项目目标是：</p>
+<ol>
+<li>加载 Base Causal LM。</li>
+<li>构造 Prompt 与 Answer。</li>
+<li>只对 Answer 计算 loss。</li>
+<li>使用 <code>Trainer</code> 完成优化。</li>
+<li>保存模型、Tokenizer 和配置。</li>
+<li>使用 <code>GenerationConfig</code> 重新加载并生成。</li>
+</ol>
+<h2 id="2-为什么先不用-Chat-Template"><a href="#2-为什么先不用-Chat-Template" class="headerlink" title="2. 为什么先不用 Chat Template"></a>2. 为什么先不用 Chat Template</h2><p>真实对话模型通常应使用 Tokenizer 自带的 Chat Template。</p>
+<p>但本篇暂时使用一个简单、显式的文本模板：</p>
+<pre class="language-text" data-language="text"><code class="language-text">### Instruction:
+&#123;instruction&#125;
+
+### Response:
+&#123;answer&#125;&lt;eos></code></pre>
+
+<p>原因是我们想直接观察：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Prompt token 到哪里结束
+Answer token 从哪里开始
+哪些 labels 应该设为 -100</code></pre>
+
+<p>第三篇切换到 TRL 时，会换回标准 <code>messages + apply_chat_template()</code> 流程。</p>
+<h2 id="3-环境准备"><a href="#3-环境准备" class="headerlink" title="3. 环境准备"></a>3. 环境准备</h2><p>安装基础依赖：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">pip <span class="token function">install</span> <span class="token parameter variable">-U</span> torch transformers datasets accelerate</code></pre>
+
+<p>建议记录实际版本：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">python <span class="token parameter variable">-c</span> <span class="token string">"import torch, transformers, datasets, accelerate; print(torch.__version__); print(transformers.__version__); print(datasets.__version__); print(accelerate.__version__)"</span></code></pre>
+
+<p>Hugging Face API 更新较快。本文代码使用当前文档中的参数名，例如：</p>
+<ul>
+<li><code>eval_strategy</code>。</li>
+<li><code>processing_class=tokenizer</code>。</li>
+<li><code>dtype=...</code>。</li>
+</ul>
+<p>如果使用旧版本，应查看对应版本文档，不要混用不同年代的代码片段。</p>
+<h2 id="4-选择-Base-Model"><a href="#4-选择-Base-Model" class="headerlink" title="4. 选择 Base Model"></a>4. 选择 Base Model</h2><p>教学代码使用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">MODEL_ID <span class="token operator">=</span> <span class="token string">"Qwen/Qwen2.5-0.5B"</span></code></pre>
+
+<p>它是 Causal Language Model，可以通过：</p>
+<pre class="language-python" data-language="python"><code class="language-python">AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>MODEL_ID<span class="token punctuation">)</span></code></pre>
+
+<p>加载。</p>
+<p>这里选择 Base Model 是为了观察 SFT 前后行为变化，而不是声称 0.5B 参数足以完成复杂任务。</p>
+<p>实际选择模型时还应检查：</p>
+<ul>
+<li>模型许可证。</li>
+<li>支持语言。</li>
+<li>参数量和显存需求。</li>
+<li>上下文长度。</li>
+<li>Tokenizer 与 Chat Template。</li>
+<li><code>transformers</code> 最低版本。</li>
+<li>Base 或 Instruct 训练阶段。</li>
+</ul>
+<h2 id="5-构造本地监督数据"><a href="#5-构造本地监督数据" class="headerlink" title="5. 构造本地监督数据"></a>5. 构造本地监督数据</h2><p>先定义若干 <code>instruction / response</code> 对：</p>
+<pre class="language-python" data-language="python"><code class="language-python">TRAIN_EXAMPLES <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"instruction"</span><span class="token punctuation">:</span> <span class="token string">"用一句话解释什么是过拟合。"</span><span class="token punctuation">,</span>
+        <span class="token string">"response"</span><span class="token punctuation">:</span> <span class="token string">"过拟合是模型过度记忆训练数据，导致在未见数据上泛化较差的现象。"</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"instruction"</span><span class="token punctuation">:</span> <span class="token string">"梯度下降的作用是什么？"</span><span class="token punctuation">,</span>
+        <span class="token string">"response"</span><span class="token punctuation">:</span> <span class="token string">"梯度下降通过沿损失函数负梯度方向更新参数，使模型损失逐步减小。"</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>再转换成 <code>Dataset</code>：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datasets <span class="token keyword">import</span> Dataset<span class="token punctuation">,</span> DatasetDict
+
+dataset <span class="token operator">=</span> DatasetDict<span class="token punctuation">(</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"train"</span><span class="token punctuation">:</span> Dataset<span class="token punctuation">.</span>from_list<span class="token punctuation">(</span>TRAIN_EXAMPLES<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token string">"validation"</span><span class="token punctuation">:</span> Dataset<span class="token punctuation">.</span>from_list<span class="token punctuation">(</span>VALIDATION_EXAMPLES<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>训练、验证和测试集必须按真实任务划分。</p>
+<p>不能把训练问题只改一个标点后放入验证集，否则评估接近记忆测试。</p>
+<h2 id="6-定义-Prompt-模板"><a href="#6-定义-Prompt-模板" class="headerlink" title="6. 定义 Prompt 模板"></a>6. 定义 Prompt 模板</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">format_prompt</span><span class="token punctuation">(</span>instruction<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        <span class="token string">"### Instruction:\n"</span>
+        <span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">&#123;</span>instruction<span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">\n\n"</span></span>
+        <span class="token string">"### Response:\n"</span>
+    <span class="token punctuation">)</span></code></pre>
+
+<p>注意返回文本停在 <code>Response:</code> 后面，不包含标准答案。</p>
+<p>例如：</p>
+<pre class="language-python" data-language="python"><code class="language-python">prompt <span class="token operator">=</span> format_prompt<span class="token punctuation">(</span><span class="token string">"梯度下降的作用是什么？"</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>prompt<span class="token punctuation">)</span></code></pre>
+
+<p>结果：</p>
+<pre class="language-text" data-language="text"><code class="language-text">### Instruction:
+梯度下降的作用是什么？
+
+### Response:</code></pre>
+
+<p>标准答案单独构造：</p>
+<pre class="language-python" data-language="python"><code class="language-python">answer <span class="token operator">=</span> response<span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> tokenizer<span class="token punctuation">.</span>eos_token</code></pre>
+
+<p>这样 Prompt 与 Answer 的边界在代码中是明确的。</p>
+<h2 id="7-加载-Tokenizer"><a href="#7-加载-Tokenizer" class="headerlink" title="7. 加载 Tokenizer"></a>7. 加载 Tokenizer</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> AutoTokenizer
+
+tokenizer <span class="token operator">=</span> AutoTokenizer<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>MODEL_ID<span class="token punctuation">)</span>
+tokenizer<span class="token punctuation">.</span>padding_side <span class="token operator">=</span> <span class="token string">"right"</span>
+
+<span class="token keyword">if</span> tokenizer<span class="token punctuation">.</span>pad_token_id <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+    tokenizer<span class="token punctuation">.</span>pad_token <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>eos_token</code></pre>
+
+<h3 id="7-1-为什么训练时使用右-Padding"><a href="#7-1-为什么训练时使用右-Padding" class="headerlink" title="7.1 为什么训练时使用右 Padding"></a>7.1 为什么训练时使用右 Padding</h3><p>右 Padding 后：</p>
+<pre class="language-text" data-language="text"><code class="language-text">真实 token ... EOS PAD PAD PAD</code></pre>
+
+<p>这与多数训练 collator 的处理方式一致，也便于观察标签。</p>
+<p>生成时批量处理不同长度 Prompt，有些 Decoder-only 模型更适合左 Padding。训练和生成可根据模型要求分别设置，不要只凭一个固定习惯。</p>
+<h3 id="7-2-为什么要确认-EOS"><a href="#7-2-为什么要确认-EOS" class="headerlink" title="7.2 为什么要确认 EOS"></a>7.2 为什么要确认 EOS</h3><p>如果答案末尾没有结束 token，模型可能只学习“怎样开始回答”，却没有明确学习“何时结束”。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">assert</span> tokenizer<span class="token punctuation">.</span>eos_token_id <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span></code></pre>
+
+<h2 id="8-Prompt-与-Answer-为什么分开-Tokenize"><a href="#8-Prompt-与-Answer-为什么分开-Tokenize" class="headerlink" title="8. Prompt 与 Answer 为什么分开 Tokenize"></a>8. Prompt 与 Answer 为什么分开 Tokenize</h2><p>我们需要知道回答 token 从哪里开始。</p>
+<pre class="language-python" data-language="python"><code class="language-python">prompt_ids <span class="token operator">=</span> tokenizer<span class="token punctuation">(</span>
+    prompt<span class="token punctuation">,</span>
+    add_special_tokens<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    truncation<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span>
+
+answer_ids <span class="token operator">=</span> tokenizer<span class="token punctuation">(</span>
+    answer<span class="token punctuation">,</span>
+    add_special_tokens<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    truncation<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span></code></pre>
+
+<p>只在 Prompt 侧增加模型默认起始特殊 token，Answer 侧不重复增加。</p>
+<p>然后拼接：</p>
+<pre class="language-python" data-language="python"><code class="language-python">input_ids <span class="token operator">=</span> prompt_ids <span class="token operator">+</span> answer_ids</code></pre>
+
+<p>如果把 Prompt 与 Answer 各自都设置 <code>add_special_tokens=True</code>，中间可能重复插入 BOS 或其他边界 token。</p>
+<h3 id="8-1-为什么不直接用-len-tokenizer-prompt-切完整序列"><a href="#8-1-为什么不直接用-len-tokenizer-prompt-切完整序列" class="headerlink" title="8.1 为什么不直接用 len(tokenizer(prompt)) 切完整序列"></a>8.1 为什么不直接用 len(tokenizer(prompt)) 切完整序列</h3><p>某些子词 Tokenizer 的结果受字符串边界影响。</p>
+<p>下面两种方法未必严格等价：</p>
+<pre class="language-python" data-language="python"><code class="language-python">tokenizer<span class="token punctuation">(</span>prompt <span class="token operator">+</span> answer<span class="token punctuation">)</span></code></pre>
+
+<pre class="language-python" data-language="python"><code class="language-python">tokenizer<span class="token punctuation">(</span>prompt<span class="token punctuation">)</span> <span class="token operator">+</span> tokenizer<span class="token punctuation">(</span>answer<span class="token punctuation">)</span></code></pre>
+
+<p>本篇模板在 Prompt 末尾保留清晰换行，并显式分段编码，目的是得到稳定边界。</p>
+<p>生产系统如果必须保持“整串文本一次分词”的精确结果，可以使用 offset mapping、模型 Chat Template 返回的 assistant mask，或 TRL 已实现的数据处理路径。</p>
+<h2 id="9-构造-Completion-only-Labels"><a href="#9-构造-Completion-only-Labels" class="headerlink" title="9. 构造 Completion-only Labels"></a>9. 构造 Completion-only Labels</h2><p>Prompt 不进入 loss：</p>
+<pre class="language-python" data-language="python"><code class="language-python">labels <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>prompt_ids<span class="token punctuation">)</span> <span class="token operator">+</span> answer_ids<span class="token punctuation">.</span>copy<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>因此：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input_ids:
+[Prompt tokens........................][Answer tokens......]
+
+labels:
+[-100, -100, -100, ...................][Answer token ids...]</code></pre>
+
+<p><code>input_ids</code> 和 <code>labels</code> 必须等长：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">assert</span> <span class="token builtin">len</span><span class="token punctuation">(</span>input_ids<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token builtin">len</span><span class="token punctuation">(</span>labels<span class="token punctuation">)</span></code></pre>
+
+<p>模型仍能看到 Prompt，只是不会因“没有预测好 Prompt 自身”受到惩罚。</p>
+<p><img src="/images/nlp-blog/sft-feature-construction.svg" alt="Prompt与Answer如何变成SFT张量"></p>
+<h2 id="10-截断时优先保留回答"><a href="#10-截断时优先保留回答" class="headerlink" title="10. 截断时优先保留回答"></a>10. 截断时优先保留回答</h2><p>最简单的：</p>
+<pre class="language-python" data-language="python"><code class="language-python">input_ids <span class="token operator">=</span> input_ids<span class="token punctuation">[</span><span class="token punctuation">:</span>max_length<span class="token punctuation">]</span>
+labels <span class="token operator">=</span> labels<span class="token punctuation">[</span><span class="token punctuation">:</span>max_length<span class="token punctuation">]</span></code></pre>
+
+<p>可能把回答完全截掉。</p>
+<p>本篇采用一个明确策略：</p>
+<ol>
+<li>为答案预留空间。</li>
+<li>Prompt 太长时从左侧截断 Prompt。</li>
+<li>答案仍太长时截断答案。</li>
+<li>尽量让最后一个答案 token 保持为 EOS。</li>
+</ol>
+<p>示例实现：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">truncate_prompt_and_answer</span><span class="token punctuation">(</span>prompt_ids<span class="token punctuation">,</span> answer_ids<span class="token punctuation">,</span> max_length<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>answer_ids<span class="token punctuation">)</span> <span class="token operator">>=</span> max_length<span class="token punctuation">:</span>
+        answer_ids <span class="token operator">=</span> answer_ids<span class="token punctuation">[</span><span class="token punctuation">:</span>max_length<span class="token punctuation">]</span>
+        answer_ids<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>eos_token_id
+        <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> answer_ids
+
+    prompt_budget <span class="token operator">=</span> max_length <span class="token operator">-</span> <span class="token builtin">len</span><span class="token punctuation">(</span>answer_ids<span class="token punctuation">)</span>
+    prompt_ids <span class="token operator">=</span> prompt_ids<span class="token punctuation">[</span><span class="token operator">-</span>prompt_budget<span class="token punctuation">:</span><span class="token punctuation">]</span>
+    <span class="token keyword">return</span> prompt_ids<span class="token punctuation">,</span> answer_ids</code></pre>
+
+<p>这适合“回答是主要监督目标”的教学问答。</p>
+<p>但它并不是所有任务的通用答案。如果 Prompt 中最前面的 system rule 不能删除，就要采用更精细的分段截断。</p>
+<h2 id="11-完整预处理函数"><a href="#11-完整预处理函数" class="headerlink" title="11. 完整预处理函数"></a>11. 完整预处理函数</h2><pre class="language-python" data-language="python"><code class="language-python">MAX_LENGTH <span class="token operator">=</span> <span class="token number">256</span>
+
+
+<span class="token keyword">def</span> <span class="token function">tokenize_example</span><span class="token punctuation">(</span>example<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    prompt <span class="token operator">=</span> format_prompt<span class="token punctuation">(</span>example<span class="token punctuation">[</span><span class="token string">"instruction"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    answer <span class="token operator">=</span> example<span class="token punctuation">[</span><span class="token string">"response"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> tokenizer<span class="token punctuation">.</span>eos_token
+
+    prompt_ids <span class="token operator">=</span> tokenizer<span class="token punctuation">(</span>
+        prompt<span class="token punctuation">,</span>
+        add_special_tokens<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+        truncation<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span>
+    answer_ids <span class="token operator">=</span> tokenizer<span class="token punctuation">(</span>
+        answer<span class="token punctuation">,</span>
+        add_special_tokens<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+        truncation<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span>
+
+    prompt_ids<span class="token punctuation">,</span> answer_ids <span class="token operator">=</span> truncate_prompt_and_answer<span class="token punctuation">(</span>
+        prompt_ids<span class="token punctuation">,</span>
+        answer_ids<span class="token punctuation">,</span>
+        MAX_LENGTH<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    input_ids <span class="token operator">=</span> prompt_ids <span class="token operator">+</span> answer_ids
+    labels <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>prompt_ids<span class="token punctuation">)</span> <span class="token operator">+</span> answer_ids<span class="token punctuation">.</span>copy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+        <span class="token string">"input_ids"</span><span class="token punctuation">:</span> input_ids<span class="token punctuation">,</span>
+        <span class="token string">"attention_mask"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>input_ids<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token string">"labels"</span><span class="token punctuation">:</span> labels<span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span></code></pre>
+
+<p>调用 <code>map()</code>：</p>
+<pre class="language-python" data-language="python"><code class="language-python">tokenized_dataset <span class="token operator">=</span> dataset<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>
+    tokenize_example<span class="token punctuation">,</span>
+    remove_columns<span class="token operator">=</span>dataset<span class="token punctuation">[</span><span class="token string">"train"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>column_names<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>由于每条样本长度不同，此时先不 Padding。</p>
+<h2 id="12-必须检查一条-Tokenized-样本"><a href="#12-必须检查一条-Tokenized-样本" class="headerlink" title="12. 必须检查一条 Tokenized 样本"></a>12. 必须检查一条 Tokenized 样本</h2><p>在启动训练前，至少打印一条样本：</p>
+<pre class="language-python" data-language="python"><code class="language-python">sample <span class="token operator">=</span> tokenized_dataset<span class="token punctuation">[</span><span class="token string">"train"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"length:"</span><span class="token punctuation">,</span> <span class="token builtin">len</span><span class="token punctuation">(</span>sample<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"input:"</span><span class="token punctuation">,</span> tokenizer<span class="token punctuation">.</span>decode<span class="token punctuation">(</span>sample<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+target_ids <span class="token operator">=</span> <span class="token punctuation">[</span>
+    token_id
+    <span class="token keyword">for</span> token_id<span class="token punctuation">,</span> label <span class="token keyword">in</span> <span class="token builtin">zip</span><span class="token punctuation">(</span>sample<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> sample<span class="token punctuation">[</span><span class="token string">"labels"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> label <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">100</span>
+<span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"target:"</span><span class="token punctuation">,</span> tokenizer<span class="token punctuation">.</span>decode<span class="token punctuation">(</span>target_ids<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>预期：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input:
+### Instruction:
+用一句话解释什么是过拟合。
+
+### Response:
+过拟合是……&lt;eos>
+
+target:
+过拟合是……&lt;eos></code></pre>
+
+<p>还要检查：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">assert</span> <span class="token builtin">len</span><span class="token punctuation">(</span>sample<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token builtin">len</span><span class="token punctuation">(</span>sample<span class="token punctuation">[</span><span class="token string">"labels"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">assert</span> <span class="token builtin">any</span><span class="token punctuation">(</span>label <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">100</span> <span class="token keyword">for</span> label <span class="token keyword">in</span> sample<span class="token punctuation">[</span><span class="token string">"labels"</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+
+<p>如果整条 <code>labels</code> 都是 <code>-100</code>，交叉熵没有有效目标，训练会得到无意义 loss 或 NaN。</p>
+<h2 id="13-为什么不在-map-时-Padding-到-max-length"><a href="#13-为什么不在-map-时-Padding-到-max-length" class="headerlink" title="13. 为什么不在 map() 时 Padding 到 max_length"></a>13. 为什么不在 map() 时 Padding 到 max_length</h2><p>假设三条样本长度是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">61, 78, 93</code></pre>
+
+<p>直接全部 Padding 到 256 会浪费大量计算。</p>
+<p>更合理的是在每个 batch 中动态补到当前最长长度：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Batch 1: [61, 78] -> Padding 到 78
+Batch 2: [93, 70] -> Padding 到 93</code></pre>
+
+<p>因此 <code>map()</code> 只负责：</p>
+<ul>
+<li>Tokenize。</li>
+<li>截断。</li>
+<li>构造 labels。</li>
+</ul>
+<p>Data Collator 再负责：</p>
+<ul>
+<li>当前 batch 的 Padding。</li>
+<li>列表转 PyTorch 张量。</li>
+</ul>
+<h2 id="14-手写-Completion-only-Data-Collator"><a href="#14-手写-Completion-only-Data-Collator" class="headerlink" title="14. 手写 Completion-only Data Collator"></a>14. 手写 Completion-only Data Collator</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> dataclasses <span class="token keyword">import</span> dataclass
+
+<span class="token keyword">import</span> torch
+
+
+<span class="token decorator annotation punctuation">@dataclass</span>
+<span class="token keyword">class</span> <span class="token class-name">CompletionOnlyCollator</span><span class="token punctuation">:</span>
+    pad_token_id<span class="token punctuation">:</span> <span class="token builtin">int</span>
+    pad_to_multiple_of<span class="token punctuation">:</span> <span class="token builtin">int</span> <span class="token operator">|</span> <span class="token boolean">None</span> <span class="token operator">=</span> <span class="token number">8</span>
+
+    <span class="token keyword">def</span> <span class="token function">__call__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> features<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        max_length <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>item<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">for</span> item <span class="token keyword">in</span> features<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>pad_to_multiple_of<span class="token punctuation">:</span>
+            multiple <span class="token operator">=</span> self<span class="token punctuation">.</span>pad_to_multiple_of
+            max_length <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>max_length <span class="token operator">+</span> multiple <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">//</span> multiple<span class="token punctuation">)</span> <span class="token operator">*</span> multiple
+
+        batch_input_ids <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        batch_attention_mask <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        batch_labels <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+        <span class="token keyword">for</span> item <span class="token keyword">in</span> features<span class="token punctuation">:</span>
+            pad_length <span class="token operator">=</span> max_length <span class="token operator">-</span> <span class="token builtin">len</span><span class="token punctuation">(</span>item<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+            batch_input_ids<span class="token punctuation">.</span>append<span class="token punctuation">(</span>
+                item<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token punctuation">[</span>self<span class="token punctuation">.</span>pad_token_id<span class="token punctuation">]</span> <span class="token operator">*</span> pad_length
+            <span class="token punctuation">)</span>
+            batch_attention_mask<span class="token punctuation">.</span>append<span class="token punctuation">(</span>
+                item<span class="token punctuation">[</span><span class="token string">"attention_mask"</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">*</span> pad_length
+            <span class="token punctuation">)</span>
+            batch_labels<span class="token punctuation">.</span>append<span class="token punctuation">(</span>
+                item<span class="token punctuation">[</span><span class="token string">"labels"</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">*</span> pad_length
+            <span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+            <span class="token string">"input_ids"</span><span class="token punctuation">:</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span>batch_input_ids<span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token string">"attention_mask"</span><span class="token punctuation">:</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span>batch_attention_mask<span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token string">"labels"</span><span class="token punctuation">:</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span>batch_labels<span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#125;</span></code></pre>
+
+<p>三种补充值不同：</p>
+<table>
+<thead>
+<tr>
+<th>张量</th>
+<th align="right">Padding 值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>input_ids</code></td>
+<td align="right"><code>pad_token_id</code></td>
+<td>合法词表 id</td>
+</tr>
+<tr>
+<td><code>attention_mask</code></td>
+<td align="right"><code>0</code></td>
+<td>不作为有效上下文</td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td align="right"><code>-100</code></td>
+<td>不进入交叉熵</td>
+</tr>
+</tbody></table>
+<p><img src="/images/nlp-blog/sft-dynamic-padding-batch.svg" alt="SFT动态Padding后的Batch张量"></p>
+<h2 id="15-检查-Collator-输出"><a href="#15-检查-Collator-输出" class="headerlink" title="15. 检查 Collator 输出"></a>15. 检查 Collator 输出</h2><pre class="language-python" data-language="python"><code class="language-python">collator <span class="token operator">=</span> CompletionOnlyCollator<span class="token punctuation">(</span>
+    pad_token_id<span class="token operator">=</span>tokenizer<span class="token punctuation">.</span>pad_token_id<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+batch <span class="token operator">=</span> collator<span class="token punctuation">(</span>
+    <span class="token punctuation">[</span>
+        tokenized_dataset<span class="token punctuation">[</span><span class="token string">"train"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        tokenized_dataset<span class="token punctuation">[</span><span class="token string">"train"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> name<span class="token punctuation">,</span> tensor <span class="token keyword">in</span> batch<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> tensor<span class="token punctuation">.</span>shape<span class="token punctuation">)</span></code></pre>
+
+<p>可能得到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input_ids      torch.Size([2, 80])
+attention_mask torch.Size([2, 80])
+labels         torch.Size([2, 80])</code></pre>
+
+<p>三个张量形状必须一致。</p>
+<p>还可以统计有效目标 token：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">print</span><span class="token punctuation">(</span><span class="token punctuation">(</span>batch<span class="token punctuation">[</span><span class="token string">"labels"</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>输出例如：</p>
+<pre class="language-text" data-language="text"><code class="language-text">tensor([31, 28])</code></pre>
+
+<p>表示两条样本分别有 31 和 28 个 token 参与 loss。</p>
+<h2 id="16-加载-AutoModelForCausalLM"><a href="#16-加载-AutoModelForCausalLM" class="headerlink" title="16. 加载 AutoModelForCausalLM"></a>16. 加载 AutoModelForCausalLM</h2><p>根据设备选择 dtype：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">choose_dtype</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_available<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> torch<span class="token punctuation">.</span>float32
+    <span class="token keyword">if</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_bf16_supported<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> torch<span class="token punctuation">.</span>bfloat16
+    <span class="token keyword">return</span> torch<span class="token punctuation">.</span>float16</code></pre>
+
+<p>加载模型：</p>
+<pre class="language-python" data-language="python"><code class="language-python">dtype <span class="token operator">=</span> choose_dtype<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    MODEL_ID<span class="token punctuation">,</span>
+    dtype<span class="token operator">=</span>dtype<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>本篇执行 Full Fine-tuning，所以默认所有参数都可训练：</p>
+<pre class="language-python" data-language="python"><code class="language-python">trainable <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>numel<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">for</span> p <span class="token keyword">in</span> model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">if</span> p<span class="token punctuation">.</span>requires_grad<span class="token punctuation">)</span>
+total <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>numel<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">for</span> p <span class="token keyword">in</span> model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"trainable: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>trainable<span class="token punctuation">:</span><span class="token format-spec">,</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"total: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>total<span class="token punctuation">:</span><span class="token format-spec">,</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span></code></pre>
+
+<p>对 0.5B 模型进行全参数训练仍需要明显多于推理的显存。教学代码小，不代表可以在任意硬件上完整训练。</p>
+<h2 id="17-先手动执行一次-forward"><a href="#17-先手动执行一次-forward" class="headerlink" title="17. 先手动执行一次 forward()"></a>17. 先手动执行一次 forward()</h2><p>在交给 <code>Trainer</code> 前，先验证最底层路径：</p>
+<pre class="language-python" data-language="python"><code class="language-python">device <span class="token operator">=</span> <span class="token builtin">next</span><span class="token punctuation">(</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>device
+batch <span class="token operator">=</span> <span class="token punctuation">&#123;</span>name<span class="token punctuation">:</span> tensor<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span> <span class="token keyword">for</span> name<span class="token punctuation">,</span> tensor <span class="token keyword">in</span> batch<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span>
+
+outputs <span class="token operator">=</span> model<span class="token punctuation">(</span><span class="token operator">**</span>batch<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>outputs<span class="token punctuation">.</span>logits<span class="token punctuation">.</span>shape<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>outputs<span class="token punctuation">.</span>loss<span class="token punctuation">)</span></code></pre>
+
+<p>如果 batch 形状为 <code>[2, 80]</code>，词表大小为 $V$：</p>
+<pre class="language-text" data-language="text"><code class="language-text">outputs.logits.shape = [2, 80, V]
+outputs.loss.shape   = []</code></pre>
+
+<p><code>loss</code> 是标量。</p>
+<h3 id="17-1-模型内部做了什么"><a href="#17-1-模型内部做了什么" class="headerlink" title="17.1 模型内部做了什么"></a>17.1 模型内部做了什么</h3><p>概念上：</p>
+<pre class="language-python" data-language="python"><code class="language-python">shift_logits <span class="token operator">=</span> logits<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">:</span><span class="token punctuation">]</span>
+shift_labels <span class="token operator">=</span> labels<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+
+loss <span class="token operator">=</span> cross_entropy<span class="token punctuation">(</span>
+    shift_logits<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> vocab_size<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    shift_labels<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    ignore_index<span class="token operator">=</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>因此外部传入的 <code>labels</code> 与 <code>input_ids</code> 等长即可。</p>
+<h2 id="18-为什么训练时关闭-use-cache"><a href="#18-为什么训练时关闭-use-cache" class="headerlink" title="18. 为什么训练时关闭 use_cache"></a>18. 为什么训练时关闭 use_cache</h2><p>KV Cache 用于加速自回归生成。</p>
+<p>训练时我们需要一次并行处理完整序列并进行反向传播，通常不需要保留生成缓存：</p>
+<pre class="language-python" data-language="python"><code class="language-python">model<span class="token punctuation">.</span>config<span class="token punctuation">.</span>use_cache <span class="token operator">=</span> <span class="token boolean">False</span></code></pre>
+
+<p>使用 Gradient Checkpointing 时，<code>use_cache=True</code> 还可能产生不兼容警告。</p>
+<p>训练完成、准备推理前再恢复：</p>
+<pre class="language-python" data-language="python"><code class="language-python">model<span class="token punctuation">.</span>config<span class="token punctuation">.</span>use_cache <span class="token operator">=</span> <span class="token boolean">True</span></code></pre>
+
+<h2 id="19-TrainingArguments"><a href="#19-TrainingArguments" class="headerlink" title="19. TrainingArguments"></a>19. TrainingArguments</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> TrainingArguments
+
+training_args <span class="token operator">=</span> TrainingArguments<span class="token punctuation">(</span>
+    output_dir<span class="token operator">=</span><span class="token string">"outputs/sft-transformers/checkpoints"</span><span class="token punctuation">,</span>
+    overwrite_output_dir<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    num_train_epochs<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span>
+    per_device_train_batch_size<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span>
+    per_device_eval_batch_size<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span>
+    gradient_accumulation_steps<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">,</span>
+    learning_rate<span class="token operator">=</span><span class="token number">2e-5</span><span class="token punctuation">,</span>
+    weight_decay<span class="token operator">=</span><span class="token number">0.01</span><span class="token punctuation">,</span>
+    warmup_ratio<span class="token operator">=</span><span class="token number">0.1</span><span class="token punctuation">,</span>
+    lr_scheduler_type<span class="token operator">=</span><span class="token string">"cosine"</span><span class="token punctuation">,</span>
+    logging_steps<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+    eval_strategy<span class="token operator">=</span><span class="token string">"epoch"</span><span class="token punctuation">,</span>
+    save_strategy<span class="token operator">=</span><span class="token string">"epoch"</span><span class="token punctuation">,</span>
+    load_best_model_at_end<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    metric_for_best_model<span class="token operator">=</span><span class="token string">"eval_loss"</span><span class="token punctuation">,</span>
+    greater_is_better<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    gradient_checkpointing<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    bf16<span class="token operator">=</span>dtype <span class="token operator">==</span> torch<span class="token punctuation">.</span>bfloat16<span class="token punctuation">,</span>
+    fp16<span class="token operator">=</span>dtype <span class="token operator">==</span> torch<span class="token punctuation">.</span>float16<span class="token punctuation">,</span>
+    report_to<span class="token operator">=</span><span class="token string">"none"</span><span class="token punctuation">,</span>
+    seed<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<h3 id="19-1-有效-Batch-Size"><a href="#19-1-有效-Batch-Size" class="headerlink" title="19.1 有效 Batch Size"></a>19.1 有效 Batch Size</h3><p>单卡时：</p>
+<p>$$<br>B_{effective}<br>&#x3D;B_{device}\times N_{accumulation}<br>$$</p>
+<p>这里：</p>
+<p>$$<br>B_{effective}&#x3D;2\times4&#x3D;8<br>$$</p>
+<p>多卡数据并行时还要乘设备数。</p>
+<h3 id="19-2-为什么-SFT-学习率通常较小"><a href="#19-2-为什么-SFT-学习率通常较小" class="headerlink" title="19.2 为什么 SFT 学习率通常较小"></a>19.2 为什么 SFT 学习率通常较小</h3><p>模型已经有预训练参数。全参数微调如果学习率过大，可能快速破坏已有表示。</p>
+<p><code>2e-5</code> 只是常见起点，不是固定答案。需要结合：</p>
+<ul>
+<li>模型大小。</li>
+<li>数据量。</li>
+<li>Full Fine-tuning 或 LoRA。</li>
+<li>Batch Size。</li>
+<li>训练步数。</li>
+<li>验证集表现。</li>
+</ul>
+<h2 id="20-创建-Trainer"><a href="#20-创建-Trainer" class="headerlink" title="20. 创建 Trainer"></a>20. 创建 Trainer</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> Trainer
+
+trainer <span class="token operator">=</span> Trainer<span class="token punctuation">(</span>
+    model<span class="token operator">=</span>model<span class="token punctuation">,</span>
+    args<span class="token operator">=</span>training_args<span class="token punctuation">,</span>
+    train_dataset<span class="token operator">=</span>tokenized_dataset<span class="token punctuation">[</span><span class="token string">"train"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    eval_dataset<span class="token operator">=</span>tokenized_dataset<span class="token punctuation">[</span><span class="token string">"validation"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    data_collator<span class="token operator">=</span>collator<span class="token punctuation">,</span>
+    processing_class<span class="token operator">=</span>tokenizer<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这里的 <code>Trainer</code> 并不知道“SFT”这个名字。</p>
+<p>它只看到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Dataset 提供 input_ids / attention_mask / labels
+Collator 组成 batch
+Model forward 返回 loss
+Trainer 对 loss 反向传播</code></pre>
+
+<p>SFT 语义主要由我们的数据构造方式决定。</p>
+<p><img src="/images/nlp-blog/sft-trainer-step.svg" alt="Trainer如何执行一次SFT更新"></p>
+<h2 id="21-启动训练"><a href="#21-启动训练" class="headerlink" title="21. 启动训练"></a>21. 启动训练</h2><pre class="language-python" data-language="python"><code class="language-python">train_result <span class="token operator">=</span> trainer<span class="token punctuation">.</span>train<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>train_result<span class="token punctuation">.</span>metrics<span class="token punctuation">)</span>
+
+eval_metrics <span class="token operator">=</span> trainer<span class="token punctuation">.</span>evaluate<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>eval_metrics<span class="token punctuation">)</span></code></pre>
+
+<p>一次优化步骤可以展开为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">DataLoader 取样本
+  -> Collator 动态 Padding
+  -> model(**batch)
+  -> Causal LM logits
+  -> shift + ignore_index=-100
+  -> loss
+  -> backward
+  -> 梯度累积
+  -> 梯度裁剪
+  -> AdamW step
+  -> scheduler step</code></pre>
+
+<h2 id="22-为什么评估时先看-eval-loss"><a href="#22-为什么评估时先看-eval-loss" class="headerlink" title="22. 为什么评估时先看 eval_loss"></a>22. 为什么评估时先看 eval_loss</h2><p>本篇数据很小，不适合构造复杂自动指标。</p>
+<p><code>eval_loss</code> 至少能回答：</p>
+<blockquote>
+<p>模型对未参与更新的标准 Answer token，平均负对数似然是否下降？</p>
+</blockquote>
+<p>但它不能完整回答：</p>
+<ul>
+<li>回答是否事实正确。</li>
+<li>是否严格遵循指令。</li>
+<li>是否产生多余内容。</li>
+<li>是否满足 JSON 等结构约束。</li>
+</ul>
+<p>真正项目还要增加生成评估和人工检查。</p>
+<h2 id="23-保存最终模型"><a href="#23-保存最终模型" class="headerlink" title="23. 保存最终模型"></a>23. 保存最终模型</h2><pre class="language-python" data-language="python"><code class="language-python">FINAL_DIR <span class="token operator">=</span> <span class="token string">"outputs/sft-transformers/final"</span>
+
+trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>config<span class="token punctuation">.</span>use_cache <span class="token operator">=</span> <span class="token boolean">True</span>
+trainer<span class="token punctuation">.</span>save_model<span class="token punctuation">(</span>FINAL_DIR<span class="token punctuation">)</span>
+tokenizer<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>FINAL_DIR<span class="token punctuation">)</span></code></pre>
+
+<p>目录中通常包括：</p>
+<pre class="language-text" data-language="text"><code class="language-text">final/
+  config.json
+  generation_config.json
+  model.safetensors
+  tokenizer.json / vocab assets
+  tokenizer_config.json
+  special_tokens_map.json
+  training_args.bin</code></pre>
+
+<p>实际文件名取决于模型和 Tokenizer 类型。</p>
+<p>Full Fine-tuning 保存的是完整模型，因此目录体积接近 Base Model 权重大小。</p>
+<h2 id="24-用-GenerationConfig-推理"><a href="#24-用-GenerationConfig-推理" class="headerlink" title="24. 用 GenerationConfig 推理"></a>24. 用 GenerationConfig 推理</h2><p>重新加载：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> GenerationConfig
+
+tokenizer <span class="token operator">=</span> AutoTokenizer<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>FINAL_DIR<span class="token punctuation">)</span>
+model <span class="token operator">=</span> AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    FINAL_DIR<span class="token punctuation">,</span>
+    dtype<span class="token operator">=</span>dtype<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>构造生成配置：</p>
+<pre class="language-python" data-language="python"><code class="language-python">generation_config <span class="token operator">=</span> GenerationConfig<span class="token punctuation">(</span>
+    max_new_tokens<span class="token operator">=</span><span class="token number">96</span><span class="token punctuation">,</span>
+    do_sample<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    pad_token_id<span class="token operator">=</span>tokenizer<span class="token punctuation">.</span>pad_token_id<span class="token punctuation">,</span>
+    eos_token_id<span class="token operator">=</span>tokenizer<span class="token punctuation">.</span>eos_token_id<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>生成：</p>
+<pre class="language-python" data-language="python"><code class="language-python">prompt <span class="token operator">=</span> format_prompt<span class="token punctuation">(</span><span class="token string">"什么是学习率？"</span><span class="token punctuation">)</span>
+inputs <span class="token operator">=</span> tokenizer<span class="token punctuation">(</span>prompt<span class="token punctuation">,</span> return_tensors<span class="token operator">=</span><span class="token string">"pt"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>model<span class="token punctuation">.</span>device<span class="token punctuation">)</span>
+
+<span class="token keyword">with</span> torch<span class="token punctuation">.</span>no_grad<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    output_ids <span class="token operator">=</span> model<span class="token punctuation">.</span>generate<span class="token punctuation">(</span>
+        <span class="token operator">**</span>inputs<span class="token punctuation">,</span>
+        generation_config<span class="token operator">=</span>generation_config<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+new_tokens <span class="token operator">=</span> output_ids<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> inputs<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+answer <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>decode<span class="token punctuation">(</span>new_tokens<span class="token punctuation">,</span> skip_special_tokens<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>answer<span class="token punctuation">)</span></code></pre>
+
+<p>切片非常重要：</p>
+<pre class="language-python" data-language="python"><code class="language-python">output_ids<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> prompt_length<span class="token punctuation">:</span><span class="token punctuation">]</span></code></pre>
+
+<p>否则 <code>decode()</code> 会同时返回 Prompt 和模型新生成的文本。</p>
+<h2 id="25-Greedy-与-Sampling-怎样选择"><a href="#25-Greedy-与-Sampling-怎样选择" class="headerlink" title="25. Greedy 与 Sampling 怎样选择"></a>25. Greedy 与 Sampling 怎样选择</h2><p>比较微调前后时，优先使用确定性的 Greedy：</p>
+<pre class="language-python" data-language="python"><code class="language-python">GenerationConfig<span class="token punctuation">(</span>
+    do_sample<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    max_new_tokens<span class="token operator">=</span><span class="token number">96</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这样相同 Prompt 的结果更容易比较。</p>
+<p>需要开放式表达时再使用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">GenerationConfig<span class="token punctuation">(</span>
+    do_sample<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    temperature<span class="token operator">=</span><span class="token number">0.8</span><span class="token punctuation">,</span>
+    top_p<span class="token operator">=</span><span class="token number">0.9</span><span class="token punctuation">,</span>
+    max_new_tokens<span class="token operator">=</span><span class="token number">96</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>不要把 Sampling 的随机差异当作 SFT 效果。</p>
+<h2 id="26-微调前后应该怎样对比"><a href="#26-微调前后应该怎样对比" class="headerlink" title="26. 微调前后应该怎样对比"></a>26. 微调前后应该怎样对比</h2><p>保存一组固定测试 Prompt：</p>
+<pre class="language-python" data-language="python"><code class="language-python">EVAL_PROMPTS <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token string">"用一句话解释什么是验证集。"</span><span class="token punctuation">,</span>
+    <span class="token string">"为什么学习率太大会导致训练不稳定？"</span><span class="token punctuation">,</span>
+    <span class="token string">"给出两种缓解过拟合的方法。"</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>固定：</p>
+<ul>
+<li>相同 Prompt 模板。</li>
+<li>相同 Tokenizer。</li>
+<li>相同 GenerationConfig。</li>
+<li>相同随机种子，或直接使用 Greedy。</li>
+<li>相同最大生成长度。</li>
+</ul>
+<p>记录：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Base Model 输出
+SFT Model 输出
+目标行为
+错误类型</code></pre>
+
+<h2 id="27-完整代码"><a href="#27-完整代码" class="headerlink" title="27. 完整代码"></a>27. 完整代码</h2><p>完整项目代码位于：</p>
+<pre class="language-text" data-language="text"><code class="language-text">source/code/nlp-blog/sft_transformers.py</code></pre>
+
+<p>运行：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">python source/code/nlp-blog/sft_transformers.py</code></pre>
+
+<p>脚本会依次执行：</p>
+<pre class="language-text" data-language="text"><code class="language-text">创建本地 Dataset
+  -> 加载 Tokenizer
+  -> 构造 Completion-only labels
+  -> 检查一条样本
+  -> 检查一个 batch
+  -> 加载 Base Model
+  -> 训练与验证
+  -> 保存完整模型
+  -> 重新加载并生成</code></pre>
+
+<p>默认示例用于学习流程。实际下载约 0.5B 模型并进行 Full Fine-tuning 仍需要合适的网络、内存和 GPU 环境。</p>
+<h2 id="28-常见错误"><a href="#28-常见错误" class="headerlink" title="28. 常见错误"></a>28. 常见错误</h2><h3 id="28-1-Prompt-与-Answer-都参与-loss"><a href="#28-1-Prompt-与-Answer-都参与-loss" class="headerlink" title="28.1 Prompt 与 Answer 都参与 loss"></a>28.1 Prompt 与 Answer 都参与 loss</h3><p>如果目标是 Completion-only，应检查 Prompt labels 是否为 <code>-100</code>。</p>
+<h3 id="28-2-把-input-ids-中的-Prompt-也改成-100"><a href="#28-2-把-input-ids-中的-Prompt-也改成-100" class="headerlink" title="28.2 把 input_ids 中的 Prompt 也改成 -100"></a>28.2 把 input_ids 中的 Prompt 也改成 -100</h3><p><code>input_ids</code> 必须是合法词表 id。<code>-100</code> 只应出现在 labels 中。</p>
+<h3 id="28-3-Padding-labels-使用-pad-token-id"><a href="#28-3-Padding-labels-使用-pad-token-id" class="headerlink" title="28.3 Padding labels 使用 pad_token_id"></a>28.3 Padding labels 使用 pad_token_id</h3><p>这会训练模型预测大量 Padding。Padding labels 应设为 <code>-100</code>。</p>
+<h3 id="28-4-手动提前-shift-labels"><a href="#28-4-手动提前-shift-labels" class="headerlink" title="28.4 手动提前 shift labels"></a>28.4 手动提前 shift labels</h3><p><code>AutoModelForCausalLM</code> 通常已经内部 shift。外部再次 shift 会错位。</p>
+<h3 id="28-5-截断后没有-Answer-token"><a href="#28-5-截断后没有-Answer-token" class="headerlink" title="28.5 截断后没有 Answer token"></a>28.5 截断后没有 Answer token</h3><p>检查每条样本：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token builtin">sum</span><span class="token punctuation">(</span>label <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">100</span> <span class="token keyword">for</span> label <span class="token keyword">in</span> labels<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span></code></pre>
+
+<h3 id="28-6-重复添加特殊-token"><a href="#28-6-重复添加特殊-token" class="headerlink" title="28.6 重复添加特殊 token"></a>28.6 重复添加特殊 token</h3><p>Prompt 与 Answer 分开编码时，应明确哪一段添加 BOS；使用 Chat Template 后更要避免再次增加重复 special token。</p>
+<h3 id="28-7-忘记-EOS"><a href="#28-7-忘记-EOS" class="headerlink" title="28.7 忘记 EOS"></a>28.7 忘记 EOS</h3><p>模型可能学不会在回答末尾停止。</p>
+<h3 id="28-8-开启-Gradient-Checkpointing-却保留-use-cache"><a href="#28-8-开启-Gradient-Checkpointing-却保留-use-cache" class="headerlink" title="28.8 开启 Gradient Checkpointing 却保留 use_cache"></a>28.8 开启 Gradient Checkpointing 却保留 use_cache</h3><p>训练前设置：</p>
+<pre class="language-python" data-language="python"><code class="language-python">model<span class="token punctuation">.</span>config<span class="token punctuation">.</span>use_cache <span class="token operator">=</span> <span class="token boolean">False</span></code></pre>
+
+<p>推理前再恢复。</p>
+<h3 id="28-9-CPU-运行看似卡住"><a href="#28-9-CPU-运行看似卡住" class="headerlink" title="28.9 CPU 运行看似卡住"></a>28.9 CPU 运行看似卡住</h3><p>0.5B 模型的全参数前向、反向和优化器状态对 CPU 很重。教学代码不是轻量性能基准。</p>
+<h3 id="28-10-用十几条数据判断模型能力"><a href="#28-10-用十几条数据判断模型能力" class="headerlink" title="28.10 用十几条数据判断模型能力"></a>28.10 用十几条数据判断模型能力</h3><p>小数据只验证代码和过拟合能力，不能证明真实泛化。</p>
+<h2 id="29-Full-Fine-tuning-的显存都花在哪里"><a href="#29-Full-Fine-tuning-的显存都花在哪里" class="headerlink" title="29. Full Fine-tuning 的显存都花在哪里"></a>29. Full Fine-tuning 的显存都花在哪里</h2><p>训练显存不只有模型权重：</p>
+<pre class="language-text" data-language="text"><code class="language-text">模型参数
+梯度
+优化器状态
+前向激活
+临时 logits
+CUDA kernel workspace</code></pre>
+
+<p>特别是 Causal LM logits：</p>
+<p>$$<br>[B,T,V]<br>$$</p>
+<p>当词表 $V$ 很大时，也会占用明显显存。</p>
+<p>常见优化包括：</p>
+<ul>
+<li>BF16 &#x2F; FP16。</li>
+<li>Gradient Accumulation。</li>
+<li>Gradient Checkpointing。</li>
+<li>缩短 <code>max_length</code>。</li>
+<li>动态 Padding。</li>
+<li>Packing。</li>
+<li>Flash Attention &#x2F; SDPA。</li>
+<li>FSDP &#x2F; DeepSpeed。</li>
+<li>LoRA &#x2F; QLoRA。</li>
+</ul>
+<p>下一篇重点使用 LoRA，减少可训练参数和优化器状态。</p>
+<h2 id="30-怎样把本篇改成-Chat-Template-训练"><a href="#30-怎样把本篇改成-Chat-Template-训练" class="headerlink" title="30. 怎样把本篇改成 Chat Template 训练"></a>30. 怎样把本篇改成 Chat Template 训练</h2><p>本篇手写文本模板是为了学习边界。</p>
+<p>真实模型可改为：</p>
+<pre class="language-python" data-language="python"><code class="language-python">messages <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> instruction<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> response<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>然后：</p>
+<pre class="language-python" data-language="python"><code class="language-python">tokenizer<span class="token punctuation">.</span>apply_chat_template<span class="token punctuation">(</span>
+    messages<span class="token punctuation">,</span>
+    tokenize<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    add_generation_prompt<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>难点转变为：</p>
+<blockquote>
+<p>怎样准确得到 assistant token 对应的 mask？</p>
+</blockquote>
+<p>可以选择：</p>
+<ol>
+<li>使用模板提供的 assistant mask。</li>
+<li>使用 Prompt 与 Completion 分离格式。</li>
+<li>使用 TRL <code>SFTTrainer</code> 的 <code>completion_only_loss</code> 或 <code>assistant_only_loss</code>。</li>
+</ol>
+<p>第三篇采用第 3 种方式。</p>
+<h2 id="31-Trainer-与-SFTTrainer-的关系"><a href="#31-Trainer-与-SFTTrainer-的关系" class="headerlink" title="31. Trainer 与 SFTTrainer 的关系"></a>31. Trainer 与 SFTTrainer 的关系</h2><p>原生 <code>Trainer</code>：</p>
+<pre class="language-text" data-language="text"><code class="language-text">负责训练循环
+但要求我提前准备好 input_ids / labels</code></pre>
+
+<p>TRL <code>SFTTrainer</code>：</p>
+<pre class="language-text" data-language="text"><code class="language-text">继承并扩展 Trainer
+额外理解 text / prompt-completion / messages 数据
+自动应用 Chat Template
+自动构造 completion 或 assistant mask
+支持 Packing 和 PEFT</code></pre>
+
+<p>所以学习顺序应是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">先理解 Trainer 接收到什么
+  -> 再理解 SFTTrainer 替我生成了什么</code></pre>
+
+<h2 id="32-总结"><a href="#32-总结" class="headerlink" title="32. 总结"></a>32. 总结</h2><p>本篇使用原生 Hugging Face Transformers 完成了 SFT 的完整闭环：</p>
+<pre class="language-text" data-language="text"><code class="language-text">instruction / response
+  -> format_prompt
+  -> Prompt 与 Answer 分开 Tokenize
+  -> input_ids
+  -> Prompt labels = -100
+  -> Answer labels = token ids
+  -> Collator 动态 Padding
+  -> AutoModelForCausalLM.forward
+  -> 内部 label shift + CrossEntropyLoss
+  -> Trainer 反向传播
+  -> save_pretrained
+  -> GenerationConfig + generate</code></pre>
+
+<p>最值得记住的并不是 <code>Trainer(...)</code> 的参数，而是这组不变量：</p>
+<pre class="language-text" data-language="text"><code class="language-text">input_ids、attention_mask、labels 形状一致
+Prompt 保留在 input_ids 中
+Prompt 对应 labels 使用 -100
+Answer 至少包含一个有效目标 token
+Padding 对应 attention_mask=0、labels=-100
+训练时不需要 Sampling
+推理时不再传 labels</code></pre>
+
+<p>下一篇将用 <code>TRL SFTTrainer</code> 和 PEFT LoRA 重写同一条流程，并解释它自动处理了哪些步骤、哪些责任仍然必须由我承担。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/tasks/language_modeling">Hugging Face Transformers：Causal language modeling</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/main_classes/trainer">Hugging Face Transformers：Trainer</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/chat_templating">Hugging Face Transformers：Chat templates</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/datasets/process">Hugging Face Datasets：Process</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/Qwen/Qwen2.5-0.5B">Qwen2.5-0.5B Model Card</a></li>
+<li><a href="https://lsworl.github.io/2026/08/24/nlp-sft-principles/">上一篇：SFT（一）从Next Token Prediction到指令微调</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/">https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/PyTorch/">PyTorch</a><a class="post-meta__tags" href="/tags/NLP/">NLP</a><a class="post-meta__tags" href="/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a><a class="post-meta__tags" href="/tags/Hugging-Face/">Hugging Face</a><a class="post-meta__tags" href="/tags/Transformers/">Transformers</a><a class="post-meta__tags" href="/tags/Trainer/">Trainer</a><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/SFT/">SFT</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</div></div><div class="info-2"><div class="info-item-1">前两篇已经完成了两层理解：  SFT 原理篇：SFT 仍然是 next-token prediction，关键在于数据、Chat Template 和 Loss Mask。 Transformers 手写篇：亲手构造 input_ids / attention_mask / labels，再交给原生 Trainer。  现在可以进入更接近真实项目的组合： Hugging Face Datasets   + Transformers   + TRL SFTTrainer   + PEFT LoRA  本篇不会把 SFTTrainer 描述成“一行代码训练大模型”。它确实减少了很多样板代码，但仍然需要对下面这些问题负责：  数据格式是否正确。 Chat Template 是否与模型匹配。 Assistant-only loss 是否真的生效。 截断是否删除了回答。 LoRA 是否插入了预期模块。 训练与验证是否存在数据泄漏。 保存的是完整模型还是 Adapter。 推理时是否加载了正确的 Base Model。     1. TRL 是什么TRL 是 Hugging Face 生态中...</div></div></div></a><a class="pagination-related" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SFT（一）：从Next Token Prediction到指令微调</div></div><div class="info-2"><div class="info-item-1">在手写 Mini-GPT中，也已经从底层走通过： Prompt   -> Tokenizer   -> Embedding   -> Causal Transformer   -> LM Head   -> logits   -> sampling   -> next token  但是理解推理流程后，新的问题随之出现：  一个只会续写文本的 Base Model，为什么经过训练后会开始理解“用户提问”和“助手回答”，并按照指令组织答案？  这就是本文要讨论的 Supervised Fine-Tuning，监督微调，简称 SFT。 本文不会从“调用一个 Trainer”开始，而会先把 SFT 还原成我已经熟悉的 next-token prediction。等把数据、标签和损失看清楚后，下一篇再用 Hugging Face Transformers 亲手实现，第三篇再进入 TRL SFTTrainer + LoRA。    1. SFT 到底是什么SFT 的完整名称是 Supervised Fine-Tuning。 它表示：  从一个已经预训练的模型出发，使用带有目标答案的监督数据...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（一）：从Next Token Prediction到指令微调</div></div><div class="info-2"><div class="info-item-1">在手写 Mini-GPT中，也已经从底层走通过： Prompt   -> Tokenizer   -> Embedding   -> Causal Transformer   -> LM Head   -> logits   -> sampling   -> next token  但是理解推理流程后，新的问题随之出现：  一个只会续写文本的 Base Model，为什么经过训练后会开始理解“用户提问”和“助手回答”，并按照指令组织答案？  这就是本文要讨论的 Supervised Fine-Tuning，监督微调，简称 SFT。 本文不会从“调用一个 Trainer”开始，而会先把 SFT 还原成我已经熟悉的 next-token prediction。等把数据、标签和损失看清楚后，下一篇再用 Hugging Face Transformers 亲手实现，第三篇再进入 TRL SFTTrainer + LoRA。    1. SFT 到底是什么SFT 的完整名称是 Supervised Fine-Tuning。 它表示：  从一个已经预训练的模型出发，使用带有目标答案的监督数据...</div></div></div></a><a class="pagination-related" href="/2026/08/22/nlp-hugging-face-transformers-tutorial/" title="Hugging Face详解：从模型下载到中文文本分类微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-22</div><div class="info-item-2">Hugging Face详解：从模型下载到中文文本分类微调</div></div><div class="info-2"><div class="info-item-1">前面的文章已经从零实现了 Transformer、Mini-GPT 和 RoPE。理解这些底层原理之后，一个很自然的问题是：  实际项目中，难道每次都要从头实现网络、训练 Tokenizer，再用海量数据预训练模型吗？  通常不需要。 很多任务可以从一个已经预训练好的模型出发，只添加或替换任务头，再使用自己的数据进行微调。Hugging Face 正是把“寻找模型、下载权重、统一调用、处理数据、训练评估和分享结果”串起来的一套生态。 不过，初学者很容易把下面这些概念混在一起：  Hugging Face 网站。 Hugging Face Hub。 transformers Python 库。 datasets Python 库。 pipeline()。 AutoTokenizer 与 AutoModel。 Trainer。 Spaces 与在线推理服务。  本文会先把它们拆开，再通过一个中文情感分类项目完整走通： 选择预训练模型   -> 加载 Tokenizer   -> 文本转成模型输入   -> 加载任务模型   -> 手动完成一次前向推理   -> 构造 Dataset ...</div></div></div></a><a class="pagination-related" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</div></div><div class="info-2"><div class="info-item-1">前两篇已经完成了两层理解：  SFT 原理篇：SFT 仍然是 next-token prediction，关键在于数据、Chat Template 和 Loss Mask。 Transformers 手写篇：亲手构造 input_ids / attention_mask / labels，再交给原生 Trainer。  现在可以进入更接近真实项目的组合： Hugging Face Datasets   + Transformers   + TRL SFTTrainer   + PEFT LoRA  本篇不会把 SFTTrainer 描述成“一行代码训练大模型”。它确实减少了很多样板代码，但仍然需要对下面这些问题负责：  数据格式是否正确。 Chat Template 是否与模型匹配。 Assistant-only loss 是否真的生效。 截断是否删除了回答。 LoRA 是否插入了预期模块。 训练与验证是否存在数据泄漏。 保存的是完整模型还是 Adapter。 推理时是否加载了正确的 Base Model。     1. TRL 是什么TRL 是 Hugging Face 生态中...</div></div></div></a><a class="pagination-related" href="/2026/08/14/nlp-rope-rotary-position-embedding/" title="RoPE详解：从二维旋转到PyTorch手写旋转位置编码"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-14</div><div class="info-item-2">RoPE详解：从二维旋转到PyTorch手写旋转位置编码</div></div><div class="info-2"><div class="info-item-1">前面的 Transformer 和 Mini-GPT 文章分别使用了固定正弦位置编码与可学习绝对位置向量。它们都在解决同一个问题：  Self-Attention 可以比较 token 内容，却不会天然知道 token 的先后顺序。  这篇文章继续研究另一种位置编码：RoPE（Rotary Position Embedding，旋转位置编码）。 RoPE 的做法很特别。它不把位置向量直接加到 token 表示上，而是在每个注意力头内部，把 Query 和 Key 按位置旋转不同角度： token hidden state   -> 线性投影得到 Q、K、V   -> 根据 position 旋转 Q 和 K   -> 计算 QK^T   -> Softmax   -> 对没有旋转的 V 加权求和  它的核心价值可以浓缩为一句话：  用绝对位置决定旋转角度，让 Query 与 Key 的点积自然只显式依赖相对位置。  本文会从二维向量开始，逐步回答下面的问题：  为什么旋转能够表示位置？ 为什么两个绝对位置最后会变成一个相对距离？ 为什么只旋转 Q 和 K，不旋转 V？ 高维向量怎...</div></div></div></a><a class="pagination-related" href="/2026/08/10/nlp-seq2seq-encoder-decoder/" title="Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-10</div><div class="info-item-2">Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现</div></div><div class="info-2"><div class="info-item-1">前面的文本处理和 Word2Vec 文章主要解决了两个问题：  如何把文本转换成 token id。 如何把 token id 转换成词向量。  但很多自然语言处理任务不是“输入一句话，输出一个类别”，而是“输入一个序列，输出另一个序列”。 例如机器翻译： 输入：我 喜欢 自然语言处理 输出：I like natural language processing  输入和输出的长度可能不同，词序也可能不同。普通 MLP 或单纯的文本分类器很难直接处理这种映射。 Seq2Seq，全称 Sequence to Sequence，就是专门学习“序列到序列”映射的一类模型框架。 一句话概括：  Seq2Seq 先用 Encoder 理解整个输入序列，再让 Decoder 根据编码结果逐步生成输出序列。     1. 什么是序列到序列任务Seq2Seq 的输入和输出都是有顺序的元素序列： $$X&#x3D;(x_1,x_2,\ldots,x_{T_x})$$ $$Y&#x3D;(y_1,y_2,\ldots,y_{T_y})$$ 其中输入长度 $T_x$ 与输出长度 $T_y$ 不必相同。 ...</div></div></div></a><a class="pagination-related" href="/2026/08/12/nlp-mini-gpt-from-scratch-pytorch/" title="手写Mini-GPT：从因果语言模型到PyTorch完整实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-12</div><div class="info-item-2">手写Mini-GPT：从因果语言模型到PyTorch完整实现</div></div><div class="info-2"><div class="info-item-1">上一篇文章从 Encoder-Decoder 结构出发，完整介绍了 Transformer 的 Self-Attention、Multi-Head Attention、位置编码、Mask、Encoder 和 Decoder。 这一次，我们不再调用 nn.Transformer，而是只使用 PyTorch 的基础层，从零手写一个能够训练和生成文本的 Mini-GPT。 它会包含 GPT 最核心的组件：  字符级 Tokenizer。 Token Embedding 和可学习 Position Embedding。 手写 Multi-Head Causal Self-Attention。 Pre-Norm Transformer Block。 GELU 前馈网络。 自回归语言模型损失。 AdamW、学习率 warmup、余弦衰减和梯度裁剪。 Temperature、Top-k 与多项式采样。 权重绑定和 KV Cache 原理。  最终模型只有约 35 万个参数，可以在 CPU 上训练。它当然不是 ChatGPT，也不会拥有通用知识，但它足以把 GPT 内部最重要的数据流完整跑通。 ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">125</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">140</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9C%AC%E7%AF%87%E8%A6%81%E8%AE%AD%E7%BB%83%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">1. 本篇要训练什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%88%E4%B8%8D%E7%94%A8-Chat-Template"><span class="toc-number">2.</span> <span class="toc-text">2. 为什么先不用 Chat Template</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">3.</span> <span class="toc-text">3. 环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%80%89%E6%8B%A9-Base-Model"><span class="toc-number">4.</span> <span class="toc-text">4. 选择 Base Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%9E%84%E9%80%A0%E6%9C%AC%E5%9C%B0%E7%9B%91%E7%9D%A3%E6%95%B0%E6%8D%AE"><span class="toc-number">5.</span> <span class="toc-text">5. 构造本地监督数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%AE%9A%E4%B9%89-Prompt-%E6%A8%A1%E6%9D%BF"><span class="toc-number">6.</span> <span class="toc-text">6. 定义 Prompt 模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%8A%A0%E8%BD%BD-Tokenizer"><span class="toc-number">7.</span> <span class="toc-text">7. 加载 Tokenizer</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%AD%E7%BB%83%E6%97%B6%E4%BD%BF%E7%94%A8%E5%8F%B3-Padding"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 为什么训练时使用右 Padding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%A1%AE%E8%AE%A4-EOS"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 为什么要确认 EOS</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-Prompt-%E4%B8%8E-Answer-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%88%86%E5%BC%80-Tokenize"><span class="toc-number">8.</span> <span class="toc-text">8. Prompt 与 Answer 为什么分开 Tokenize</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%9B%B4%E6%8E%A5%E7%94%A8-len-tokenizer-prompt-%E5%88%87%E5%AE%8C%E6%95%B4%E5%BA%8F%E5%88%97"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 为什么不直接用 len(tokenizer(prompt)) 切完整序列</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%9E%84%E9%80%A0-Completion-only-Labels"><span class="toc-number">9.</span> <span class="toc-text">9. 构造 Completion-only Labels</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%88%AA%E6%96%AD%E6%97%B6%E4%BC%98%E5%85%88%E4%BF%9D%E7%95%99%E5%9B%9E%E7%AD%94"><span class="toc-number">10.</span> <span class="toc-text">10. 截断时优先保留回答</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%AE%8C%E6%95%B4%E9%A2%84%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-number">11.</span> <span class="toc-text">11. 完整预处理函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%BF%85%E9%A1%BB%E6%A3%80%E6%9F%A5%E4%B8%80%E6%9D%A1-Tokenized-%E6%A0%B7%E6%9C%AC"><span class="toc-number">12.</span> <span class="toc-text">12. 必须检查一条 Tokenized 样本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%9C%A8-map-%E6%97%B6-Padding-%E5%88%B0-max-length"><span class="toc-number">13.</span> <span class="toc-text">13. 为什么不在 map() 时 Padding 到 max_length</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E6%89%8B%E5%86%99-Completion-only-Data-Collator"><span class="toc-number">14.</span> <span class="toc-text">14. 手写 Completion-only Data Collator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E6%A3%80%E6%9F%A5-Collator-%E8%BE%93%E5%87%BA"><span class="toc-number">15.</span> <span class="toc-text">15. 检查 Collator 输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E5%8A%A0%E8%BD%BD-AutoModelForCausalLM"><span class="toc-number">16.</span> <span class="toc-text">16. 加载 AutoModelForCausalLM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E5%85%88%E6%89%8B%E5%8A%A8%E6%89%A7%E8%A1%8C%E4%B8%80%E6%AC%A1-forward"><span class="toc-number">17.</span> <span class="toc-text">17. 先手动执行一次 forward()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E6%A8%A1%E5%9E%8B%E5%86%85%E9%83%A8%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">17.1.</span> <span class="toc-text">17.1 模型内部做了什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%AD%E7%BB%83%E6%97%B6%E5%85%B3%E9%97%AD-use-cache"><span class="toc-number">18.</span> <span class="toc-text">18. 为什么训练时关闭 use_cache</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-TrainingArguments"><span class="toc-number">19.</span> <span class="toc-text">19. TrainingArguments</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E6%9C%89%E6%95%88-Batch-Size"><span class="toc-number">19.1.</span> <span class="toc-text">19.1 有效 Batch Size</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E4%B8%BA%E4%BB%80%E4%B9%88-SFT-%E5%AD%A6%E4%B9%A0%E7%8E%87%E9%80%9A%E5%B8%B8%E8%BE%83%E5%B0%8F"><span class="toc-number">19.2.</span> <span class="toc-text">19.2 为什么 SFT 学习率通常较小</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%88%9B%E5%BB%BA-Trainer"><span class="toc-number">20.</span> <span class="toc-text">20. 创建 Trainer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E5%90%AF%E5%8A%A8%E8%AE%AD%E7%BB%83"><span class="toc-number">21.</span> <span class="toc-text">21. 启动训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AF%84%E4%BC%B0%E6%97%B6%E5%85%88%E7%9C%8B-eval-loss"><span class="toc-number">22.</span> <span class="toc-text">22. 为什么评估时先看 eval_loss</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E4%BF%9D%E5%AD%98%E6%9C%80%E7%BB%88%E6%A8%A1%E5%9E%8B"><span class="toc-number">23.</span> <span class="toc-text">23. 保存最终模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E7%94%A8-GenerationConfig-%E6%8E%A8%E7%90%86"><span class="toc-number">24.</span> <span class="toc-text">24. 用 GenerationConfig 推理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-Greedy-%E4%B8%8E-Sampling-%E6%80%8E%E6%A0%B7%E9%80%89%E6%8B%A9"><span class="toc-number">25.</span> <span class="toc-text">25. Greedy 与 Sampling 怎样选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E5%BE%AE%E8%B0%83%E5%89%8D%E5%90%8E%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E5%AF%B9%E6%AF%94"><span class="toc-number">26.</span> <span class="toc-text">26. 微调前后应该怎样对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">27.</span> <span class="toc-text">27. 完整代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">28.</span> <span class="toc-text">28. 常见错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-Prompt-%E4%B8%8E-Answer-%E9%83%BD%E5%8F%82%E4%B8%8E-loss"><span class="toc-number">28.1.</span> <span class="toc-text">28.1 Prompt 与 Answer 都参与 loss</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-2-%E6%8A%8A-input-ids-%E4%B8%AD%E7%9A%84-Prompt-%E4%B9%9F%E6%94%B9%E6%88%90-100"><span class="toc-number">28.2.</span> <span class="toc-text">28.2 把 input_ids 中的 Prompt 也改成 -100</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-3-Padding-labels-%E4%BD%BF%E7%94%A8-pad-token-id"><span class="toc-number">28.3.</span> <span class="toc-text">28.3 Padding labels 使用 pad_token_id</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-4-%E6%89%8B%E5%8A%A8%E6%8F%90%E5%89%8D-shift-labels"><span class="toc-number">28.4.</span> <span class="toc-text">28.4 手动提前 shift labels</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-5-%E6%88%AA%E6%96%AD%E5%90%8E%E6%B2%A1%E6%9C%89-Answer-token"><span class="toc-number">28.5.</span> <span class="toc-text">28.5 截断后没有 Answer token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-6-%E9%87%8D%E5%A4%8D%E6%B7%BB%E5%8A%A0%E7%89%B9%E6%AE%8A-token"><span class="toc-number">28.6.</span> <span class="toc-text">28.6 重复添加特殊 token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-7-%E5%BF%98%E8%AE%B0-EOS"><span class="toc-number">28.7.</span> <span class="toc-text">28.7 忘记 EOS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-8-%E5%BC%80%E5%90%AF-Gradient-Checkpointing-%E5%8D%B4%E4%BF%9D%E7%95%99-use-cache"><span class="toc-number">28.8.</span> <span class="toc-text">28.8 开启 Gradient Checkpointing 却保留 use_cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-9-CPU-%E8%BF%90%E8%A1%8C%E7%9C%8B%E4%BC%BC%E5%8D%A1%E4%BD%8F"><span class="toc-number">28.9.</span> <span class="toc-text">28.9 CPU 运行看似卡住</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-10-%E7%94%A8%E5%8D%81%E5%87%A0%E6%9D%A1%E6%95%B0%E6%8D%AE%E5%88%A4%E6%96%AD%E6%A8%A1%E5%9E%8B%E8%83%BD%E5%8A%9B"><span class="toc-number">28.10.</span> <span class="toc-text">28.10 用十几条数据判断模型能力</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-Full-Fine-tuning-%E7%9A%84%E6%98%BE%E5%AD%98%E9%83%BD%E8%8A%B1%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-number">29.</span> <span class="toc-text">29. Full Fine-tuning 的显存都花在哪里</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E6%80%8E%E6%A0%B7%E6%8A%8A%E6%9C%AC%E7%AF%87%E6%94%B9%E6%88%90-Chat-Template-%E8%AE%AD%E7%BB%83"><span class="toc-number">30.</span> <span class="toc-text">30. 怎样把本篇改成 Chat Template 训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-Trainer-%E4%B8%8E-SFTTrainer-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">31.</span> <span class="toc-text">31. Trainer 与 SFTTrainer 的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E6%80%BB%E7%BB%93"><span class="toc-number">32.</span> <span class="toc-text">32. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">33.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</a><time datetime="2026-08-24T15:59:00.000Z" title="发表于 2026-08-24 23:59:00">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-transformers-from-scratch/" title="SFT（二）：用Hugging Face Transformers手写监督微调">SFT（二）：用Hugging Face Transformers手写监督微调</a><time datetime="2026-08-24T15:10:58.000Z" title="发表于 2026-08-24 23:10:58">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调">SFT（一）：从Next Token Prediction到指令微调</a><time datetime="2026-08-23T16:00:00.000Z" title="发表于 2026-08-24 00:00:00">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/22/nlp-hugging-face-transformers-tutorial/" title="Hugging Face详解：从模型下载到中文文本分类微调">Hugging Face详解：从模型下载到中文文本分类微调</a><time datetime="2026-08-21T16:00:00.000Z" title="发表于 2026-08-22 00:00:00">2026-08-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/14/nlp-rope-rotary-position-embedding/" title="RoPE详解：从二维旋转到PyTorch手写旋转位置编码">RoPE详解：从二维旋转到PyTorch手写旋转位置编码</a><time datetime="2026-08-13T16:00:00.000Z" title="发表于 2026-08-14 00:00:00">2026-08-14</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

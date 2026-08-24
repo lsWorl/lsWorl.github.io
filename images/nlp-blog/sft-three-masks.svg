@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="760" viewBox="0 0 1150 760" role="img" aria-labelledby="title desc">
+  <title id="title">SFT 中的三种 Mask</title>
+  <desc id="desc">Causal Mask 控制未来可见性，Attention Mask 区分真实 token 和 Padding，Label Mask 决定哪些目标参与损失。</desc>
+  <rect width="1150" height="760" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">三个 Mask 回答三个不同问题</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">可见性、有效输入和 Loss 范围不能混为一谈</text>
+
+    <rect x="70" y="115" width="1010" height="100" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="95" y="148" font-size="16" font-weight="700" fill="#334155">序列</text>
+    <g font-size="15" text-anchor="middle">
+      <rect x="180" y="135" width="110" height="50" rx="7" fill="#eaf3ff"/><text x="235" y="166" fill="#2f5f9e">&lt;user&gt;</text>
+      <rect x="300" y="135" width="110" height="50" rx="7" fill="#eaf3ff"/><text x="355" y="166" fill="#2f5f9e">问题</text>
+      <rect x="420" y="135" width="130" height="50" rx="7" fill="#fff7e6"/><text x="485" y="166" fill="#8a5418">&lt;assistant&gt;</text>
+      <rect x="560" y="135" width="110" height="50" rx="7" fill="#eefaf2"/><text x="615" y="166" fill="#166534">回答1</text>
+      <rect x="680" y="135" width="110" height="50" rx="7" fill="#eefaf2"/><text x="735" y="166" fill="#166534">回答2</text>
+      <rect x="800" y="135" width="90" height="50" rx="7" fill="#eefaf2"/><text x="845" y="166" fill="#166534">EOS</text>
+      <rect x="900" y="135" width="90" height="50" rx="7" fill="#f1f3f5"/><text x="945" y="166" fill="#6b7280">PAD</text>
+    </g>
+
+    <rect x="55" y="265" width="320" height="375" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="215" y="307" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Causal Mask</text>
+    <text x="215" y="337" text-anchor="middle" font-size="15" fill="#6b3fa0">当前位置能看见哪些历史位置？</text>
+    <g transform="translate(120 375)">
+      <rect width="34" height="34" fill="#9b51e0"/><rect x="38" width="34" height="34" fill="#e7d8f5"/><rect x="76" width="34" height="34" fill="#e7d8f5"/><rect x="114" width="34" height="34" fill="#e7d8f5"/>
+      <rect y="38" width="34" height="34" fill="#9b51e0"/><rect x="38" y="38" width="34" height="34" fill="#9b51e0"/><rect x="76" y="38" width="34" height="34" fill="#e7d8f5"/><rect x="114" y="38" width="34" height="34" fill="#e7d8f5"/>
+      <rect y="76" width="34" height="34" fill="#9b51e0"/><rect x="38" y="76" width="34" height="34" fill="#9b51e0"/><rect x="76" y="76" width="34" height="34" fill="#9b51e0"/><rect x="114" y="76" width="34" height="34" fill="#e7d8f5"/>
+      <rect y="114" width="34" height="34" fill="#9b51e0"/><rect x="38" y="114" width="34" height="34" fill="#9b51e0"/><rect x="76" y="114" width="34" height="34" fill="#9b51e0"/><rect x="114" y="114" width="34" height="34" fill="#9b51e0"/>
+    </g>
+    <text x="215" y="555" text-anchor="middle" font-size="15" fill="#52616f">下三角可见，未来位置不可见</text>
+    <text x="215" y="590" text-anchor="middle" font-size="14" fill="#6b3fa0">作用于 Attention 分数</text>
+
+    <rect x="415" y="265" width="320" height="375" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="575" y="307" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Attention Mask</text>
+    <text x="575" y="337" text-anchor="middle" font-size="15" fill="#2f5f9e">哪些位置是真实 token？</text>
+    <text x="455" y="410" font-size="16" font-weight="700" fill="#334155">input_ids</text>
+    <rect x="455" y="430" width="240" height="48" rx="7" fill="#fff" stroke="#bad1ef"/>
+    <text x="575" y="461" text-anchor="middle" font-size="14" fill="#52616f">[10, 81, 11, 35, 2, 0]</text>
+    <text x="455" y="510" font-size="16" font-weight="700" fill="#334155">attention_mask</text>
+    <rect x="455" y="530" width="240" height="48" rx="7" fill="#fff" stroke="#bad1ef"/>
+    <text x="575" y="561" text-anchor="middle" font-size="14" fill="#52616f">[ 1,  1,  1,  1, 1, 0]</text>
+    <text x="575" y="606" text-anchor="middle" font-size="14" fill="#2f5f9e">0 表示 Padding 无效位置</text>
+
+    <rect x="775" y="265" width="320" height="375" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="935" y="307" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Label Mask</text>
+    <text x="935" y="337" text-anchor="middle" font-size="15" fill="#166534">哪些目标 token 进入 Loss？</text>
+    <text x="815" y="410" font-size="16" font-weight="700" fill="#334155">labels</text>
+    <rect x="815" y="430" width="240" height="70" rx="7" fill="#fff" stroke="#b8dfc5"/>
+    <text x="935" y="458" text-anchor="middle" font-size="14" fill="#52616f">[-100, -100, -100,</text>
+    <text x="935" y="482" text-anchor="middle" font-size="14" fill="#52616f">35, 72, 2, -100]</text>
+    <text x="935" y="536" text-anchor="middle" font-size="15" fill="#166534">Prompt 与 Padding 被忽略</text>
+    <text x="935" y="568" text-anchor="middle" font-size="15" fill="#166534">Assistant token 产生梯度</text>
+    <text x="935" y="606" text-anchor="middle" font-size="14" fill="#166534">作用于 CrossEntropyLoss</text>
+
+    <rect x="160" y="685" width="830" height="45" rx="8" fill="#fff" stroke="#d4dbe5"/>
+    <text x="575" y="714" text-anchor="middle" font-size="16" fill="#334155">labels=-100 不会删除 Prompt，它只把对应目标排除在损失之外</text>
+  </g>
+</svg>

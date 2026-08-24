@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="690" viewBox="0 0 1150 690" role="img" aria-labelledby="title desc">
+  <title id="title">SFT 训练与自回归生成的区别</title>
+  <desc id="desc">训练使用完整标准序列一次并行前向计算多个 token 损失，生成只有 Prompt 并逐 token 选择和回填。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="690" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">训练并行算 Loss，生成串行选 Token</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">GenerationConfig 不参与普通 SFT 交叉熵</text>
+
+    <rect x="45" y="120" width="510" height="500" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="300" y="165" text-anchor="middle" font-size="25" font-weight="700" fill="#1f2937">SFT Training</text>
+    <rect x="95" y="205" width="410" height="70" rx="8" fill="#fff" stroke="#bad1ef"/>
+    <text x="300" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#2f5f9e">完整标准序列</text>
+    <text x="300" y="260" text-anchor="middle" font-size="14" fill="#52616f">Prompt + Ground-truth Answer</text>
+    <path d="M300 275V315" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="95" y="330" width="410" height="80" rx="8" fill="#fff" stroke="#bad1ef"/>
+    <text x="300" y="362" text-anchor="middle" font-size="17" font-weight="700" fill="#2f5f9e">一次 forward</text>
+    <text x="300" y="390" text-anchor="middle" font-size="14" fill="#52616f">同时输出所有位置 [B, T, V] logits</text>
+    <path d="M300 410V450" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="95" y="465" width="190" height="90" rx="8" fill="#eefaf2" stroke="#27ae60"/>
+    <text x="190" y="500" text-anchor="middle" font-size="16" font-weight="700" fill="#166534">Cross Entropy</text>
+    <text x="190" y="528" text-anchor="middle" font-size="14" fill="#52616f">labels != -100</text>
+    <rect x="315" y="465" width="190" height="90" rx="8" fill="#fff7e6" stroke="#f2994a"/>
+    <text x="410" y="500" text-anchor="middle" font-size="16" font-weight="700" fill="#8a5418">Backward</text>
+    <text x="410" y="528" text-anchor="middle" font-size="14" fill="#52616f">AdamW 更新参数</text>
+    <text x="300" y="594" text-anchor="middle" font-size="15" fill="#2f5f9e">Teacher Forcing：历史来自标准答案</text>
+
+    <rect x="595" y="120" width="510" height="500" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="850" y="165" text-anchor="middle" font-size="25" font-weight="700" fill="#1f2937">Autoregressive Generation</text>
+    <rect x="645" y="205" width="410" height="70" rx="8" fill="#fff" stroke="#f2c784"/>
+    <text x="850" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#8a5418">只有 Prompt</text>
+    <text x="850" y="260" text-anchor="middle" font-size="14" fill="#52616f">没有 Ground-truth labels</text>
+    <path d="M850 275V315" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="645" y="330" width="190" height="80" rx="8" fill="#fff" stroke="#f2c784"/>
+    <text x="740" y="362" text-anchor="middle" font-size="16" font-weight="700" fill="#8a5418">最后位置 logits</text>
+    <text x="740" y="389" text-anchor="middle" font-size="14" fill="#52616f">[B, V]</text>
+    <path d="M835 370H875" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="890" y="330" width="165" height="80" rx="8" fill="#f4effb" stroke="#9b51e0"/>
+    <text x="972" y="359" text-anchor="middle" font-size="16" font-weight="700" fill="#6b3fa0">Sampling</text>
+    <text x="972" y="385" text-anchor="middle" font-size="13" fill="#52616f">top-p / temp</text>
+    <path d="M972 410V450" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="720" y="465" width="260" height="90" rx="8" fill="#eefaf2" stroke="#27ae60"/>
+    <text x="850" y="500" text-anchor="middle" font-size="16" font-weight="700" fill="#166534">Next token 拼回输入</text>
+    <text x="850" y="528" text-anchor="middle" font-size="14" fill="#52616f">循环直到 EOS / length</text>
+    <path d="M720 510H665V370H645" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="850" y="594" text-anchor="middle" font-size="15" fill="#8a5418">历史包含模型自己刚生成的 token</text>
+
+    <text x="575" y="662" text-anchor="middle" font-size="16" fill="#334155">同一个模型 forward，位于两个不同的控制循环中</text>
+  </g>
+</svg>

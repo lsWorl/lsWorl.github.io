@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="720" viewBox="0 0 1150 720" role="img" aria-labelledby="title desc">
+  <title id="title">Trainer 如何执行一次 SFT 参数更新</title>
+  <desc id="desc">DataLoader 与 Collator 形成批次，Causal LM 计算 logits 和 completion loss，Trainer 完成梯度累积、裁剪、AdamW 与调度器更新。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="720" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Trainer 不理解“问答”，它理解 Batch 与 Loss</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">SFT 语义来自预处理后的 labels</text>
+
+    <rect x="60" y="125" width="230" height="105" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="175" y="165" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">DataLoader</text>
+    <text x="175" y="197" text-anchor="middle" font-size="14" fill="#8a5418">取多条变长样本</text>
+    <path d="M290 178H350" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="365" y="125" width="260" height="105" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="495" y="165" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Data Collator</text>
+    <text x="495" y="197" text-anchor="middle" font-size="14" fill="#2f5f9e">Padding + tensor batch</text>
+    <path d="M625 178H685" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="700" y="110" width="390" height="135" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="895" y="151" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Batch Contract</text>
+    <text x="895" y="183" text-anchor="middle" font-size="14" fill="#6b3fa0">input_ids [B,T]</text>
+    <text x="895" y="207" text-anchor="middle" font-size="14" fill="#6b3fa0">attention_mask [B,T] / labels [B,T]</text>
+
+    <path d="M895 245V300" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="300" y="315" width="550" height="150" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="575" y="356" text-anchor="middle" font-size="23" font-weight="700" fill="#1f2937">model(**batch)</text>
+    <text x="575" y="391" text-anchor="middle" font-size="16" fill="#2f5f9e">Causal Transformer -&gt; LM Head -&gt; logits</text>
+    <text x="575" y="422" text-anchor="middle" font-size="15" fill="#52616f">shift + ignore_index=-100</text>
+    <text x="575" y="447" text-anchor="middle" font-size="16" font-weight="700" fill="#2f5f9e">outputs.loss</text>
+
+    <path d="M300 390H230" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="60" y="325" width="155" height="130" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="137" y="364" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Eval</text>
+    <text x="137" y="397" text-anchor="middle" font-size="14" fill="#166534">no_grad</text>
+    <text x="137" y="423" text-anchor="middle" font-size="14" fill="#166534">eval_loss</text>
+    <text x="137" y="446" text-anchor="middle" font-size="13" fill="#52616f">不更新参数</text>
+
+    <path d="M575 465V515" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="125" y="530" width="205" height="115" rx="10" fill="#fff2eb" stroke="#eb5757" stroke-width="2"/>
+    <text x="227" y="570" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Backward</text>
+    <text x="227" y="602" text-anchor="middle" font-size="14" fill="#a83737">loss.backward()</text>
+    <text x="227" y="627" text-anchor="middle" font-size="13" fill="#52616f">累加梯度</text>
+    <path d="M330 587H390" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="405" y="530" width="205" height="115" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="507" y="570" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Clip Grad</text>
+    <text x="507" y="602" text-anchor="middle" font-size="14" fill="#8a5418">达到累积步数</text>
+    <text x="507" y="627" text-anchor="middle" font-size="13" fill="#52616f">控制 grad_norm</text>
+    <path d="M610 587H670" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="685" y="530" width="205" height="115" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="787" y="570" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">AdamW</text>
+    <text x="787" y="602" text-anchor="middle" font-size="14" fill="#6b3fa0">optimizer.step()</text>
+    <text x="787" y="627" text-anchor="middle" font-size="13" fill="#52616f">更新模型参数</text>
+    <path d="M890 587H950" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="965" y="530" width="130" height="115" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="1030" y="570" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">Scheduler</text>
+    <text x="1030" y="602" text-anchor="middle" font-size="13" fill="#166534">lr step</text>
+    <text x="1030" y="627" text-anchor="middle" font-size="13" fill="#52616f">zero_grad</text>
+
+    <text x="575" y="690" text-anchor="middle" font-size="16" fill="#334155">Trainer 管理循环；Completion-only 规则已经编码在 labels 中</text>
+  </g>
+</svg>

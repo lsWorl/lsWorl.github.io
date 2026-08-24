@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700" role="img" aria-labelledby="title desc">
+  <title id="title">LoRA Adapter 保存、加载与合并</title>
+  <desc id="desc">训练后保存 Adapter、配置和 Tokenizer，推理时与 Base Model 一起加载，也可以合并为独立完整模型。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Adapter 很小，但通常不能脱离 Base Model</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">Tokenizer 与 Chat Template 也必须随训练结果一起保存</text>
+
+    <rect x="55" y="130" width="280" height="190" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="195" y="172" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">SFTTrainer 训练完成</text>
+    <text x="195" y="210" text-anchor="middle" font-size="15" fill="#166534">Frozen Base</text>
+    <text x="195" y="238" text-anchor="middle" font-size="15" fill="#166534">Trainable LoRA A / B</text>
+    <text x="195" y="276" text-anchor="middle" font-size="14" fill="#52616f">trainer.save_model()</text>
+    <path d="M335 225H395" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="410" y="110" width="330" height="230" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="575" y="152" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">final-adapter/</text>
+    <rect x="455" y="177" width="240" height="40" rx="6" fill="#fff"/><text x="575" y="203" text-anchor="middle" font-size="14" fill="#6b3fa0">adapter_model.safetensors</text>
+    <rect x="455" y="225" width="240" height="40" rx="6" fill="#fff"/><text x="575" y="251" text-anchor="middle" font-size="14" fill="#6b3fa0">adapter_config.json</text>
+    <rect x="455" y="273" width="240" height="40" rx="6" fill="#fff"/><text x="575" y="299" text-anchor="middle" font-size="14" fill="#6b3fa0">tokenizer + chat template</text>
+
+    <path d="M740 225H800" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="815" y="130" width="280" height="190" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="955" y="172" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">Adapter 推理</text>
+    <text x="955" y="210" text-anchor="middle" font-size="15" fill="#2f5f9e">load Base Model</text>
+    <text x="955" y="238" text-anchor="middle" font-size="15" fill="#2f5f9e">PeftModel.from_pretrained</text>
+    <text x="955" y="266" text-anchor="middle" font-size="15" fill="#2f5f9e">load Tokenizer</text>
+    <text x="955" y="294" text-anchor="middle" font-size="14" fill="#52616f">generate()</text>
+
+    <path d="M575 340V405" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="115" y="420" width="400" height="190" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="315" y="462" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">可选 merge_and_unload()</text>
+    <text x="315" y="503" text-anchor="middle" font-size="17" fill="#8a5418">W_merged = W_base + Delta_W_lora</text>
+    <text x="315" y="539" text-anchor="middle" font-size="14" fill="#52616f">推理只需一个完整模型目录</text>
+    <text x="315" y="568" text-anchor="middle" font-size="14" fill="#52616f">不再方便动态切换 Adapter</text>
+    <path d="M515 515H575" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="590" y="420" width="445" height="190" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="812" y="462" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2937">merged-model/</text>
+    <rect x="650" y="487" width="325" height="42" rx="6" fill="#eaf3ff"/><text x="812" y="514" text-anchor="middle" font-size="14" fill="#2f5f9e">完整 model.safetensors</text>
+    <rect x="650" y="539" width="325" height="42" rx="6" fill="#f4effb"/><text x="812" y="566" text-anchor="middle" font-size="14" fill="#6b3fa0">config + tokenizer + chat template</text>
+
+    <rect x="200" y="642" width="750" height="38" rx="7" fill="#fff" stroke="#d4dbe5"/>
+    <text x="575" y="667" text-anchor="middle" font-size="15" fill="#334155">Adapter 适合存储与切换；Merged Model 适合只接受完整权重的推理环境</text>
+  </g>
+</svg>

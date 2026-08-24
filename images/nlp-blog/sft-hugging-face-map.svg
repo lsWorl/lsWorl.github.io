@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="760" viewBox="0 0 1150 760" role="img" aria-labelledby="title desc">
+  <title id="title">SFT 概念与 Hugging Face API 对应关系</title>
+  <desc id="desc">Dataset 提供监督示范，Tokenizer 与 Chat Template 产生 token，Collator 组成批次，Causal LM 计算损失，Trainer 更新参数，generate 完成推理。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="760" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">把 SFT 原理映射回 Hugging Face API</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">每层封装都对应一项明确职责</text>
+
+    <rect x="60" y="130" width="220" height="110" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="170" y="170" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Dataset</text>
+    <text x="170" y="200" text-anchor="middle" font-size="14" fill="#8a5418">prompt / completion</text>
+    <text x="170" y="222" text-anchor="middle" font-size="14" fill="#8a5418">messages</text>
+    <path d="M280 185H335" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="350" y="115" width="280" height="140" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="490" y="155" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Chat Template + Tokenizer</text>
+    <text x="490" y="188" text-anchor="middle" font-size="14" fill="#6b3fa0">角色边界、特殊 token</text>
+    <text x="490" y="214" text-anchor="middle" font-size="14" fill="#6b3fa0">文本 -&gt; input_ids</text>
+    <text x="490" y="238" text-anchor="middle" font-size="14" fill="#52616f">训练时 add_generation_prompt=False</text>
+    <path d="M630 185H685" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="700" y="130" width="390" height="110" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="895" y="168" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Data Collator</text>
+    <text x="895" y="198" text-anchor="middle" font-size="14" fill="#2f5f9e">动态 Padding + attention_mask</text>
+    <text x="895" y="222" text-anchor="middle" font-size="14" fill="#2f5f9e">labels 使用 token id / -100</text>
+
+    <path d="M895 240V305" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="330" y="320" width="640" height="160" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="650" y="365" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2937">AutoModelForCausalLM.forward</text>
+    <text x="650" y="402" text-anchor="middle" font-size="16" fill="#2f5f9e">input_ids [B,T] -&gt; logits [B,T,V]</text>
+    <text x="650" y="433" text-anchor="middle" font-size="16" fill="#2f5f9e">labels -&gt; one-token shift -&gt; CrossEntropyLoss</text>
+    <text x="650" y="459" text-anchor="middle" font-size="14" fill="#52616f">ignore_index = -100</text>
+
+    <path d="M330 400H245" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="55" y="335" width="175" height="130" rx="10" fill="#fff2eb" stroke="#eb5757" stroke-width="2"/>
+    <text x="142" y="374" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Trainer</text>
+    <text x="142" y="406" text-anchor="middle" font-size="14" fill="#a83737">backward</text>
+    <text x="142" y="432" text-anchor="middle" font-size="14" fill="#a83737">AdamW / scheduler</text>
+    <text x="142" y="454" text-anchor="middle" font-size="13" fill="#52616f">checkpoint</text>
+
+    <path d="M650 480V535" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="350" y="550" width="280" height="130" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="490" y="590" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">save_pretrained</text>
+    <text x="490" y="621" text-anchor="middle" font-size="14" fill="#166534">Model / Adapter</text>
+    <text x="490" y="647" text-anchor="middle" font-size="14" fill="#166534">Tokenizer / Config</text>
+    <path d="M630 615H700" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="715" y="550" width="375" height="130" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="902" y="590" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">GenerationConfig + generate</text>
+    <text x="902" y="621" text-anchor="middle" font-size="14" fill="#8a5418">add_generation_prompt=True</text>
+    <text x="902" y="647" text-anchor="middle" font-size="14" fill="#8a5418">Greedy / Temperature / Top-p</text>
+
+    <text x="575" y="730" text-anchor="middle" font-size="16" fill="#334155">SFTTrainer 会自动连接其中多步，但底层张量契约没有改变</text>
+  </g>
+</svg>

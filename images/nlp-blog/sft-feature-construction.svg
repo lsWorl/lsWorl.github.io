@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="690" viewBox="0 0 1150 690" role="img" aria-labelledby="title desc">
+  <title id="title">Prompt 与 Answer 如何变成 SFT 张量</title>
+  <desc id="desc">Prompt 和 Answer 分开分词，Answer 添加 EOS，拼接 input ids，并把 Prompt 对应 labels 设为负一百。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="690" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Completion-only Feature Construction</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">边界由代码显式维护，Prompt 保留为上下文但不产生 Loss</text>
+
+    <rect x="55" y="125" width="440" height="145" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="275" y="163" text-anchor="middle" font-size="21" font-weight="700" fill="#1f2937">Prompt</text>
+    <text x="275" y="198" text-anchor="middle" font-size="15" fill="#2f5f9e">### Instruction: 什么是过拟合？</text>
+    <text x="275" y="229" text-anchor="middle" font-size="15" fill="#2f5f9e">### Response:</text>
+    <text x="275" y="254" text-anchor="middle" font-size="13" fill="#52616f">add_special_tokens=True</text>
+
+    <rect x="655" y="125" width="440" height="145" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="875" y="163" text-anchor="middle" font-size="21" font-weight="700" fill="#1f2937">Answer</text>
+    <text x="875" y="198" text-anchor="middle" font-size="15" fill="#166534">过拟合是模型在训练数据上……</text>
+    <text x="875" y="229" text-anchor="middle" font-size="15" fill="#166534">+ EOS</text>
+    <text x="875" y="254" text-anchor="middle" font-size="13" fill="#52616f">add_special_tokens=False</text>
+
+    <path d="M275 270V320" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M875 270V320" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="75" y="335" width="400" height="90" rx="10" fill="#fff" stroke="#bad1ef" stroke-width="2"/>
+    <text x="275" y="370" text-anchor="middle" font-size="18" font-weight="700" fill="#2f5f9e">prompt_ids</text>
+    <text x="275" y="400" text-anchor="middle" font-size="15" fill="#52616f">[101, 923, 44, 81, 19, 77]</text>
+
+    <rect x="675" y="335" width="400" height="90" rx="10" fill="#fff" stroke="#b8dfc5" stroke-width="2"/>
+    <text x="875" y="370" text-anchor="middle" font-size="18" font-weight="700" fill="#166534">answer_ids</text>
+    <text x="875" y="400" text-anchor="middle" font-size="15" fill="#52616f">[35, 72, 66, 51, 2]</text>
+
+    <path d="M475 380H565" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M675 380H585" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <circle cx="575" cy="380" r="25" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="575" y="387" text-anchor="middle" font-size="23" font-weight="700" fill="#8a5418">+</text>
+    <path d="M575 405V465" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="80" y="480" width="990" height="150" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="120" y="520" font-size="18" font-weight="700" fill="#334155">input_ids</text>
+    <rect x="285" y="495" width="430" height="45" rx="7" fill="#eaf3ff"/><text x="500" y="524" text-anchor="middle" font-size="14" fill="#2f5f9e">[101, 923, 44, 81, 19, 77]</text>
+    <rect x="725" y="495" width="280" height="45" rx="7" fill="#eefaf2"/><text x="865" y="524" text-anchor="middle" font-size="14" fill="#166534">[35, 72, 66, 51, 2]</text>
+    <text x="120" y="590" font-size="18" font-weight="700" fill="#334155">labels</text>
+    <rect x="285" y="565" width="430" height="45" rx="7" fill="#f1f3f5"/><text x="500" y="594" text-anchor="middle" font-size="14" fill="#6b7280">[-100, -100, -100, -100, -100, -100]</text>
+    <rect x="725" y="565" width="280" height="45" rx="7" fill="#eefaf2"/><text x="865" y="594" text-anchor="middle" font-size="14" fill="#166534">[35, 72, 66, 51, 2]</text>
+
+    <text x="575" y="666" text-anchor="middle" font-size="15" fill="#334155">蓝色 Prompt 提供上下文；绿色 Answer 同时出现在输入与监督标签中</text>
+  </g>
+</svg>

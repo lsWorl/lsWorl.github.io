@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="720" viewBox="0 0 1150 720" role="img" aria-labelledby="title desc">
+  <title id="title">Chat Template 如何生成 Assistant Mask</title>
+  <desc id="desc">多轮 messages 由模板变成线性 token 序列，system 和 user 区域 mask 为零，assistant 区域 mask 为一，据此构造 labels。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="720" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">Assistant-only Loss 依赖准确的角色边界</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">Mask 为 0 的 token 仍在 input_ids 中，只是不进入损失</text>
+
+    <rect x="55" y="120" width="1040" height="120" rx="10" fill="#fff" stroke="#d4dbe5" stroke-width="2"/>
+    <text x="85" y="158" font-size="18" font-weight="700" fill="#334155">messages</text>
+    <rect x="220" y="140" width="180" height="65" rx="8" fill="#f4effb" stroke="#9b51e0"/>
+    <text x="310" y="166" text-anchor="middle" font-size="15" font-weight="700" fill="#6b3fa0">system</text>
+    <text x="310" y="190" text-anchor="middle" font-size="13" fill="#52616f">你是一名助教</text>
+    <rect x="420" y="140" width="180" height="65" rx="8" fill="#eaf3ff" stroke="#2f80ed"/>
+    <text x="510" y="166" text-anchor="middle" font-size="15" font-weight="700" fill="#2f5f9e">user 1</text>
+    <text x="510" y="190" text-anchor="middle" font-size="13" fill="#52616f">什么是SFT</text>
+    <rect x="620" y="140" width="180" height="65" rx="8" fill="#eefaf2" stroke="#27ae60"/>
+    <text x="710" y="166" text-anchor="middle" font-size="15" font-weight="700" fill="#166534">assistant 1</text>
+    <text x="710" y="190" text-anchor="middle" font-size="13" fill="#52616f">SFT是监督微调</text>
+    <rect x="820" y="140" width="180" height="65" rx="8" fill="#eaf3ff" stroke="#2f80ed"/>
+    <text x="910" y="166" text-anchor="middle" font-size="15" font-weight="700" fill="#2f5f9e">user 2</text>
+    <text x="910" y="190" text-anchor="middle" font-size="13" fill="#52616f">LoRA呢</text>
+
+    <path d="M575 240V290" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="55" y="305" width="1040" height="120" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="85" y="343" font-size="18" font-weight="700" fill="#334155">template tokens</text>
+    <rect x="260" y="325" width="170" height="65" rx="8" fill="#f4effb"/><text x="345" y="352" text-anchor="middle" font-size="13" fill="#6b3fa0">&lt;system&gt; ... &lt;end&gt;</text><text x="345" y="376" text-anchor="middle" font-size="13" fill="#6b3fa0">system span</text>
+    <rect x="440" y="325" width="170" height="65" rx="8" fill="#eaf3ff"/><text x="525" y="352" text-anchor="middle" font-size="13" fill="#2f5f9e">&lt;user&gt; ... &lt;end&gt;</text><text x="525" y="376" text-anchor="middle" font-size="13" fill="#2f5f9e">user span</text>
+    <rect x="620" y="325" width="210" height="65" rx="8" fill="#eefaf2"/><text x="725" y="352" text-anchor="middle" font-size="13" fill="#166534">&lt;assistant&gt; answer &lt;end&gt;</text><text x="725" y="376" text-anchor="middle" font-size="13" fill="#166534">generation span</text>
+    <rect x="840" y="325" width="170" height="65" rx="8" fill="#eaf3ff"/><text x="925" y="352" text-anchor="middle" font-size="13" fill="#2f5f9e">&lt;user&gt; ... &lt;end&gt;</text><text x="925" y="376" text-anchor="middle" font-size="13" fill="#2f5f9e">user span</text>
+
+    <path d="M575 425V475" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="55" y="490" width="1040" height="160" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="85" y="530" font-size="18" font-weight="700" fill="#334155">assistant_mask</text>
+    <rect x="260" y="505" width="170" height="45" rx="7" fill="#f1f3f5"/><text x="345" y="534" text-anchor="middle" font-size="14" fill="#6b7280">0 0 0 0</text>
+    <rect x="440" y="505" width="170" height="45" rx="7" fill="#f1f3f5"/><text x="525" y="534" text-anchor="middle" font-size="14" fill="#6b7280">0 0 0 0</text>
+    <rect x="620" y="505" width="210" height="45" rx="7" fill="#bfe8cd"/><text x="725" y="534" text-anchor="middle" font-size="14" font-weight="700" fill="#166534">1 1 1 1 1</text>
+    <rect x="840" y="505" width="170" height="45" rx="7" fill="#f1f3f5"/><text x="925" y="534" text-anchor="middle" font-size="14" fill="#6b7280">0 0 0 0</text>
+    <text x="85" y="605" font-size="18" font-weight="700" fill="#334155">labels</text>
+    <text x="260" y="605" font-size="15" fill="#6b7280">-100 ... -100</text>
+    <text x="620" y="605" font-size="15" font-weight="700" fill="#166534">assistant token ids</text>
+    <text x="840" y="605" font-size="15" fill="#6b7280">-100 ... -100</text>
+
+    <text x="575" y="690" text-anchor="middle" font-size="16" fill="#334155">模板若不能标记 generation span，assistant_only_loss 就无法可靠定位目标区域</text>
+  </g>
+</svg>

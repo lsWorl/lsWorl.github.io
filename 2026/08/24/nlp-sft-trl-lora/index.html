@@ -1,0 +1,975 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在理解input_ids、labels与Completion-only loss后，使用Hugging Face TRL SFTTrainer、Conversational Dataset、Chat Template和PEFT LoRA完成对话SFT，并讲清assistant-only loss、Packing、显存、Adapter保存加载与推理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型">
+<meta property="og:url" content="https://lsworl.github.io/2026/08/24/nlp-sft-trl-lora/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="在理解input_ids、labels与Completion-only loss后，使用Hugging Face TRL SFTTrainer、Conversational Dataset、Chat Template和PEFT LoRA完成对话SFT，并讲清assistant-only loss、Packing、显存、Adapter保存加载与推理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-08-24T15:59:00.000Z">
+<meta property="article:modified_time" content="2026-08-24T16:00:40.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="自然语言处理">
+<meta property="article:tag" content="Hugging Face">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="SFT">
+<meta property="article:tag" content="TRL">
+<meta property="article:tag" content="PEFT">
+<meta property="article:tag" content="LoRA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型",
+  "url": "https://lsworl.github.io/2026/08/24/nlp-sft-trl-lora/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-08-24T15:59:00.000Z",
+  "dateModified": "2026-08-24T16:00:40.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/08/24/nlp-sft-trl-lora/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">125</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">140</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-24T15:59:00.000Z" title="发表于 2026-08-24 23:59:00">2026-08-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-24T16:00:40.000Z" title="更新于 2026-08-25 00:00:40">2026-08-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>前两篇已经完成了两层理解：</p>
+<ol>
+<li><a href="https://lsworl.github.io/2026/08/24/nlp-sft-principles/">SFT 原理篇</a>：SFT 仍然是 next-token prediction，关键在于数据、Chat Template 和 Loss Mask。</li>
+<li><a href="https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/">Transformers 手写篇</a>：亲手构造 <code>input_ids / attention_mask / labels</code>，再交给原生 <code>Trainer</code>。</li>
+</ol>
+<p>现在可以进入更接近真实项目的组合：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Hugging Face Datasets
+  + Transformers
+  + TRL SFTTrainer
+  + PEFT LoRA</code></pre>
+
+<p>本篇不会把 <code>SFTTrainer</code> 描述成“一行代码训练大模型”。它确实减少了很多样板代码，但仍然需要对下面这些问题负责：</p>
+<ul>
+<li>数据格式是否正确。</li>
+<li>Chat Template 是否与模型匹配。</li>
+<li>Assistant-only loss 是否真的生效。</li>
+<li>截断是否删除了回答。</li>
+<li>LoRA 是否插入了预期模块。</li>
+<li>训练与验证是否存在数据泄漏。</li>
+<li>保存的是完整模型还是 Adapter。</li>
+<li>推理时是否加载了正确的 Base Model。</li>
+</ul>
+<span id="more"></span>
+
+<p><img src="/images/nlp-blog/sft-trl-lora-overview.svg" alt="TRL SFTTrainer与PEFT LoRA整体流程"></p>
+<h2 id="1-TRL-是什么"><a href="#1-TRL-是什么" class="headerlink" title="1. TRL 是什么"></a>1. TRL 是什么</h2><p>TRL 是 Hugging Face 生态中面向语言模型后训练的库。</p>
+<p>它提供多种 Trainer，例如：</p>
+<ul>
+<li><code>SFTTrainer</code>：监督微调。</li>
+<li><code>DPOTrainer</code>：偏好优化。</li>
+<li><code>RewardTrainer</code>：奖励模型训练。</li>
+<li><code>PPOTrainer</code>：基于 PPO 的强化学习训练。</li>
+<li>其他后训练算法 Trainer。</li>
+</ul>
+<p>本篇只讨论 <code>SFTTrainer</code>。</p>
+<p>它建立在 Transformers <code>Trainer</code> 之上，额外处理：</p>
+<pre class="language-text" data-language="text"><code class="language-text">SFT 常见数据格式
+Chat Template
+Tokenization
+Completion / Assistant Loss Mask
+Packing
+PEFT 集成</code></pre>
+
+<h2 id="2-SFTTrainer-自动做了什么"><a href="#2-SFTTrainer-自动做了什么" class="headerlink" title="2. SFTTrainer 自动做了什么"></a>2. SFTTrainer 自动做了什么</h2><p>上一份代码中，我们手动完成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">format_prompt
+  -> tokenize Prompt
+  -> tokenize Answer
+  -> 拼接 input_ids
+  -> 构造 labels=-100
+  -> 动态 Padding</code></pre>
+
+<p>现在可以直接提供：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token punctuation">&#123;</span>
+    <span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"什么是过拟合？"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"过拟合是……"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><code>SFTTrainer</code> 会根据 Tokenizer 与配置完成中间处理。</p>
+<p>但“自动”不等于“无需理解”。如果模板、角色或 EOS 配置错了，Trainer 只会稳定地训练错误数据。</p>
+<h2 id="3-安装依赖"><a href="#3-安装依赖" class="headerlink" title="3. 安装依赖"></a>3. 安装依赖</h2><pre class="language-bash" data-language="bash"><code class="language-bash">pip <span class="token function">install</span> <span class="token parameter variable">-U</span> torch transformers datasets accelerate trl peft</code></pre>
+
+<p>记录版本：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">python <span class="token parameter variable">-c</span> <span class="token string">"import torch, transformers, datasets, trl, peft; print(torch.__version__); print(transformers.__version__); print(datasets.__version__); print(trl.__version__); print(peft.__version__)"</span></code></pre>
+
+<p>TRL 迭代较快，尤其是：</p>
+<ul>
+<li>数据格式支持。</li>
+<li><code>SFTConfig</code> 参数。</li>
+<li>Chat Template 处理。</li>
+<li>Completion-only 与 Assistant-only loss。</li>
+<li>Packing 和 Loss 实现。</li>
+</ul>
+<p>运行项目时应固定一组经过验证的依赖版本，并保留 <code>pip freeze</code>。</p>
+<h2 id="4-本篇模型与训练目标"><a href="#4-本篇模型与训练目标" class="headerlink" title="4. 本篇模型与训练目标"></a>4. 本篇模型与训练目标</h2><p>教学代码使用：</p>
+<pre class="language-python" data-language="python"><code class="language-python">MODEL_ID <span class="token operator">=</span> <span class="token string">"Qwen/Qwen3-0.6B-Base"</span></code></pre>
+
+<p>目标是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Qwen3 Base Causal LM
+  + 中文机器学习对话示范
+  + Chat Template
+  + Assistant-only loss
+  + LoRA
+  -> 一个教学用指令微调 Adapter</code></pre>
+
+<p>选择小模型只是为了降低学习门槛。少量示例不能构建可靠的通用助手。</p>
+<p>使用任何模型前都要检查 Model Card、许可证和最低 Transformers 版本。</p>
+<h2 id="5-为什么使用-Base-Model"><a href="#5-为什么使用-Base-Model" class="headerlink" title="5. 为什么使用 Base Model"></a>5. 为什么使用 Base Model</h2><p>Base Model 的主要训练阶段是预训练。</p>
+<p>它可能已经具备语言和知识能力，但并不保证稳定遵循对话指令。</p>
+<p>从 Base Model 开始能更清楚地观察：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Chat Template + SFT Data
+如何让“文本续写”呈现为“用户与助手对话”</code></pre>
+
+<p>如果目标是快速适配业务，通常也可以从 Instruct Model 开始；此时应沿用原模型自带的 Chat Template，避免改变角色协议。</p>
+<h2 id="6-TRL-支持哪些-SFT-数据格式"><a href="#6-TRL-支持哪些-SFT-数据格式" class="headerlink" title="6. TRL 支持哪些 SFT 数据格式"></a>6. TRL 支持哪些 SFT 数据格式</h2><p>当前 <code>SFTTrainer</code> 主要支持两种数据类型，每种又有标准与对话形式。</p>
+<h3 id="6-1-Standard-language-modeling"><a href="#6-1-Standard-language-modeling" class="headerlink" title="6.1 Standard language modeling"></a>6.1 Standard language modeling</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token punctuation">&#123;</span><span class="token string">"text"</span><span class="token punctuation">:</span> <span class="token string">"The sky is blue."</span><span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="6-2-Conversational-language-modeling"><a href="#6-2-Conversational-language-modeling" class="headerlink" title="6.2 Conversational language modeling"></a>6.2 Conversational language modeling</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token punctuation">&#123;</span>
+    <span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"What color is the sky?"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"It is blue."</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="6-3-Standard-prompt-completion"><a href="#6-3-Standard-prompt-completion" class="headerlink" title="6.3 Standard prompt-completion"></a>6.3 Standard prompt-completion</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token punctuation">&#123;</span>
+    <span class="token string">"prompt"</span><span class="token punctuation">:</span> <span class="token string">"The sky is"</span><span class="token punctuation">,</span>
+    <span class="token string">"completion"</span><span class="token punctuation">:</span> <span class="token string">" blue."</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="6-4-Conversational-prompt-completion"><a href="#6-4-Conversational-prompt-completion" class="headerlink" title="6.4 Conversational prompt-completion"></a>6.4 Conversational prompt-completion</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token punctuation">&#123;</span>
+    <span class="token string">"prompt"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"What color is the sky?"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">"completion"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"It is blue."</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>本篇使用 <code>messages</code>，因为它最接近聊天模型的真实输入结构。</p>
+<h2 id="7-构造-Conversational-Dataset"><a href="#7-构造-Conversational-Dataset" class="headerlink" title="7. 构造 Conversational Dataset"></a>7. 构造 Conversational Dataset</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datasets <span class="token keyword">import</span> Dataset<span class="token punctuation">,</span> DatasetDict
+
+TRAIN_CONVERSATIONS <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">&#123;</span>
+                <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">,</span>
+                <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"你是一名耐心、准确的机器学习助教。"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#123;</span>
+                <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+                <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"请用一句话解释什么是过拟合。"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#123;</span>
+                <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span>
+                <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"过拟合是模型过度记忆训练数据，导致在未见数据上泛化较差的现象。"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+
+dataset <span class="token operator">=</span> DatasetDict<span class="token punctuation">(</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"train"</span><span class="token punctuation">:</span> Dataset<span class="token punctuation">.</span>from_list<span class="token punctuation">(</span>TRAIN_CONVERSATIONS<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token string">"validation"</span><span class="token punctuation">:</span> Dataset<span class="token punctuation">.</span>from_list<span class="token punctuation">(</span>VALIDATION_CONVERSATIONS<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">)</span></code></pre>
+
+<h3 id="7-1-为什么保留结构化-messages"><a href="#7-1-为什么保留结构化-messages" class="headerlink" title="7.1 为什么保留结构化 messages"></a>7.1 为什么保留结构化 messages</h3><p>结构化数据比提前拼接字符串更容易：</p>
+<ul>
+<li>检查角色顺序。</li>
+<li>替换 system prompt。</li>
+<li>支持多轮对话。</li>
+<li>应用不同模型的 Chat Template。</li>
+<li>区分 assistant token。</li>
+<li>扩展工具调用字段。</li>
+</ul>
+<h2 id="8-数据校验不能省"><a href="#8-数据校验不能省" class="headerlink" title="8. 数据校验不能省"></a>8. 数据校验不能省</h2><pre class="language-python" data-language="python"><code class="language-python">ALLOWED_ROLES <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"assistant"</span><span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">def</span> <span class="token function">validate_conversation</span><span class="token punctuation">(</span>example<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    messages <span class="token operator">=</span> example<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span>
+    <span class="token keyword">assert</span> messages<span class="token punctuation">,</span> <span class="token string">"messages 不能为空"</span>
+
+    assistant_count <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">for</span> message <span class="token keyword">in</span> messages<span class="token punctuation">:</span>
+        <span class="token keyword">assert</span> message<span class="token punctuation">[</span><span class="token string">"role"</span><span class="token punctuation">]</span> <span class="token keyword">in</span> ALLOWED_ROLES
+        <span class="token keyword">assert</span> <span class="token builtin">isinstance</span><span class="token punctuation">(</span>message<span class="token punctuation">[</span><span class="token string">"content"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token builtin">str</span><span class="token punctuation">)</span>
+        <span class="token keyword">assert</span> message<span class="token punctuation">[</span><span class="token string">"content"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        assistant_count <span class="token operator">+=</span> message<span class="token punctuation">[</span><span class="token string">"role"</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">"assistant"</span>
+
+    <span class="token keyword">assert</span> assistant_count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"每条训练样本至少需要一个 assistant 回答"</span></code></pre>
+
+<p>还应检查：</p>
+<ul>
+<li>是否连续出现多个相同角色。</li>
+<li>system 是否只出现在允许位置。</li>
+<li>assistant 是否复制了 Prompt。</li>
+<li>是否存在空回答。</li>
+<li>是否存在超长样本。</li>
+<li>训练集与验证集是否重复。</li>
+</ul>
+<h2 id="9-Chat-Template-是训练协议"><a href="#9-Chat-Template-是训练协议" class="headerlink" title="9. Chat Template 是训练协议"></a>9. Chat Template 是训练协议</h2><p><code>messages</code> 只是数据结构，模型真正看到的仍是一串 token。</p>
+<p>Chat Template 负责把：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"什么是SFT？"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"SFT是监督微调。"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>变成类似：</p>
+<pre class="language-text" data-language="text"><code class="language-text">&lt;|user|>
+什么是SFT？&lt;|end|>
+&lt;|assistant|>
+SFT是监督微调。&lt;|end|></code></pre>
+
+<p>模板定义：</p>
+<ul>
+<li>角色起始 token。</li>
+<li>消息结束 token。</li>
+<li>system prompt 放置方式。</li>
+<li>assistant 回答边界。</li>
+<li>EOS 对齐。</li>
+<li>可选工具调用格式。</li>
+</ul>
+<p><img src="/images/nlp-blog/sft-chat-template-assistant-mask.svg" alt="Chat Template如何生成Assistant Mask"></p>
+<h2 id="10-内置模板与-chat-template-path"><a href="#10-内置模板与-chat-template-path" class="headerlink" title="10. 内置模板与 chat_template_path"></a>10. 内置模板与 chat_template_path</h2><p>本文完整脚本使用 Qwen3 Tokenizer 已有的 Chat Template 和控制 token。当前 TRL 能为已知的 Qwen3 模板补充 Assistant-only loss 所需的生成区域标记，因此核心配置不必克隆另一套角色协议。</p>
+<p>如果模型没有模板，<code>SFTConfig</code> 也可以指定一个模板来源：</p>
+<pre class="language-python" data-language="python"><code class="language-python">SFTConfig<span class="token punctuation">(</span>
+    chat_template_path<span class="token operator">=</span><span class="token string">"HuggingFaceTB/SmolLM3-3B"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>TRL 会使用对应模板处理 conversational dataset，并处理所需特殊 token。</p>
+<p>有些 Base Model Tokenizer 已经包含合适 Chat Template，这时不一定需要克隆其他模板。</p>
+<p>判断原则：</p>
+<ol>
+<li>优先检查模型自己的 Tokenizer 配置。</li>
+<li>确认模板是否适合训练目标。</li>
+<li>确认 EOS 与消息结束 token 对齐。</li>
+<li>确认 Assistant-only loss 所需标记是否受支持。</li>
+<li>保存最终 Tokenizer，不能只保存 Adapter。</li>
+</ol>
+<h2 id="11-assistant-only-loss-x3D-True-到底做什么"><a href="#11-assistant-only-loss-x3D-True-到底做什么" class="headerlink" title="11. assistant_only_loss&#x3D;True 到底做什么"></a>11. assistant_only_loss&#x3D;True 到底做什么</h2><pre class="language-python" data-language="python"><code class="language-python">SFTConfig<span class="token punctuation">(</span>
+    assistant_only_loss<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>它让 system 和 user token 对应 labels 被忽略：</p>
+<pre class="language-text" data-language="text"><code class="language-text">system token    -> labels = -100
+user token      -> labels = -100
+assistant token -> labels = token id
+Padding token   -> labels = -100</code></pre>
+
+<p>这与上一篇手写的：</p>
+<pre class="language-python" data-language="python"><code class="language-python">labels <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>prompt_ids<span class="token punctuation">)</span> <span class="token operator">+</span> answer_ids</code></pre>
+
+<p>属于同一原理，只是 TRL 根据 Chat Template 生成 assistant mask。</p>
+<h3 id="11-1-不是所有模板都能自动识别-Assistant"><a href="#11-1-不是所有模板都能自动识别-Assistant" class="headerlink" title="11.1 不是所有模板都能自动识别 Assistant"></a>11.1 不是所有模板都能自动识别 Assistant</h3><p>Assistant-only loss 需要模板能够标记 assistant 生成区域。</p>
+<p>当前 TRL 文档使用模板中的 generation 区域标记来获得 assistant mask，并对部分已知模型族提供适配。</p>
+<p>因此开启参数后仍应检查一条处理后的样本，而不是只相信配置名。</p>
+<h2 id="12-completion-only-loss-与-assistant-only-loss-的区别"><a href="#12-completion-only-loss-与-assistant-only-loss-的区别" class="headerlink" title="12. completion_only_loss 与 assistant_only_loss 的区别"></a>12. completion_only_loss 与 assistant_only_loss 的区别</h2><h3 id="12-1-completion-only-loss"><a href="#12-1-completion-only-loss" class="headerlink" title="12.1 completion_only_loss"></a>12.1 completion_only_loss</h3><p>适合 <code>prompt / completion</code> 数据：</p>
+<pre class="language-text" data-language="text"><code class="language-text">prompt     -> -100
+completion -> 参与 loss</code></pre>
+
+<h3 id="12-2-assistant-only-loss"><a href="#12-2-assistant-only-loss" class="headerlink" title="12.2 assistant_only_loss"></a>12.2 assistant_only_loss</h3><p>适合 conversational 数据：</p>
+<pre class="language-text" data-language="text"><code class="language-text">system / user -> -100
+assistant     -> 参与 loss</code></pre>
+
+<p>多轮对话中可以有多个 assistant 区域。</p>
+<h3 id="12-3-可以同时使用吗"><a href="#12-3-可以同时使用吗" class="headerlink" title="12.3 可以同时使用吗"></a>12.3 可以同时使用吗</h3><p>对于 conversational prompt-completion 数据，两种范围可以组合：先只考虑 completion 部分，再只训练其中 assistant 消息。</p>
+<p>具体行为与 TRL 版本和数据格式有关，应根据当前官方文档与处理结果确认。</p>
+<h2 id="13-SFTConfig-的核心参数"><a href="#13-SFTConfig-的核心参数" class="headerlink" title="13. SFTConfig 的核心参数"></a>13. SFTConfig 的核心参数</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> trl <span class="token keyword">import</span> SFTConfig
+
+training_args <span class="token operator">=</span> SFTConfig<span class="token punctuation">(</span>
+    output_dir<span class="token operator">=</span><span class="token string">"outputs/sft-trl-lora/checkpoints"</span><span class="token punctuation">,</span>
+    max_length<span class="token operator">=</span><span class="token number">512</span><span class="token punctuation">,</span>
+    eos_token<span class="token operator">=</span><span class="token string">"&lt;|im_end|>"</span><span class="token punctuation">,</span>
+    assistant_only_loss<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    packing<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    loss_type<span class="token operator">=</span><span class="token string">"nll"</span><span class="token punctuation">,</span>
+    num_train_epochs<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+    per_device_train_batch_size<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+    per_device_eval_batch_size<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+    gradient_accumulation_steps<span class="token operator">=</span><span class="token number">8</span><span class="token punctuation">,</span>
+    learning_rate<span class="token operator">=</span><span class="token number">1e-4</span><span class="token punctuation">,</span>
+    warmup_ratio<span class="token operator">=</span><span class="token number">0.1</span><span class="token punctuation">,</span>
+    lr_scheduler_type<span class="token operator">=</span><span class="token string">"cosine"</span><span class="token punctuation">,</span>
+    logging_steps<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+    eval_strategy<span class="token operator">=</span><span class="token string">"epoch"</span><span class="token punctuation">,</span>
+    save_strategy<span class="token operator">=</span><span class="token string">"epoch"</span><span class="token punctuation">,</span>
+    load_best_model_at_end<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    metric_for_best_model<span class="token operator">=</span><span class="token string">"eval_loss"</span><span class="token punctuation">,</span>
+    greater_is_better<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    gradient_checkpointing<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    report_to<span class="token operator">=</span><span class="token string">"none"</span><span class="token punctuation">,</span>
+    seed<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">,</span>
+    model_init_kwargs<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">"dtype"</span><span class="token punctuation">:</span> dtype<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<h3 id="13-1-max-length"><a href="#13-1-max-length" class="headerlink" title="13.1 max_length"></a>13.1 max_length</h3><p>它限制处理后的序列长度。</p>
+<p>不能只根据模型最大上下文设置。还要结合：</p>
+<ul>
+<li>数据长度分布。</li>
+<li>GPU 显存。</li>
+<li>Batch Size。</li>
+<li>Attention 的二次复杂度。</li>
+<li>截断后回答是否保留。</li>
+</ul>
+<h3 id="13-2-packing"><a href="#13-2-packing" class="headerlink" title="13.2 packing"></a>13.2 packing</h3><p><code>packing=True</code> 会把多个短样本打包，提高 token 利用率。</p>
+<p>学习阶段先设为 <code>False</code>，更容易逐条检查。</p>
+<h3 id="13-3-eos-token"><a href="#13-3-eos-token" class="headerlink" title="13.3 eos_token"></a>13.3 eos_token</h3><p>Qwen3 Chat Template 使用 <code>&lt;|im_end|&gt;</code> 结束一条消息，因此显式把训练结束 token 与模板对齐：</p>
+<pre class="language-python" data-language="python"><code class="language-python">eos_token<span class="token operator">=</span><span class="token string">"&lt;|im_end|>"</span></code></pre>
+
+<h3 id="13-4-learning-rate"><a href="#13-4-learning-rate" class="headerlink" title="13.4 learning_rate"></a>13.4 learning_rate</h3><p>LoRA 只训练新增参数，常使用比 Full Fine-tuning 更高的学习率。</p>
+<p><code>1e-4</code> 是一个实验起点，不是通用最优值。</p>
+<h3 id="13-5-model-init-kwargs"><a href="#13-5-model-init-kwargs" class="headerlink" title="13.5 model_init_kwargs"></a>13.5 model_init_kwargs</h3><p>当 <code>model</code> 以 Hub ID 字符串传给 <code>SFTTrainer</code> 时，可以通过它传递 <code>from_pretrained()</code> 参数：</p>
+<pre class="language-python" data-language="python"><code class="language-python">model_init_kwargs<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">"dtype"</span><span class="token punctuation">:</span> torch<span class="token punctuation">.</span>bfloat16<span class="token punctuation">&#125;</span></code></pre>
+
+<h2 id="14-为什么本篇显式设置-loss-type-x3D-”nll”"><a href="#14-为什么本篇显式设置-loss-type-x3D-”nll”" class="headerlink" title="14. 为什么本篇显式设置 loss_type&#x3D;”nll”"></a>14. 为什么本篇显式设置 loss_type&#x3D;”nll”</h2><p>当前 TRL 还提供降低大词表 logits 峰值显存的 chunked loss 实现。</p>
+<p>但具体 loss 实现与 PEFT、Liger 等功能之间可能存在版本相关的兼容限制。</p>
+<p>本篇目标是讲清 LoRA SFT，因此显式使用标准负对数似然：</p>
+<pre class="language-python" data-language="python"><code class="language-python">loss_type<span class="token operator">=</span><span class="token string">"nll"</span></code></pre>
+
+<p>数学目标仍然是：</p>
+<p>$$<br>\mathcal{L}<br>&#x3D;-<br>\frac{1}{N}<br>\sum_{t: label_t\neq -100}<br>\log p_{\theta}(x_t\mid x_{&lt;t})<br>$$</p>
+<p>引入新的显存优化前，应先阅读正在使用的 TRL 版本文档并单独验证兼容性。</p>
+<h2 id="15-LoRA-的数学原理"><a href="#15-LoRA-的数学原理" class="headerlink" title="15. LoRA 的数学原理"></a>15. LoRA 的数学原理</h2><p>原线性层：</p>
+<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>LoRA 冻结 $W$，学习低秩增量：</p>
+<p>$$<br>y&#x3D;(W+\Delta W)x<br>$$</p>
+<p>$$<br>\Delta W&#x3D;\frac{\alpha}{r}BA<br>$$</p>
+<p>其中：</p>
+<p>$$<br>A\in\mathbb{R}^{r\times d_{in}}<br>$$</p>
+<p>$$<br>B\in\mathbb{R}^{d_{out}\times r}<br>$$</p>
+<p>如果原矩阵参数量为：</p>
+<p>$$<br>d_{out}d_{in}<br>$$</p>
+<p>LoRA 新增参数量为：</p>
+<p>$$<br>r(d_{in}+d_{out})<br>$$</p>
+<p>当 $r$ 很小时，新增参数远少于完整矩阵。</p>
+<h2 id="16-配置-LoraConfig"><a href="#16-配置-LoraConfig" class="headerlink" title="16. 配置 LoraConfig"></a>16. 配置 LoraConfig</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> peft <span class="token keyword">import</span> LoraConfig
+
+peft_config <span class="token operator">=</span> LoraConfig<span class="token punctuation">(</span>
+    r<span class="token operator">=</span><span class="token number">16</span><span class="token punctuation">,</span>
+    lora_alpha<span class="token operator">=</span><span class="token number">32</span><span class="token punctuation">,</span>
+    lora_dropout<span class="token operator">=</span><span class="token number">0.05</span><span class="token punctuation">,</span>
+    bias<span class="token operator">=</span><span class="token string">"none"</span><span class="token punctuation">,</span>
+    task_type<span class="token operator">=</span><span class="token string">"CAUSAL_LM"</span><span class="token punctuation">,</span>
+    target_modules<span class="token operator">=</span><span class="token string">"all-linear"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<h3 id="16-1-r"><a href="#16-1-r" class="headerlink" title="16.1 r"></a>16.1 r</h3><p><code>r</code> 是低秩维度。</p>
+<p>更大的 <code>r</code>：</p>
+<ul>
+<li>表达能力更高。</li>
+<li>可训练参数更多。</li>
+<li>显存和计算增加。</li>
+<li>不一定带来更好泛化。</li>
+</ul>
+<h3 id="16-2-lora-alpha"><a href="#16-2-lora-alpha" class="headerlink" title="16.2 lora_alpha"></a>16.2 lora_alpha</h3><p>它控制 LoRA 更新的缩放。</p>
+<p>原始形式常写为：</p>
+<p>$$<br>\frac{\alpha}{r}<br>$$</p>
+<h3 id="16-3-lora-dropout"><a href="#16-3-lora-dropout" class="headerlink" title="16.3 lora_dropout"></a>16.3 lora_dropout</h3><p>只在 LoRA 分支上应用 Dropout，可缓解小数据过拟合。</p>
+<h3 id="16-4-target-modules-x3D-”all-linear”"><a href="#16-4-target-modules-x3D-”all-linear”" class="headerlink" title="16.4 target_modules&#x3D;”all-linear”"></a>16.4 target_modules&#x3D;”all-linear”</h3><p>PEFT 会选择模型中的线性层，同时对 <code>PreTrainedModel</code> 排除最终输出层。</p>
+<p>优点是避免硬编码不同架构的模块名。</p>
+<p>如果只想训练特定投影，也可以显式配置：</p>
+<pre class="language-python" data-language="python"><code class="language-python">target_modules<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"q_proj"</span><span class="token punctuation">,</span> <span class="token string">"k_proj"</span><span class="token punctuation">,</span> <span class="token string">"v_proj"</span><span class="token punctuation">,</span> <span class="token string">"o_proj"</span><span class="token punctuation">]</span></code></pre>
+
+<p>前提是目标模型确实使用这些名称。</p>
+<p><img src="/images/nlp-blog/sft-lora-linear-layer.svg" alt="LoRA如何插入Causal LM线性层"></p>
+<h2 id="17-创建-SFTTrainer"><a href="#17-创建-SFTTrainer" class="headerlink" title="17. 创建 SFTTrainer"></a>17. 创建 SFTTrainer</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> trl <span class="token keyword">import</span> SFTTrainer
+
+trainer <span class="token operator">=</span> SFTTrainer<span class="token punctuation">(</span>
+    model<span class="token operator">=</span>MODEL_ID<span class="token punctuation">,</span>
+    args<span class="token operator">=</span>training_args<span class="token punctuation">,</span>
+    train_dataset<span class="token operator">=</span>dataset<span class="token punctuation">[</span><span class="token string">"train"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    eval_dataset<span class="token operator">=</span>dataset<span class="token punctuation">[</span><span class="token string">"validation"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    peft_config<span class="token operator">=</span>peft_config<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这几行背后发生：</p>
+<pre class="language-text" data-language="text"><code class="language-text">根据 MODEL_ID 加载 Causal LM
+  -> 加载 Tokenizer / Processing Class
+  -> 准备 Chat Template
+  -> 处理 messages
+  -> Tokenize
+  -> 构造 Assistant Mask 与 labels
+  -> 用 PEFT 包装模型
+  -> 创建 Trainer 训练循环</code></pre>
+
+<h2 id="18-确认可训练参数"><a href="#18-确认可训练参数" class="headerlink" title="18. 确认可训练参数"></a>18. 确认可训练参数</h2><pre class="language-python" data-language="python"><code class="language-python">trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>print_trainable_parameters<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>预期看到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">trainable params: 较小数值
+all params: Base Model + Adapter
+trainable%: 很小比例</code></pre>
+
+<p>还可以手动统计：</p>
+<pre class="language-python" data-language="python"><code class="language-python">trainable <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span>
+    parameter<span class="token punctuation">.</span>numel<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> parameter <span class="token keyword">in</span> trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> parameter<span class="token punctuation">.</span>requires_grad
+<span class="token punctuation">)</span>
+
+total <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span>
+    parameter<span class="token punctuation">.</span>numel<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> parameter <span class="token keyword">in</span> trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>trainable<span class="token punctuation">,</span> total<span class="token punctuation">,</span> trainable <span class="token operator">/</span> total<span class="token punctuation">)</span></code></pre>
+
+<p>如果几乎所有参数都可训练，说明 PEFT 配置没有按预期生效。</p>
+<h2 id="19-LoRA-为什么能减少训练显存"><a href="#19-LoRA-为什么能减少训练显存" class="headerlink" title="19. LoRA 为什么能减少训练显存"></a>19. LoRA 为什么能减少训练显存</h2><p>Full Fine-tuning 需要为大量参数保存：</p>
+<ul>
+<li>梯度。</li>
+<li>AdamW 一阶矩。</li>
+<li>AdamW 二阶矩。</li>
+</ul>
+<p>LoRA 冻结主干后，这些状态只为 Adapter 参数创建。</p>
+<p>但 LoRA 不会消除所有显存：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Base Model 权重仍要加载
+前向激活仍然存在
+Attention 中间结果仍然存在
+部分 logits 仍然存在</code></pre>
+
+<p>因此序列过长或 Batch 太大时，LoRA 仍可能 OOM。</p>
+<p><img src="/images/nlp-blog/sft-full-vs-lora-memory.svg" alt="Full Fine-tuning与LoRA显存组成对比"></p>
+<h2 id="20-Gradient-Checkpointing"><a href="#20-Gradient-Checkpointing" class="headerlink" title="20. Gradient Checkpointing"></a>20. Gradient Checkpointing</h2><pre class="language-python" data-language="python"><code class="language-python">gradient_checkpointing<span class="token operator">=</span><span class="token boolean">True</span></code></pre>
+
+<p>它不保存全部前向激活，而是在反向传播时重新计算一部分中间结果。</p>
+<p>交换关系是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">更少显存
+  &lt;- 代价 ->
+更多计算时间</code></pre>
+
+<p>它和 LoRA 解决不同问题：</p>
+<ul>
+<li>LoRA 减少可训练参数与优化器状态。</li>
+<li>Gradient Checkpointing 减少前向激活保存。</li>
+</ul>
+<h2 id="21-BF16-与-FP16"><a href="#21-BF16-与-FP16" class="headerlink" title="21. BF16 与 FP16"></a>21. BF16 与 FP16</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">choose_dtype</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_available<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> torch<span class="token punctuation">.</span>float32
+    <span class="token keyword">if</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_bf16_supported<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> torch<span class="token punctuation">.</span>bfloat16
+    <span class="token keyword">return</span> torch<span class="token punctuation">.</span>float16</code></pre>
+
+<p>一般而言：</p>
+<ul>
+<li>支持 BF16 的设备优先尝试 BF16。</li>
+<li>较旧 GPU 可能只能高效使用 FP16。</li>
+<li>CPU 教学检查使用 FP32 更稳妥，但训练很慢。</li>
+</ul>
+<p>混合精度不是简单把所有张量永久变成低精度；训练框架会对不同计算使用合适策略。</p>
+<h2 id="22-Packing-何时开启"><a href="#22-Packing-何时开启" class="headerlink" title="22. Packing 何时开启"></a>22. Packing 何时开启</h2><p>先统计长度：</p>
+<pre class="language-text" data-language="text"><code class="language-text">P50 = 120 token
+P90 = 220 token
+max_length = 1024</code></pre>
+
+<p>如果大多数样本很短，Packing 可以显著降低 Padding 比例。</p>
+<pre class="language-python" data-language="python"><code class="language-python">SFTConfig<span class="token punctuation">(</span>
+    packing<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>但第一次训练建议关闭：</p>
+<pre class="language-python" data-language="python"><code class="language-python">packing<span class="token operator">=</span><span class="token boolean">False</span></code></pre>
+
+<p>先确认：</p>
+<ul>
+<li>不 Packing 时 loss 正常下降。</li>
+<li>Assistant Mask 正确。</li>
+<li>单条样本能被正确 decode。</li>
+<li>验证集行为符合预期。</li>
+</ul>
+<p>再开启 Packing 做速度对比。</p>
+<h2 id="23-启动训练"><a href="#23-启动训练" class="headerlink" title="23. 启动训练"></a>23. 启动训练</h2><pre class="language-python" data-language="python"><code class="language-python">trainer<span class="token punctuation">.</span>train<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>建议重点观察：</p>
+<ul>
+<li><code>loss</code>。</li>
+<li><code>eval_loss</code>。</li>
+<li><code>learning_rate</code>。</li>
+<li><code>grad_norm</code>。</li>
+<li>有效 token 数。</li>
+<li>每秒处理 token 数。</li>
+<li>GPU 峰值显存。</li>
+</ul>
+<p>训练 loss 突然为 0 或 NaN 时，先检查数据与 labels，而不是立即调整优化器。</p>
+<h2 id="24-保存-LoRA-Adapter"><a href="#24-保存-LoRA-Adapter" class="headerlink" title="24. 保存 LoRA Adapter"></a>24. 保存 LoRA Adapter</h2><pre class="language-python" data-language="python"><code class="language-python">ADAPTER_DIR <span class="token operator">=</span> <span class="token string">"outputs/sft-trl-lora/final-adapter"</span>
+
+trainer<span class="token punctuation">.</span>save_model<span class="token punctuation">(</span>ADAPTER_DIR<span class="token punctuation">)</span>
+trainer<span class="token punctuation">.</span>processing_class<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>ADAPTER_DIR<span class="token punctuation">)</span></code></pre>
+
+<p>Adapter 目录通常包含：</p>
+<pre class="language-text" data-language="text"><code class="language-text">final-adapter/
+  adapter_config.json
+  adapter_model.safetensors
+  tokenizer / chat template assets
+  training_args.bin</code></pre>
+
+<p>它通常不包含完整 Base Model 权重。</p>
+<p>部署时需要：</p>
+<pre class="language-text" data-language="text"><code class="language-text">原 Base Model
+  + LoRA Adapter
+  + 训练时对应 Tokenizer / Chat Template</code></pre>
+
+<p><img src="/images/nlp-blog/sft-lora-save-load-merge.svg" alt="LoRA Adapter保存、加载与合并"></p>
+<h2 id="25-重新加载-Adapter"><a href="#25-重新加载-Adapter" class="headerlink" title="25. 重新加载 Adapter"></a>25. 重新加载 Adapter</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> peft <span class="token keyword">import</span> PeftModel
+<span class="token keyword">from</span> transformers <span class="token keyword">import</span> AutoModelForCausalLM<span class="token punctuation">,</span> AutoTokenizer
+
+tokenizer <span class="token operator">=</span> AutoTokenizer<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>ADAPTER_DIR<span class="token punctuation">)</span>
+
+base_model <span class="token operator">=</span> AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    MODEL_ID<span class="token punctuation">,</span>
+    dtype<span class="token operator">=</span>dtype<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> PeftModel<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    base_model<span class="token punctuation">,</span>
+    ADAPTER_DIR<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>必须保证：</p>
+<ul>
+<li><code>MODEL_ID</code> 与训练 Adapter 时的 Base Model 一致。</li>
+<li>Tokenizer 使用训练后保存的版本。</li>
+<li>特殊 token 数量与 embedding 对齐。</li>
+<li>Chat Template 与训练时一致。</li>
+</ul>
+<h2 id="26-使用-Chat-Template-推理"><a href="#26-使用-Chat-Template-推理" class="headerlink" title="26. 使用 Chat Template 推理"></a>26. 使用 Chat Template 推理</h2><p>推理数据不包含标准答案：</p>
+<pre class="language-python" data-language="python"><code class="language-python">messages <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">,</span>
+        <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"你是一名耐心、准确的机器学习助教。"</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+        <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"请解释训练集和验证集的区别。"</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>构造模型输入：</p>
+<pre class="language-python" data-language="python"><code class="language-python">inputs <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>apply_chat_template<span class="token punctuation">(</span>
+    messages<span class="token punctuation">,</span>
+    tokenize<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    add_generation_prompt<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    return_dict<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    return_tensors<span class="token operator">=</span><span class="token string">"pt"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>model<span class="token punctuation">.</span>device<span class="token punctuation">)</span></code></pre>
+
+<p>训练时使用 <code>add_generation_prompt=False</code>，因为标准 assistant 答案已经存在；推理时使用 <code>True</code>，提示模型开始 assistant turn。</p>
+<h2 id="27-GenerationConfig-与生成"><a href="#27-GenerationConfig-与生成" class="headerlink" title="27. GenerationConfig 与生成"></a>27. GenerationConfig 与生成</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> GenerationConfig
+
+generation_config <span class="token operator">=</span> GenerationConfig<span class="token punctuation">(</span>
+    max_new_tokens<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">,</span>
+    do_sample<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    temperature<span class="token operator">=</span><span class="token number">0.8</span><span class="token punctuation">,</span>
+    top_p<span class="token operator">=</span><span class="token number">0.9</span><span class="token punctuation">,</span>
+    pad_token_id<span class="token operator">=</span>tokenizer<span class="token punctuation">.</span>pad_token_id<span class="token punctuation">,</span>
+    eos_token_id<span class="token operator">=</span>tokenizer<span class="token punctuation">.</span>eos_token_id<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>生成：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">with</span> torch<span class="token punctuation">.</span>no_grad<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    output_ids <span class="token operator">=</span> model<span class="token punctuation">.</span>generate<span class="token punctuation">(</span>
+        <span class="token operator">**</span>inputs<span class="token punctuation">,</span>
+        generation_config<span class="token operator">=</span>generation_config<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+prompt_length <span class="token operator">=</span> inputs<span class="token punctuation">[</span><span class="token string">"input_ids"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+new_tokens <span class="token operator">=</span> output_ids<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> prompt_length<span class="token punctuation">:</span><span class="token punctuation">]</span>
+answer <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>decode<span class="token punctuation">(</span>new_tokens<span class="token punctuation">,</span> skip_special_tokens<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>answer<span class="token punctuation">)</span></code></pre>
+
+<p>SFT 更新了模型参数；<code>GenerationConfig</code> 决定如何从新 logits 分布中选择 token。两者仍然属于不同层次。</p>
+<h2 id="28-可选：合并-Adapter"><a href="#28-可选：合并-Adapter" class="headerlink" title="28. 可选：合并 Adapter"></a>28. 可选：合并 Adapter</h2><p>如果推理框架不方便分别加载 Base Model 和 Adapter，可以合并：</p>
+<pre class="language-python" data-language="python"><code class="language-python">merged_model <span class="token operator">=</span> model<span class="token punctuation">.</span>merge_and_unload<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+merged_model<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>
+    <span class="token string">"outputs/sft-trl-lora/merged-model"</span><span class="token punctuation">,</span>
+    safe_serialization<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+tokenizer<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>
+    <span class="token string">"outputs/sft-trl-lora/merged-model"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>合并后：</p>
+<pre class="language-text" data-language="text"><code class="language-text">W_merged = W_base + Delta_W_lora</code></pre>
+
+<p>优点：</p>
+<ul>
+<li>推理时只加载一个模型目录。</li>
+<li>不需要额外 Adapter 路由。</li>
+</ul>
+<p>代价：</p>
+<ul>
+<li>失去 Adapter 小体积优势。</li>
+<li>每个任务可能都要保存一份完整模型。</li>
+<li>不再方便动态切换多个 Adapter。</li>
+</ul>
+<p>因此完整脚本默认不自动合并，必须显式开启开关。</p>
+<h2 id="29-QLoRA-与本篇-LoRA-有什么区别"><a href="#29-QLoRA-与本篇-LoRA-有什么区别" class="headerlink" title="29. QLoRA 与本篇 LoRA 有什么区别"></a>29. QLoRA 与本篇 LoRA 有什么区别</h2><p>本篇：</p>
+<pre class="language-text" data-language="text"><code class="language-text">低精度或普通精度 Base Model
+  + LoRA Adapter</code></pre>
+
+<p>QLoRA 通常进一步：</p>
+<pre class="language-text" data-language="text"><code class="language-text">4-bit 量化 Base Model
+  + 可训练 LoRA Adapter</code></pre>
+
+<p>它进一步降低 Base Model 权重显存，但会增加：</p>
+<ul>
+<li>量化配置。</li>
+<li>bitsandbytes 等依赖。</li>
+<li>设备兼容问题。</li>
+<li>量化 dtype 与计算 dtype 的选择。</li>
+<li>保存、加载和合并复杂度。</li>
+</ul>
+<p>在 LoRA 流程完全正确前，不建议一开始就叠加 QLoRA。</p>
+<h2 id="30-完整代码"><a href="#30-完整代码" class="headerlink" title="30. 完整代码"></a>30. 完整代码</h2><p>完整代码位于：</p>
+<pre class="language-text" data-language="text"><code class="language-text">source/code/nlp-blog/sft_trl_lora.py</code></pre>
+
+<p>运行：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">python source/code/nlp-blog/sft_trl_lora.py</code></pre>
+
+<p>脚本会执行：</p>
+<pre class="language-text" data-language="text"><code class="language-text">创建 messages Dataset
+  -> 校验角色与内容
+  -> 创建 SFTConfig
+  -> 创建 LoraConfig
+  -> SFTTrainer 自动应用 Chat Template
+  -> Assistant-only loss
+  -> 训练与验证
+  -> 保存 Adapter 与 Tokenizer
+  -> 重新加载 Base + Adapter
+  -> apply_chat_template
+  -> GenerationConfig
+  -> generate
+  -> 可选 merge_and_unload</code></pre>
+
+<h2 id="31-怎样检查-Assistant-Mask-是否真的正确"><a href="#31-怎样检查-Assistant-Mask-是否真的正确" class="headerlink" title="31. 怎样检查 Assistant Mask 是否真的正确"></a>31. 怎样检查 Assistant Mask 是否真的正确</h2><p>不同版本的内部处理接口可能变化，因此不要依赖私有属性。</p>
+<p>可以采用三层检查。</p>
+<h3 id="31-1-数据层"><a href="#31-1-数据层" class="headerlink" title="31.1 数据层"></a>31.1 数据层</h3><p>打印原始 <code>messages</code>，确认角色和内容。</p>
+<h3 id="31-2-模板层"><a href="#31-2-模板层" class="headerlink" title="31.2 模板层"></a>31.2 模板层</h3><pre class="language-python" data-language="python"><code class="language-python">formatted <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>apply_chat_template<span class="token punctuation">(</span>
+    messages<span class="token punctuation">,</span>
+    tokenize<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+    add_generation_prompt<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>formatted<span class="token punctuation">)</span></code></pre>
+
+<p>确认 user、assistant 和 turn-end token 都在正确位置。</p>
+<h3 id="31-3-训练行为层"><a href="#31-3-训练行为层" class="headerlink" title="31.3 训练行为层"></a>31.3 训练行为层</h3><p>构造最小数据集并比较：</p>
+<ul>
+<li><code>assistant_only_loss=False</code>。</li>
+<li><code>assistant_only_loss=True</code>。</li>
+</ul>
+<p>观察有效 token 数、loss 和显存是否符合预期。</p>
+<p>如果需要逐 token 审计，可以预先使用 Chat Template 生成 <code>input_ids</code> 与 assistant mask，构造预 Tokenized Dataset，再把 <code>labels=-100</code> 的位置 decode 出来检查。</p>
+<h2 id="32-常见错误"><a href="#32-常见错误" class="headerlink" title="32. 常见错误"></a>32. 常见错误</h2><h3 id="32-1-把-prompt-only-数据传给-SFTTrainer"><a href="#32-1-把-prompt-only-数据传给-SFTTrainer" class="headerlink" title="32.1 把 prompt-only 数据传给 SFTTrainer"></a>32.1 把 prompt-only 数据传给 SFTTrainer</h3><p>SFT 需要目标文本。只有 Prompt 没有 Completion，无法构造标准监督答案。</p>
+<h3 id="32-2-使用了错误-Chat-Template"><a href="#32-2-使用了错误-Chat-Template" class="headerlink" title="32.2 使用了错误 Chat Template"></a>32.2 使用了错误 Chat Template</h3><p>模型可能继续用户消息、输出错误控制 token 或无法停止。</p>
+<h3 id="32-3-训练时-add-generation-prompt-x3D-True"><a href="#32-3-训练时-add-generation-prompt-x3D-True" class="headerlink" title="32.3 训练时 add_generation_prompt&#x3D;True"></a>32.3 训练时 add_generation_prompt&#x3D;True</h3><p>标准 assistant 答案已经在数据中，额外的生成起始标记可能制造错误尾部。</p>
+<h3 id="32-4-assistant-only-loss-x3D-True-但模板不支持-Assistant-Mask"><a href="#32-4-assistant-only-loss-x3D-True-但模板不支持-Assistant-Mask" class="headerlink" title="32.4 assistant_only_loss&#x3D;True 但模板不支持 Assistant Mask"></a>32.4 assistant_only_loss&#x3D;True 但模板不支持 Assistant Mask</h3><p>参数名存在不代表模板能够正确标记区域。检查当前官方支持条件。</p>
+<h3 id="32-5-EOS-与模板结束-token-不一致"><a href="#32-5-EOS-与模板结束-token-不一致" class="headerlink" title="32.5 EOS 与模板结束 token 不一致"></a>32.5 EOS 与模板结束 token 不一致</h3><p>模型可能无法在预期位置停止。</p>
+<h3 id="32-6-LoRA-target-modules-不匹配"><a href="#32-6-LoRA-target-modules-不匹配" class="headerlink" title="32.6 LoRA target_modules 不匹配"></a>32.6 LoRA target_modules 不匹配</h3><p>可能没有插入 Adapter，或插入范围与预期不同。打印模型和可训练参数。</p>
+<h3 id="32-7-误以为-LoRA-不需要-Base-Model"><a href="#32-7-误以为-LoRA-不需要-Base-Model" class="headerlink" title="32.7 误以为 LoRA 不需要 Base Model"></a>32.7 误以为 LoRA 不需要 Base Model</h3><p>未合并的 Adapter 只保存增量参数。</p>
+<h3 id="32-8-保存-Adapter-却遗漏-Tokenizer"><a href="#32-8-保存-Adapter-却遗漏-Tokenizer" class="headerlink" title="32.8 保存 Adapter 却遗漏 Tokenizer"></a>32.8 保存 Adapter 却遗漏 Tokenizer</h3><p>Chat Template 和特殊 token 可能随 Tokenizer 保存，必须一起保留。</p>
+<h3 id="32-9-eval-loss-下降就认为回答变好"><a href="#32-9-eval-loss-下降就认为回答变好" class="headerlink" title="32.9 eval_loss 下降就认为回答变好"></a>32.9 eval_loss 下降就认为回答变好</h3><p>仍需生成评估、任务指标和人工检查。</p>
+<h3 id="32-10-小数据训练太多-Epoch"><a href="#32-10-小数据训练太多-Epoch" class="headerlink" title="32.10 小数据训练太多 Epoch"></a>32.10 小数据训练太多 Epoch</h3><p>模型可能记住答案，同时破坏原有通用能力。</p>
+<h3 id="32-11-随意开启所有显存优化"><a href="#32-11-随意开启所有显存优化" class="headerlink" title="32.11 随意开启所有显存优化"></a>32.11 随意开启所有显存优化</h3><p>Packing、Gradient Checkpointing、量化、Liger、Flash Attention 和特殊 Loss 实现可能存在组合限制。一次只增加一个变量并验证。</p>
+<h3 id="32-12-用测试集调整超参数"><a href="#32-12-用测试集调整超参数" class="headerlink" title="32.12 用测试集调整超参数"></a>32.12 用测试集调整超参数</h3><p>验证集用于选择配置，测试集只用于最终评估。</p>
+<h2 id="33-一个可靠的-SFT-实验记录应包含什么"><a href="#33-一个可靠的-SFT-实验记录应包含什么" class="headerlink" title="33. 一个可靠的 SFT 实验记录应包含什么"></a>33. 一个可靠的 SFT 实验记录应包含什么</h2><h3 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h3><pre class="language-text" data-language="text"><code class="language-text">model_id
+revision / commit hash
+architecture
+parameter count
+tokenizer revision
+chat template</code></pre>
+
+<h3 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h3><pre class="language-text" data-language="text"><code class="language-text">数据来源与许可证
+清洗规则
+去重规则
+训练/验证/测试数量
+token 长度分布
+截断比例
+有效 assistant token 比例</code></pre>
+
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><pre class="language-text" data-language="text"><code class="language-text">Full / LoRA / QLoRA
+LoRA r / alpha / target modules
+learning rate
+batch size
+gradient accumulation
+max_length
+packing
+dtype
+训练步数
+随机种子</code></pre>
+
+<h3 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h3><pre class="language-text" data-language="text"><code class="language-text">eval_loss
+任务指标
+固定生成 Prompt
+GenerationConfig
+人工错误分类
+Base Model 对照</code></pre>
+
+<h2 id="34-从-SFT-继续学习什么"><a href="#34-从-SFT-继续学习什么" class="headerlink" title="34. 从 SFT 继续学习什么"></a>34. 从 SFT 继续学习什么</h2><p>完成本系列后，可以继续：</p>
+<pre class="language-text" data-language="text"><code class="language-text">数据去重与质量评分
+  -> Chat Template 自定义
+  -> LoRA target modules 对比
+  -> QLoRA
+  -> Packing 与长度分桶
+  -> 生成式评估
+  -> 多轮对话评估
+  -> DPO 偏好优化
+  -> Reward Model
+  -> PPO / GRPO 等在线或强化学习方法
+  -> 分布式训练与推理部署</code></pre>
+
+<p>其中 DPO、PPO 或 GRPO 不会替代 SFT 的基础作用。多数后训练流程仍需要一个质量足够的 SFT 模型作为起点。</p>
+<h2 id="35-总结"><a href="#35-总结" class="headerlink" title="35. 总结"></a>35. 总结</h2><p>这一篇把手写 SFT 数据管线替换成了 TRL 与 PEFT：</p>
+<pre class="language-text" data-language="text"><code class="language-text">messages
+  -> Chat Template
+  -> Tokenizer
+  -> Assistant Mask
+  -> labels=-100 / token ids
+  -> SFTTrainer
+  -> Causal LM Loss
+  -> LoRA 参数更新
+  -> Adapter + Tokenizer 保存
+  -> Base + Adapter 重新加载
+  -> GenerationConfig + generate</code></pre>
+
+<p>我现在可以把 <code>SFTTrainer</code> 理解成：</p>
+<blockquote>
+<p>一个知道 SFT 常见数据格式和处理规则、并与 Transformers Trainer 和 PEFT 集成的训练器，而不是一种新的模型或新的语言模型数学目标。</p>
+</blockquote>
+<p>系列三篇对应三层能力：</p>
+<ol>
+<li><strong>原理层</strong>：知道为什么是 next-token loss，知道三个 Mask 的区别。</li>
+<li><strong>张量层</strong>：能自己构造 <code>input_ids / attention_mask / labels</code> 并手动 forward。</li>
+<li><strong>工程层</strong>：能使用 <code>SFTTrainer + LoRA</code>，也知道自动化边界和排错方法。</li>
+</ol>
+<p>真正开始项目时，最先投入精力的往往不是继续增加 Trainer 参数，而是数据质量、模板一致性和可靠评估。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/sft_trainer">Hugging Face TRL：SFT Trainer</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/dataset_formats">Hugging Face TRL：Dataset formats</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/reducing_memory_usage">Hugging Face TRL：Reducing memory usage</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/chat_templating">Hugging Face Transformers：Chat templates</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/peft/main/conceptual_guides/lora">Hugging Face PEFT：LoRA conceptual guide</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/peft/package_reference/lora">Hugging Face PEFT：LoraConfig</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/Qwen/Qwen3-0.6B-Base">Qwen3-0.6B-Base Model Card</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">LoRA: Low-Rank Adaptation of Large Language Models</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.14314">QLoRA: Efficient Finetuning of Quantized LLMs</a></li>
+<li><a href="https://lsworl.github.io/2026/08/24/nlp-sft-transformers-from-scratch/">上一篇：SFT（二）用Hugging Face Transformers手写监督微调</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/08/24/nlp-sft-trl-lora/">https://lsworl.github.io/2026/08/24/nlp-sft-trl-lora/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/NLP/">NLP</a><a class="post-meta__tags" href="/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a><a class="post-meta__tags" href="/tags/Hugging-Face/">Hugging Face</a><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/SFT/">SFT</a><a class="post-meta__tags" href="/tags/TRL/">TRL</a><a class="post-meta__tags" href="/tags/PEFT/">PEFT</a><a class="post-meta__tags" href="/tags/LoRA/">LoRA</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/24/nlp-sft-transformers-from-scratch/" title="SFT（二）：用Hugging Face Transformers手写监督微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SFT（二）：用Hugging Face Transformers手写监督微调</div></div><div class="info-2"><div class="info-item-1">上一篇 SFT 原理篇已经把监督微调还原成 next-token prediction： Prompt 与标准答案   -> 一串 Causal LM token   -> Prompt 对应 labels 设为 -100   -> 模型内部进行 one-token shift   -> 只在 Answer token 上计算交叉熵  这一篇不使用 TRL 的 SFTTrainer，而只部分的 Hugging Face 组件：  Dataset。 AutoTokenizer。 AutoModelForCausalLM。 forward()。 Trainer 与 TrainingArguments。 GenerationConfig 与 generate()。  目标不是重复造一个完善的训练框架，而是让我能亲眼看到 SFT 中最重要的三组张量： input_ids attention_mask labels  等这些张量完全对上后，下一篇再使用 TRL SFTTrainer + LoRA，就不会把自动化误认为魔法。    1. 本篇要训练什么我们使用一个小型 Causal Lang...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/24/nlp-sft-transformers-from-scratch/" title="SFT（二）：用Hugging Face Transformers手写监督微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（二）：用Hugging Face Transformers手写监督微调</div></div><div class="info-2"><div class="info-item-1">上一篇 SFT 原理篇已经把监督微调还原成 next-token prediction： Prompt 与标准答案   -> 一串 Causal LM token   -> Prompt 对应 labels 设为 -100   -> 模型内部进行 one-token shift   -> 只在 Answer token 上计算交叉熵  这一篇不使用 TRL 的 SFTTrainer，而只部分的 Hugging Face 组件：  Dataset。 AutoTokenizer。 AutoModelForCausalLM。 forward()。 Trainer 与 TrainingArguments。 GenerationConfig 与 generate()。  目标不是重复造一个完善的训练框架，而是让我能亲眼看到 SFT 中最重要的三组张量： input_ids attention_mask labels  等这些张量完全对上后，下一篇再使用 TRL SFTTrainer + LoRA，就不会把自动化误认为魔法。    1. 本篇要训练什么我们使用一个小型 Causal Lang...</div></div></div></a><a class="pagination-related" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（一）：从Next Token Prediction到指令微调</div></div><div class="info-2"><div class="info-item-1">在手写 Mini-GPT中，也已经从底层走通过： Prompt   -> Tokenizer   -> Embedding   -> Causal Transformer   -> LM Head   -> logits   -> sampling   -> next token  但是理解推理流程后，新的问题随之出现：  一个只会续写文本的 Base Model，为什么经过训练后会开始理解“用户提问”和“助手回答”，并按照指令组织答案？  这就是本文要讨论的 Supervised Fine-Tuning，监督微调，简称 SFT。 本文不会从“调用一个 Trainer”开始，而会先把 SFT 还原成我已经熟悉的 next-token prediction。等把数据、标签和损失看清楚后，下一篇再用 Hugging Face Transformers 亲手实现，第三篇再进入 TRL SFTTrainer + LoRA。    1. SFT 到底是什么SFT 的完整名称是 Supervised Fine-Tuning。 它表示：  从一个已经预训练的模型出发，使用带有目标答案的监督数据...</div></div></div></a><a class="pagination-related" href="/2026/08/22/nlp-hugging-face-transformers-tutorial/" title="Hugging Face详解：从模型下载到中文文本分类微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-22</div><div class="info-item-2">Hugging Face详解：从模型下载到中文文本分类微调</div></div><div class="info-2"><div class="info-item-1">前面的文章已经从零实现了 Transformer、Mini-GPT 和 RoPE。理解这些底层原理之后，一个很自然的问题是：  实际项目中，难道每次都要从头实现网络、训练 Tokenizer，再用海量数据预训练模型吗？  通常不需要。 很多任务可以从一个已经预训练好的模型出发，只添加或替换任务头，再使用自己的数据进行微调。Hugging Face 正是把“寻找模型、下载权重、统一调用、处理数据、训练评估和分享结果”串起来的一套生态。 不过，初学者很容易把下面这些概念混在一起：  Hugging Face 网站。 Hugging Face Hub。 transformers Python 库。 datasets Python 库。 pipeline()。 AutoTokenizer 与 AutoModel。 Trainer。 Spaces 与在线推理服务。  本文会先把它们拆开，再通过一个中文情感分类项目完整走通： 选择预训练模型   -> 加载 Tokenizer   -> 文本转成模型输入   -> 加载任务模型   -> 手动完成一次前向推理   -> 构造 Dataset ...</div></div></div></a><a class="pagination-related" href="/2026/08/03/nlp-word2vec-embedding-classifier/" title="Word2Vec：从词向量训练到神经网络分类器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-03</div><div class="info-item-2">Word2Vec：从词向量训练到神经网络分类器</div></div><div class="info-2"><div class="info-item-1">前面学习文本处理时，我们已经知道：自然语言不能直接送进模型，必须先变成数字。 最朴素的方法是 One-hot。比如词表里有 10000 个词，每个词就用一个长度为 10000 的向量表示，属于自己的位置为 1，其他位置为 0。 但 One-hot 有两个明显问题：  向量太稀疏，绝大多数位置都是 0。 词和词之间没有语义关系，“国王”和“王后”在 One-hot 空间里并不比“国王”和“香蕉”更接近。  word2vec 要解决的就是这个问题：  把词表示成低维、稠密、带有语义关系的向量。  例如： 国王 -> [0.32, -0.18, 0.71, ...] 王后 -> [0.29, -0.15, 0.69, ...] 香蕉 -> [-0.44, 0.83, 0.12, ...]  如果训练得好，“国王”和“王后”的向量会更接近，而“国王”和“香蕉”的向量会更远。 这篇文章就从 word2vec 出发，理解词向量是怎么训练出来的、怎么改进和评价词向量，并进一步过渡到神经网络文本分类器。    1. 词向量到底是什么词向量，也叫 word embedding，本质上就是给每个词分...</div></div></div></a><a class="pagination-related" href="/2026/08/10/nlp-seq2seq-encoder-decoder/" title="Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-10</div><div class="info-item-2">Seq2Seq：从Encoder-Decoder到Attention与PyTorch实现</div></div><div class="info-2"><div class="info-item-1">前面的文本处理和 Word2Vec 文章主要解决了两个问题：  如何把文本转换成 token id。 如何把 token id 转换成词向量。  但很多自然语言处理任务不是“输入一句话，输出一个类别”，而是“输入一个序列，输出另一个序列”。 例如机器翻译： 输入：我 喜欢 自然语言处理 输出：I like natural language processing  输入和输出的长度可能不同，词序也可能不同。普通 MLP 或单纯的文本分类器很难直接处理这种映射。 Seq2Seq，全称 Sequence to Sequence，就是专门学习“序列到序列”映射的一类模型框架。 一句话概括：  Seq2Seq 先用 Encoder 理解整个输入序列，再让 Decoder 根据编码结果逐步生成输出序列。     1. 什么是序列到序列任务Seq2Seq 的输入和输出都是有顺序的元素序列： $$X&#x3D;(x_1,x_2,\ldots,x_{T_x})$$ $$Y&#x3D;(y_1,y_2,\ldots,y_{T_y})$$ 其中输入长度 $T_x$ 与输出长度 $T_y$ 不必相同。 ...</div></div></div></a><a class="pagination-related" href="/2026/06/07/nlp-text-processing/" title="文本处理：让自然语言变成模型能理解的数字"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-07</div><div class="info-item-2">文本处理：让自然语言变成模型能理解的数字</div></div><div class="info-2"><div class="info-item-1">学习 Transformer 之前，有一个非常重要的前置问题：  机器学习模型只能处理数字，那自然语言文本应该怎样变成数字？  比如一句话： 我喜欢自然语言处理  人可以直接理解它的意思，但模型不能直接处理汉字、单词和标点。我们需要先把文本拆成一个个 token，再把 token 映射成编号或向量，最后才能送进模型。 这篇文章就来系统梳理 NLP 中最基础的文本处理流程。    1. 文本处理在 NLP 中的位置在前面的机器学习文章中，我们处理的大多是结构化数据，例如： 学习时长、睡眠时长、房屋面积、历史成绩  这些特征天然就是数字，或者很容易转成数字。 但 NLP 处理的是文本，例如： 这部电影很好看 这个商品质量一般 今天天气不错  模型不能直接理解这些句子，所以需要一个转换流程： 原始文本   -> 清洗与规范化   -> 分词 / tokenization   -> 构建词表   -> token 转 id   -> id 转向量   -> 输入模型  传统机器学习中，文本常被转成词袋、TF-IDF 这样的稀疏向量；深度学习和 Transformer 中，文本通常先转成 ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">125</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">140</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-TRL-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">1. TRL 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-SFTTrainer-%E8%87%AA%E5%8A%A8%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text">2. SFTTrainer 自动做了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-number">3.</span> <span class="toc-text">3. 安装依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%9C%AC%E7%AF%87%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83%E7%9B%AE%E6%A0%87"><span class="toc-number">4.</span> <span class="toc-text">4. 本篇模型与训练目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-Base-Model"><span class="toc-number">5.</span> <span class="toc-text">5. 为什么使用 Base Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-TRL-%E6%94%AF%E6%8C%81%E5%93%AA%E4%BA%9B-SFT-%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="toc-number">6.</span> <span class="toc-text">6. TRL 支持哪些 SFT 数据格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-Standard-language-modeling"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 Standard language modeling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-Conversational-language-modeling"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 Conversational language modeling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-Standard-prompt-completion"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 Standard prompt-completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-Conversational-prompt-completion"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 Conversational prompt-completion</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%9E%84%E9%80%A0-Conversational-Dataset"><span class="toc-number">7.</span> <span class="toc-text">7. 构造 Conversational Dataset</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BF%9D%E7%95%99%E7%BB%93%E6%9E%84%E5%8C%96-messages"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 为什么保留结构化 messages</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%95%B0%E6%8D%AE%E6%A0%A1%E9%AA%8C%E4%B8%8D%E8%83%BD%E7%9C%81"><span class="toc-number">8.</span> <span class="toc-text">8. 数据校验不能省</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-Chat-Template-%E6%98%AF%E8%AE%AD%E7%BB%83%E5%8D%8F%E8%AE%AE"><span class="toc-number">9.</span> <span class="toc-text">9. Chat Template 是训练协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%86%85%E7%BD%AE%E6%A8%A1%E6%9D%BF%E4%B8%8E-chat-template-path"><span class="toc-number">10.</span> <span class="toc-text">10. 内置模板与 chat_template_path</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-assistant-only-loss-x3D-True-%E5%88%B0%E5%BA%95%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">11.</span> <span class="toc-text">11. assistant_only_loss&#x3D;True 到底做什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E4%B8%8D%E6%98%AF%E6%89%80%E6%9C%89%E6%A8%A1%E6%9D%BF%E9%83%BD%E8%83%BD%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB-Assistant"><span class="toc-number">11.1.</span> <span class="toc-text">11.1 不是所有模板都能自动识别 Assistant</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-completion-only-loss-%E4%B8%8E-assistant-only-loss-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">12.</span> <span class="toc-text">12. completion_only_loss 与 assistant_only_loss 的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-completion-only-loss"><span class="toc-number">12.1.</span> <span class="toc-text">12.1 completion_only_loss</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-assistant-only-loss"><span class="toc-number">12.2.</span> <span class="toc-text">12.2 assistant_only_loss</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E5%8F%AF%E4%BB%A5%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8%E5%90%97"><span class="toc-number">12.3.</span> <span class="toc-text">12.3 可以同时使用吗</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-SFTConfig-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0"><span class="toc-number">13.</span> <span class="toc-text">13. SFTConfig 的核心参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-max-length"><span class="toc-number">13.1.</span> <span class="toc-text">13.1 max_length</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-packing"><span class="toc-number">13.2.</span> <span class="toc-text">13.2 packing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-eos-token"><span class="toc-number">13.3.</span> <span class="toc-text">13.3 eos_token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-4-learning-rate"><span class="toc-number">13.4.</span> <span class="toc-text">13.4 learning_rate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-5-model-init-kwargs"><span class="toc-number">13.5.</span> <span class="toc-text">13.5 model_init_kwargs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%AC%E7%AF%87%E6%98%BE%E5%BC%8F%E8%AE%BE%E7%BD%AE-loss-type-x3D-%E2%80%9Dnll%E2%80%9D"><span class="toc-number">14.</span> <span class="toc-text">14. 为什么本篇显式设置 loss_type&#x3D;”nll”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-LoRA-%E7%9A%84%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86"><span class="toc-number">15.</span> <span class="toc-text">15. LoRA 的数学原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E9%85%8D%E7%BD%AE-LoraConfig"><span class="toc-number">16.</span> <span class="toc-text">16. 配置 LoraConfig</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-r"><span class="toc-number">16.1.</span> <span class="toc-text">16.1 r</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-lora-alpha"><span class="toc-number">16.2.</span> <span class="toc-text">16.2 lora_alpha</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-3-lora-dropout"><span class="toc-number">16.3.</span> <span class="toc-text">16.3 lora_dropout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-4-target-modules-x3D-%E2%80%9Dall-linear%E2%80%9D"><span class="toc-number">16.4.</span> <span class="toc-text">16.4 target_modules&#x3D;”all-linear”</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E5%88%9B%E5%BB%BA-SFTTrainer"><span class="toc-number">17.</span> <span class="toc-text">17. 创建 SFTTrainer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E7%A1%AE%E8%AE%A4%E5%8F%AF%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0"><span class="toc-number">18.</span> <span class="toc-text">18. 确认可训练参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-LoRA-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%87%8F%E5%B0%91%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98"><span class="toc-number">19.</span> <span class="toc-text">19. LoRA 为什么能减少训练显存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-Gradient-Checkpointing"><span class="toc-number">20.</span> <span class="toc-text">20. Gradient Checkpointing</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-BF16-%E4%B8%8E-FP16"><span class="toc-number">21.</span> <span class="toc-text">21. BF16 与 FP16</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-Packing-%E4%BD%95%E6%97%B6%E5%BC%80%E5%90%AF"><span class="toc-number">22.</span> <span class="toc-text">22. Packing 何时开启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E5%90%AF%E5%8A%A8%E8%AE%AD%E7%BB%83"><span class="toc-number">23.</span> <span class="toc-text">23. 启动训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E4%BF%9D%E5%AD%98-LoRA-Adapter"><span class="toc-number">24.</span> <span class="toc-text">24. 保存 LoRA Adapter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E9%87%8D%E6%96%B0%E5%8A%A0%E8%BD%BD-Adapter"><span class="toc-number">25.</span> <span class="toc-text">25. 重新加载 Adapter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E4%BD%BF%E7%94%A8-Chat-Template-%E6%8E%A8%E7%90%86"><span class="toc-number">26.</span> <span class="toc-text">26. 使用 Chat Template 推理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-GenerationConfig-%E4%B8%8E%E7%94%9F%E6%88%90"><span class="toc-number">27.</span> <span class="toc-text">27. GenerationConfig 与生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E5%8F%AF%E9%80%89%EF%BC%9A%E5%90%88%E5%B9%B6-Adapter"><span class="toc-number">28.</span> <span class="toc-text">28. 可选：合并 Adapter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-QLoRA-%E4%B8%8E%E6%9C%AC%E7%AF%87-LoRA-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">29.</span> <span class="toc-text">29. QLoRA 与本篇 LoRA 有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">30.</span> <span class="toc-text">30. 完整代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E6%80%8E%E6%A0%B7%E6%A3%80%E6%9F%A5-Assistant-Mask-%E6%98%AF%E5%90%A6%E7%9C%9F%E7%9A%84%E6%AD%A3%E7%A1%AE"><span class="toc-number">31.</span> <span class="toc-text">31. 怎样检查 Assistant Mask 是否真的正确</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-1-%E6%95%B0%E6%8D%AE%E5%B1%82"><span class="toc-number">31.1.</span> <span class="toc-text">31.1 数据层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-2-%E6%A8%A1%E6%9D%BF%E5%B1%82"><span class="toc-number">31.2.</span> <span class="toc-text">31.2 模板层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-3-%E8%AE%AD%E7%BB%83%E8%A1%8C%E4%B8%BA%E5%B1%82"><span class="toc-number">31.3.</span> <span class="toc-text">31.3 训练行为层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">32.</span> <span class="toc-text">32. 常见错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32-1-%E6%8A%8A-prompt-only-%E6%95%B0%E6%8D%AE%E4%BC%A0%E7%BB%99-SFTTrainer"><span class="toc-number">32.1.</span> <span class="toc-text">32.1 把 prompt-only 数据传给 SFTTrainer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-2-%E4%BD%BF%E7%94%A8%E4%BA%86%E9%94%99%E8%AF%AF-Chat-Template"><span class="toc-number">32.2.</span> <span class="toc-text">32.2 使用了错误 Chat Template</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-3-%E8%AE%AD%E7%BB%83%E6%97%B6-add-generation-prompt-x3D-True"><span class="toc-number">32.3.</span> <span class="toc-text">32.3 训练时 add_generation_prompt&#x3D;True</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-4-assistant-only-loss-x3D-True-%E4%BD%86%E6%A8%A1%E6%9D%BF%E4%B8%8D%E6%94%AF%E6%8C%81-Assistant-Mask"><span class="toc-number">32.4.</span> <span class="toc-text">32.4 assistant_only_loss&#x3D;True 但模板不支持 Assistant Mask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-5-EOS-%E4%B8%8E%E6%A8%A1%E6%9D%BF%E7%BB%93%E6%9D%9F-token-%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">32.5.</span> <span class="toc-text">32.5 EOS 与模板结束 token 不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-6-LoRA-target-modules-%E4%B8%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">32.6.</span> <span class="toc-text">32.6 LoRA target_modules 不匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-7-%E8%AF%AF%E4%BB%A5%E4%B8%BA-LoRA-%E4%B8%8D%E9%9C%80%E8%A6%81-Base-Model"><span class="toc-number">32.7.</span> <span class="toc-text">32.7 误以为 LoRA 不需要 Base Model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-8-%E4%BF%9D%E5%AD%98-Adapter-%E5%8D%B4%E9%81%97%E6%BC%8F-Tokenizer"><span class="toc-number">32.8.</span> <span class="toc-text">32.8 保存 Adapter 却遗漏 Tokenizer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-9-eval-loss-%E4%B8%8B%E9%99%8D%E5%B0%B1%E8%AE%A4%E4%B8%BA%E5%9B%9E%E7%AD%94%E5%8F%98%E5%A5%BD"><span class="toc-number">32.9.</span> <span class="toc-text">32.9 eval_loss 下降就认为回答变好</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-10-%E5%B0%8F%E6%95%B0%E6%8D%AE%E8%AE%AD%E7%BB%83%E5%A4%AA%E5%A4%9A-Epoch"><span class="toc-number">32.10.</span> <span class="toc-text">32.10 小数据训练太多 Epoch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-11-%E9%9A%8F%E6%84%8F%E5%BC%80%E5%90%AF%E6%89%80%E6%9C%89%E6%98%BE%E5%AD%98%E4%BC%98%E5%8C%96"><span class="toc-number">32.11.</span> <span class="toc-text">32.11 随意开启所有显存优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-12-%E7%94%A8%E6%B5%8B%E8%AF%95%E9%9B%86%E8%B0%83%E6%95%B4%E8%B6%85%E5%8F%82%E6%95%B0"><span class="toc-number">32.12.</span> <span class="toc-text">32.12 用测试集调整超参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E4%B8%80%E4%B8%AA%E5%8F%AF%E9%9D%A0%E7%9A%84-SFT-%E5%AE%9E%E9%AA%8C%E8%AE%B0%E5%BD%95%E5%BA%94%E5%8C%85%E5%90%AB%E4%BB%80%E4%B9%88"><span class="toc-number">33.</span> <span class="toc-text">33. 一个可靠的 SFT 实验记录应包含什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B"><span class="toc-number">33.1.</span> <span class="toc-text">模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE"><span class="toc-number">33.2.</span> <span class="toc-text">数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83"><span class="toc-number">33.3.</span> <span class="toc-text">训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%84%E4%BC%B0"><span class="toc-number">33.4.</span> <span class="toc-text">评估</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E4%BB%8E-SFT-%E7%BB%A7%E7%BB%AD%E5%AD%A6%E4%B9%A0%E4%BB%80%E4%B9%88"><span class="toc-number">34.</span> <span class="toc-text">34. 从 SFT 继续学习什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-%E6%80%BB%E7%BB%93"><span class="toc-number">35.</span> <span class="toc-text">35. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">36.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</a><time datetime="2026-08-24T15:59:00.000Z" title="发表于 2026-08-24 23:59:00">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-transformers-from-scratch/" title="SFT（二）：用Hugging Face Transformers手写监督微调">SFT（二）：用Hugging Face Transformers手写监督微调</a><time datetime="2026-08-24T15:10:58.000Z" title="发表于 2026-08-24 23:10:58">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调">SFT（一）：从Next Token Prediction到指令微调</a><time datetime="2026-08-23T16:00:00.000Z" title="发表于 2026-08-24 00:00:00">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/22/nlp-hugging-face-transformers-tutorial/" title="Hugging Face详解：从模型下载到中文文本分类微调">Hugging Face详解：从模型下载到中文文本分类微调</a><time datetime="2026-08-21T16:00:00.000Z" title="发表于 2026-08-22 00:00:00">2026-08-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/14/nlp-rope-rotary-position-embedding/" title="RoPE详解：从二维旋转到PyTorch手写旋转位置编码">RoPE详解：从二维旋转到PyTorch手写旋转位置编码</a><time datetime="2026-08-13T16:00:00.000Z" title="发表于 2026-08-14 00:00:00">2026-08-14</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

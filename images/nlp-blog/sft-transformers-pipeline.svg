@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700" role="img" aria-labelledby="title desc">
+  <title id="title">原生 Transformers 实现 SFT 的完整流程</title>
+  <desc id="desc">本地指令回答数据经过分段分词、Completion-only 标签和动态 Padding，送入 Causal LM 与 Trainer，最后保存并生成。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52616f"/></marker></defs>
+  <rect width="1150" height="700" rx="16" fill="#fbfbfd"/>
+  <g font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="575" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#222831">不用 TRL，亲手构造 SFT 的三组张量</text>
+    <text x="575" y="80" text-anchor="middle" font-size="16" fill="#5f6b7a">先理解数据契约，再使用更高层封装</text>
+
+    <rect x="50" y="130" width="205" height="120" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="152" y="171" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Dataset</text>
+    <text x="152" y="204" text-anchor="middle" font-size="15" fill="#8a5418">instruction</text>
+    <text x="152" y="228" text-anchor="middle" font-size="15" fill="#8a5418">response</text>
+    <path d="M255 190H305" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="320" y="115" width="235" height="150" rx="10" fill="#f4effb" stroke="#9b51e0" stroke-width="2"/>
+    <text x="437" y="154" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Tokenizer</text>
+    <text x="437" y="186" text-anchor="middle" font-size="15" fill="#6b3fa0">Prompt 单独编码</text>
+    <text x="437" y="213" text-anchor="middle" font-size="15" fill="#6b3fa0">Answer + EOS 单独编码</text>
+    <text x="437" y="241" text-anchor="middle" font-size="14" fill="#52616f">控制特殊 token 与边界</text>
+    <path d="M555 190H605" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="620" y="115" width="240" height="150" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="740" y="154" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Feature Builder</text>
+    <text x="740" y="187" text-anchor="middle" font-size="15" fill="#166534">拼接 input_ids</text>
+    <text x="740" y="214" text-anchor="middle" font-size="15" fill="#166534">Prompt labels = -100</text>
+    <text x="740" y="241" text-anchor="middle" font-size="14" fill="#52616f">截断时优先保留 Answer</text>
+    <path d="M860 190H910" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="925" y="130" width="175" height="120" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="2"/>
+    <text x="1012" y="171" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Collator</text>
+    <text x="1012" y="204" text-anchor="middle" font-size="14" fill="#2f5f9e">动态 Padding</text>
+    <text x="1012" y="228" text-anchor="middle" font-size="14" fill="#2f5f9e">lists -&gt; tensors</text>
+
+    <path d="M1012 250V325H820" fill="none" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="330" y="340" width="500" height="150" rx="10" fill="#eaf3ff" stroke="#2f80ed" stroke-width="3"/>
+    <text x="580" y="381" text-anchor="middle" font-size="23" font-weight="700" fill="#1f2937">AutoModelForCausalLM</text>
+    <text x="580" y="416" text-anchor="middle" font-size="16" fill="#2f5f9e">forward(input_ids, attention_mask, labels)</text>
+    <text x="580" y="447" text-anchor="middle" font-size="15" fill="#52616f">logits [B,T,V] + scalar loss</text>
+    <text x="580" y="473" text-anchor="middle" font-size="14" fill="#52616f">模型内部完成 label shift</text>
+
+    <path d="M330 415H250" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="50" y="350" width="185" height="130" rx="10" fill="#fff2eb" stroke="#eb5757" stroke-width="2"/>
+    <text x="142" y="390" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Trainer</text>
+    <text x="142" y="421" text-anchor="middle" font-size="14" fill="#a83737">backward</text>
+    <text x="142" y="447" text-anchor="middle" font-size="14" fill="#a83737">AdamW / scheduler</text>
+    <text x="142" y="470" text-anchor="middle" font-size="13" fill="#52616f">eval / checkpoint</text>
+
+    <path d="M580 490V540" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="190" y="555" width="360" height="100" rx="10" fill="#eefaf2" stroke="#27ae60" stroke-width="2"/>
+    <text x="370" y="594" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">保存完整模型</text>
+    <text x="370" y="625" text-anchor="middle" font-size="14" fill="#166534">model + tokenizer + config</text>
+    <path d="M550 605H620" stroke="#52616f" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="635" y="555" width="360" height="100" rx="10" fill="#fff7e6" stroke="#f2994a" stroke-width="2"/>
+    <text x="815" y="594" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">GenerationConfig + generate</text>
+    <text x="815" y="625" text-anchor="middle" font-size="14" fill="#8a5418">只解码 Prompt 后的新 token</text>
+  </g>
+</svg>
