@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>NF4 非均匀量化直觉</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="52" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">NF4：把更多表示能力留给权重密集区域</text>
+  <text x="575" y="82" text-anchor="middle" font-size="16" fill="#64748b">预训练权重常近似集中在 0 附近，量化档位无需等距离</text>
+
+  <line x1="90" y1="430" x2="1060" y2="430" stroke="#52616f" stroke-width="2"/>
+  <line x1="575" y1="122" x2="575" y2="465" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="7 7"/>
+  <path d="M110 430 C240 428,310 405,390 335 C460 270,505 155,575 135 C645 155,690 270,760 335 C840 405,910 428,1040 430 L1040 430 L110 430Z" fill="#dceaff" stroke="#3b82f6" stroke-width="4"/>
+  <text x="575" y="118" text-anchor="middle" font-size="17" font-weight="700" fill="#1e4f8f">权重密度高</text>
+  <text x="180" y="414" text-anchor="middle" font-size="15" fill="#52616f">尾部稀疏</text>
+  <text x="970" y="414" text-anchor="middle" font-size="15" fill="#52616f">尾部稀疏</text>
+
+  <g stroke="#9654d8" stroke-width="3">
+    <line x1="170" y1="410" x2="170" y2="478"/><line x1="270" y1="390" x2="270" y2="478"/>
+    <line x1="355" y1="355" x2="355" y2="478"/><line x1="425" y1="302" x2="425" y2="478"/>
+    <line x1="478" y1="225" x2="478" y2="478"/><line x1="520" y1="165" x2="520" y2="478"/>
+    <line x1="550" y1="140" x2="550" y2="478"/><line x1="575" y1="135" x2="575" y2="478"/>
+    <line x1="600" y1="140" x2="600" y2="478"/><line x1="630" y1="165" x2="630" y2="478"/>
+    <line x1="672" y1="225" x2="672" y2="478"/><line x1="725" y1="302" x2="725" y2="478"/>
+    <line x1="795" y1="355" x2="795" y2="478"/><line x1="880" y1="390" x2="880" y2="478"/>
+    <line x1="980" y1="410" x2="980" y2="478"/>
+  </g>
+  <text x="575" y="515" text-anchor="middle" font-size="18" font-weight="700" fill="#633493">0 附近档位更密，尾部档位间隔更宽</text>
+
+  <rect x="130" y="558" width="390" height="84" rx="7" fill="#fff5df" stroke="#e59b2f"/>
+  <text x="325" y="591" text-anchor="middle" font-size="18" font-weight="700" fill="#704814">均匀 INT4 的直觉</text>
+  <text x="325" y="620" text-anchor="middle" font-size="16" fill="#704814">数值轴等距离切分</text>
+  <rect x="630" y="558" width="390" height="84" rx="7" fill="#eaf8ef" stroke="#24a467"/>
+  <text x="825" y="591" text-anchor="middle" font-size="18" font-weight="700" fill="#17643f">NF4 的直觉</text>
+  <text x="825" y="620" text-anchor="middle" font-size="16" fill="#17643f">按近似正态分布分配 16 个表示值</text>
+</svg>

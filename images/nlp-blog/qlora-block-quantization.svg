@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>分块量化与反量化计算</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="50" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">手算一个 4-bit 均匀量化块</text>
+  <text x="575" y="79" text-anchor="middle" font-size="16" fill="#64748b">这是量化原理示例，不是 NF4 的实际 codebook</text>
+
+  <rect x="65" y="120" width="1020" height="90" rx="7" fill="#e8f1ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="110" y="155" font-size="18" font-weight="700" fill="#1e3a5f">原始权重 W</text>
+  <g font-size="19" text-anchor="middle" fill="#1e3a5f">
+    <rect x="310" y="137" width="145" height="51" rx="5" fill="#ffffff"/><text x="382" y="169">-1.20</text>
+    <rect x="470" y="137" width="145" height="51" rx="5" fill="#ffffff"/><text x="542" y="169">-0.40</text>
+    <rect x="630" y="137" width="145" height="51" rx="5" fill="#ffffff"/><text x="702" y="169">0.10</text>
+    <rect x="790" y="137" width="145" height="51" rx="5" fill="#ffffff"/><text x="862" y="169">0.85</text>
+  </g>
+
+  <path d="M575 216v48" stroke="#52616f" stroke-width="4"/><path d="M575 264l-10-17h20z" fill="#52616f"/>
+  <rect x="205" y="277" width="740" height="74" rx="7" fill="#fff5df" stroke="#e59b2f" stroke-width="2"/>
+  <text x="575" y="310" text-anchor="middle" font-size="20" font-weight="700" fill="#704814">s = max(|W|) / 7 = 1.20 / 7 ≈ 0.1714</text>
+  <text x="575" y="337" text-anchor="middle" font-size="16" fill="#8b5b1d">一个 block 共享一个缩放因子</text>
+
+  <path d="M575 357v43" stroke="#52616f" stroke-width="4"/><path d="M575 400l-10-17h20z" fill="#52616f"/>
+  <rect x="65" y="413" width="1020" height="90" rx="7" fill="#f2eafe" stroke="#9654d8" stroke-width="2"/>
+  <text x="110" y="448" font-size="18" font-weight="700" fill="#633493">4-bit 编号 q</text>
+  <g font-size="19" text-anchor="middle" fill="#633493">
+    <rect x="310" y="430" width="145" height="51" rx="5" fill="#ffffff"/><text x="382" y="462">-7</text>
+    <rect x="470" y="430" width="145" height="51" rx="5" fill="#ffffff"/><text x="542" y="462">-2</text>
+    <rect x="630" y="430" width="145" height="51" rx="5" fill="#ffffff"/><text x="702" y="462">1</text>
+    <rect x="790" y="430" width="145" height="51" rx="5" fill="#ffffff"/><text x="862" y="462">5</text>
+  </g>
+
+  <path d="M575 509v39" stroke="#52616f" stroke-width="4"/><path d="M575 548l-10-17h20z" fill="#52616f"/>
+  <rect x="65" y="561" width="1020" height="90" rx="7" fill="#eaf8ef" stroke="#24a467" stroke-width="2"/>
+  <text x="110" y="596" font-size="18" font-weight="700" fill="#17643f">反量化 Ŵ=sq</text>
+  <g font-size="19" text-anchor="middle" fill="#17643f">
+    <text x="382" y="612">-1.200</text><text x="542" y="612">-0.343</text>
+    <text x="702" y="612">0.171</text><text x="862" y="612">0.857</text>
+  </g>
+  <text x="575" y="683" text-anchor="middle" font-size="17" fill="#52616f">编号很小，但恢复近似浮点权重还必须携带 scale</text>
+</svg>

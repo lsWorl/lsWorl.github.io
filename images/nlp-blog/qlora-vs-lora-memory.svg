@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>Full Fine-tuning、LoRA 与 QLoRA 对比</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="52" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">三种微调方式，真正改变的是“存什么、训什么”</text>
+  <text x="575" y="82" text-anchor="middle" font-size="16" fill="#64748b">条形高度表示概念上的显存组成，不代表固定比例</text>
+
+  <g transform="translate(55 128)">
+    <rect width="320" height="490" rx="8" fill="#ffffff" stroke="#d3dbe5" stroke-width="2"/>
+    <text x="160" y="43" text-anchor="middle" font-size="24" font-weight="700" fill="#172033">Full Fine-tuning</text>
+    <rect x="50" y="91" width="220" height="190" rx="5" fill="#f5b56b"/>
+    <text x="160" y="175" text-anchor="middle" font-size="19" font-weight="700" fill="#64370d">16-bit Base 权重</text>
+    <text x="160" y="203" text-anchor="middle" font-size="16" fill="#64370d">全部可训练</text>
+    <rect x="50" y="290" width="220" height="95" rx="5" fill="#e9a0a0"/>
+    <text x="160" y="330" text-anchor="middle" font-size="17" font-weight="700" fill="#7a2929">全参数梯度</text>
+    <text x="160" y="357" text-anchor="middle" font-size="15" fill="#7a2929">规模接近 Base</text>
+    <rect x="50" y="394" width="220" height="62" rx="5" fill="#c987d9"/>
+    <text x="160" y="431" text-anchor="middle" font-size="16" font-weight="700" fill="#582267">全参数优化器状态</text>
+  </g>
+
+  <g transform="translate(415 128)">
+    <rect width="320" height="490" rx="8" fill="#ffffff" stroke="#d3dbe5" stroke-width="2"/>
+    <text x="160" y="43" text-anchor="middle" font-size="24" font-weight="700" fill="#172033">LoRA</text>
+    <rect x="50" y="91" width="220" height="190" rx="5" fill="#f5b56b"/>
+    <text x="160" y="175" text-anchor="middle" font-size="19" font-weight="700" fill="#64370d">16-bit Base 权重</text>
+    <text x="160" y="203" text-anchor="middle" font-size="16" fill="#64370d">冻结但仍占显存</text>
+    <rect x="50" y="307" width="220" height="62" rx="5" fill="#8fd5ac"/>
+    <text x="160" y="344" text-anchor="middle" font-size="17" font-weight="700" fill="#155c38">LoRA 参数 + 梯度</text>
+    <rect x="50" y="379" width="220" height="48" rx="5" fill="#bda1e8"/>
+    <text x="160" y="409" text-anchor="middle" font-size="15" font-weight="700" fill="#53318b">仅 LoRA 优化器状态</text>
+    <text x="160" y="465" text-anchor="middle" font-size="16" fill="#52616f">省掉全参数训练状态</text>
+  </g>
+
+  <g transform="translate(775 128)">
+    <rect width="320" height="490" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="3"/>
+    <text x="160" y="43" text-anchor="middle" font-size="24" font-weight="700" fill="#1e4f8f">QLoRA</text>
+    <rect x="50" y="91" width="220" height="70" rx="5" fill="#f8d291"/>
+    <text x="160" y="123" text-anchor="middle" font-size="18" font-weight="700" fill="#64370d">NF4 4-bit Base</text>
+    <text x="160" y="148" text-anchor="middle" font-size="14" fill="#64370d">冻结 + 量化元数据</text>
+    <rect x="50" y="187" width="220" height="62" rx="5" fill="#8fd5ac"/>
+    <text x="160" y="224" text-anchor="middle" font-size="17" font-weight="700" fill="#155c38">LoRA 参数 + 梯度</text>
+    <rect x="50" y="259" width="220" height="48" rx="5" fill="#bda1e8"/>
+    <text x="160" y="289" text-anchor="middle" font-size="15" font-weight="700" fill="#53318b">8-bit / Paged 状态</text>
+    <rect x="50" y="337" width="220" height="82" rx="5" fill="#e8f1ff" stroke="#8bb8ef"/>
+    <text x="160" y="370" text-anchor="middle" font-size="16" fill="#24558f">激活仍然存在</text>
+    <text x="160" y="398" text-anchor="middle" font-size="15" fill="#24558f">长度增大仍可能 OOM</text>
+    <text x="160" y="465" text-anchor="middle" font-size="16" font-weight="700" fill="#17643f">继续压缩冻结权重</text>
+  </g>
+
+  <text x="575" y="665" text-anchor="middle" font-size="18" fill="#334155">LoRA 减少训练状态；QLoRA 在此基础上继续降低 Base Model 权重存储</text>
+</svg>

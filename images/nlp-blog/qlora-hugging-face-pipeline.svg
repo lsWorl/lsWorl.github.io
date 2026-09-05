@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>Hugging Face 实现 QLoRA 的组件关系</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="50" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">Hugging Face QLoRA：五个组件各管一件事</text>
+  <text x="575" y="80" text-anchor="middle" font-size="16" fill="#64748b">数据、量化、Adapter 与训练目标保持清晰边界</text>
+
+  <g font-size="18" text-anchor="middle">
+    <rect x="45" y="137" width="190" height="115" rx="7" fill="#e8f1ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="140" y="176" font-weight="700" fill="#1e4f8f">Datasets</text>
+    <text x="140" y="207" font-size="15" fill="#315f8f">messages</text>
+    <text x="140" y="231" font-size="15" fill="#315f8f">train / eval split</text>
+
+    <path d="M240 195H291" stroke="#52616f" stroke-width="4"/><path d="M291 195l-15-9v18z" fill="#52616f"/>
+    <rect x="305" y="137" width="215" height="115" rx="7" fill="#fff5df" stroke="#e59b2f" stroke-width="2"/>
+    <text x="412" y="176" font-weight="700" fill="#704814">Transformers</text>
+    <text x="412" y="207" font-size="15" fill="#704814">Tokenizer / Model</text>
+    <text x="412" y="231" font-size="15" fill="#704814">BitsAndBytesConfig</text>
+
+    <path d="M525 195H576" stroke="#52616f" stroke-width="4"/><path d="M576 195l-15-9v18z" fill="#52616f"/>
+    <rect x="590" y="137" width="215" height="115" rx="7" fill="#f2eafe" stroke="#9654d8" stroke-width="2"/>
+    <text x="697" y="176" font-weight="700" fill="#633493">bitsandbytes</text>
+    <text x="697" y="207" font-size="15" fill="#633493">Linear4bit / NF4</text>
+    <text x="697" y="231" font-size="15" fill="#633493">Paged 8-bit AdamW</text>
+
+    <path d="M810 195H861" stroke="#52616f" stroke-width="4"/><path d="M861 195l-15-9v18z" fill="#52616f"/>
+    <rect x="875" y="137" width="225" height="115" rx="7" fill="#eaf8ef" stroke="#24a467" stroke-width="2"/>
+    <text x="987" y="176" font-weight="700" fill="#17643f">PEFT</text>
+    <text x="987" y="207" font-size="15" fill="#17643f">LoraConfig</text>
+    <text x="987" y="231" font-size="15" fill="#17643f">Adapter 保存 / 加载</text>
+  </g>
+
+  <path d="M575 274v62" stroke="#52616f" stroke-width="4"/><path d="M575 336l-10-17h20z" fill="#52616f"/>
+  <rect x="185" y="350" width="780" height="165" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="3"/>
+  <text x="575" y="394" text-anchor="middle" font-size="24" font-weight="700" fill="#1e4f8f">TRL SFTTrainer</text>
+  <text x="575" y="430" text-anchor="middle" font-size="17" fill="#315f8f">Chat Template -> Tokenization -> Assistant Mask -> Batch</text>
+  <text x="575" y="462" text-anchor="middle" font-size="17" fill="#315f8f">quantization_config + peft_config + SFTConfig</text>
+  <text x="575" y="492" text-anchor="middle" font-size="16" font-weight="700" fill="#17643f">forward -> next-token loss -> backward -> update LoRA</text>
+
+  <path d="M575 521v52" stroke="#52616f" stroke-width="4"/><path d="M575 573l-10-17h20z" fill="#52616f"/>
+  <rect x="245" y="587" width="660" height="77" rx="7" fill="#eaf8ef" stroke="#24a467" stroke-width="2"/>
+  <text x="575" y="620" text-anchor="middle" font-size="20" font-weight="700" fill="#17643f">训练产物：LoRA Adapter + Tokenizer</text>
+  <text x="575" y="648" text-anchor="middle" font-size="15" fill="#17643f">推理时重新加载 Base Model，并挂载 Adapter</text>
+</svg>

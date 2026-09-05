@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>QLoRA 前向与反向传播</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="50" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">梯度穿过 Base 计算，但参数更新只落在 LoRA</text>
+  <text x="575" y="80" text-anchor="middle" font-size="16" fill="#64748b">Forward 用两个分支求和，Backward 依据 requires_grad 决定保存哪些参数梯度</text>
+
+  <rect x="55" y="250" width="155" height="100" rx="7" fill="#e8f1ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="132" y="292" text-anchor="middle" font-size="22" font-weight="700" fill="#1e3a5f">输入 x</text>
+  <text x="132" y="323" text-anchor="middle" font-size="15" fill="#315f8f">BF16 / FP16</text>
+
+  <path d="M215 275H313" stroke="#52616f" stroke-width="4"/><path d="M313 275l-16-10v20z" fill="#52616f"/>
+  <path d="M255 275V468H313" fill="none" stroke="#52616f" stroke-width="4"/><path d="M313 468l-16-10v20z" fill="#52616f"/>
+
+  <rect x="330" y="145" width="345" height="220" rx="8" fill="#fff5df" stroke="#e59b2f" stroke-width="2"/>
+  <text x="502" y="184" text-anchor="middle" font-size="22" font-weight="700" fill="#704814">Base 分支</text>
+  <rect x="370" y="207" width="265" height="55" rx="5" fill="#ffffff"/>
+  <text x="502" y="241" text-anchor="middle" font-size="17" fill="#704814">NF4 codes + quant state</text>
+  <path d="M502 271v35" stroke="#e59b2f" stroke-width="3"/><path d="M502 306l-9-15h18z" fill="#e59b2f"/>
+  <text x="502" y="335" text-anchor="middle" font-size="17" fill="#704814">dequant -> Ŵ -> xŴᵀ</text>
+  <text x="620" y="350" text-anchor="end" font-size="14" font-weight="700" fill="#9a2929">Frozen</text>
+
+  <rect x="330" y="405" width="345" height="135" rx="8" fill="#eaf8ef" stroke="#24a467" stroke-width="2"/>
+  <text x="502" y="445" text-anchor="middle" font-size="22" font-weight="700" fill="#17643f">LoRA 分支</text>
+  <text x="502" y="481" text-anchor="middle" font-size="18" fill="#17643f">(α/r) xAᵀBᵀ</text>
+  <text x="502" y="515" text-anchor="middle" font-size="16" font-weight="700" fill="#17643f">A、B 可训练</text>
+
+  <path d="M681 255H758V332" fill="none" stroke="#52616f" stroke-width="4"/>
+  <path d="M681 468H758V348" fill="none" stroke="#52616f" stroke-width="4"/>
+  <circle cx="758" cy="340" r="25" fill="#ffffff" stroke="#52616f" stroke-width="3"/>
+  <text x="758" y="348" text-anchor="middle" font-size="26" font-weight="700" fill="#52616f">+</text>
+
+  <path d="M786 340H850" stroke="#52616f" stroke-width="4"/><path d="M850 340l-16-10v20z" fill="#52616f"/>
+  <rect x="865" y="263" width="225" height="155" rx="8" fill="#f2eafe" stroke="#9654d8" stroke-width="2"/>
+  <text x="977" y="302" text-anchor="middle" font-size="21" font-weight="700" fill="#633493">SFT Loss</text>
+  <text x="977" y="337" text-anchor="middle" font-size="16" fill="#633493">Next-token CE</text>
+  <text x="977" y="366" text-anchor="middle" font-size="16" fill="#633493">labels=-100 被忽略</text>
+  <text x="977" y="396" text-anchor="middle" font-size="16" font-weight="700" fill="#633493">Backward</text>
+
+  <path d="M977 425V605H502V548" fill="none" stroke="#24a467" stroke-width="4"/>
+  <path d="M502 548l-10 17h20z" fill="#24a467"/>
+  <text x="753" y="633" text-anchor="middle" font-size="17" fill="#17643f">∂L/∂A 与 ∂L/∂B 进入优化器；Base 没有参数更新</text>
+</svg>

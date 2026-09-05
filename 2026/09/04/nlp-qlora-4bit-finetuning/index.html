@@ -1,0 +1,1042 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SFT（四）：QLoRA的4-bit量化与LoRA微调原理 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="承接LoRA监督微调，从显存组成、分块量化、NF4、Double Quantization和Paged Optimizer出发，解释QLoRA的前向与反向传播，并使用Hugging Face Transformers、TRL、PEFT和bitsandbytes完成可检查的4-bit SFT项目。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SFT（四）：QLoRA的4-bit量化与LoRA微调原理">
+<meta property="og:url" content="https://lsworl.github.io/2026/09/04/nlp-qlora-4bit-finetuning/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="承接LoRA监督微调，从显存组成、分块量化、NF4、Double Quantization和Paged Optimizer出发，解释QLoRA的前向与反向传播，并使用Hugging Face Transformers、TRL、PEFT和bitsandbytes完成可检查的4-bit SFT项目。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-09-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-03T16:46:30.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="自然语言处理">
+<meta property="article:tag" content="Hugging Face">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="SFT">
+<meta property="article:tag" content="TRL">
+<meta property="article:tag" content="PEFT">
+<meta property="article:tag" content="LoRA">
+<meta property="article:tag" content="QLoRA">
+<meta property="article:tag" content="bitsandbytes">
+<meta property="article:tag" content="模型量化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SFT（四）：QLoRA的4-bit量化与LoRA微调原理",
+  "url": "https://lsworl.github.io/2026/09/04/nlp-qlora-4bit-finetuning/",
+  "image": "https://github.com/lsWorl.png",
+  "datePublished": "2026-09-03T16:00:00.000Z",
+  "dateModified": "2026-09-03T16:46:30.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://lsworl.github.io/2026/09/04/nlp-qlora-4bit-finetuning/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f172a')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SFT（四）：QLoRA的4-bit量化与LoRA微调原理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">126</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">143</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">SFT（四）：QLoRA的4-bit量化与LoRA微调原理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SFT（四）：QLoRA的4-bit量化与LoRA微调原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-09-03T16:00:00.000Z" title="发表于 2026-09-04 00:00:00">2026-09-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-03T16:46:30.000Z" title="更新于 2026-09-04 00:46:30">2026-09-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>在上一篇 <a href="https://lsworl.github.io/2026/08/24/nlp-sft-trl-lora/">SFT（三）：使用 TRL SFTTrainer 与 LoRA 微调对话模型</a> 中，我已经知道：</p>
+<ul>
+<li>Base Model 的参数保持冻结。</li>
+<li>LoRA 在线性层旁边增加两个低秩矩阵 $A$ 和 $B$。</li>
+<li>反向传播只更新 LoRA Adapter。</li>
+<li>训练后保存的是 Adapter，而不是另一份完整 Base Model。</li>
+</ul>
+<p>LoRA 已经大幅减少了<strong>可训练参数、梯度和优化器状态</strong>，但还有一个问题：</p>
+<blockquote>
+<p>冻结不等于不占显存。Base Model 虽然不更新，前向传播时仍然要放在设备上。</p>
+</blockquote>
+<p>如果一个 7B 模型以 BF16 保存，仅权重理论上就约占：</p>
+<p>$$<br>7 \times 10^9 \times 2\text{ Byte}<br>\approx 14\text{ GB}<br>$$</p>
+<p>再加上激活值、LoRA 参数、梯度、优化器状态和 CUDA 临时工作区，普通 LoRA 仍可能超出消费级显卡的容量。</p>
+<p>QLoRA 解决的正是这部分问题：<strong>把冻结的 Base Model 以 4-bit 保存，同时继续用较高精度训练 LoRA Adapter。</strong></p>
+<span id="more"></span>
+
+<p><img src="/images/nlp-blog/qlora-overview.svg" alt="QLoRA整体训练流程"></p>
+<h2 id="1-QLoRA-到底是什么"><a href="#1-QLoRA-到底是什么" class="headerlink" title="1. QLoRA 到底是什么"></a>1. QLoRA 到底是什么</h2><p>QLoRA 的全称是 <strong>Quantized Low-Rank Adaptation</strong>。</p>
+<p>它不是一个替代 SFT 的新损失函数，也不是新的 Transformer 架构，而是一种更节省显存的参数高效微调方式：</p>
+<pre class="language-text" data-language="text"><code class="language-text">SFT 数据与 Loss
+        +
+4-bit 冻结 Base Model
+        +
+高精度可训练 LoRA Adapter
+        =
+QLoRA SFT</code></pre>
+
+<p>论文中的核心描述可以压缩成一句话：</p>
+<blockquote>
+<p>梯度穿过冻结的 4-bit 量化模型，但只流入 LoRA Adapter 并更新其参数。</p>
+</blockquote>
+<p>这里有两个关键词：</p>
+<ol>
+<li><strong>穿过</strong>量化 Base Model。</li>
+<li>不<strong>更新</strong>量化 Base Model。</li>
+</ol>
+<p>Base Model 仍然参与前向计算和梯度链式法则，只是其参数 <code>requires_grad=False</code>。</p>
+<h2 id="2-QLoRA-与-SFT、LoRA、量化是什么关系"><a href="#2-QLoRA-与-SFT、LoRA、量化是什么关系" class="headerlink" title="2. QLoRA 与 SFT、LoRA、量化是什么关系"></a>2. QLoRA 与 SFT、LoRA、量化是什么关系</h2><p>这几个术语处在不同层次。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>回答的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SFT</td>
+<td>使用什么数据和监督信号训练</td>
+</tr>
+<tr>
+<td>LoRA</td>
+<td>更新哪些参数，如何低秩参数化</td>
+</tr>
+<tr>
+<td>4-bit Quantization</td>
+<td>Base Model 权重如何压缩存储</td>
+</tr>
+<tr>
+<td>QLoRA</td>
+<td>如何组合 4-bit Base Model 与 LoRA 进行训练</td>
+</tr>
+</tbody></table>
+<p>因此下面的说法更准确：</p>
+<pre class="language-text" data-language="text"><code class="language-text">我使用 Assistant-only SFT 作为训练目标，
+并使用 QLoRA 作为参数与显存高效的训练方式。</code></pre>
+
+<p>只说“我用了 QLoRA”，并没有说明：</p>
+<ul>
+<li>数据是什么。</li>
+<li>Loss 计算哪些 token。</li>
+<li>Chat Template 是什么。</li>
+<li>训练了多少步。</li>
+<li>最终模型质量如何。</li>
+</ul>
+<h2 id="3-Full-Fine-tuning、LoRA-与-QLoRA-对比"><a href="#3-Full-Fine-tuning、LoRA-与-QLoRA-对比" class="headerlink" title="3. Full Fine-tuning、LoRA 与 QLoRA 对比"></a>3. Full Fine-tuning、LoRA 与 QLoRA 对比</h2><p><img src="/images/nlp-blog/qlora-vs-lora-memory.svg" alt="Full Fine-tuning、LoRA与QLoRA对比"></p>
+<h3 id="3-1-Full-Fine-tuning"><a href="#3-1-Full-Fine-tuning" class="headerlink" title="3.1 Full Fine-tuning"></a>3.1 Full Fine-tuning</h3><pre class="language-text" data-language="text"><code class="language-text">Base Model：BF16 / FP16，可训练
+梯度：所有参数
+优化器状态：所有参数</code></pre>
+
+<p>它更新能力最完整，但训练显存通常最高。</p>
+<h3 id="3-2-LoRA"><a href="#3-2-LoRA" class="headerlink" title="3.2 LoRA"></a>3.2 LoRA</h3><pre class="language-text" data-language="text"><code class="language-text">Base Model：通常 BF16 / FP16，冻结
+LoRA：BF16 / FP32，可训练
+梯度与优化器状态：仅 LoRA</code></pre>
+
+<p>它省掉了绝大部分梯度和优化器状态，却仍然要保存一份 16-bit Base Model。</p>
+<h3 id="3-3-QLoRA"><a href="#3-3-QLoRA" class="headerlink" title="3.3 QLoRA"></a>3.3 QLoRA</h3><pre class="language-text" data-language="text"><code class="language-text">Base Model：4-bit，冻结
+LoRA：较高精度，可训练
+梯度与优化器状态：仅 LoRA</code></pre>
+
+<p>它在 LoRA 的基础上，继续压缩占显存大头的冻结权重。</p>
+<h2 id="4-“4-bit-训练”是一个容易误导的简称"><a href="#4-“4-bit-训练”是一个容易误导的简称" class="headerlink" title="4. “4-bit 训练”是一个容易误导的简称"></a>4. “4-bit 训练”是一个容易误导的简称</h2><p>QLoRA 常被简称为“用 4-bit 训练模型”，但实际并不是所有张量都只有 4 bit。</p>
+<p>至少要区分四种精度：</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>常见精度</th>
+<th>是否训练</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base Model 权重存储</td>
+<td>NF4 4-bit</td>
+<td>否</td>
+</tr>
+<tr>
+<td>矩阵乘法计算</td>
+<td>BF16 或 FP16</td>
+<td>参与计算</td>
+</tr>
+<tr>
+<td>LoRA 参数</td>
+<td>BF16 &#x2F; FP32</td>
+<td>是</td>
+</tr>
+<tr>
+<td>LoRA 优化器状态</td>
+<td>8-bit 或 32-bit</td>
+<td>随优化器而定</td>
+</tr>
+</tbody></table>
+<p>因此更准确的描述是：</p>
+<blockquote>
+<p>Base Model 权重以 4-bit 形式存储，使用时分块反量化到计算 dtype；LoRA 分支保持可训练的浮点参数。</p>
+</blockquote>
+<p>QLoRA 不是在一个只能表示 16 个值的空间里直接更新全部模型权重。</p>
+<h2 id="5-为什么冻结的-Base-Model-仍然消耗大量显存"><a href="#5-为什么冻结的-Base-Model-仍然消耗大量显存" class="headerlink" title="5. 为什么冻结的 Base Model 仍然消耗大量显存"></a>5. 为什么冻结的 Base Model 仍然消耗大量显存</h2><p>以 $N$ 个参数为例，只看权重存储的理论下限：</p>
+<p>$$<br>M_{\text{BF16}} &#x3D; 2N\text{ Byte}<br>$$</p>
+<p>$$<br>M_{\text{INT8}} &#x3D; 1N\text{ Byte}<br>$$</p>
+<p>$$<br>M_{\text{4bit}} &#x3D; 0.5N\text{ Byte}<br>$$</p>
+<p>对 7B 模型：</p>
+<table>
+<thead>
+<tr>
+<th>存储形式</th>
+<th align="right">纯权重理论值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BF16 &#x2F; FP16</td>
+<td align="right">约 14 GB</td>
+</tr>
+<tr>
+<td>INT8</td>
+<td align="right">约 7 GB</td>
+</tr>
+<tr>
+<td>4-bit</td>
+<td align="right">约 3.5 GB</td>
+</tr>
+</tbody></table>
+<p>实际显存会更高，因为还有：</p>
+<ul>
+<li>每个量化块的 scale 和量化元数据。</li>
+<li>激活值。</li>
+<li>LoRA 参数、梯度和优化器状态。</li>
+<li>Attention 与 Loss 的中间张量。</li>
+<li>内存碎片和 CUDA 工作区。</li>
+</ul>
+<p>所以“7B 的 4-bit 权重约 3.5 GB”只是理解数量级，不能直接当成训练所需显存。</p>
+<h2 id="6-先理解最普通的分块量化"><a href="#6-先理解最普通的分块量化" class="headerlink" title="6. 先理解最普通的分块量化"></a>6. 先理解最普通的分块量化</h2><p>NF4 不是普通的均匀 INT4，但先理解分块量化会更容易进入 QLoRA。</p>
+<p>假设一个权重块为：</p>
+<p>$$<br>W&#x3D;[-1.20,-0.40,0.10,0.85]<br>$$</p>
+<p>为了演示，先使用有符号 4-bit 均匀量化，整数范围取 $[-7,7]$。</p>
+<h3 id="6-1-计算缩放因子"><a href="#6-1-计算缩放因子" class="headerlink" title="6.1 计算缩放因子"></a>6.1 计算缩放因子</h3><p>$$<br>s&#x3D;\frac{\max(|W|)}{7}&#x3D;\frac{1.20}{7}\approx0.1714<br>$$</p>
+<h3 id="6-2-把浮点权重映射为整数编号"><a href="#6-2-把浮点权重映射为整数编号" class="headerlink" title="6.2 把浮点权重映射为整数编号"></a>6.2 把浮点权重映射为整数编号</h3><p>$$<br>q_i&#x3D;\operatorname{clip}\left(\operatorname{round}\left(\frac{w_i}{s}\right),-7,7\right)<br>$$</p>
+<p>得到：</p>
+<p>$$<br>q&#x3D;[-7,-2,1,5]<br>$$</p>
+<h3 id="6-3-反量化得到近似权重"><a href="#6-3-反量化得到近似权重" class="headerlink" title="6.3 反量化得到近似权重"></a>6.3 反量化得到近似权重</h3><p>$$<br>\hat w_i&#x3D;sq_i<br>$$</p>
+<p>$$<br>\hat W\approx[-1.200,-0.343,0.171,0.857]<br>$$</p>
+<p>误差为：</p>
+<p>$$<br>E&#x3D;W-\hat W\approx[0,-0.057,-0.071,-0.007]<br>$$</p>
+<p><img src="/images/nlp-blog/qlora-block-quantization.svg" alt="分块量化与反量化计算"></p>
+<p>这个例子揭示了三个事实：</p>
+<ol>
+<li>4 bit 保存的是每个权重的<strong>编号</strong>。</li>
+<li>想恢复近似浮点值，还需要保存 scale。</li>
+<li>量化是有损的，$W$ 与 $\hat W$ 不完全相等。</li>
+</ol>
+<p>注意：这个例子用于讲清基本过程，<strong>并不是 NF4 的实际编码表</strong>。</p>
+<h2 id="7-为什么要分块，而不是整层只用一个-scale"><a href="#7-为什么要分块，而不是整层只用一个-scale" class="headerlink" title="7. 为什么要分块，而不是整层只用一个 scale"></a>7. 为什么要分块，而不是整层只用一个 scale</h2><p>如果一个线性层中既有很小的权重，又有少量极端大值，整层共用一个 scale 会导致小权重挤在很少的量化档位中。</p>
+<p>分块后，每一小组权重拥有自己的缩放统计量：</p>
+<pre class="language-text" data-language="text"><code class="language-text">block 0: 64 个权重 -> scale_0
+block 1: 64 个权重 -> scale_1
+block 2: 64 个权重 -> scale_2
+...</code></pre>
+
+<p>这样通常能降低量化误差，但也需要额外保存更多 scale。</p>
+<p>这正好引出 Double Quantization：scale 本身也会占空间。</p>
+<h2 id="8-NF4-是什么"><a href="#8-NF4-是什么" class="headerlink" title="8. NF4 是什么"></a>8. NF4 是什么</h2><p>NF4 是 QLoRA 论文提出的 <strong>4-bit NormalFloat</strong> 数据类型。</p>
+<p>预训练神经网络的权重通常近似集中在 0 附近，并向两侧逐渐变少。若 16 个表示值等距离分布，会把相同数量的档位分给稀疏尾部和密集中心区域。</p>
+<p>NF4 的思路是：</p>
+<blockquote>
+<p>根据近似正态分布设计非均匀量化档位，使每个区间承载更接近的概率质量。</p>
+</blockquote>
+<p><img src="/images/nlp-blog/qlora-nf4-distribution.svg" alt="NF4非均匀量化直觉"></p>
+<p>因此 NF4 的档位在 0 附近更密，在分布尾部更疏。</p>
+<p>在 Hugging Face 中对应：</p>
+<pre class="language-python" data-language="python"><code class="language-python">bnb_4bit_quant_type<span class="token operator">=</span><span class="token string">"nf4"</span></code></pre>
+
+<p>官方文档建议在训练 4-bit Base Model 时使用 NF4。</p>
+<h2 id="9-NF4-与-FP4-不要混为一谈"><a href="#9-NF4-与-FP4-不要混为一谈" class="headerlink" title="9. NF4 与 FP4 不要混为一谈"></a>9. NF4 与 FP4 不要混为一谈</h2><p><code>bitsandbytes</code> 常见选项包括：</p>
+<pre class="language-python" data-language="python"><code class="language-python">bnb_4bit_quant_type<span class="token operator">=</span><span class="token string">"nf4"</span></code></pre>
+
+<p>或：</p>
+<pre class="language-python" data-language="python"><code class="language-python">bnb_4bit_quant_type<span class="token operator">=</span><span class="token string">"fp4"</span></code></pre>
+
+<p>两者都使用 4-bit 编码，但量化表示方式不同。</p>
+<p>对于 QLoRA 训练，通常从 NF4 开始，因为它针对近似正态分布的权重设计。不要因为名字中都有“4”就认为两者完全相同。</p>
+<h2 id="10-Double-Quantization-是什么"><a href="#10-Double-Quantization-是什么" class="headerlink" title="10. Double Quantization 是什么"></a>10. Double Quantization 是什么</h2><p>分块量化需要给每个 block 保存一个 scale。如果模型很大，scale 的数量也很多。</p>
+<p>Double Quantization 又称 Nested Quantization，其思想是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">第一次量化：量化 Base Model 权重
+第二次量化：继续量化第一次量化所需的 scale / constant</code></pre>
+
+<p><img src="/images/nlp-blog/qlora-double-quantization.svg" alt="Double Quantization流程"></p>
+<p>在 Hugging Face 中开启：</p>
+<pre class="language-python" data-language="python"><code class="language-python">bnb_4bit_use_double_quant<span class="token operator">=</span><span class="token boolean">True</span></code></pre>
+
+<p>当前 Transformers 文档给出的说明是，它还能额外节省约 <code>0.4 bit / parameter</code>。</p>
+<p>需要注意：</p>
+<ul>
+<li>它不是“把 4 bit 再除以 2，变成 2 bit 权重”。</li>
+<li>第二次量化针对的是量化常数，而不是重新量化每个原始权重。</li>
+<li>这会引入额外元数据与反量化步骤，但换来更低的平均存储开销。</li>
+</ul>
+<h2 id="11-QLoRA-前向传播究竟怎样计算"><a href="#11-QLoRA-前向传播究竟怎样计算" class="headerlink" title="11. QLoRA 前向传播究竟怎样计算"></a>11. QLoRA 前向传播究竟怎样计算</h2><p>对一个加入 LoRA 的线性层，普通 LoRA 可以写成：</p>
+<p>$$<br>y&#x3D;xW^T+\frac{\alpha}{r}xA^TB^T<br>$$</p>
+<p>QLoRA 中保存的 Base Model 权重是量化后的 $W_q$ 和量化状态 $S$。计算时先近似反量化：</p>
+<p>$$<br>\hat W&#x3D;\operatorname{dequant}(W_q,S)<br>$$</p>
+<p>再执行：</p>
+<p>$$<br>y&#x3D;x\hat W^T+\frac{\alpha}{r}xA^TB^T<br>$$</p>
+<p>这里：</p>
+<ul>
+<li>$W_q$：4-bit 存储的 Base Model 权重。</li>
+<li>$S$：scale 等量化状态。</li>
+<li>$\hat W$：用于本次计算的近似浮点权重。</li>
+<li>$A,B$：可训练 LoRA 参数。</li>
+</ul>
+<p><img src="/images/nlp-blog/qlora-forward-backward.svg" alt="QLoRA前向与反向传播"></p>
+<h2 id="12-反向传播会不会更新-4-bit-权重"><a href="#12-反向传播会不会更新-4-bit-权重" class="headerlink" title="12. 反向传播会不会更新 4-bit 权重"></a>12. 反向传播会不会更新 4-bit 权重</h2><p>不会。</p>
+<p>设损失为 $\mathcal L$，QLoRA 的训练目标是计算：</p>
+<p>$$<br>\frac{\partial \mathcal L}{\partial A},\qquad<br>\frac{\partial \mathcal L}{\partial B}<br>$$</p>
+<p>但不对 Base Model 执行参数更新：</p>
+<p>$$<br>\frac{\partial \mathcal L}{\partial W_q}<br>\quad\text{不用于更新 }W_q<br>$$</p>
+<p>梯度仍要经过 Base Model 的运算回传到较早位置的 LoRA 分支，所以“冻结”不能理解为“反向传播绕过整个 Base Model”。</p>
+<p>这也是为什么 QLoRA 仍然需要激活值，且序列长度会显著影响显存。</p>
+<h2 id="13-LoRA-参数为什么不能也简单存成-4-bit-训练"><a href="#13-LoRA-参数为什么不能也简单存成-4-bit-训练" class="headerlink" title="13. LoRA 参数为什么不能也简单存成 4 bit 训练"></a>13. LoRA 参数为什么不能也简单存成 4 bit 训练</h2><p>训练参数需要表示细小的连续更新。</p>
+<p>如果直接用极低精度保存和更新 LoRA 参数：</p>
+<ul>
+<li>小梯度可能舍入为 0。</li>
+<li>更新噪声可能变大。</li>
+<li>优化过程更容易不稳定。</li>
+</ul>
+<p>QLoRA 的关键平衡是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">占绝大多数、又被冻结的 Base 权重 -> 4-bit
+数量较少、需要学习的 LoRA 参数       -> 较高精度</code></pre>
+
+<p>因此它同时获得较低存储开销与可训练性。</p>
+<h2 id="14-Paged-Optimizer-解决什么问题"><a href="#14-Paged-Optimizer-解决什么问题" class="headerlink" title="14. Paged Optimizer 解决什么问题"></a>14. Paged Optimizer 解决什么问题</h2><p>训练显存并不是恒定的。</p>
+<p>某些 step 可能因为长序列、临时张量或梯度检查点重计算产生显存峰值。QLoRA 论文使用 Paged Optimizer，借助统一内存分页思想在显存压力突然升高时转移部分优化器数据，降低 OOM 峰值风险。</p>
+<p>在 Transformers 中可以配置：</p>
+<pre class="language-python" data-language="python"><code class="language-python">optim<span class="token operator">=</span><span class="token string">"paged_adamw_8bit"</span></code></pre>
+
+<p>它同时表达两件事：</p>
+<ul>
+<li><code>paged</code>：支持分页管理。</li>
+<li><code>8bit</code>：以 8-bit 形式保存大部分 AdamW 优化器状态。</li>
+</ul>
+<p>不过 QLoRA 中优化器只管理 LoRA 等可训练参数，因此它节省的不是 4-bit Base Model 的优化器状态，因为 Base Model 原本就没有优化器状态。</p>
+<h2 id="15-QLoRA-到底省了哪些显存"><a href="#15-QLoRA-到底省了哪些显存" class="headerlink" title="15. QLoRA 到底省了哪些显存"></a>15. QLoRA 到底省了哪些显存</h2><p><img src="/images/nlp-blog/qlora-memory-anatomy.svg" alt="QLoRA训练显存组成"></p>
+<p>QLoRA 主要降低：</p>
+<ol>
+<li><strong>Base Model 权重存储</strong>：16-bit 降到约 4-bit 加元数据。</li>
+<li><strong>LoRA 优化器状态</strong>：可选择 8-bit Optimizer。</li>
+<li><strong>显存峰值风险</strong>：Paged Optimizer 可缓解部分瞬时峰值。</li>
+</ol>
+<p>QLoRA 没有自动消除：</p>
+<ul>
+<li>激活值。</li>
+<li>Attention 中间张量。</li>
+<li>Logits 和 Loss 中间张量。</li>
+<li>LoRA 梯度。</li>
+<li>数据 batch。</li>
+<li>CUDA 上下文与工作区。</li>
+</ul>
+<p>所以长度从 512 增加到 4096 时，即使 Base Model 仍是 4-bit，训练仍可能 OOM。</p>
+<h2 id="16-QLoRA-不是把磁盘文件简单压缩成四分之一"><a href="#16-QLoRA-不是把磁盘文件简单压缩成四分之一" class="headerlink" title="16. QLoRA 不是把磁盘文件简单压缩成四分之一"></a>16. QLoRA 不是把磁盘文件简单压缩成四分之一</h2><p>量化模型的实际大小不严格等于 BF16 的四分之一，原因包括：</p>
+<ul>
+<li>分块 scale。</li>
+<li>Double Quantization 状态。</li>
+<li>未量化模块。</li>
+<li>Token Embedding 或输出层的处理差异。</li>
+<li>配置和序列化元数据。</li>
+</ul>
+<p>同样，“显存降为四分之一”也不是稳定承诺，因为激活值等部分不会按权重位宽同比下降。</p>
+<h2 id="17-在-Hugging-Face-中需要哪些组件"><a href="#17-在-Hugging-Face-中需要哪些组件" class="headerlink" title="17. 在 Hugging Face 中需要哪些组件"></a>17. 在 Hugging Face 中需要哪些组件</h2><p><img src="/images/nlp-blog/qlora-hugging-face-pipeline.svg" alt="Hugging Face实现QLoRA的组件关系"></p>
+<p>本篇使用：</p>
+<table>
+<thead>
+<tr>
+<th>库</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Transformers</td>
+<td>Tokenizer、Base Model、<code>BitsAndBytesConfig</code>、训练参数</td>
+</tr>
+<tr>
+<td>bitsandbytes</td>
+<td>NF4 线性层、4-bit 量化、分页&#x2F;8-bit Optimizer</td>
+</tr>
+<tr>
+<td>PEFT</td>
+<td><code>LoraConfig</code>、Adapter 保存加载</td>
+</tr>
+<tr>
+<td>TRL</td>
+<td><code>SFTTrainer</code>、对话 SFT 与 Assistant-only Loss</td>
+</tr>
+<tr>
+<td>Datasets</td>
+<td>构建训练集和验证集</td>
+</tr>
+</tbody></table>
+<p>数据与 Loss 仍沿用 SFT 系列已经学过的逻辑。</p>
+<p>QLoRA 只改变参数加载与更新方式，不会替我修复错误的 Chat Template 或标签范围。</p>
+<h2 id="18-安装依赖与记录环境"><a href="#18-安装依赖与记录环境" class="headerlink" title="18. 安装依赖与记录环境"></a>18. 安装依赖与记录环境</h2><pre class="language-bash" data-language="bash"><code class="language-bash">pip <span class="token function">install</span> <span class="token parameter variable">-U</span> torch transformers datasets accelerate trl peft bitsandbytes</code></pre>
+
+<p>记录版本：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">python <span class="token parameter variable">-c</span> <span class="token string">"import torch, transformers, datasets, trl, peft, bitsandbytes; print(torch.__version__); print(transformers.__version__); print(datasets.__version__); print(trl.__version__); print(peft.__version__); print(bitsandbytes.__version__)"</span></code></pre>
+
+<p><code>transformers</code>、<code>trl</code>、<code>peft</code> 和 <code>bitsandbytes</code> 都会持续更新。文章中的代码按当前官方接口编写，真实项目应锁定经过验证的一组版本。</p>
+<h2 id="19-先检查硬件与-BF16-支持"><a href="#19-先检查硬件与-BF16-支持" class="headerlink" title="19. 先检查硬件与 BF16 支持"></a>19. 先检查硬件与 BF16 支持</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> torch
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"CUDA:"</span><span class="token punctuation">,</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_available<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_available<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"GPU:"</span><span class="token punctuation">,</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>get_device_name<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"BF16:"</span><span class="token punctuation">,</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_bf16_supported<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>本篇完整示例为了让行为可预测，要求 CUDA GPU。</p>
+<p>当前 bitsandbytes 已在扩展 NVIDIA CUDA 之外的后端支持，但不同平台、版本和算子的成熟度会变化。运行前应检查最新硬件兼容表，而不是照搬多年前“只支持某个平台”的结论。</p>
+<h2 id="20-选择计算-dtype"><a href="#20-选择计算-dtype" class="headerlink" title="20. 选择计算 dtype"></a>20. 选择计算 dtype</h2><pre class="language-python" data-language="python"><code class="language-python">compute_dtype <span class="token operator">=</span> <span class="token punctuation">(</span>
+    torch<span class="token punctuation">.</span>bfloat16
+    <span class="token keyword">if</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_bf16_supported<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span> torch<span class="token punctuation">.</span>float16
+<span class="token punctuation">)</span></code></pre>
+
+<p>这里选择的是<strong>计算 dtype</strong>，不是 Base Model 的权重存储 dtype。</p>
+<p>BF16 与 FP16 都占 16 bit，但数值范围不同。支持 BF16 的 GPU 上通常优先使用 BF16；旧设备则回退到 FP16。</p>
+<p>不要在不支持 BF16 的硬件上只改：</p>
+<pre class="language-python" data-language="python"><code class="language-python">bf16<span class="token operator">=</span><span class="token boolean">True</span></code></pre>
+
+<p>配置必须与设备能力一致。</p>
+<h2 id="21-配置-BitsAndBytesConfig"><a href="#21-配置-BitsAndBytesConfig" class="headerlink" title="21. 配置 BitsAndBytesConfig"></a>21. 配置 BitsAndBytesConfig</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> BitsAndBytesConfig
+
+quantization_config <span class="token operator">=</span> BitsAndBytesConfig<span class="token punctuation">(</span>
+    load_in_4bit<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    bnb_4bit_quant_type<span class="token operator">=</span><span class="token string">"nf4"</span><span class="token punctuation">,</span>
+    bnb_4bit_use_double_quant<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    bnb_4bit_compute_dtype<span class="token operator">=</span>compute_dtype<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>逐项理解：</p>
+<h3 id="21-1-load-in-4bit-True"><a href="#21-1-load-in-4bit-True" class="headerlink" title="21.1 load_in_4bit=True"></a>21.1 <code>load_in_4bit=True</code></h3><p>加载模型时将支持的线性层替换为 4-bit 量化实现。</p>
+<p>它不是在训练结束后才压缩模型。</p>
+<h3 id="21-2-bnb-4bit-quant-type-quot-nf4-quot"><a href="#21-2-bnb-4bit-quant-type-quot-nf4-quot" class="headerlink" title="21.2 bnb_4bit_quant_type=&quot;nf4&quot;"></a>21.2 <code>bnb_4bit_quant_type=&quot;nf4&quot;</code></h3><p>指定使用 NF4 编码 Base Model 权重。</p>
+<h3 id="21-3-bnb-4bit-use-double-quant-True"><a href="#21-3-bnb-4bit-use-double-quant-True" class="headerlink" title="21.3 bnb_4bit_use_double_quant=True"></a>21.3 <code>bnb_4bit_use_double_quant=True</code></h3><p>继续压缩第一次量化产生的量化常数。</p>
+<h3 id="21-4-bnb-4bit-compute-dtype-compute-dtype"><a href="#21-4-bnb-4bit-compute-dtype-compute-dtype" class="headerlink" title="21.4 bnb_4bit_compute_dtype=compute_dtype"></a>21.4 <code>bnb_4bit_compute_dtype=compute_dtype</code></h3><p>指定矩阵乘法等运算使用 BF16 或 FP16。</p>
+<p>再次强调：</p>
+<pre class="language-text" data-language="text"><code class="language-text">storage dtype != compute dtype</code></pre>
+
+<h2 id="22-配置-LoRA"><a href="#22-配置-LoRA" class="headerlink" title="22. 配置 LoRA"></a>22. 配置 LoRA</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> peft <span class="token keyword">import</span> LoraConfig
+
+peft_config <span class="token operator">=</span> LoraConfig<span class="token punctuation">(</span>
+    task_type<span class="token operator">=</span><span class="token string">"CAUSAL_LM"</span><span class="token punctuation">,</span>
+    r<span class="token operator">=</span><span class="token number">16</span><span class="token punctuation">,</span>
+    lora_alpha<span class="token operator">=</span><span class="token number">32</span><span class="token punctuation">,</span>
+    lora_dropout<span class="token operator">=</span><span class="token number">0.05</span><span class="token punctuation">,</span>
+    bias<span class="token operator">=</span><span class="token string">"none"</span><span class="token punctuation">,</span>
+    target_modules<span class="token operator">=</span><span class="token string">"all-linear"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>上一篇已经推导过 LoRA：</p>
+<p>$$<br>W’&#x3D;W+\Delta W,<br>\qquad<br>\Delta W&#x3D;\frac{\alpha}{r}BA<br>$$</p>
+<p>QLoRA 没有改变这条公式，只是 $W$ 来自量化 Base Model 的近似反量化结果。</p>
+<h3 id="22-1-为什么使用-all-linear"><a href="#22-1-为什么使用-all-linear" class="headerlink" title="22.1 为什么使用 all-linear"></a>22.1 为什么使用 <code>all-linear</code></h3><p><code>target_modules=&quot;all-linear&quot;</code> 让 PEFT 尽量把 LoRA 加入模型的线性层，避免为每一种架构手写 <code>q_proj</code>、<code>v_proj</code> 等名称。</p>
+<p>它不是永远最优的超参数，但适合构建结构无关、容易检查的 QLoRA 基线。训练后仍应打印实际命中的模块。</p>
+<h2 id="23-当前-TRL-可以直接组合量化与-PEFT"><a href="#23-当前-TRL-可以直接组合量化与-PEFT" class="headerlink" title="23. 当前 TRL 可以直接组合量化与 PEFT"></a>23. 当前 TRL 可以直接组合量化与 PEFT</h2><p>当前 <code>SFTTrainer</code> 支持同时接收：</p>
+<pre class="language-python" data-language="python"><code class="language-python">quantization_config<span class="token operator">=</span>quantization_config
+peft_config<span class="token operator">=</span>peft_config</code></pre>
+
+<p>当 <code>model</code> 传入模型仓库 ID 时，Trainer 可以完成：</p>
+<pre class="language-text" data-language="text"><code class="language-text">根据 model id 加载 Causal LM
+-> 以 BitsAndBytesConfig 量化
+-> 为 k-bit 训练做准备
+-> 根据 LoraConfig 包装 PEFT Model
+-> 执行 SFT</code></pre>
+
+<p>代码变短了，但每一步仍应被检查。</p>
+<h2 id="24-手动加载时为什么有-prepare-model-for-kbit-training"><a href="#24-手动加载时为什么有-prepare-model-for-kbit-training" class="headerlink" title="24. 手动加载时为什么有 prepare_model_for_kbit_training"></a>24. 手动加载时为什么有 prepare_model_for_kbit_training</h2><p>如果不让 <code>SFTTrainer</code> 负责模型初始化，而是自己加载模型，PEFT 官方流程会调用：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> peft <span class="token keyword">import</span> prepare_model_for_kbit_training
+
+model <span class="token operator">=</span> AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    MODEL_ID<span class="token punctuation">,</span>
+    quantization_config<span class="token operator">=</span>quantization_config<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+model <span class="token operator">=</span> prepare_model_for_kbit_training<span class="token punctuation">(</span>model<span class="token punctuation">)</span></code></pre>
+
+<p>这个函数用于把量化模型整理为适合 k-bit Adapter 训练的状态，例如冻结 Base Model 参数，并对部分数值敏感模块进行必要处理。</p>
+<p>不要把它理解为“开始训练”；它只是训练前准备。</p>
+<h2 id="25-构造对话数据"><a href="#25-构造对话数据" class="headerlink" title="25. 构造对话数据"></a>25. 构造对话数据</h2><p>沿用前文的结构化格式：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datasets <span class="token keyword">import</span> Dataset
+
+train_dataset <span class="token operator">=</span> Dataset<span class="token punctuation">.</span>from_list<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"你是一名耐心的机器学习助教。"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"什么是过拟合？"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#123;</span>
+                <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span>
+                <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"过拟合是模型在训练数据上表现很好，却难以推广到新样本。"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+
+<p>量化不会改变数据协议。</p>
+<p>如果 <code>messages</code>、Chat Template 或 Assistant Mask 错了，QLoRA 只会更省显存地训练错误目标。</p>
+<h2 id="26-配置-SFTConfig"><a href="#26-配置-SFTConfig" class="headerlink" title="26. 配置 SFTConfig"></a>26. 配置 SFTConfig</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> trl <span class="token keyword">import</span> SFTConfig
+
+training_args <span class="token operator">=</span> SFTConfig<span class="token punctuation">(</span>
+    output_dir<span class="token operator">=</span><span class="token string">"outputs/qwen3-0.6b-qlora"</span><span class="token punctuation">,</span>
+    max_length<span class="token operator">=</span><span class="token number">512</span><span class="token punctuation">,</span>
+    assistant_only_loss<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    eos_token<span class="token operator">=</span><span class="token string">"&lt;|im_end|>"</span><span class="token punctuation">,</span>
+
+    per_device_train_batch_size<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+    gradient_accumulation_steps<span class="token operator">=</span><span class="token number">8</span><span class="token punctuation">,</span>
+    gradient_checkpointing<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    gradient_checkpointing_kwargs<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">"use_reentrant"</span><span class="token punctuation">:</span> <span class="token boolean">False</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+
+    learning_rate<span class="token operator">=</span><span class="token number">2e-4</span><span class="token punctuation">,</span>
+    num_train_epochs<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+    warmup_ratio<span class="token operator">=</span><span class="token number">0.05</span><span class="token punctuation">,</span>
+    lr_scheduler_type<span class="token operator">=</span><span class="token string">"cosine"</span><span class="token punctuation">,</span>
+    optim<span class="token operator">=</span><span class="token string">"paged_adamw_8bit"</span><span class="token punctuation">,</span>
+    max_grad_norm<span class="token operator">=</span><span class="token number">0.3</span><span class="token punctuation">,</span>
+
+    bf16<span class="token operator">=</span><span class="token punctuation">(</span>compute_dtype <span class="token operator">==</span> torch<span class="token punctuation">.</span>bfloat16<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    fp16<span class="token operator">=</span><span class="token punctuation">(</span>compute_dtype <span class="token operator">==</span> torch<span class="token punctuation">.</span>float16<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    eval_strategy<span class="token operator">=</span><span class="token string">"epoch"</span><span class="token punctuation">,</span>
+    save_strategy<span class="token operator">=</span><span class="token string">"epoch"</span><span class="token punctuation">,</span>
+    report_to<span class="token operator">=</span><span class="token string">"none"</span><span class="token punctuation">,</span>
+    use_cache<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<h3 id="26-1-为什么微批次设为-1"><a href="#26-1-为什么微批次设为-1" class="headerlink" title="26.1 为什么微批次设为 1"></a>26.1 为什么微批次设为 1</h3><p>显存不足时先减少每次真正送入 GPU 的样本数：</p>
+<pre class="language-python" data-language="python"><code class="language-python">per_device_train_batch_size<span class="token operator">=</span><span class="token number">1</span></code></pre>
+
+<p>再用梯度累积增大有效 Batch Size：</p>
+<p>$$<br>B_{\text{effective}}<br>&#x3D;B_{\text{device}}<br>\times G_{\text{accumulation}}<br>\times N_{\text{devices}}<br>$$</p>
+<p>单卡示例中：</p>
+<p>$$<br>1\times8\times1&#x3D;8<br>$$</p>
+<h3 id="26-2-为什么开启-Gradient-Checkpointing"><a href="#26-2-为什么开启-Gradient-Checkpointing" class="headerlink" title="26.2 为什么开启 Gradient Checkpointing"></a>26.2 为什么开启 Gradient Checkpointing</h3><p>它不保存所有中间激活，而是在反向传播时重新计算一部分前向过程：</p>
+<pre class="language-text" data-language="text"><code class="language-text">更低激活显存 &lt;-> 更多计算时间</code></pre>
+
+<p>QLoRA 主要压缩权重，Gradient Checkpointing 主要压缩激活保存，两者解决不同问题。</p>
+<h3 id="26-3-为什么-use-cache-False"><a href="#26-3-为什么-use-cache-False" class="headerlink" title="26.3 为什么 use_cache=False"></a>26.3 为什么 <code>use_cache=False</code></h3><p>KV Cache 主要服务于自回归生成。</p>
+<p>训练时还要反向传播，KV Cache 通常没有生成阶段的意义，并可能与 Gradient Checkpointing 冲突。因此训练配置关闭，推理时再使用。</p>
+<h2 id="27-创建-SFTTrainer"><a href="#27-创建-SFTTrainer" class="headerlink" title="27. 创建 SFTTrainer"></a>27. 创建 SFTTrainer</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> trl <span class="token keyword">import</span> SFTTrainer
+
+trainer <span class="token operator">=</span> SFTTrainer<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"Qwen/Qwen3-0.6B-Base"</span><span class="token punctuation">,</span>
+    args<span class="token operator">=</span>training_args<span class="token punctuation">,</span>
+    train_dataset<span class="token operator">=</span>train_dataset<span class="token punctuation">,</span>
+    eval_dataset<span class="token operator">=</span>eval_dataset<span class="token punctuation">,</span>
+    processing_class<span class="token operator">=</span>tokenizer<span class="token punctuation">,</span>
+    quantization_config<span class="token operator">=</span>quantization_config<span class="token punctuation">,</span>
+    peft_config<span class="token operator">=</span>peft_config<span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这几行连接了三条独立主线：</p>
+<pre class="language-text" data-language="text"><code class="language-text">SFT 主线：messages -> Chat Template -> labels -> loss
+量化主线：Base Model -> NF4 -> Double Quantization
+PEFT 主线：Linear -> LoRA A/B -> 只更新 Adapter</code></pre>
+
+<h2 id="28-如何确认加载的真是-4-bit-模型"><a href="#28-如何确认加载的真是-4-bit-模型" class="headerlink" title="28. 如何确认加载的真是 4-bit 模型"></a>28. 如何确认加载的真是 4-bit 模型</h2><p>不能只因为配置中写了 <code>load_in_4bit=True</code> 就停止检查。</p>
+<pre class="language-python" data-language="python"><code class="language-python">linear4bit <span class="token operator">=</span> <span class="token punctuation">[</span>
+    name
+    <span class="token keyword">for</span> name<span class="token punctuation">,</span> module <span class="token keyword">in</span> trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>named_modules<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> module<span class="token punctuation">.</span>__class__<span class="token punctuation">.</span>__name__ <span class="token operator">==</span> <span class="token string">"Linear4bit"</span>
+<span class="token punctuation">]</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"4-bit Linear layers:"</span><span class="token punctuation">,</span> <span class="token builtin">len</span><span class="token punctuation">(</span>linear4bit<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>linear4bit<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+
+<p>还可以检查：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">print</span><span class="token punctuation">(</span>trainer<span class="token punctuation">.</span>model<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>get_memory_footprint<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>如果量化层数量为 0，应先排查版本、硬件后端、模型支持与加载路径，而不是继续训练。</p>
+<h2 id="29-如何确认只有-LoRA-在训练"><a href="#29-如何确认只有-LoRA-在训练" class="headerlink" title="29. 如何确认只有 LoRA 在训练"></a>29. 如何确认只有 LoRA 在训练</h2><pre class="language-python" data-language="python"><code class="language-python">trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>print_trainable_parameters<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>或手动统计：</p>
+<pre class="language-python" data-language="python"><code class="language-python">trainable <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span>
+    p<span class="token punctuation">.</span>numel<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> p <span class="token keyword">in</span> trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> p<span class="token punctuation">.</span>requires_grad
+<span class="token punctuation">)</span>
+total <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>numel<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">for</span> p <span class="token keyword">in</span> trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"trainable:"</span><span class="token punctuation">,</span> trainable<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"ratio:"</span><span class="token punctuation">,</span> <span class="token number">100</span> <span class="token operator">*</span> trainable <span class="token operator">/</span> total<span class="token punctuation">,</span> <span class="token string">"%"</span><span class="token punctuation">)</span></code></pre>
+
+<p>再查看具体名称：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">for</span> name<span class="token punctuation">,</span> parameter <span class="token keyword">in</span> trainer<span class="token punctuation">.</span>model<span class="token punctuation">.</span>named_parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> parameter<span class="token punctuation">.</span>requires_grad<span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> parameter<span class="token punctuation">.</span>shape<span class="token punctuation">,</span> parameter<span class="token punctuation">.</span>dtype<span class="token punctuation">)</span></code></pre>
+
+<p>正常情况下，大部分可训练名称会带有 <code>lora_A</code> 或 <code>lora_B</code>。</p>
+<h2 id="30-启动训练并记录峰值显存"><a href="#30-启动训练并记录峰值显存" class="headerlink" title="30. 启动训练并记录峰值显存"></a>30. 启动训练并记录峰值显存</h2><pre class="language-python" data-language="python"><code class="language-python">torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>reset_peak_memory_stats<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+trainer<span class="token punctuation">.</span>train<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+peak_gib <span class="token operator">=</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>max_memory_allocated<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">1024</span><span class="token operator">**</span><span class="token number">3</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"peak allocated VRAM: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>peak_gib<span class="token punctuation">:</span><span class="token format-spec">.2f</span><span class="token punctuation">&#125;</span></span><span class="token string"> GiB"</span></span><span class="token punctuation">)</span></code></pre>
+
+<p>比较 LoRA 与 QLoRA 时必须保持尽量相同的：</p>
+<ul>
+<li>Base Model。</li>
+<li>序列长度。</li>
+<li>微批次。</li>
+<li>梯度累积。</li>
+<li>Gradient Checkpointing。</li>
+<li>LoRA rank 与目标层。</li>
+<li>数据和训练步数。</li>
+</ul>
+<p>否则显存差异不能只归因于量化。</p>
+<h2 id="31-保存的仍然主要是-LoRA-Adapter"><a href="#31-保存的仍然主要是-LoRA-Adapter" class="headerlink" title="31. 保存的仍然主要是 LoRA Adapter"></a>31. 保存的仍然主要是 LoRA Adapter</h2><pre class="language-python" data-language="python"><code class="language-python">ADAPTER_DIR <span class="token operator">=</span> <span class="token string">"outputs/qwen3-0.6b-qlora/final-adapter"</span>
+
+trainer<span class="token punctuation">.</span>save_model<span class="token punctuation">(</span>ADAPTER_DIR<span class="token punctuation">)</span>
+tokenizer<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>ADAPTER_DIR<span class="token punctuation">)</span></code></pre>
+
+<p>目录中通常会看到：</p>
+<pre class="language-text" data-language="text"><code class="language-text">adapter_model.safetensors
+adapter_config.json
+tokenizer files
+chat template related files</code></pre>
+
+<p>QLoRA 不会自动把完整 Base Model 权重复制进 Adapter。</p>
+<p>推理仍需要：</p>
+<pre class="language-text" data-language="text"><code class="language-text">原始 Base Model
++ 相同量化配置
++ QLoRA Adapter
++ 匹配的 Tokenizer / Chat Template</code></pre>
+
+<h2 id="32-重新加载-QLoRA-Adapter"><a href="#32-重新加载-QLoRA-Adapter" class="headerlink" title="32. 重新加载 QLoRA Adapter"></a>32. 重新加载 QLoRA Adapter</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> peft <span class="token keyword">import</span> PeftModel
+<span class="token keyword">from</span> transformers <span class="token keyword">import</span> AutoModelForCausalLM
+
+base_model <span class="token operator">=</span> AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    MODEL_ID<span class="token punctuation">,</span>
+    quantization_config<span class="token operator">=</span>quantization_config<span class="token punctuation">,</span>
+    device_map<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">""</span><span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> PeftModel<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    base_model<span class="token punctuation">,</span>
+    ADAPTER_DIR<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>这里的顺序很重要：</p>
+<pre class="language-text" data-language="text"><code class="language-text">先加载与训练一致的 Base Model
+-> 以 4-bit 放入设备
+-> 再挂载 Adapter</code></pre>
+
+<p>如果 Base Model ID 或 revision 不一致，Adapter 的效果和兼容性都可能出问题。</p>
+<h2 id="33-使用-Chat-Template-推理"><a href="#33-使用-Chat-Template-推理" class="headerlink" title="33. 使用 Chat Template 推理"></a>33. 使用 Chat Template 推理</h2><pre class="language-python" data-language="python"><code class="language-python">messages <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"你是一名耐心的机器学习助教。"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"请用生活中的例子解释过拟合。"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+
+input_ids <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>apply_chat_template<span class="token punctuation">(</span>
+    messages<span class="token punctuation">,</span>
+    tokenize<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    add_generation_prompt<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    return_tensors<span class="token operator">=</span><span class="token string">"pt"</span><span class="token punctuation">,</span>
+    enable_thinking<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+device <span class="token operator">=</span> model<span class="token punctuation">.</span>get_input_embeddings<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>weight<span class="token punctuation">.</span>device
+input_ids <span class="token operator">=</span> input_ids<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span></code></pre>
+
+<p>训练时完整样本已经包含 Assistant 回答，所以不添加空的 Assistant 开头；推理时要让模型开始生成 Assistant 内容，因此：</p>
+<pre class="language-python" data-language="python"><code class="language-python">add_generation_prompt<span class="token operator">=</span><span class="token boolean">True</span></code></pre>
+
+<p>QLoRA 没有改变这一规则。</p>
+<h2 id="34-配置-GenerationConfig"><a href="#34-配置-GenerationConfig" class="headerlink" title="34. 配置 GenerationConfig"></a>34. 配置 GenerationConfig</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> transformers <span class="token keyword">import</span> GenerationConfig
+
+im_end_id <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>convert_tokens_to_ids<span class="token punctuation">(</span><span class="token string">"&lt;|im_end|>"</span><span class="token punctuation">)</span>
+
+generation_config <span class="token operator">=</span> GenerationConfig<span class="token punctuation">(</span>
+    max_new_tokens<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">,</span>
+    do_sample<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    temperature<span class="token operator">=</span><span class="token number">0.7</span><span class="token punctuation">,</span>
+    top_p<span class="token operator">=</span><span class="token number">0.9</span><span class="token punctuation">,</span>
+    repetition_penalty<span class="token operator">=</span><span class="token number">1.05</span><span class="token punctuation">,</span>
+    pad_token_id<span class="token operator">=</span>tokenizer<span class="token punctuation">.</span>pad_token_id<span class="token punctuation">,</span>
+    eos_token_id<span class="token operator">=</span>im_end_id<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">with</span> torch<span class="token punctuation">.</span>inference_mode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    output_ids <span class="token operator">=</span> model<span class="token punctuation">.</span>generate<span class="token punctuation">(</span>
+        input_ids<span class="token operator">=</span>input_ids<span class="token punctuation">,</span>
+        generation_config<span class="token operator">=</span>generation_config<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span></code></pre>
+
+<p>只解码新生成部分：</p>
+<pre class="language-python" data-language="python"><code class="language-python">new_tokens <span class="token operator">=</span> output_ids<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> input_ids<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+answer <span class="token operator">=</span> tokenizer<span class="token punctuation">.</span>decode<span class="token punctuation">(</span>new_tokens<span class="token punctuation">,</span> skip_special_tokens<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>answer<span class="token punctuation">)</span></code></pre>
+
+<p>GenerationConfig 控制生成策略，不参与 QLoRA 的训练 Loss。</p>
+<h2 id="35-QLoRA-Adapter-可以合并吗"><a href="#35-QLoRA-Adapter-可以合并吗" class="headerlink" title="35. QLoRA Adapter 可以合并吗"></a>35. QLoRA Adapter 可以合并吗</h2><p>可以讨论合并，但要理解合并对象。</p>
+<p>训练时实际有效权重近似为：</p>
+<p>$$<br>W_{\text{effective}}&#x3D;\hat W+\frac{\alpha}{r}BA<br>$$</p>
+<p>若希望导出一个普通浮点合并模型，更稳妥的流程是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">重新加载未量化的 Base Model
+-> 加载 Adapter
+-> merge_and_unload()
+-> 保存浮点合并模型</code></pre>
+
+<p>示例：</p>
+<pre class="language-python" data-language="python"><code class="language-python">merge_base <span class="token operator">=</span> AutoModelForCausalLM<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    MODEL_ID<span class="token punctuation">,</span>
+    dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span>bfloat16<span class="token punctuation">,</span>
+    device_map<span class="token operator">=</span><span class="token string">"cpu"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+merge_model <span class="token operator">=</span> PeftModel<span class="token punctuation">.</span>from_pretrained<span class="token punctuation">(</span>
+    merge_base<span class="token punctuation">,</span>
+    ADAPTER_DIR<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+merged <span class="token operator">=</span> merge_model<span class="token punctuation">.</span>merge_and_unload<span class="token punctuation">(</span><span class="token punctuation">)</span>
+merged<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>
+    <span class="token string">"outputs/qwen3-0.6b-qlora/merged-model"</span><span class="token punctuation">,</span>
+    safe_serialization<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+tokenizer<span class="token punctuation">.</span>save_pretrained<span class="token punctuation">(</span>
+    <span class="token string">"outputs/qwen3-0.6b-qlora/merged-model"</span>
+<span class="token punctuation">)</span></code></pre>
+
+<p>这一步需要足够的 CPU 内存或 GPU 显存容纳未量化模型。合并后文件也会明显变大。</p>
+<p>如果部署系统支持 PEFT Adapter，保留 <code>Base + Adapter</code> 往往更灵活。</p>
+<h2 id="36-QLoRA-与“量化后推理”有什么区别"><a href="#36-QLoRA-与“量化后推理”有什么区别" class="headerlink" title="36. QLoRA 与“量化后推理”有什么区别"></a>36. QLoRA 与“量化后推理”有什么区别</h2><p>两者都可能加载 4-bit Base Model，但目的不同。</p>
+<h3 id="36-1-量化推理"><a href="#36-1-量化推理" class="headerlink" title="36.1 量化推理"></a>36.1 量化推理</h3><pre class="language-text" data-language="text"><code class="language-text">4-bit Base Model
+-> generate()
+-> 不进行 backward</code></pre>
+
+<h3 id="36-2-QLoRA-训练"><a href="#36-2-QLoRA-训练" class="headerlink" title="36.2 QLoRA 训练"></a>36.2 QLoRA 训练</h3><pre class="language-text" data-language="text"><code class="language-text">4-bit frozen Base Model
++ trainable LoRA
+-> forward
+-> SFT loss
+-> backward through Base computations
+-> update LoRA</code></pre>
+
+<p>只执行：</p>
+<pre class="language-python" data-language="python"><code class="language-python">load_in_4bit<span class="token operator">=</span><span class="token boolean">True</span></code></pre>
+
+<p>并不会自动变成 QLoRA。还必须有可训练 Adapter 和训练过程。</p>
+<h2 id="37-QLoRA-与-QAT-不要混淆"><a href="#37-QLoRA-与-QAT-不要混淆" class="headerlink" title="37. QLoRA 与 QAT 不要混淆"></a>37. QLoRA 与 QAT 不要混淆</h2><p>QAT 是 Quantization-Aware Training，通常会在训练中模拟量化误差，让待部署模型适应低精度表示。</p>
+<p>QLoRA 的核心路径是：</p>
+<ul>
+<li>Base Model 先被量化并冻结。</li>
+<li>不直接更新 Base Model 的量化权重。</li>
+<li>训练额外的 LoRA Adapter。</li>
+</ul>
+<p>因此 QLoRA 不是标准意义上的“对全部模型权重执行 QAT”。</p>
+<h2 id="38-常见错误"><a href="#38-常见错误" class="headerlink" title="38. 常见错误"></a>38. 常见错误</h2><h3 id="38-1-把-torch-dtype-与-bnb-4bit-compute-dtype-当成一回事"><a href="#38-1-把-torch-dtype-与-bnb-4bit-compute-dtype-当成一回事" class="headerlink" title="38.1 把 torch_dtype 与 bnb_4bit_compute_dtype 当成一回事"></a>38.1 把 <code>torch_dtype</code> 与 <code>bnb_4bit_compute_dtype</code> 当成一回事</h3><p>一个控制普通浮点模块或加载 dtype，一个明确控制 4-bit 算子的计算 dtype。要结合模型和库版本理解，不能只看某一个参数。</p>
+<h3 id="38-2-认为量化参数可以像普通-FP32-Parameter-一样直接更新"><a href="#38-2-认为量化参数可以像普通-FP32-Parameter-一样直接更新" class="headerlink" title="38.2 认为量化参数可以像普通 FP32 Parameter 一样直接更新"></a>38.2 认为量化参数可以像普通 FP32 Parameter 一样直接更新</h3><p>QLoRA 冻结 4-bit Base Model，只训练 Adapter。</p>
+<h3 id="38-3-忘记安装-bitsandbytes"><a href="#38-3-忘记安装-bitsandbytes" class="headerlink" title="38.3 忘记安装 bitsandbytes"></a>38.3 忘记安装 bitsandbytes</h3><p>只有 Transformers 和 PEFT 不足以使用这里的 NF4 路径。</p>
+<h3 id="38-4-硬件不支持却强行设置-BF16"><a href="#38-4-硬件不支持却强行设置-BF16" class="headerlink" title="38.4 硬件不支持却强行设置 BF16"></a>38.4 硬件不支持却强行设置 BF16</h3><p>先检查 <code>torch.cuda.is_bf16_supported()</code>。</p>
+<h3 id="38-5-使用-device-map-quot-auto-quot-训练后又直接扩展到分布式"><a href="#38-5-使用-device-map-quot-auto-quot-训练后又直接扩展到分布式" class="headerlink" title="38.5 使用 device_map=&quot;auto&quot; 训练后又直接扩展到分布式"></a>38.5 使用 <code>device_map=&quot;auto&quot;</code> 训练后又直接扩展到分布式</h3><p>推理的自动切分与训练的设备放置不是同一问题。单卡示例跑通后，再根据 Accelerate、FSDP 或 TRL 当前文档设计多卡方案。</p>
+<h3 id="38-6-只看-nvidia-smi-的某一个瞬间"><a href="#38-6-只看-nvidia-smi-的某一个瞬间" class="headerlink" title="38.6 只看 nvidia-smi 的某一个瞬间"></a>38.6 只看 <code>nvidia-smi</code> 的某一个瞬间</h3><p>应该记录峰值显存、训练吞吐和完整配置。</p>
+<h3 id="38-7-只量化了模型，却没有挂载-LoRA"><a href="#38-7-只量化了模型，却没有挂载-LoRA" class="headerlink" title="38.7 只量化了模型，却没有挂载 LoRA"></a>38.7 只量化了模型，却没有挂载 LoRA</h3><p>那只是量化加载，不是 QLoRA 训练。</p>
+<h3 id="38-8-Adapter-保存后删除了-Base-Model-信息"><a href="#38-8-Adapter-保存后删除了-Base-Model-信息" class="headerlink" title="38.8 Adapter 保存后删除了 Base Model 信息"></a>38.8 Adapter 保存后删除了 Base Model 信息</h3><p>至少记录准确的模型 ID、revision、Tokenizer 和量化配置。</p>
+<h3 id="38-9-把-4-bit-权重直接-merge-后当作无损浮点模型"><a href="#38-9-把-4-bit-权重直接-merge-后当作无损浮点模型" class="headerlink" title="38.9 把 4-bit 权重直接 merge 后当作无损浮点模型"></a>38.9 把 4-bit 权重直接 merge 后当作无损浮点模型</h3><p>量化本身已经产生近似误差。需要明确合并来源、输出 dtype，并重新评估模型。</p>
+<h3 id="38-10-因为更省显存就盲目增加序列长度"><a href="#38-10-因为更省显存就盲目增加序列长度" class="headerlink" title="38.10 因为更省显存就盲目增加序列长度"></a>38.10 因为更省显存就盲目增加序列长度</h3><p>激活值和 Attention 开销仍然会增长。先测量，再扩大 <code>max_length</code>。</p>
+<h3 id="38-11-用少量演示数据宣称模型已经学会领域知识"><a href="#38-11-用少量演示数据宣称模型已经学会领域知识" class="headerlink" title="38.11 用少量演示数据宣称模型已经学会领域知识"></a>38.11 用少量演示数据宣称模型已经学会领域知识</h3><p>本篇数据只验证流程，不构成可靠模型训练实验。</p>
+<h3 id="38-12-不验证-Assistant-only-Mask"><a href="#38-12-不验证-Assistant-only-Mask" class="headerlink" title="38.12 不验证 Assistant-only Mask"></a>38.12 不验证 Assistant-only Mask</h3><p>QLoRA 与 Loss Mask 是正交问题。量化正确不代表监督目标正确。</p>
+<h2 id="39-OOM-时应该按什么顺序排查"><a href="#39-OOM-时应该按什么顺序排查" class="headerlink" title="39. OOM 时应该按什么顺序排查"></a>39. OOM 时应该按什么顺序排查</h2><p>可以按下面顺序处理：</p>
+<ol>
+<li>减小 <code>per_device_train_batch_size</code>。</li>
+<li>减小 <code>max_length</code>。</li>
+<li>开启 Gradient Checkpointing。</li>
+<li>增加 Gradient Accumulation 保持有效 Batch Size。</li>
+<li>确认 Base Model 确实以 4-bit 加载。</li>
+<li>检查是否意外让 Base Model 参数可训练。</li>
+<li>减小 LoRA rank 或缩小目标层范围。</li>
+<li>检查评估和保存阶段是否出现峰值。</li>
+<li>再考虑 CPU Offload、多卡或更复杂的并行策略。</li>
+</ol>
+<p>不要一次修改所有设置，否则很难知道真正解决问题的是哪一项。</p>
+<h2 id="40-如何做一个可信的-LoRA-与-QLoRA-对比实验"><a href="#40-如何做一个可信的-LoRA-与-QLoRA-对比实验" class="headerlink" title="40. 如何做一个可信的 LoRA 与 QLoRA 对比实验"></a>40. 如何做一个可信的 LoRA 与 QLoRA 对比实验</h2><p>至少记录：</p>
+<h3 id="模型与量化"><a href="#模型与量化" class="headerlink" title="模型与量化"></a>模型与量化</h3><pre class="language-text" data-language="text"><code class="language-text">model id / revision
+LoRA or QLoRA
+quant type
+double quant
+compute dtype</code></pre>
+
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><pre class="language-text" data-language="text"><code class="language-text">max_length
+micro batch size
+gradient accumulation
+effective batch size
+LoRA r / alpha / target modules
+optimizer
+learning rate
+gradient checkpointing</code></pre>
+
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><pre class="language-text" data-language="text"><code class="language-text">peak allocated VRAM
+peak reserved VRAM
+tokens per second
+wall-clock time
+eval loss
+task metrics
+generation samples</code></pre>
+
+<p>QLoRA 的价值不应只用“成功跑起来”判断，还要比较速度、显存与质量之间的交换。</p>
+<h2 id="41-一个具体的显存思考例子"><a href="#41-一个具体的显存思考例子" class="headerlink" title="41. 一个具体的显存思考例子"></a>41. 一个具体的显存思考例子</h2><p>假设有一个 7B Base Model，先只估计权重：</p>
+<h3 id="BF16-LoRA"><a href="#BF16-LoRA" class="headerlink" title="BF16 LoRA"></a>BF16 LoRA</h3><p>$$<br>7\text{B}\times16\text{ bit}&#x3D;112\text{ Gbit}\approx14\text{ GB}<br>$$</p>
+<h3 id="理想-4-bit-QLoRA"><a href="#理想-4-bit-QLoRA" class="headerlink" title="理想 4-bit QLoRA"></a>理想 4-bit QLoRA</h3><p>$$<br>7\text{B}\times4\text{ bit}&#x3D;28\text{ Gbit}\approx3.5\text{ GB}<br>$$</p>
+<p>理论差值约为：</p>
+<p>$$<br>14-3.5&#x3D;10.5\text{ GB}<br>$$</p>
+<p>但假设训练时激活、Adapter、优化器、缓存和工作区还需要 6 GB，那么粗略总量可能是：</p>
+<pre class="language-text" data-language="text"><code class="language-text">LoRA  : 14 + 6 = 20 GB
+QLoRA : 3.5 + 量化元数据 + 6 GB</code></pre>
+
+<p>这解释了两个现象：</p>
+<ol>
+<li>QLoRA 能显著节省显存。</li>
+<li>实际总显存不会严格变成 LoRA 的四分之一。</li>
+</ol>
+<h2 id="42-完整代码"><a href="#42-完整代码" class="headerlink" title="42. 完整代码"></a>42. 完整代码</h2><p>本文完整示例位于：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/lsworl/lsworl.github.io/blob/main/source/code/nlp-blog/sft_qlora.py">sft_qlora.py</a></p>
+<p>本地运行：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">python source/code/nlp-blog/sft_qlora.py</code></pre>
+
+<p>运行前请先把它当作一次环境验证：</p>
+<pre class="language-text" data-language="text"><code class="language-text">能否识别 CUDA
+-> 能否加载 NF4 Linear4bit
+-> 能否构造 Assistant Mask
+-> 可训练参数是否只有 LoRA
+-> 能否完成一个训练 step
+-> 能否保存并重新加载 Adapter
+-> 能否生成回答</code></pre>
+
+<p>全部通过后，再替换为真实数据和更大的模型。</p>
+<h2 id="43-从已经学过的-Hugging-Face-API-重新理解-QLoRA"><a href="#43-从已经学过的-Hugging-Face-API-重新理解-QLoRA" class="headerlink" title="43. 从已经学过的 Hugging Face API 重新理解 QLoRA"></a>43. 从已经学过的 Hugging Face API 重新理解 QLoRA</h2><p>现在可以把 QLoRA 映射回前面学过的内容：</p>
+<h3 id="Tokenizer"><a href="#Tokenizer" class="headerlink" title="Tokenizer"></a>Tokenizer</h3><p>仍然负责把 Chat Template 的文本变成 <code>input_ids</code>，量化不会改变 token id。</p>
+<h3 id="Model-x2F-Forward"><a href="#Model-x2F-Forward" class="headerlink" title="Model &#x2F; Forward"></a>Model &#x2F; Forward</h3><p>模型内部部分 <code>Linear</code> 被替换为 <code>Linear4bit</code>。Forward 时 Base 权重反量化计算，并与 LoRA 分支结果相加。</p>
+<h3 id="Config-x2F-Architecture"><a href="#Config-x2F-Architecture" class="headerlink" title="Config &#x2F; Architecture"></a>Config &#x2F; Architecture</h3><p>Transformer 主体架构不因 QLoRA 改变。量化配置决定权重如何加载，PEFT 配置决定在哪些模块增加 Adapter。</p>
+<h3 id="Generation-x2F-Sampling"><a href="#Generation-x2F-Sampling" class="headerlink" title="Generation &#x2F; Sampling"></a>Generation &#x2F; Sampling</h3><p>训练完成后仍通过 <code>generate()</code> 自回归预测下一个 token，Temperature、Top-p 等规则不参与训练。</p>
+<h3 id="GenerationConfig"><a href="#GenerationConfig" class="headerlink" title="GenerationConfig"></a>GenerationConfig</h3><p>继续管理推理策略，不管理 NF4、LoRA rank 或 SFT Loss。</p>
+<h3 id="SFT"><a href="#SFT" class="headerlink" title="SFT"></a>SFT</h3><p>Loss 仍然是带 Label Mask 的 next-token cross entropy。QLoRA 只改变模型参数如何存储和更新。</p>
+<h2 id="44-总结"><a href="#44-总结" class="headerlink" title="44. 总结"></a>44. 总结</h2><p>QLoRA 可以用下面这条主线记忆：</p>
+<pre class="language-text" data-language="text"><code class="language-text">Base Model 权重
+-> 分块 NF4 4-bit 存储
+-> Double Quantization 压缩量化常数
+-> 前向时反量化到 BF16 / FP16 计算
+-> 与高精度 LoRA 分支相加
+-> SFT Loss 反向传播
+-> 冻结 Base Model
+-> 只更新 LoRA Adapter
+-> Paged Optimizer 缓解优化器状态与峰值压力</code></pre>
+
+<p>真正需要记住的不是四个参数名，而是下面四句话：</p>
+<ol>
+<li>QLoRA 是量化 Base Model 与 LoRA 的组合，不是新的 SFT Loss。</li>
+<li>4-bit 主要描述 Base Model 权重的存储，不代表所有计算都在 4 bit 中进行。</li>
+<li>梯度经过量化模型的计算路径，但只更新高精度 Adapter。</li>
+<li>QLoRA 大幅压缩权重显存，却不会消除激活值、序列长度和数据质量问题。</li>
+</ol>
+<p>理解这些之后，<code>BitsAndBytesConfig</code> 就不再是一组需要背诵的开关，而是每一步数学与显存取舍在 Hugging Face 中的具体入口。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.14314">QLoRA: Efficient Finetuning of Quantized LLMs</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/quantization/bitsandbytes">Hugging Face Transformers：Bitsandbytes</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/peft/developer_guides/quantization">Hugging Face PEFT：Quantization</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/peft_integration">Hugging Face TRL：PEFT Integration</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/sft_trainer">Hugging Face TRL：SFTTrainer</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/bitsandbytes/installation">Hugging Face bitsandbytes：Installation Guide</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.github.io">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.github.io/2026/09/04/nlp-qlora-4bit-finetuning/">https://lsworl.github.io/2026/09/04/nlp-qlora-4bit-finetuning/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.github.io" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/NLP/">NLP</a><a class="post-meta__tags" href="/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a><a class="post-meta__tags" href="/tags/Hugging-Face/">Hugging Face</a><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/SFT/">SFT</a><a class="post-meta__tags" href="/tags/TRL/">TRL</a><a class="post-meta__tags" href="/tags/PEFT/">PEFT</a><a class="post-meta__tags" href="/tags/LoRA/">LoRA</a><a class="post-meta__tags" href="/tags/QLoRA/">QLoRA</a><a class="post-meta__tags" href="/tags/bitsandbytes/">bitsandbytes</a><a class="post-meta__tags" href="/tags/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96/">模型量化</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/lsWorl.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</div></div><div class="info-2"><div class="info-item-1">前两篇已经完成了两层理解：  SFT 原理篇：SFT 仍然是 next-token prediction，关键在于数据、Chat Template 和 Loss Mask。 Transformers 手写篇：亲手构造 input_ids / attention_mask / labels，再交给原生 Trainer。  现在可以进入更接近真实项目的组合： Hugging Face Datasets   + Transformers   + TRL SFTTrainer   + PEFT LoRA  本篇不会把 SFTTrainer 描述成“一行代码训练大模型”。它确实减少了很多样板代码，但仍然需要对下面这些问题负责：  数据格式是否正确。 Chat Template 是否与模型匹配。 Assistant-only loss 是否真的生效。 截断是否删除了回答。 LoRA 是否插入了预期模块。 训练与验证是否存在数据泄漏。 保存的是完整模型还是 Adapter。 推理时是否加载了正确的 Base Model。     1. TRL 是什么TRL 是 Hugging Face 生态中...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</div></div><div class="info-2"><div class="info-item-1">前两篇已经完成了两层理解：  SFT 原理篇：SFT 仍然是 next-token prediction，关键在于数据、Chat Template 和 Loss Mask。 Transformers 手写篇：亲手构造 input_ids / attention_mask / labels，再交给原生 Trainer。  现在可以进入更接近真实项目的组合： Hugging Face Datasets   + Transformers   + TRL SFTTrainer   + PEFT LoRA  本篇不会把 SFTTrainer 描述成“一行代码训练大模型”。它确实减少了很多样板代码，但仍然需要对下面这些问题负责：  数据格式是否正确。 Chat Template 是否与模型匹配。 Assistant-only loss 是否真的生效。 截断是否删除了回答。 LoRA 是否插入了预期模块。 训练与验证是否存在数据泄漏。 保存的是完整模型还是 Adapter。 推理时是否加载了正确的 Base Model。     1. TRL 是什么TRL 是 Hugging Face 生态中...</div></div></div></a><a class="pagination-related" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（一）：从Next Token Prediction到指令微调</div></div><div class="info-2"><div class="info-item-1">在手写 Mini-GPT中，也已经从底层走通过： Prompt   -> Tokenizer   -> Embedding   -> Causal Transformer   -> LM Head   -> logits   -> sampling   -> next token  但是理解推理流程后，新的问题随之出现：  一个只会续写文本的 Base Model，为什么经过训练后会开始理解“用户提问”和“助手回答”，并按照指令组织答案？  这就是本文要讨论的 Supervised Fine-Tuning，监督微调，简称 SFT。 本文不会从“调用一个 Trainer”开始，而会先把 SFT 还原成我已经熟悉的 next-token prediction。等把数据、标签和损失看清楚后，下一篇再用 Hugging Face Transformers 亲手实现，第三篇再进入 TRL SFTTrainer + LoRA。    1. SFT 到底是什么SFT 的完整名称是 Supervised Fine-Tuning。 它表示：  从一个已经预训练的模型出发，使用带有目标答案的监督数据...</div></div></div></a><a class="pagination-related" href="/2026/08/24/nlp-sft-transformers-from-scratch/" title="SFT（二）：用Hugging Face Transformers手写监督微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-24</div><div class="info-item-2">SFT（二）：用Hugging Face Transformers手写监督微调</div></div><div class="info-2"><div class="info-item-1">上一篇 SFT 原理篇已经把监督微调还原成 next-token prediction： Prompt 与标准答案   -> 一串 Causal LM token   -> Prompt 对应 labels 设为 -100   -> 模型内部进行 one-token shift   -> 只在 Answer token 上计算交叉熵  这一篇不使用 TRL 的 SFTTrainer，而只部分的 Hugging Face 组件：  Dataset。 AutoTokenizer。 AutoModelForCausalLM。 forward()。 Trainer 与 TrainingArguments。 GenerationConfig 与 generate()。  目标不是重复造一个完善的训练框架，而是让我能亲眼看到 SFT 中最重要的三组张量： input_ids attention_mask labels  等这些张量完全对上后，下一篇再使用 TRL SFTTrainer + LoRA，就不会把自动化误认为魔法。    1. 本篇要训练什么我们使用一个小型 Causal Lang...</div></div></div></a><a class="pagination-related" href="/2026/08/22/nlp-hugging-face-transformers-tutorial/" title="Hugging Face详解：从模型下载到中文文本分类微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-22</div><div class="info-item-2">Hugging Face详解：从模型下载到中文文本分类微调</div></div><div class="info-2"><div class="info-item-1">前面的文章已经从零实现了 Transformer、Mini-GPT 和 RoPE。理解这些底层原理之后，一个很自然的问题是：  实际项目中，难道每次都要从头实现网络、训练 Tokenizer，再用海量数据预训练模型吗？  通常不需要。 很多任务可以从一个已经预训练好的模型出发，只添加或替换任务头，再使用自己的数据进行微调。Hugging Face 正是把“寻找模型、下载权重、统一调用、处理数据、训练评估和分享结果”串起来的一套生态。 不过，初学者很容易把下面这些概念混在一起：  Hugging Face 网站。 Hugging Face Hub。 transformers Python 库。 datasets Python 库。 pipeline()。 AutoTokenizer 与 AutoModel。 Trainer。 Spaces 与在线推理服务。  本文会先把它们拆开，再通过一个中文情感分类项目完整走通： 选择预训练模型   -> 加载 Tokenizer   -> 文本转成模型输入   -> 加载任务模型   -> 手动完成一次前向推理   -> 构造 Dataset ...</div></div></div></a><a class="pagination-related" href="/2026/08/14/nlp-rope-rotary-position-embedding/" title="RoPE详解：从二维旋转到PyTorch手写旋转位置编码"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-14</div><div class="info-item-2">RoPE详解：从二维旋转到PyTorch手写旋转位置编码</div></div><div class="info-2"><div class="info-item-1">前面的 Transformer 和 Mini-GPT 文章分别使用了固定正弦位置编码与可学习绝对位置向量。它们都在解决同一个问题：  Self-Attention 可以比较 token 内容，却不会天然知道 token 的先后顺序。  这篇文章继续研究另一种位置编码：RoPE（Rotary Position Embedding，旋转位置编码）。 RoPE 的做法很特别。它不把位置向量直接加到 token 表示上，而是在每个注意力头内部，把 Query 和 Key 按位置旋转不同角度： token hidden state   -> 线性投影得到 Q、K、V   -> 根据 position 旋转 Q 和 K   -> 计算 QK^T   -> Softmax   -> 对没有旋转的 V 加权求和  它的核心价值可以浓缩为一句话：  用绝对位置决定旋转角度，让 Query 与 Key 的点积自然只显式依赖相对位置。  本文会从二维向量开始，逐步回答下面的问题：  为什么旋转能够表示位置？ 为什么两个绝对位置最后会变成一个相对距离？ 为什么只旋转 Q 和 K，不旋转 V？ 高维向量怎...</div></div></div></a><a class="pagination-related" href="/2026/08/03/nlp-word2vec-embedding-classifier/" title="Word2Vec：从词向量训练到神经网络分类器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-03</div><div class="info-item-2">Word2Vec：从词向量训练到神经网络分类器</div></div><div class="info-2"><div class="info-item-1">前面学习文本处理时，我们已经知道：自然语言不能直接送进模型，必须先变成数字。 最朴素的方法是 One-hot。比如词表里有 10000 个词，每个词就用一个长度为 10000 的向量表示，属于自己的位置为 1，其他位置为 0。 但 One-hot 有两个明显问题：  向量太稀疏，绝大多数位置都是 0。 词和词之间没有语义关系，“国王”和“王后”在 One-hot 空间里并不比“国王”和“香蕉”更接近。  word2vec 要解决的就是这个问题：  把词表示成低维、稠密、带有语义关系的向量。  例如： 国王 -> [0.32, -0.18, 0.71, ...] 王后 -> [0.29, -0.15, 0.69, ...] 香蕉 -> [-0.44, 0.83, 0.12, ...]  如果训练得好，“国王”和“王后”的向量会更接近，而“国王”和“香蕉”的向量会更远。 这篇文章就从 word2vec 出发，理解词向量是怎么训练出来的、怎么改进和评价词向量，并进一步过渡到神经网络文本分类器。    1. 词向量到底是什么词向量，也叫 word embedding，本质上就是给每个词分...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">专注机器学习、深度学习与工程实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">126</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">143</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LsWorld，这里记录机器学习学习路线、实验笔记和代码实践。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-QLoRA-%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">1. QLoRA 到底是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-QLoRA-%E4%B8%8E-SFT%E3%80%81LoRA%E3%80%81%E9%87%8F%E5%8C%96%E6%98%AF%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="toc-number">2.</span> <span class="toc-text">2. QLoRA 与 SFT、LoRA、量化是什么关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Full-Fine-tuning%E3%80%81LoRA-%E4%B8%8E-QLoRA-%E5%AF%B9%E6%AF%94"><span class="toc-number">3.</span> <span class="toc-text">3. Full Fine-tuning、LoRA 与 QLoRA 对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Full-Fine-tuning"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 Full Fine-tuning</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-LoRA"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 LoRA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-QLoRA"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 QLoRA</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E2%80%9C4-bit-%E8%AE%AD%E7%BB%83%E2%80%9D%E6%98%AF%E4%B8%80%E4%B8%AA%E5%AE%B9%E6%98%93%E8%AF%AF%E5%AF%BC%E7%9A%84%E7%AE%80%E7%A7%B0"><span class="toc-number">4.</span> <span class="toc-text">4. “4-bit 训练”是一个容易误导的简称</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%86%BB%E7%BB%93%E7%9A%84-Base-Model-%E4%BB%8D%E7%84%B6%E6%B6%88%E8%80%97%E5%A4%A7%E9%87%8F%E6%98%BE%E5%AD%98"><span class="toc-number">5.</span> <span class="toc-text">5. 为什么冻结的 Base Model 仍然消耗大量显存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%85%88%E7%90%86%E8%A7%A3%E6%9C%80%E6%99%AE%E9%80%9A%E7%9A%84%E5%88%86%E5%9D%97%E9%87%8F%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">6. 先理解最普通的分块量化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E8%AE%A1%E7%AE%97%E7%BC%A9%E6%94%BE%E5%9B%A0%E5%AD%90"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 计算缩放因子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E6%8A%8A%E6%B5%AE%E7%82%B9%E6%9D%83%E9%87%8D%E6%98%A0%E5%B0%84%E4%B8%BA%E6%95%B4%E6%95%B0%E7%BC%96%E5%8F%B7"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 把浮点权重映射为整数编号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%8F%8D%E9%87%8F%E5%8C%96%E5%BE%97%E5%88%B0%E8%BF%91%E4%BC%BC%E6%9D%83%E9%87%8D"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 反量化得到近似权重</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%9D%97%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E6%95%B4%E5%B1%82%E5%8F%AA%E7%94%A8%E4%B8%80%E4%B8%AA-scale"><span class="toc-number">7.</span> <span class="toc-text">7. 为什么要分块，而不是整层只用一个 scale</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-NF4-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">8.</span> <span class="toc-text">8. NF4 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-NF4-%E4%B8%8E-FP4-%E4%B8%8D%E8%A6%81%E6%B7%B7%E4%B8%BA%E4%B8%80%E8%B0%88"><span class="toc-number">9.</span> <span class="toc-text">9. NF4 与 FP4 不要混为一谈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-Double-Quantization-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">10.</span> <span class="toc-text">10. Double Quantization 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-QLoRA-%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%A9%B6%E7%AB%9F%E6%80%8E%E6%A0%B7%E8%AE%A1%E7%AE%97"><span class="toc-number">11.</span> <span class="toc-text">11. QLoRA 前向传播究竟怎样计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E4%BC%9A%E4%B8%8D%E4%BC%9A%E6%9B%B4%E6%96%B0-4-bit-%E6%9D%83%E9%87%8D"><span class="toc-number">12.</span> <span class="toc-text">12. 反向传播会不会更新 4-bit 权重</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-LoRA-%E5%8F%82%E6%95%B0%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E4%B9%9F%E7%AE%80%E5%8D%95%E5%AD%98%E6%88%90-4-bit-%E8%AE%AD%E7%BB%83"><span class="toc-number">13.</span> <span class="toc-text">13. LoRA 参数为什么不能也简单存成 4 bit 训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-Paged-Optimizer-%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">14.</span> <span class="toc-text">14. Paged Optimizer 解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-QLoRA-%E5%88%B0%E5%BA%95%E7%9C%81%E4%BA%86%E5%93%AA%E4%BA%9B%E6%98%BE%E5%AD%98"><span class="toc-number">15.</span> <span class="toc-text">15. QLoRA 到底省了哪些显存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-QLoRA-%E4%B8%8D%E6%98%AF%E6%8A%8A%E7%A3%81%E7%9B%98%E6%96%87%E4%BB%B6%E7%AE%80%E5%8D%95%E5%8E%8B%E7%BC%A9%E6%88%90%E5%9B%9B%E5%88%86%E4%B9%8B%E4%B8%80"><span class="toc-number">16.</span> <span class="toc-text">16. QLoRA 不是把磁盘文件简单压缩成四分之一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E5%9C%A8-Hugging-Face-%E4%B8%AD%E9%9C%80%E8%A6%81%E5%93%AA%E4%BA%9B%E7%BB%84%E4%BB%B6"><span class="toc-number">17.</span> <span class="toc-text">17. 在 Hugging Face 中需要哪些组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E4%B8%8E%E8%AE%B0%E5%BD%95%E7%8E%AF%E5%A2%83"><span class="toc-number">18.</span> <span class="toc-text">18. 安装依赖与记录环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E5%85%88%E6%A3%80%E6%9F%A5%E7%A1%AC%E4%BB%B6%E4%B8%8E-BF16-%E6%94%AF%E6%8C%81"><span class="toc-number">19.</span> <span class="toc-text">19. 先检查硬件与 BF16 支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E9%80%89%E6%8B%A9%E8%AE%A1%E7%AE%97-dtype"><span class="toc-number">20.</span> <span class="toc-text">20. 选择计算 dtype</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E9%85%8D%E7%BD%AE-BitsAndBytesConfig"><span class="toc-number">21.</span> <span class="toc-text">21. 配置 BitsAndBytesConfig</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-load-in-4bit-True"><span class="toc-number">21.1.</span> <span class="toc-text">21.1 load_in_4bit&#x3D;True</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-bnb-4bit-quant-type-quot-nf4-quot"><span class="toc-number">21.2.</span> <span class="toc-text">21.2 bnb_4bit_quant_type&#x3D;&quot;nf4&quot;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-3-bnb-4bit-use-double-quant-True"><span class="toc-number">21.3.</span> <span class="toc-text">21.3 bnb_4bit_use_double_quant&#x3D;True</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-4-bnb-4bit-compute-dtype-compute-dtype"><span class="toc-number">21.4.</span> <span class="toc-text">21.4 bnb_4bit_compute_dtype&#x3D;compute_dtype</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E9%85%8D%E7%BD%AE-LoRA"><span class="toc-number">22.</span> <span class="toc-text">22. 配置 LoRA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-all-linear"><span class="toc-number">22.1.</span> <span class="toc-text">22.1 为什么使用 all-linear</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E5%BD%93%E5%89%8D-TRL-%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E7%BB%84%E5%90%88%E9%87%8F%E5%8C%96%E4%B8%8E-PEFT"><span class="toc-number">23.</span> <span class="toc-text">23. 当前 TRL 可以直接组合量化与 PEFT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E6%89%8B%E5%8A%A8%E5%8A%A0%E8%BD%BD%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89-prepare-model-for-kbit-training"><span class="toc-number">24.</span> <span class="toc-text">24. 手动加载时为什么有 prepare_model_for_kbit_training</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E6%9E%84%E9%80%A0%E5%AF%B9%E8%AF%9D%E6%95%B0%E6%8D%AE"><span class="toc-number">25.</span> <span class="toc-text">25. 构造对话数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E9%85%8D%E7%BD%AE-SFTConfig"><span class="toc-number">26.</span> <span class="toc-text">26. 配置 SFTConfig</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%AE%E6%89%B9%E6%AC%A1%E8%AE%BE%E4%B8%BA-1"><span class="toc-number">26.1.</span> <span class="toc-text">26.1 为什么微批次设为 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%80%E5%90%AF-Gradient-Checkpointing"><span class="toc-number">26.2.</span> <span class="toc-text">26.2 为什么开启 Gradient Checkpointing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-3-%E4%B8%BA%E4%BB%80%E4%B9%88-use-cache-False"><span class="toc-number">26.3.</span> <span class="toc-text">26.3 为什么 use_cache&#x3D;False</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E5%88%9B%E5%BB%BA-SFTTrainer"><span class="toc-number">27.</span> <span class="toc-text">27. 创建 SFTTrainer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E5%A6%82%E4%BD%95%E7%A1%AE%E8%AE%A4%E5%8A%A0%E8%BD%BD%E7%9A%84%E7%9C%9F%E6%98%AF-4-bit-%E6%A8%A1%E5%9E%8B"><span class="toc-number">28.</span> <span class="toc-text">28. 如何确认加载的真是 4-bit 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E5%A6%82%E4%BD%95%E7%A1%AE%E8%AE%A4%E5%8F%AA%E6%9C%89-LoRA-%E5%9C%A8%E8%AE%AD%E7%BB%83"><span class="toc-number">29.</span> <span class="toc-text">29. 如何确认只有 LoRA 在训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E5%90%AF%E5%8A%A8%E8%AE%AD%E7%BB%83%E5%B9%B6%E8%AE%B0%E5%BD%95%E5%B3%B0%E5%80%BC%E6%98%BE%E5%AD%98"><span class="toc-number">30.</span> <span class="toc-text">30. 启动训练并记录峰值显存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E4%BF%9D%E5%AD%98%E7%9A%84%E4%BB%8D%E7%84%B6%E4%B8%BB%E8%A6%81%E6%98%AF-LoRA-Adapter"><span class="toc-number">31.</span> <span class="toc-text">31. 保存的仍然主要是 LoRA Adapter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E9%87%8D%E6%96%B0%E5%8A%A0%E8%BD%BD-QLoRA-Adapter"><span class="toc-number">32.</span> <span class="toc-text">32. 重新加载 QLoRA Adapter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E4%BD%BF%E7%94%A8-Chat-Template-%E6%8E%A8%E7%90%86"><span class="toc-number">33.</span> <span class="toc-text">33. 使用 Chat Template 推理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E9%85%8D%E7%BD%AE-GenerationConfig"><span class="toc-number">34.</span> <span class="toc-text">34. 配置 GenerationConfig</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-QLoRA-Adapter-%E5%8F%AF%E4%BB%A5%E5%90%88%E5%B9%B6%E5%90%97"><span class="toc-number">35.</span> <span class="toc-text">35. QLoRA Adapter 可以合并吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-QLoRA-%E4%B8%8E%E2%80%9C%E9%87%8F%E5%8C%96%E5%90%8E%E6%8E%A8%E7%90%86%E2%80%9D%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">36.</span> <span class="toc-text">36. QLoRA 与“量化后推理”有什么区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#36-1-%E9%87%8F%E5%8C%96%E6%8E%A8%E7%90%86"><span class="toc-number">36.1.</span> <span class="toc-text">36.1 量化推理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-2-QLoRA-%E8%AE%AD%E7%BB%83"><span class="toc-number">36.2.</span> <span class="toc-text">36.2 QLoRA 训练</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-QLoRA-%E4%B8%8E-QAT-%E4%B8%8D%E8%A6%81%E6%B7%B7%E6%B7%86"><span class="toc-number">37.</span> <span class="toc-text">37. QLoRA 与 QAT 不要混淆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#38-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">38.</span> <span class="toc-text">38. 常见错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#38-1-%E6%8A%8A-torch-dtype-%E4%B8%8E-bnb-4bit-compute-dtype-%E5%BD%93%E6%88%90%E4%B8%80%E5%9B%9E%E4%BA%8B"><span class="toc-number">38.1.</span> <span class="toc-text">38.1 把 torch_dtype 与 bnb_4bit_compute_dtype 当成一回事</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-2-%E8%AE%A4%E4%B8%BA%E9%87%8F%E5%8C%96%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E5%83%8F%E6%99%AE%E9%80%9A-FP32-Parameter-%E4%B8%80%E6%A0%B7%E7%9B%B4%E6%8E%A5%E6%9B%B4%E6%96%B0"><span class="toc-number">38.2.</span> <span class="toc-text">38.2 认为量化参数可以像普通 FP32 Parameter 一样直接更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-3-%E5%BF%98%E8%AE%B0%E5%AE%89%E8%A3%85-bitsandbytes"><span class="toc-number">38.3.</span> <span class="toc-text">38.3 忘记安装 bitsandbytes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-4-%E7%A1%AC%E4%BB%B6%E4%B8%8D%E6%94%AF%E6%8C%81%E5%8D%B4%E5%BC%BA%E8%A1%8C%E8%AE%BE%E7%BD%AE-BF16"><span class="toc-number">38.4.</span> <span class="toc-text">38.4 硬件不支持却强行设置 BF16</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-5-%E4%BD%BF%E7%94%A8-device-map-quot-auto-quot-%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8F%88%E7%9B%B4%E6%8E%A5%E6%89%A9%E5%B1%95%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F"><span class="toc-number">38.5.</span> <span class="toc-text">38.5 使用 device_map&#x3D;&quot;auto&quot; 训练后又直接扩展到分布式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-6-%E5%8F%AA%E7%9C%8B-nvidia-smi-%E7%9A%84%E6%9F%90%E4%B8%80%E4%B8%AA%E7%9E%AC%E9%97%B4"><span class="toc-number">38.6.</span> <span class="toc-text">38.6 只看 nvidia-smi 的某一个瞬间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-7-%E5%8F%AA%E9%87%8F%E5%8C%96%E4%BA%86%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%B4%E6%B2%A1%E6%9C%89%E6%8C%82%E8%BD%BD-LoRA"><span class="toc-number">38.7.</span> <span class="toc-text">38.7 只量化了模型，却没有挂载 LoRA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-8-Adapter-%E4%BF%9D%E5%AD%98%E5%90%8E%E5%88%A0%E9%99%A4%E4%BA%86-Base-Model-%E4%BF%A1%E6%81%AF"><span class="toc-number">38.8.</span> <span class="toc-text">38.8 Adapter 保存后删除了 Base Model 信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-9-%E6%8A%8A-4-bit-%E6%9D%83%E9%87%8D%E7%9B%B4%E6%8E%A5-merge-%E5%90%8E%E5%BD%93%E4%BD%9C%E6%97%A0%E6%8D%9F%E6%B5%AE%E7%82%B9%E6%A8%A1%E5%9E%8B"><span class="toc-number">38.9.</span> <span class="toc-text">38.9 把 4-bit 权重直接 merge 后当作无损浮点模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-10-%E5%9B%A0%E4%B8%BA%E6%9B%B4%E7%9C%81%E6%98%BE%E5%AD%98%E5%B0%B1%E7%9B%B2%E7%9B%AE%E5%A2%9E%E5%8A%A0%E5%BA%8F%E5%88%97%E9%95%BF%E5%BA%A6"><span class="toc-number">38.10.</span> <span class="toc-text">38.10 因为更省显存就盲目增加序列长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-11-%E7%94%A8%E5%B0%91%E9%87%8F%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE%E5%AE%A3%E7%A7%B0%E6%A8%A1%E5%9E%8B%E5%B7%B2%E7%BB%8F%E5%AD%A6%E4%BC%9A%E9%A2%86%E5%9F%9F%E7%9F%A5%E8%AF%86"><span class="toc-number">38.11.</span> <span class="toc-text">38.11 用少量演示数据宣称模型已经学会领域知识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-12-%E4%B8%8D%E9%AA%8C%E8%AF%81-Assistant-only-Mask"><span class="toc-number">38.12.</span> <span class="toc-text">38.12 不验证 Assistant-only Mask</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#39-OOM-%E6%97%B6%E5%BA%94%E8%AF%A5%E6%8C%89%E4%BB%80%E4%B9%88%E9%A1%BA%E5%BA%8F%E6%8E%92%E6%9F%A5"><span class="toc-number">39.</span> <span class="toc-text">39. OOM 时应该按什么顺序排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#40-%E5%A6%82%E4%BD%95%E5%81%9A%E4%B8%80%E4%B8%AA%E5%8F%AF%E4%BF%A1%E7%9A%84-LoRA-%E4%B8%8E-QLoRA-%E5%AF%B9%E6%AF%94%E5%AE%9E%E9%AA%8C"><span class="toc-number">40.</span> <span class="toc-text">40. 如何做一个可信的 LoRA 与 QLoRA 对比实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E4%B8%8E%E9%87%8F%E5%8C%96"><span class="toc-number">40.1.</span> <span class="toc-text">模型与量化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83"><span class="toc-number">40.2.</span> <span class="toc-text">训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">40.3.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#41-%E4%B8%80%E4%B8%AA%E5%85%B7%E4%BD%93%E7%9A%84%E6%98%BE%E5%AD%98%E6%80%9D%E8%80%83%E4%BE%8B%E5%AD%90"><span class="toc-number">41.</span> <span class="toc-text">41. 一个具体的显存思考例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BF16-LoRA"><span class="toc-number">41.1.</span> <span class="toc-text">BF16 LoRA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E6%83%B3-4-bit-QLoRA"><span class="toc-number">41.2.</span> <span class="toc-text">理想 4-bit QLoRA</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#42-%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">42.</span> <span class="toc-text">42. 完整代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#43-%E4%BB%8E%E5%B7%B2%E7%BB%8F%E5%AD%A6%E8%BF%87%E7%9A%84-Hugging-Face-API-%E9%87%8D%E6%96%B0%E7%90%86%E8%A7%A3-QLoRA"><span class="toc-number">43.</span> <span class="toc-text">43. 从已经学过的 Hugging Face API 重新理解 QLoRA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Tokenizer"><span class="toc-number">43.1.</span> <span class="toc-text">Tokenizer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Model-x2F-Forward"><span class="toc-number">43.2.</span> <span class="toc-text">Model &#x2F; Forward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Config-x2F-Architecture"><span class="toc-number">43.3.</span> <span class="toc-text">Config &#x2F; Architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generation-x2F-Sampling"><span class="toc-number">43.4.</span> <span class="toc-text">Generation &#x2F; Sampling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenerationConfig"><span class="toc-number">43.5.</span> <span class="toc-text">GenerationConfig</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SFT"><span class="toc-number">43.6.</span> <span class="toc-text">SFT</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#44-%E6%80%BB%E7%BB%93"><span class="toc-number">44.</span> <span class="toc-text">44. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">45.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/04/nlp-qlora-4bit-finetuning/" title="SFT（四）：QLoRA的4-bit量化与LoRA微调原理">SFT（四）：QLoRA的4-bit量化与LoRA微调原理</a><time datetime="2026-09-03T16:00:00.000Z" title="发表于 2026-09-04 00:00:00">2026-09-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</a><time datetime="2026-08-24T15:59:00.000Z" title="发表于 2026-08-24 23:59:00">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-transformers-from-scratch/" title="SFT（二）：用Hugging Face Transformers手写监督微调">SFT（二）：用Hugging Face Transformers手写监督微调</a><time datetime="2026-08-24T15:10:58.000Z" title="发表于 2026-08-24 23:10:58">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/24/nlp-sft-principles/" title="SFT（一）：从Next Token Prediction到指令微调">SFT（一）：从Next Token Prediction到指令微调</a><time datetime="2026-08-23T16:00:00.000Z" title="发表于 2026-08-24 00:00:00">2026-08-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/22/nlp-hugging-face-transformers-tutorial/" title="Hugging Face详解：从模型下载到中文文本分类微调">Hugging Face详解：从模型下载到中文文本分类微调</a><time datetime="2026-08-21T16:00:00.000Z" title="发表于 2026-08-22 00:00:00">2026-08-22</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

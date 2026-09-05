@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>QLoRA 整体训练流程</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="52" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">QLoRA：4-bit 冻结主干 + 高精度可训练 Adapter</text>
+  <text x="575" y="82" text-anchor="middle" font-size="16" fill="#64748b">量化降低 Base Model 存储，LoRA 保留可学习的连续更新</text>
+
+  <rect x="55" y="137" width="220" height="150" rx="7" fill="#e8f1ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="165" y="176" text-anchor="middle" font-size="21" font-weight="700" fill="#1e3a5f">对话 SFT 数据</text>
+  <text x="165" y="211" text-anchor="middle" font-size="16" fill="#315f8f">messages + Chat Template</text>
+  <text x="165" y="239" text-anchor="middle" font-size="16" fill="#315f8f">input_ids / labels</text>
+  <text x="165" y="267" text-anchor="middle" font-size="16" fill="#315f8f">Assistant-only Loss</text>
+
+  <path d="M280 212H356" stroke="#52616f" stroke-width="4"/>
+  <path d="M356 212l-16-10v20z" fill="#52616f"/>
+
+  <rect x="370" y="112" width="410" height="390" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="575" y="151" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">同一个 Transformer 线性层</text>
+  <rect x="410" y="186" width="330" height="128" rx="7" fill="#fff5df" stroke="#e59b2f" stroke-width="2"/>
+  <text x="575" y="222" text-anchor="middle" font-size="21" font-weight="700" fill="#704814">Base Model 主分支</text>
+  <text x="575" y="254" text-anchor="middle" font-size="17" fill="#704814">NF4 4-bit 权重 + Double Quant</text>
+  <text x="575" y="282" text-anchor="middle" font-size="16" fill="#9a651c">Frozen：参与计算，不执行参数更新</text>
+
+  <text x="575" y="347" text-anchor="middle" font-size="27" font-weight="700" fill="#52616f">+</text>
+
+  <rect x="410" y="373" width="330" height="96" rx="7" fill="#eaf8ef" stroke="#24a467" stroke-width="2"/>
+  <text x="575" y="408" text-anchor="middle" font-size="21" font-weight="700" fill="#17643f">LoRA Adapter 分支</text>
+  <text x="575" y="439" text-anchor="middle" font-size="17" fill="#17643f">BF16 / FP32，A 与 B 可训练</text>
+
+  <path d="M785 307H856" stroke="#52616f" stroke-width="4"/>
+  <path d="M856 307l-16-10v20z" fill="#52616f"/>
+
+  <rect x="870" y="222" width="225" height="170" rx="7" fill="#f2eafe" stroke="#9654d8" stroke-width="2"/>
+  <text x="982" y="263" text-anchor="middle" font-size="21" font-weight="700" fill="#633493">Forward + Loss</text>
+  <text x="982" y="297" text-anchor="middle" font-size="16" fill="#633493">Base 与 LoRA 输出相加</text>
+  <text x="982" y="326" text-anchor="middle" font-size="16" fill="#633493">Next-token Cross Entropy</text>
+  <text x="982" y="359" text-anchor="middle" font-size="16" font-weight="700" fill="#17643f">Backward 只更新 LoRA</text>
+
+  <path d="M982 402V547H686" fill="none" stroke="#24a467" stroke-width="4"/>
+  <path d="M686 547l17-10v20z" fill="#24a467"/>
+  <text x="844" y="574" text-anchor="middle" font-size="16" fill="#17643f">梯度穿过量化主干的运算，流入 Adapter</text>
+
+  <rect x="145" y="610" width="860" height="55" rx="7" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="575" y="645" text-anchor="middle" font-size="18" fill="#334155">Token 与 Loss 没有变化；变化的是 Base 权重存储方式与可训练参数范围</text>
+</svg>

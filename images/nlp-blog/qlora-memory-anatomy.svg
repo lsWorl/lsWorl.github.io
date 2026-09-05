@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>QLoRA 训练显存组成</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="50" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">QLoRA 压缩了权重，但训练显存不只包含权重</text>
+  <text x="575" y="80" text-anchor="middle" font-size="16" fill="#64748b">示意面积表示组成，不代表特定模型的固定比例</text>
+
+  <rect x="80" y="125" width="990" height="420" rx="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="115" y="165" width="430" height="150" rx="7" fill="#f8d291" stroke="#e59b2f"/>
+  <text x="330" y="215" text-anchor="middle" font-size="23" font-weight="700" fill="#704814">4-bit Base Model</text>
+  <text x="330" y="250" text-anchor="middle" font-size="17" fill="#704814">NF4 codes + quant state</text>
+  <text x="330" y="283" text-anchor="middle" font-size="16" fill="#704814">QLoRA 最主要的节省来源</text>
+
+  <rect x="575" y="165" width="220" height="150" rx="7" fill="#8fd5ac" stroke="#24a467"/>
+  <text x="685" y="214" text-anchor="middle" font-size="21" font-weight="700" fill="#17643f">LoRA</text>
+  <text x="685" y="249" text-anchor="middle" font-size="16" fill="#17643f">参数 + 梯度</text>
+  <text x="685" y="280" text-anchor="middle" font-size="15" fill="#17643f">仍是较高精度</text>
+
+  <rect x="825" y="165" width="210" height="150" rx="7" fill="#cbb5ed" stroke="#9654d8"/>
+  <text x="930" y="214" text-anchor="middle" font-size="20" font-weight="700" fill="#633493">Optimizer</text>
+  <text x="930" y="249" text-anchor="middle" font-size="16" fill="#633493">8-bit / Paged</text>
+  <text x="930" y="280" text-anchor="middle" font-size="15" fill="#633493">只管理可训练参数</text>
+
+  <rect x="115" y="345" width="470" height="155" rx="7" fill="#e8f1ff" stroke="#3b82f6"/>
+  <text x="350" y="394" text-anchor="middle" font-size="22" font-weight="700" fill="#1e4f8f">Activations</text>
+  <text x="350" y="430" text-anchor="middle" font-size="16" fill="#315f8f">受 batch、sequence length、hidden size 影响</text>
+  <text x="350" y="463" text-anchor="middle" font-size="16" fill="#315f8f">Gradient Checkpointing 可用计算换空间</text>
+
+  <rect x="615" y="345" width="420" height="155" rx="7" fill="#eef1f4" stroke="#8a96a3"/>
+  <text x="825" y="394" text-anchor="middle" font-size="22" font-weight="700" fill="#3e4b59">Temporary / Runtime</text>
+  <text x="825" y="430" text-anchor="middle" font-size="16" fill="#52616f">logits、attention、CUDA workspace</text>
+  <text x="825" y="463" text-anchor="middle" font-size="16" fill="#52616f">缓存、内存碎片、评估阶段峰值</text>
+
+  <path d="M575 545v45" stroke="#52616f" stroke-width="4"/><path d="M575 590l-10-17h20z" fill="#52616f"/>
+  <rect x="195" y="603" width="760" height="60" rx="7" fill="#fff5df" stroke="#e59b2f"/>
+  <text x="575" y="640" text-anchor="middle" font-size="18" fill="#704814">序列变长时，Base 权重不变，但 Activations 与 Attention 开销仍会上升</text>
+</svg>

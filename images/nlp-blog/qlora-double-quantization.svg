@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="700" viewBox="0 0 1150 700">
+  <title>Double Quantization 流程</title>
+  <rect width="1150" height="700" fill="#f8fafc"/>
+  <text x="575" y="52" text-anchor="middle" font-size="31" font-weight="700" fill="#172033">Double Quantization：连量化常数也继续压缩</text>
+  <text x="575" y="82" text-anchor="middle" font-size="16" fill="#64748b">第二次量化的目标是第一层 scale，而不是把 4-bit 权重改成 2-bit</text>
+
+  <rect x="60" y="135" width="250" height="155" rx="8" fill="#e8f1ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="185" y="174" text-anchor="middle" font-size="21" font-weight="700" fill="#1e3a5f">浮点 Base 权重</text>
+  <text x="185" y="208" text-anchor="middle" font-size="16" fill="#315f8f">block 0 / 1 / 2 / ...</text>
+  <text x="185" y="240" text-anchor="middle" font-size="16" fill="#315f8f">每块统计 absmax</text>
+  <text x="185" y="268" text-anchor="middle" font-size="15" fill="#315f8f">W</text>
+
+  <path d="M316 212H415" stroke="#52616f" stroke-width="4"/><path d="M415 212l-17-10v20z" fill="#52616f"/>
+  <text x="365" y="193" text-anchor="middle" font-size="15" fill="#52616f">第一次量化</text>
+
+  <rect x="430" y="118" width="310" height="190" rx="8" fill="#fff5df" stroke="#e59b2f" stroke-width="2"/>
+  <text x="585" y="158" text-anchor="middle" font-size="21" font-weight="700" fill="#704814">NF4 权重编号</text>
+  <text x="585" y="189" text-anchor="middle" font-size="16" fill="#704814">每个权重：4-bit code</text>
+  <rect x="470" y="214" width="230" height="63" rx="5" fill="#ffffff" stroke="#e7c58d"/>
+  <text x="585" y="239" text-anchor="middle" font-size="16" font-weight="700" fill="#704814">第一层量化常数</text>
+  <text x="585" y="263" text-anchor="middle" font-size="15" fill="#8b5b1d">scale₀, scale₁, scale₂, ...</text>
+
+  <path d="M746 245H845" stroke="#9654d8" stroke-width="4"/><path d="M845 245l-17-10v20z" fill="#9654d8"/>
+  <text x="795" y="224" text-anchor="middle" font-size="15" fill="#633493">第二次量化 scale</text>
+
+  <rect x="860" y="135" width="230" height="155" rx="8" fill="#f2eafe" stroke="#9654d8" stroke-width="2"/>
+  <text x="975" y="175" text-anchor="middle" font-size="21" font-weight="700" fill="#633493">量化后的常数</text>
+  <text x="975" y="209" text-anchor="middle" font-size="16" fill="#633493">scale codes</text>
+  <text x="975" y="240" text-anchor="middle" font-size="16" fill="#633493">+ 第二层全局常数</text>
+  <text x="975" y="268" text-anchor="middle" font-size="15" fill="#633493">平均再省约 0.4 bit/参数</text>
+
+  <rect x="105" y="375" width="940" height="205" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="575" y="416" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">计算时按相反方向恢复</text>
+  <g font-size="17" text-anchor="middle">
+    <rect x="155" y="458" width="220" height="70" rx="6" fill="#f2eafe"/><text x="265" y="500" fill="#633493">恢复第一层 scale</text>
+    <path d="M385 493H467" stroke="#52616f" stroke-width="4"/><path d="M467 493l-16-10v20z" fill="#52616f"/>
+    <rect x="480" y="458" width="220" height="70" rx="6" fill="#fff5df"/><text x="590" y="500" fill="#704814">恢复 NF4 近似权重</text>
+    <path d="M710 493H792" stroke="#52616f" stroke-width="4"/><path d="M792 493l-16-10v20z" fill="#52616f"/>
+    <rect x="805" y="458" width="190" height="70" rx="6" fill="#eaf8ef"/><text x="900" y="500" fill="#17643f">BF16 / FP16 计算</text>
+  </g>
+  <text x="575" y="638" text-anchor="middle" font-size="18" fill="#334155">多一层量化状态管理，换取更低的平均 Base Model 存储开销</text>
+</svg>
