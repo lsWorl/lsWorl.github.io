@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">线性回归的预测均值与观测噪声</title>
+  <desc id="desc">训练点分布在回归均值线附近，阴影表示由残差估计得到的观测噪声范围。</desc>
+  <defs>
+    <style>
+      .text { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #253247; font-size: 16px; }
+      .heading { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #536174; }
+      .axis { stroke: #738398; stroke-width: 1.8; }
+      .grid { stroke: #e4eaf1; stroke-width: 1; }
+    </style>
+  </defs>
+  <rect width="960" height="420" fill="#f7f9fc"/>
+  <text class="text heading" x="36" y="42">点预测给中心，残差方差给出观测噪声宽度</text>
+  <text class="text small" x="36" y="68">阴影只表示观测噪声，不包含有限样本导致的参数不确定性。</text>
+  <rect x="62" y="96" width="650" height="266" fill="#ffffff" stroke="#cfd8e3" stroke-width="2" rx="8"/>
+  <line class="grid" x1="104" y1="146" x2="682" y2="146"/><line class="grid" x1="104" y1="214" x2="682" y2="214"/><line class="grid" x1="104" y1="282" x2="682" y2="282"/>
+  <line class="axis" x1="104" y1="328" x2="682" y2="328"/><line class="axis" x1="104" y1="328" x2="104" y2="122"/>
+  <path d="M112 296 L674 132 L674 196 L112 360 Z" fill="#dcecff" opacity="0.8" clip-path="url(#plot)"/>
+  <defs><clipPath id="plot"><rect x="104" y="112" width="578" height="216"/></clipPath></defs>
+  <line x1="112" y1="328" x2="674" y2="164" stroke="#3979b8" stroke-width="3"/>
+  <circle cx="154" cy="299" r="6" fill="#cb5368"/><circle cx="232" cy="304" r="6" fill="#cb5368"/><circle cx="318" cy="247" r="6" fill="#cb5368"/><circle cx="410" cy="226" r="6" fill="#cb5368"/><circle cx="512" cy="185" r="6" fill="#cb5368"/><circle cx="620" cy="183" r="6" fill="#cb5368"/>
+  <line x1="558" y1="198" x2="558" y2="261" stroke="#c78328" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="558" cy="198" r="7" fill="#c78328"/>
+  <text class="text small" x="574" y="204">新输入的均值预测</text>
+  <text class="text small" x="318" y="126">约 95% 观测噪声范围</text>
+  <text class="text small" x="530" y="345">输入 x</text><text class="text small" x="74" y="132">目标 t</text>
+
+  <rect x="748" y="112" width="178" height="214" rx="8" fill="#ffffff" stroke="#cfd8e3" stroke-width="2"/>
+  <text class="text" x="770" y="146" font-weight="700">预测分布</text>
+  <path d="M774 278 C795 277, 809 259, 822 216 C833 178, 847 160, 858 160 C870 160, 884 178, 895 216 C907 259, 916 277, 922 278" fill="none" stroke="#2f8a62" stroke-width="3"/>
+  <line x1="858" y1="158" x2="858" y2="290" stroke="#c78328" stroke-width="2" stroke-dasharray="5 4"/>
+  <text class="text small" x="776" y="306">中心 = wᵀφ(x*)</text>
+  <text class="text small" x="203" y="397">σ 越大，分布越宽；β = 1/σ² 越小</text>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">线性回归的三种视角</title>
+  <desc id="desc">线性回归可以从代数求解、几何投影与概率建模三个相互连接的角度理解。</desc>
+  <defs>
+    <style>
+      .text { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #253247; font-size: 16px; }
+      .heading { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #536174; }
+      .formula { font-family: "Times New Roman", serif; font-size: 20px; fill: #253247; }
+      .panel { fill: #ffffff; stroke: #cfd8e3; stroke-width: 2; }
+      .arrow { stroke: #68788e; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#68788e"/>
+    </marker>
+  </defs>
+  <rect width="960" height="360" fill="#f7f9fc"/>
+  <text class="text heading" x="36" y="42">同一个线性回归，三种互补视角</text>
+  <text class="text small" x="36" y="68">代数告诉我们怎样求参数，几何解释解的含义，概率说明平方误差为何合理。</text>
+
+  <rect class="panel" x="40" y="102" width="260" height="190" rx="8"/>
+  <circle cx="82" cy="142" r="22" fill="#dcecff" stroke="#3979b8" stroke-width="2"/>
+  <text class="text heading" x="116" y="150">代数</text>
+  <text class="formula" x="65" y="202">XᵀXθ = Xᵀy</text>
+  <text class="text small" x="65" y="238">设计矩阵、正规方程</text>
+  <text class="text small" x="65" y="263">秩、SVD 与伪逆</text>
+
+  <rect class="panel" x="350" y="102" width="260" height="190" rx="8"/>
+  <circle cx="392" cy="142" r="22" fill="#dff4e8" stroke="#2f8a62" stroke-width="2"/>
+  <text class="text heading" x="426" y="150">几何</text>
+  <line x1="390" y1="238" x2="550" y2="190" stroke="#2f8a62" stroke-width="3"/>
+  <circle cx="494" cy="159" r="6" fill="#cb5368"/>
+  <line x1="494" y1="159" x2="507" y2="203" stroke="#cb5368" stroke-width="2" stroke-dasharray="5 4"/>
+  <path d="M500 181 L512 178 L515 190" fill="none" stroke="#68788e" stroke-width="1.5"/>
+  <text class="text small" x="375" y="263">把 y 投影到 X 的列空间</text>
+
+  <rect class="panel" x="660" y="102" width="260" height="190" rx="8"/>
+  <circle cx="702" cy="142" r="22" fill="#fff0d8" stroke="#c78328" stroke-width="2"/>
+  <text class="text heading" x="736" y="150">概率</text>
+  <path d="M700 224 C730 160, 770 160, 800 224 C830 288, 870 288, 896 224" fill="none" stroke="#c78328" stroke-width="3" transform="translate(0,-24)"/>
+  <line x1="798" y1="169" x2="798" y2="242" stroke="#cb5368" stroke-width="2" stroke-dasharray="5 4"/>
+  <text class="text small" x="687" y="263">高斯噪声下的极大似然</text>
+
+  <path class="arrow" d="M300 198 L340 198"/>
+  <path class="arrow" d="M610 198 L650 198"/>
+  <text class="text small" x="386" y="327">三个视角得到的是同一个最小二乘解</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="430" viewBox="0 0 960 430" role="img" aria-labelledby="title desc">
+  <title id="title">三类常见基函数</title>
+  <desc id="desc">多项式基函数描述全局弯曲，高斯基函数描述局部响应，Sigmoid 基函数描述平滑阶梯。</desc>
+  <defs>
+    <style>
+      .text { font-family: Arial, "Microsoft YaHei", sans-serif; fill: #253247; font-size: 16px; }
+      .heading { font-size: 22px; font-weight: 700; }
+      .small { font-size: 14px; fill: #536174; }
+      .panel { fill: #ffffff; stroke: #cfd8e3; stroke-width: 2; }
+      .axis { stroke: #8190a2; stroke-width: 1.5; }
+      .grid { stroke: #e6ebf1; stroke-width: 1; }
+    </style>
+  </defs>
+  <rect width="960" height="430" fill="#f7f9fc"/>
+  <text class="text heading" x="36" y="42">固定基函数把输入映射到更有表达力的特征</text>
+  <text class="text small" x="36" y="68">曲线可以对 x 非线性，但最终仍是对权重 w 的线性组合。</text>
+
+  <rect class="panel" x="34" y="100" width="280" height="282" rx="8"/>
+  <text class="text" x="58" y="134" font-weight="700">多项式基函数</text>
+  <text class="text small" x="58" y="158">1, x, x², x³, ...</text>
+  <line class="axis" x1="70" y1="315" x2="282" y2="315"/><line class="axis" x1="176" y1="184" x2="176" y2="340"/>
+  <path d="M72 208 C110 300, 142 326, 176 315 C212 303, 245 252, 280 192" fill="none" stroke="#3979b8" stroke-width="3"/>
+  <path d="M72 315 C112 254, 142 232, 176 228 C212 232, 244 254, 280 315" fill="none" stroke="#cb5368" stroke-width="2.5"/>
+  <text class="text small" x="58" y="362">适合描述整体平滑弯曲</text>
+
+  <rect class="panel" x="340" y="100" width="280" height="282" rx="8"/>
+  <text class="text" x="364" y="134" font-weight="700">高斯基函数</text>
+  <text class="text small" x="364" y="158">中心 μ 控制位置，s 控制宽度</text>
+  <line class="axis" x1="376" y1="315" x2="588" y2="315"/>
+  <path d="M376 315 C405 314, 414 294, 430 235 C442 190, 459 190, 472 235 C489 294, 498 314, 520 315" fill="none" stroke="#2f8a62" stroke-width="3"/>
+  <path d="M442 315 C470 314, 482 294, 496 235 C508 190, 526 190, 538 235 C554 294, 564 314, 588 315" fill="none" stroke="#c78328" stroke-width="3"/>
+  <line x1="451" y1="190" x2="451" y2="315" stroke="#2f8a62" stroke-dasharray="4 4" opacity="0.5"/>
+  <line x1="517" y1="190" x2="517" y2="315" stroke="#c78328" stroke-dasharray="4 4" opacity="0.5"/>
+  <text class="text small" x="364" y="362">适合组合多个局部响应</text>
+
+  <rect class="panel" x="646" y="100" width="280" height="282" rx="8"/>
+  <text class="text" x="670" y="134" font-weight="700">Sigmoid 基函数</text>
+  <text class="text small" x="670" y="158">中心 μ 控制转折位置</text>
+  <line class="axis" x1="682" y1="315" x2="894" y2="315"/><line class="axis" x1="682" y1="184" x2="682" y2="338"/>
+  <path d="M684 303 C722 302, 744 298, 758 278 C774 255, 776 209, 798 194 C814 183, 844 182, 892 182" fill="none" stroke="#8a5aa8" stroke-width="3"/>
+  <path d="M684 303 C748 302, 774 299, 798 278 C818 260, 824 218, 842 199 C856 185, 870 183, 892 182" fill="none" stroke="#3979b8" stroke-width="2.5"/>
+  <text class="text small" x="670" y="362">适合组合平滑阶梯变化</text>
+  <text class="text small" x="322" y="414">φ(x) 负责变换输入，w 负责学习各个变换结果应占多大权重</text>
+</svg>
