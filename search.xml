@@ -22,11 +22,11 @@
             
             <tag> NLP </tag>
             
+            <tag> LLM </tag>
+            
             <tag> Hugging Face </tag>
             
             <tag> Transformers </tag>
-            
-            <tag> LLM </tag>
             
             <tag> RAG </tag>
             
@@ -96,11 +96,11 @@
             
             <tag> 自然语言处理 </tag>
             
-            <tag> Hugging Face </tag>
-            
             <tag> LLM </tag>
             
             <tag> SFT </tag>
+            
+            <tag> Hugging Face </tag>
             
             <tag> TRL </tag>
             
@@ -141,11 +141,11 @@
             
             <tag> 自然语言处理 </tag>
             
-            <tag> Hugging Face </tag>
-            
             <tag> LLM </tag>
             
             <tag> SFT </tag>
+            
+            <tag> Hugging Face </tag>
             
             <tag> TRL </tag>
             
@@ -182,15 +182,15 @@
             
             <tag> 自然语言处理 </tag>
             
+            <tag> LLM </tag>
+            
+            <tag> SFT </tag>
+            
             <tag> Hugging Face </tag>
             
             <tag> Transformers </tag>
             
             <tag> Trainer </tag>
-            
-            <tag> LLM </tag>
-            
-            <tag> SFT </tag>
             
         </tags>
       
@@ -219,13 +219,13 @@
             
             <tag> 自然语言处理 </tag>
             
-            <tag> Hugging Face </tag>
-            
-            <tag> Transformers </tag>
-            
             <tag> LLM </tag>
             
             <tag> SFT </tag>
+            
+            <tag> Hugging Face </tag>
+            
+            <tag> Transformers </tag>
             
             <tag> 指令微调 </tag>
             
@@ -377,9 +377,9 @@
             
             <tag> Transformer </tag>
             
-            <tag> Self-Attention </tag>
-            
             <tag> Seq2Seq </tag>
+            
+            <tag> Self-Attention </tag>
             
             <tag> Multi-Head Attention </tag>
             

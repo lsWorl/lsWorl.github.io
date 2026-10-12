@@ -86,6 +86,7 @@
   }
 
   function setupExperiment(root) {
+    if (window.setupGradientExperiment) return window.setupGradientExperiment(root);
     const rate = root.querySelector('#lab-learning-rate');
     const start = root.querySelector('#lab-start-weight');
     const runButton = root.querySelector('[data-lab-run]');
@@ -198,7 +199,19 @@
       });
     });
     const experiment = document.querySelector('[data-gradient-lab]');
-    disposeExperiment = experiment ? setupExperiment(experiment) : () => {};
+    const stopGradient = experiment ? setupExperiment(experiment) : () => {};
+    const stopAI = window.initAILabs ? window.initAILabs() : () => {};
+    disposeExperiment = () => { stopGradient(); stopAI(); };
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } });
+      }, {threshold: 0.06});
+      document.querySelectorAll('.lab-track-card, .lab-post-card, .lab-project-card, .lab-section-heading').forEach((node,index) => {
+        node.classList.add('ai-reveal'); node.style.setProperty('--reveal-delay', (index % 3) * 40 + 'ms'); observer.observe(node);
+      });
+      const previous = disposeExperiment;
+      disposeExperiment = () => { previous(); observer.disconnect(); };
+    }
   }
   document.addEventListener('change', event => {
     if (!event.target.matches('[data-read-node]')) return;
