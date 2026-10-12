@@ -1,7 +1,7 @@
 /* Local interactive examples. No remote model or third-party runtime required. */
 (() => {
   'use strict';
-  const M = window.LabMath;
+  let M = window.LabMath;
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const element = (tag, cls, text) => {
     const node=document.createElement(tag);
@@ -307,30 +307,75 @@
     reset();return ()=>{stop();document.removeEventListener('lab:panel-change',stop);};
   };
 
+  const sessions = new WeakMap();
   window.initAILabs=()=>{
-    const tabs=[...document.querySelectorAll('[data-experiment-tab]')];
-    if(!tabs.length||!M)return ()=>{};
-    const stops=[sampling(document.querySelector('[data-sampling-lab]')),attention(document.querySelector('[data-attention-lab]')),
-      rag(document.querySelector('[data-rag-lab]')),network(document.querySelector('[data-network-lab]'))];
+    const tablist=document.querySelector('.ai-tabs');
+    if(!tablist)return ()=>{};
+    M=window.LabMath;
+    if(sessions.has(tablist)) {
+      const session=sessions.get(tablist); session.resume(); return session.pause;
+    }
+    const tabs=[...tablist.querySelectorAll('[data-experiment-tab]')];
+    const panels=[...document.querySelectorAll('[data-experiment-panel]')];
+    const initialized=new Map(),failed=new Set();
+    const initializers={sampling,attention,rag,network};
+    const stop=()=>{
+      initialized.forEach(pause=>pause());
+      document.dispatchEvent(new CustomEvent('lab:panel-change'));
+    };
     function activate(id,focus=false) {
-      stops.forEach(stop=>stop());
-      // The original gradient experiment registers its own animation cleanup.
-      document.dispatchEvent(new CustomEvent('lab:panel-change',{detail:id}));
-      tabs.forEach(tab=>{const active=tab.dataset.experimentTab===id;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;if(active&&focus)tab.focus();});
-      document.querySelectorAll('[data-experiment-panel]').forEach(panel=>{panel.hidden=panel.dataset.experimentPanel!==id;});
-      if(window.location.hash!== '#'+id)history.replaceState(null,'','#'+id);
+      if(!tabs.some(tab=>tab.dataset.experimentTab===id))id='gradient';
+      stop();
+      tabs.forEach(tab=>{
+        const active=tab.dataset.experimentTab===id;
+        tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;
+        if(active&&focus)tab.focus();
+      });
+      panels.forEach(panel=>{panel.hidden=panel.dataset.experimentPanel!==id;});
+      // Tab navigation is independent of the numerical demos. Initialize each
+      // panel only when opened, so one component cannot disable all five tabs.
+      if(initializers[id]&&!initialized.has(id)&&!failed.has(id)) {
+        const panel=panels.find(panel=>panel.dataset.experimentPanel===id);
+        try {
+          if(!M)throw new Error('LabMath was not loaded');
+          initialized.set(id,initializers[id](panel));
+        } catch(error) {
+          failed.add(id);
+          const notice=element('p','ai-empty','实验计算组件未能加载，请刷新页面后重试。');
+          notice.setAttribute('role','alert');panel.querySelector('.lab-experiment-heading').append(notice);
+          console.error('AI experiment initialization failed:',id,error);
+        }
+      }
+      if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);
     }
     tabs.forEach((tab,index)=>{
       tab.addEventListener('click',()=>activate(tab.dataset.experimentTab));
       tab.addEventListener('keydown',event=>{
         const offset=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:0;
-        if(offset){event.preventDefault();activate(tabs[(index+offset+tabs.length)%tabs.length].dataset.experimentTab,true);}
+        const target=event.key==='Home'?0:event.key==='End'?tabs.length-1:
+          offset?(index+offset+tabs.length)%tabs.length:-1;
+        if(target>=0){event.preventDefault();activate(tabs[target].dataset.experimentTab,true);}
       });
     });
-    const requested=window.location.hash.slice(1);
-    activate(tabs.some(tab=>tab.dataset.experimentTab===requested)?requested:'gradient');
-    const visibility=()=>{if(document.hidden){stops.forEach(stop=>stop());document.dispatchEvent(new CustomEvent('lab:panel-change'));}};
-    document.addEventListener('visibilitychange',visibility);
-    return ()=>{stops.forEach(stop=>stop());document.removeEventListener('visibilitychange',visibility);};
+    const visibility=()=>{if(document.hidden)stop();};
+    const hash=()=>activate(location.hash.slice(1));
+    let listening=false;
+    const resume=()=>{
+      if(!listening){document.addEventListener('visibilitychange',visibility);window.addEventListener('hashchange',hash);listening=true;}
+      activate(location.hash.slice(1));
+    };
+    const pause=()=>{
+      stop();document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',hash);listening=false;
+    };
+    sessions.set(tablist,{resume,pause});resume();return pause;
   };
+
+  // Also boot independently of the blog's navigation script. This supports a
+  // freshly deployed experiment page even if an older navigation script is cached.
+  let pauseActive=()=>{};
+  const boot=()=>{pauseActive();pauseActive=window.initAILabs();};
+  document.addEventListener('pjax:send',()=>pauseActive());
+  document.addEventListener('pjax:complete',boot);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();

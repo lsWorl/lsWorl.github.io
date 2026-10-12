@@ -201,7 +201,8 @@
     const experiment = document.querySelector('[data-gradient-lab]');
     const stopGradient = experiment ? setupExperiment(experiment) : () => {};
     const stopAI = window.initAILabs ? window.initAILabs() : () => {};
-    disposeExperiment = () => { stopGradient(); stopAI(); };
+    const stopHome = window.initHomeMotion ? window.initHomeMotion() : () => {};
+    disposeExperiment = () => { stopGradient(); stopAI(); stopHome(); };
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } });
