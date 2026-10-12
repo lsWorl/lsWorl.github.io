@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="480" viewBox="0 0 1080 480" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">240字符窗口与40字符重叠</title>
+  <desc id="desc">相邻文档窗口起点相距200字符，分别是零到240、200到440、400到640。橙色标出40字符的重复范围。</desc>
+  <rect width="1080" height="480" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">Chunk 切分：保留完整语义，控制输入长度</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">示例按字符计数：窗口 240、重叠 40、步长 200；token 长度仍需单独检查。</text>
+  <text x="36" y="142" fill="#172033" font-size="21" font-weight="700">原始文档</text>
+  <rect x="270" y="116" width="704" height="42" fill="#e5ebf3" stroke="#a4b4c8"/>
+  <g stroke="#a4b4c8" stroke-dasharray="4 5">
+    <path d="M270 169V362"/><path d="M490 169V362"/><path d="M534 169V362"/><path d="M710 169V362"/><path d="M754 169V362"/><path d="M974 169V362"/>
+  </g>
+  <g fill="#58697c" font-size="16" text-anchor="middle">
+    <text x="270" y="182">0</text><text x="490" y="182">200</text><text x="534" y="182">240</text><text x="710" y="182">400</text><text x="754" y="182">440</text><text x="974" y="182">640</text>
+  </g>
+  <g fill="#172033" font-size="20">
+    <text x="36" y="224">Chunk 1 [0, 240)</text><text x="36" y="283">Chunk 2 [200, 440)</text><text x="36" y="342">Chunk 3 [400, 640)</text>
+  </g>
+  <rect x="270" y="198" width="264" height="40" rx="4" fill="#e8f1ff" stroke="#5089bb" stroke-width="2"/>
+  <rect x="490" y="257" width="264" height="40" rx="4" fill="#e8f6ed" stroke="#45936b" stroke-width="2"/>
+  <rect x="710" y="316" width="264" height="40" rx="4" fill="#f1edf9" stroke="#8a6cac" stroke-width="2"/>
+  <g fill="#f2c069" opacity=".8"><rect x="490" y="198" width="44" height="40"/><rect x="490" y="257" width="44" height="40"/><rect x="710" y="257" width="44" height="40"/><rect x="710" y="316" width="44" height="40"/></g>
+  <rect x="36" y="395" width="20" height="20" fill="#f2c069"/>
+  <text x="68" y="412" fill="#58697c" font-size="18">橙色：重叠 40 个字符，帮助保留跨边界内容，也会产生重复证据。</text>
+  <text x="36" y="449" fill="#58697c" font-size="18">每个块同时保存标题、版本与来源；正式项目优先结合段落、句子和表格边界。</text>
+</svg>

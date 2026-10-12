@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="480" viewBox="0 0 1100 480" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">2048 token上下文预算</title>
+  <desc id="desc">将2048 token窗口分为规则问题模板300、可用资料1588、生成预留160。实际资料占用由完整模板的Tokenizer计数决定。</desc>
+  <rect width="1100" height="480" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">预算以完整 token 序列计算</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">2048-token 窗口是教学项目限制；300 为示例占用，运行时实际 Tokenize。</text>
+  <text x="36" y="143" fill="#172033" font-size="22" font-weight="700">上下文总量：2048 = 300 + 1588 + 160</text>
+  <g>
+    <rect x="36" y="173" width="150" height="65" fill="#dbeafb" stroke="#5089bb"/>
+    <rect x="186" y="173" width="794" height="65" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="980" y="173" width="80" height="65" fill="#fff0d2" stroke="#c99038"/>
+  </g>
+  <g text-anchor="middle" fill="#172033" font-size="21" font-weight="700">
+    <text x="111" y="214">300</text><text x="583" y="214">1588</text><text x="1020" y="214">160</text>
+  </g>
+  <g fill="#58697c" font-size="17">
+    <text x="36" y="268">规则、问题、模板</text><text x="478" y="268">资料剩余预算</text><text x="961" y="268">生成预留</text>
+  </g>
+  <path d="M36 294V309H980V294" fill="none" stroke="#5089bb" stroke-width="2"/>
+  <text x="508" y="338" text-anchor="middle" fill="#256c9b" font-size="22" font-weight="700">完整输入上限：1888 token</text>
+  <text x="36" y="393" fill="#172033" font-size="20">按相关性加入完整块 → 每次对完整 messages 计数 → 装不下则跳过</text>
+  <text x="36" y="436" fill="#58697c" font-size="18">保证问题与 Assistant 起始格式保留；切块字符数不能代替生成器 token 数。</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="610" viewBox="0 0 1120 610" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">RAG离线建库与在线问答</title>
+  <desc id="desc">离线将文档切块并编码入库，在线编码问题、检索原文、组织Prompt，再调用生成模型输出带来源的回答。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#58697c"/></marker></defs>
+  <rect width="1120" height="610" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">RAG：检索证据，再根据证据生成回答</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">两条数据流使用同一检索空间；生成器读取的是找回的原文。</text>
+  <text x="36" y="132" fill="#256c9b" font-size="23" font-weight="700">离线建库</text>
+  <g stroke-width="2">
+    <rect x="36" y="154" width="220" height="116" rx="7" fill="#e8f1ff" stroke="#5089bb"/>
+    <rect x="312" y="154" width="220" height="116" rx="7" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="588" y="154" width="220" height="116" rx="7" fill="#f1edf9" stroke="#8a6cac"/>
+    <rect x="864" y="154" width="220" height="116" rx="7" fill="#fff4dd" stroke="#c99038"/>
+  </g>
+  <g fill="#172033" text-anchor="middle" font-size="22" font-weight="700">
+    <text x="146" y="194">文档解析</text><text x="422" y="194">切分 Chunk</text><text x="698" y="194">Embedding</text><text x="974" y="194">保存索引</text>
+  </g>
+  <g fill="#58697c" text-anchor="middle" font-size="18">
+    <text x="146" y="229">原文、标题、版本</text><text x="422" y="229">块文本 + 元数据</text><text x="698" y="229">每个块一个向量</text><text x="974" y="229">向量、ID、原文</text>
+  </g>
+  <g stroke="#58697c" stroke-width="3" marker-end="url(#arrow)" fill="none">
+    <path d="M264 212H300"/><path d="M540 212H576"/><path d="M816 212H852"/>
+  </g>
+  <line x1="36" y1="320" x2="1084" y2="320" stroke="#d0dbe6" stroke-dasharray="7 5"/>
+  <text x="36" y="365" fill="#247553" font-size="23" font-weight="700">在线问答</text>
+  <g stroke-width="2">
+    <rect x="36" y="390" width="142" height="120" rx="7" fill="#e8f1ff" stroke="#5089bb"/>
+    <rect x="228" y="390" width="152" height="120" rx="7" fill="#f1edf9" stroke="#8a6cac"/>
+    <rect x="430" y="390" width="176" height="120" rx="7" fill="#fff4dd" stroke="#c99038"/>
+    <rect x="656" y="390" width="182" height="120" rx="7" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="888" y="390" width="196" height="120" rx="7" fill="#ffebee" stroke="#bf6978"/>
+  </g>
+  <g fill="#172033" text-anchor="middle" font-size="21" font-weight="700">
+    <text x="107" y="431">用户问题</text><text x="304" y="431">编码问题</text><text x="518" y="431">检索 Top-K</text><text x="747" y="431">组织 Prompt</text><text x="986" y="431">LLM 生成</text>
+  </g>
+  <g fill="#58697c" text-anchor="middle" font-size="17">
+    <text x="107" y="465">自然语言</text><text x="304" y="465">query 向量</text><text x="518" y="465">取出原文</text><text x="747" y="465">规则 + 资料 + 问题</text><text x="986" y="465">回答 + [S1]</text>
+  </g>
+  <g stroke="#58697c" stroke-width="3" marker-end="url(#arrow)" fill="none">
+    <path d="M186 450H216"/><path d="M388 450H418"/><path d="M614 450H644"/><path d="M846 450H876"/>
+    <path d="M974 280V296H518V378" stroke-dasharray="5 5"/>
+  </g>
+  <text x="36" y="565" fill="#58697c" font-size="18">本篇基础实现：模型权重保持不变；更新资料时同步更新相关文档块与向量。</text>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">人工二维向量的余弦检索</title>
+  <desc id="desc">问题与四个文档都归一化到单位圆。余弦分数为0.96、0.80、0.60和负1，Top-2选中年假天数和年假流程。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="context-stroke"/></marker></defs>
+  <rect width="1100" height="620" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">用二维向量手算一次 Top-K</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">人工指定向量用于教学，真实 E5 输出为 384 维；相似度不是正确概率。</text>
+  <circle cx="267" cy="322" r="174" fill="#fff" stroke="#d0dbe6" stroke-width="2"/>
+  <g stroke="#9cacbf" stroke-width="1.5"><path d="M61 322H481"/><path d="M267 111V533"/></g>
+  <g fill="#58697c" font-size="16"><text x="471" y="345">x</text><text x="280" y="126">y</text><text x="280" y="345">0</text></g>
+  <g stroke-width="4" marker-end="url(#arrow)">
+    <path d="M267 322L371.4 182.8" stroke="#bf4f67"/>
+    <path d="M267 322L406.2 217.6" stroke="#347cad"/>
+    <path d="M267 322L267 148" stroke="#3b956c"/>
+    <path d="M267 322L441 322" stroke="#c28a2c"/>
+    <path d="M267 322L162.6 461.2" stroke="#8b73a6"/>
+  </g>
+  <g font-size="18" font-weight="700">
+    <text x="370" y="158" fill="#bf4f67">q [0.6, 0.8]</text>
+    <text x="361" y="258" fill="#347cad">年假天数</text>
+    <text x="156" y="141" fill="#3b956c">年假流程</text>
+    <text x="367" y="357" fill="#c28a2c">设备报销</text>
+    <text x="72" y="495" fill="#8b73a6">账号重置</text>
+  </g>
+  <rect x="553" y="119" width="509" height="372" rx="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="583" y="154" fill="#172033" font-size="21" font-weight="700">相似度 = 归一化向量的点积</text>
+  <path d="M575 177H1040" stroke="#d0dbe6"/>
+  <rect x="575" y="191" width="465" height="62" rx="4" fill="#e8f1ff"/>
+  <rect x="575" y="262" width="465" height="62" rx="4" fill="#e8f6ed"/>
+  <g font-size="20" fill="#172033">
+    <text x="592" y="229">年假天数</text><text x="815" y="229">0.96</text><text x="925" y="229">选中</text>
+    <text x="592" y="300">年假流程</text><text x="815" y="300">0.80</text><text x="925" y="300">选中</text>
+    <text x="592" y="371">设备报销</text><text x="815" y="371">0.60</text>
+    <text x="592" y="442">账号重置</text><text x="815" y="442">-1.00</text>
+  </g>
+  <text x="574" y="535" fill="#347cad" font-size="21" font-weight="700">Top-2：取年假天数与年假流程的原文</text>
+  <text x="36" y="584" fill="#58697c" font-size="18">0.96 = 0.6 × 0.8 + 0.8 × 0.6；评分负责排序，原文负责提供答案依据。</text>
+</svg>

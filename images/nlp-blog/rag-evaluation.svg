@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="510" viewBox="0 0 1100 510" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">RAG按阶段评估与排查</title>
+  <desc id="desc">先检查正确证据是否进入索引、被召回、进入Prompt，再检查生成答案是否正确且有来源支持。检索和生成分别评估。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#58697c"/></marker></defs>
+  <rect width="1100" height="510" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">沿着证据流排查，分别评估检索和生成</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">核心检查：正确证据是否已经出现在生成器实际读取的 Prompt 中？</text>
+  <g stroke-width="2">
+    <rect x="36" y="130" width="220" height="129" rx="7" fill="#e8f1ff" stroke="#5089bb"/>
+    <rect x="312" y="130" width="220" height="129" rx="7" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="588" y="130" width="220" height="129" rx="7" fill="#fff4dd" stroke="#c99038"/>
+    <rect x="864" y="130" width="200" height="129" rx="7" fill="#ffebee" stroke="#bf6978"/>
+  </g>
+  <g fill="#172033" text-anchor="middle" font-size="22" font-weight="700">
+    <text x="146" y="169">索引里有吗？</text><text x="422" y="169">检索找到了吗？</text><text x="698" y="169">进入 Prompt 吗？</text><text x="964" y="169">回答被支持吗？</text>
+  </g>
+  <g fill="#58697c" text-anchor="middle" font-size="18">
+    <text x="146" y="208">解析、切分、截断</text><text x="422" y="208">召回、版本、重排</text><text x="698" y="208">预算、去重、模板</text><text x="964" y="208">条件、数字、引用</text>
+    <text x="146" y="238">检查块原文</text><text x="422" y="238">检查候选列表</text><text x="698" y="238">检查完整 messages</text><text x="964" y="238">逐项核对事实</text>
+  </g>
+  <g stroke="#58697c" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M266 195H298"/><path d="M542 195H574"/><path d="M818 195H850"/></g>
+  <rect x="36" y="310" width="496" height="104" rx="7" fill="#fff" stroke="#cbd5e1"/>
+  <rect x="588" y="310" width="476" height="104" rx="7" fill="#fff" stroke="#cbd5e1"/>
+  <text x="60" y="347" fill="#256c9b" font-size="22" font-weight="700">检索评测</text>
+  <text x="60" y="384" fill="#58697c" font-size="18">Recall@K、Precision@K、完整证据命中</text>
+  <text x="612" y="347" fill="#a14b61" font-size="22" font-weight="700">生成评测</text>
+  <text x="612" y="384" fill="#58697c" font-size="18">答案正确性、证据支持、拒答与引用质量</text>
+  <text x="36" y="463" fill="#58697c" font-size="18">对照输入：不给资料 / 给正确资料 / 给无关资料；再测试改写、无答案和版本冲突。</text>
+</svg>

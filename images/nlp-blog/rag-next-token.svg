@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="670" viewBox="0 0 1100 670" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">从RAG证据到下一个token</title>
+  <desc id="desc">原文加入Prompt后经过聊天模板和生成器Tokenizer。Transformer利用参考资料得到隐藏状态，LM Head输出logits，再选择token。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#58697c"/></marker></defs>
+  <rect width="1100" height="670" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">RAG 改变输入条件，生成仍然逐 token 进行</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">检索器的 384 维向量用来找资料；找到的文本交给生成模型自己的 Tokenizer。</text>
+  <g stroke-width="2">
+    <rect x="36" y="122" width="280" height="140" rx="7" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="383" y="122" width="275" height="140" rx="7" fill="#e8f1ff" stroke="#5089bb"/>
+    <rect x="726" y="122" width="338" height="140" rx="7" fill="#f1edf9" stroke="#8a6cac"/>
+  </g>
+  <g fill="#172033" text-anchor="middle" font-size="22" font-weight="700">
+    <text x="176" y="158">问题 + 参考原文</text><text x="520" y="158">Chat Template</text><text x="895" y="158">Causal Transformer</text>
+  </g>
+  <g fill="#58697c" text-anchor="middle" font-size="18">
+    <text x="176" y="196">[S1] 每年15天带薪年假</text><text x="176" y="230">规则 + 问题 + 来源</text>
+    <text x="520" y="196">生成器 Tokenizer</text><text x="520" y="230">input_ids → Token Embedding</text>
+    <text x="895" y="196">Attention 利用前面的资料</text><text x="895" y="230">最后位置隐藏状态 h</text>
+  </g>
+  <g stroke="#58697c" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M326 192H369"/><path d="M668 192H712"/>
+    <path d="M895 274V317H191V355"/>
+  </g>
+  <text x="400" y="307" fill="#58697c" font-size="17">LM Head 将隐藏状态映射到词表分数</text>
+  <rect x="36" y="367" width="310" height="207" rx="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="61" y="403" fill="#172033" font-size="22" font-weight="700">假想 logits</text>
+  <g fill="#172033" font-size="20">
+    <text x="61" y="448">候选 “15”</text><text x="262" y="448">2</text>
+    <text x="61" y="488">候选 “5”</text><text x="262" y="488">1</text>
+    <text x="61" y="528">候选 “不知道”</text><text x="262" y="528">0</text>
+  </g>
+  <path d="M356 470H395" fill="none" stroke="#58697c" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="409" y="367" width="309" height="207" rx="7" fill="#fff4dd" stroke="#c99038" stroke-width="2"/>
+  <text x="435" y="403" fill="#172033" font-size="22" font-weight="700">Softmax 概率</text>
+  <g fill="#172033" font-size="20">
+    <text x="435" y="448">“15”</text><text x="591" y="448">0.6652</text>
+    <text x="435" y="488">“5”</text><text x="591" y="488">0.2447</text>
+    <text x="435" y="528">“不知道”</text><text x="591" y="528">0.0900</text>
+  </g>
+  <path d="M728 470H767" fill="none" stroke="#58697c" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="781" y="392" width="283" height="156" rx="7" fill="#ffebee" stroke="#bf6978" stroke-width="2"/>
+  <text x="922" y="433" text-anchor="middle" fill="#172033" font-size="22" font-weight="700">Greedy 选择 “15”</text>
+  <text x="922" y="474" text-anchor="middle" fill="#58697c" font-size="18">追加到序列，再预测下一 token</text>
+  <text x="922" y="507" text-anchor="middle" fill="#58697c" font-size="18">遇到 EOS 或长度上限后停止</text>
+  <text x="36" y="619" fill="#58697c" font-size="18">分数与三项词表均为手算假设。真实概率和 token 边界取决于实际模型与完整输入。</text>
+</svg>

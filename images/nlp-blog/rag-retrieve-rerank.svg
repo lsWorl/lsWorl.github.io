@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="570" viewBox="0 0 1100 570" role="img" aria-labelledby="title desc" font-family="Arial, Microsoft YaHei, sans-serif">
+  <title id="title">独立编码召回与联合编码重排</title>
+  <desc id="desc">Bi-Encoder分别编码问题与文档，再比较向量；Cross-Encoder把问题和候选文档一起输入，得到相关性分数。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#58697c"/></marker></defs>
+  <rect width="1100" height="570" fill="#f8fafc"/>
+  <text x="36" y="47" fill="#172033" font-size="29" font-weight="700">先快速召回，再细致重排序</text>
+  <text x="36" y="80" fill="#58697c" font-size="18">重排只处理召回到的候选；未被召回的关键资料需要先改善召回阶段。</text>
+  <rect x="36" y="112" width="490" height="307" rx="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="574" y="112" width="490" height="307" rx="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="60" y="149" fill="#256c9b" font-size="23" font-weight="700">Bi-Encoder：分别编码</text>
+  <text x="598" y="149" fill="#247553" font-size="23" font-weight="700">Cross-Encoder：联合编码</text>
+  <g stroke-width="2">
+    <rect x="62" y="181" width="95" height="51" rx="4" fill="#e8f1ff" stroke="#5089bb"/>
+    <rect x="221" y="181" width="119" height="51" rx="4" fill="#e8f1ff" stroke="#5089bb"/>
+    <rect x="62" y="284" width="95" height="51" rx="4" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="221" y="284" width="119" height="51" rx="4" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="598" y="210" width="162" height="81" rx="4" fill="#e8f6ed" stroke="#45936b"/>
+    <rect x="822" y="210" width="217" height="81" rx="4" fill="#f1edf9" stroke="#8a6cac"/>
+  </g>
+  <g fill="#172033" font-size="18" text-anchor="middle">
+    <text x="109" y="213">问题</text><text x="280" y="213">Encoder</text><text x="109" y="316">文档块</text><text x="280" y="316">Encoder</text>
+    <text x="420" y="213">query 向量</text><text x="420" y="316">文档向量</text>
+    <text x="679" y="240">问题 + 文档</text><text x="679" y="271">同一次输入</text>
+    <text x="930" y="244">联合 Attention</text><text x="930" y="274">输出相关性分数</text>
+  </g>
+  <g stroke="#58697c" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+    <path d="M167 207H208"/><path d="M350 207H362"/><path d="M167 310H208"/><path d="M350 310H362"/>
+    <path d="M420 227V247"/><path d="M420 292V275"/><path d="M771 250H808"/>
+  </g>
+  <text x="389" y="267" fill="#c28a2c" font-size="17">点积</text>
+  <text x="62" y="388" fill="#58697c" font-size="17">文档向量可提前计算，适合大集合检索。</text>
+  <text x="598" y="348" fill="#58697c" font-size="17">为每个问题与候选块重新计算。</text>
+  <text x="598" y="388" fill="#58697c" font-size="17">分数范围依赖模型，不直接等于可信度。</text>
+  <rect x="36" y="456" width="1028" height="72" rx="7" fill="#fff4dd" stroke="#c99038"/>
+  <text x="550" y="487" text-anchor="middle" fill="#795119" font-size="21" font-weight="700">大量文档 → 召回 20 块 → 重排 → 选择 4 块 → 检查 Prompt 预算</text>
+  <text x="550" y="513" text-anchor="middle" fill="#795119" font-size="16">20 与 4 是流程示例，应通过任务评测选择。</text>
+</svg>
