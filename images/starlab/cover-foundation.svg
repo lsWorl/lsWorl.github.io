@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e5f0ed"/><stop offset="1" stop-color="#faf9fe"/></linearGradient><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#78a594" opacity=".16"/></pattern></defs>
+<rect width="640" height="360" fill="url(#bg)"/><rect width="640" height="360" fill="url(#grid)"/>
+<circle cx="528" cy="162" r="115" fill="#b1d3c6" opacity=".18"/><circle cx="528" cy="162" r="143" fill="none" stroke="#78a594" opacity=".12"/><circle cx="528" cy="162" r="178" fill="none" stroke="#78a594" opacity=".08"/>
+<path d="M440 88H555V202H440Z M460 110H535V180H460Z M418 107H440 M418 143H440 M418 180H440 M555 107H577 M555 143H577 M555 180H577 M462 68V88 M497 68V88 M533 68V88 M462 202V225 M497 202V225 M533 202V225" fill="none" stroke="#78a594" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".65"/>
+
+<path d="m345 55 3 10 10 3-10 3-3 10-3-10-10-3 10-3Z" fill="#78a594" opacity=".5"/><circle cx="388" cy="255" r="3" fill="#78a594" opacity=".45"/>
+<text x="42" y="91" font-family="Arial,sans-serif" font-size="11" letter-spacing="3" fill="#78a594">LSWORLD / FIELD NOTES</text>
+<text x="38" y="188" font-family="Arial,sans-serif" font-size="64" font-weight="700" letter-spacing="-2" fill="#78a594">CORE</text>
+<rect x="42" y="217" width="35" height="3" rx="1.5" fill="#78a594" opacity=".6"/>
+<text x="42" y="250" font-family="Arial,sans-serif" font-size="11" letter-spacing="2" fill="#78a594">BENEATH THE CODE</text>
+<text x="42" y="317" font-family="Arial,sans-serif" font-size="9" letter-spacing="2" fill="#78a594" opacity=".6">A LITTLE ROOM FOR BIG IDEAS</text></svg>
