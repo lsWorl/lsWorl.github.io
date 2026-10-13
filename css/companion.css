@@ -61,6 +61,9 @@
 .cp-memory-list li span { flex: 1; overflow-wrap: anywhere; }
 .cp-memory-list button { flex: none; background: transparent; color: #8c536e; font-size: 11px; }
 .cp-data-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.cp-panel > .cp-data-buttons { padding: 0 15px 10px; }
+.cp-panel > .cp-data-buttons button { padding: 2px 7px; font-size: 10px; color: var(--cp-muted); }
+.cp-disclosure { margin: 0; padding: 0 15px 6px; color: var(--cp-muted); font-size: 10px; line-height: 1.5; }
 .cp-data-buttons button { padding: 6px 10px; border-radius: 10px; background: #f2e7ef; font-size: 11px; }
 .cp-stop { background: #f2e3eb; border-radius: 10px; padding: 5px 10px; font-size: 12px; margin-top: 10px; }
 .cp-playing .cp-avatar { animation: cp-breathe 1.8s ease-in-out infinite; }
