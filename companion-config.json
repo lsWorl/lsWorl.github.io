@@ -1,1 +1,1 @@
-{"enabled":true,"name":"星伴","apiBase":"https://companion.lsworl.top","avatar":"/images/companion/character-sheet.webp","greeting":"今天也来这里坐一会儿吧。想聊聊近况，还是一起看看博客？"}
+{"enabled":true,"name":"可莉","apiBase":"https://companion.lsworl.top","avatar":"/images/companion/klee-atlas-v1.webp","animation":{"columns":4,"rows":4,"mouthFrames":[0,1,2,3,4,5,6,7],"blinkFrames":[8,9,10,11,12,13,14,15,8],"mouthCenter":[52.3,73.5],"eyeCenter":[52.3,62.2]},"greeting":"旅行者，可莉来啦！今天想聊什么？嘟嘟可也在认真听哦。"}

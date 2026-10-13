@@ -13,7 +13,8 @@
   outline: 3px solid #a570c4; outline-offset: 3px;
 }
 .cp-launcher { padding: 0; background: transparent; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 5px 12px #57375524); }
-.cp-avatar { width: 140px; height: 140px; background-size: 300% 200%; background-position: 0 0; background-repeat: no-repeat; flex: none; }
+.cp-avatar { position: relative; width: 140px; height: 140px; background-size: 300% 200%; background-position: 0 0; background-repeat: no-repeat; flex: none; }
+.cp-mouth, .cp-eyes { position: absolute; inset: 0; background-image: inherit; background-size: inherit; background-repeat: no-repeat; pointer-events: none; }
 .cp-launcher .cp-avatar { animation: cp-breathe 5s ease-in-out infinite; }
 .cp-launcher-label { margin-top: -6px; padding: 7px 17px; border: 1px solid #ffffffbd; border-radius: 24px; background: linear-gradient(120deg,#fff9fc,#f5e4f5); box-shadow: 0 5px 16px #6941701a; font-weight: 600; font-size: 12px; }
 .cp-panel { width: 390px; max-height: min(730px, calc(100dvh - 100px)); height: 680px; border: 1px solid #eedfec; border-radius: 24px; overflow: hidden; background: var(--cp-card); box-shadow: var(--cp-shadow); display: flex; flex-direction: column; }
@@ -36,6 +37,7 @@
 .cp-message { max-width: 94%; align-self: flex-start; background: #f1e9f3; border-radius: 15px 15px 15px 4px; padding: 11px 13px; overflow-wrap: anywhere; }
 .cp-message[data-role=user] { align-self: flex-end; background: #87589d; color: white; border-radius: 15px 15px 4px 15px; }
 .cp-message p { margin: 0; white-space: pre-wrap; line-height: 1.75; font-size: 13px; }
+.cp-message.cp-pending { color: var(--cp-muted); }
 .cp-message-actions { display: flex; gap: 7px; margin-top: 7px; flex-wrap: wrap; }
 .cp-message-actions button { background: #fffbff; color: #82519b; border-radius: 10px; padding: 3px 8px; font-size: 11px; }
 .cp-sources { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
@@ -66,7 +68,6 @@
 .cp-disclosure { margin: 0; padding: 0 15px 6px; color: var(--cp-muted); font-size: 10px; line-height: 1.5; }
 .cp-data-buttons button { padding: 6px 10px; border-radius: 10px; background: #f2e7ef; font-size: 11px; }
 .cp-stop { background: #f2e3eb; border-radius: 10px; padding: 5px 10px; font-size: 12px; margin-top: 10px; }
-.cp-playing .cp-avatar { animation: cp-breathe 1.8s ease-in-out infinite; }
 [data-theme=dark] .companion { --cp-ink: #eee2f2; --cp-muted: #c1aec6; --cp-card: #271e30; --cp-line: #49324d; }
 [data-theme=dark] .cp-intro { background: radial-gradient(ellipse at 20% 80%,#5d3b5d,transparent 65%); }
 [data-theme=dark] .cp-message, [data-theme=dark] .cp-memory-list li { background: #3f2e49; }

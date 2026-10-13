@@ -1,4 +1,4 @@
-/* The renderer uses a six-frame reference sheet. It can later be replaced by Live2D. */
+/* Keep the body still; animate only the mouth and eyelids from the sprite atlas. */
 (() => {
   'use strict';
   if (window.__lsworldCompanion) return;
@@ -10,7 +10,8 @@
   let token = typeof saved.token === 'string' ? saved.token : '';
   let root, config, apiBase, notice, messageList, quota, textarea, send, form;
   let opened = false, busy = false, service = null, currentLimits = null, audio = null, audioContext = null, analyser = null;
-  let animationFrame = null, blinkTimer = null, blinking = false, mouth = 0, sessionPromise = null, playbackTicket = 0;
+  let animationFrame = null, blinkTimer = null, blinkStep = 0, mouth = 0, sessionPromise = null, playbackTicket = 0;
+  let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMouthChange = 0, renderedFrame = '';
   const audioCache = new Map();
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
   const node = (tag, className, text) => {
@@ -25,13 +26,31 @@
   };
   const report = text => { notice.textContent = text; notice.hidden = !text; };
   const state = text => { root.querySelector('.cp-state').textContent = text; };
-  const setFrame = () => root.querySelectorAll('.cp-avatar').forEach(avatar => {
-    avatar.style.backgroundPosition = `${mouth * 50}% ${blinking ? 100 : 0}%`;
-  });
+  const sprite = () => config.animation || {columns: 3, rows: 2, mouthFrames: [0,1,2], blinkFrames: [0,3,0], mouthCenter: [55.5,60.5], eyeCenter: [55.5,48]};
+  const framePosition = index => {
+    const atlas = sprite();
+    const x = atlas.columns > 1 ? index % atlas.columns / (atlas.columns - 1) * 100 : 0;
+    const y = atlas.rows > 1 ? Math.floor(index / atlas.columns) / (atlas.rows - 1) * 100 : 0;
+    return `${Number(x.toFixed(4))}% ${Number(y.toFixed(4))}%`;
+  };
+  const setFrame = () => {
+    if (!root) return;
+    const key = `${mouth}:${blinkStep}`; if (key === renderedFrame) return; renderedFrame = key;
+    root.querySelectorAll('.cp-avatar').forEach(avatar => {
+      const lips = avatar.querySelector('.cp-mouth'), eyes = avatar.querySelector('.cp-eyes');
+      const mouthPosition = framePosition(sprite().mouthFrames[mouth]), eyePosition = framePosition(sprite().blinkFrames[blinkStep]);
+      lips.hidden = mouth === 0; if (lips.style.backgroundPosition !== mouthPosition) lips.style.backgroundPosition = mouthPosition;
+      eyes.hidden = blinkStep === 0; if (eyes.style.backgroundPosition !== eyePosition) eyes.style.backgroundPosition = eyePosition;
+    });
+  };
   const scheduleBlink = () => {
     clearTimeout(blinkTimer);
     if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    blinkTimer = setTimeout(() => { blinking = true; setFrame(); blinkTimer = setTimeout(() => { blinking = false; setFrame(); scheduleBlink(); }, 140); }, 3000 + Math.random() * 3500);
+    blinkTimer = setTimeout(function blink() {
+      blinkStep++; setFrame();
+      if (blinkStep < sprite().blinkFrames.length - 1) blinkTimer = setTimeout(blink, 40);
+      else { blinkStep = 0; setFrame(); scheduleBlink(); }
+    }, 3000 + Math.random() * 3500);
   };
   function updateLimits(limits) {
     if (limits) currentLimits = limits;
@@ -83,14 +102,23 @@
       else report('');
       if (token) {
         const result = await request('/state'); updateLimits(result.limits);
-        if (!busy) { messageList.replaceChildren(); if (!result.messages.length) welcome(); result.messages.forEach(addMessage); }
+        if (!busy) { messageList.replaceChildren(); if (!result.messages.length) welcome(); result.messages.forEach(message => addMessage(message)); }
       }
     } catch (error) { updateSend(); report(error.message); }
   }
   function welcome() { addMessage({role: 'assistant', text: config.greeting}); }
-  function addMessage(message) {
+  function addMessage(message, pending = false) {
     const item = node('div', 'cp-message'); item.dataset.role = message.role;
-    item.append(node('p', '', message.text));
+    const paragraph = node('p', '', pending ? '正在准备回复和语音…' : message.text); item.append(paragraph);
+    if (pending) { item.classList.add('cp-pending'); item.setAttribute('aria-busy', 'true'); }
+    const view = {item, paragraph, message, characters: [...String(message.text || '')], revealed: pending ? 0 : [...String(message.text || '')].length};
+    if (!pending) addSources(view);
+    messageList.append(item); messageList.scrollTop = messageList.scrollHeight;
+    return view;
+  }
+  function addSources(view) {
+    const {message, item} = view;
+    if (item.querySelector('.cp-sources')) return;
     if (message.sources?.length) {
       const links = node('div', 'cp-sources');
       message.sources.forEach(source => {
@@ -101,40 +129,62 @@
       });
       item.append(links);
     }
-    messageList.append(item); messageList.scrollTop = messageList.scrollHeight;
+  }
+  function revealReply(view, count) {
+    count = Math.max(view.revealed, Math.min(view.characters.length, count));
+    if (count === view.revealed && !view.item.classList.contains('cp-pending')) return;
+    view.revealed = count; view.paragraph.textContent = view.characters.slice(0, count).join('');
+    view.item.classList.remove('cp-pending'); messageList.scrollTop = messageList.scrollHeight;
+  }
+  function finishReply(view = narration?.view) {
+    if (!view) return;
+    revealReply(view, view.characters.length); view.item.setAttribute('aria-busy', 'false'); addSources(view);
   }
   async function submit(event) {
     event.preventDefault(); const text = textarea.value.trim(); if (!text || busy) return;
     if (send.disabled) return;
-    busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); state('想一想怎么回答你');
+    busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); const ticket = playbackTicket; state('想一想怎么回答你');
     primeAudio();
+    let view = null;
     try {
       await ensureSession(); addMessage({role: 'user', text}); textarea.value = '';
+      view = addMessage({role: 'assistant', text: ''}, true);
       const result = await request('/chat', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true});
-      addMessage(result); updateLimits(result.limits); blinking = result.emotion === 'happy'; setFrame();
-      setTimeout(() => { blinking = false; setFrame(); }, 350);
+      view.message = result; view.characters = [...result.text]; updateLimits(result.limits);
       report(result.demo ? '本地演示：没有调用真实聊天模型。' : ''); state('在这里，听你说');
-      if (!result.demo && opened && !document.hidden) {
-        try { await playSpeech(result); }
-        catch (error) { report(error.name === 'NotAllowedError' ? '浏览器阻止了自动播放，请允许此网站播放声音后再发送消息。' : error.message); state('文字已回复，语音暂时没成功'); }
-      }
-    } catch (error) { report(error.message); textarea.value = text; state('稍后再试试吧'); }
+      if (!result.demo && ticket === playbackTicket && opened && !document.hidden) {
+        try { await playSpeech(result, view, ticket); }
+        catch (error) { finishReply(view); report(error.name === 'NotAllowedError' ? '浏览器阻止了自动播放，请允许此网站播放声音后再发送消息。' : error.message); state('文字已回复，语音暂时没成功'); }
+      } else finishReply(view);
+    } catch (error) { view?.item.remove(); report(error.message); textarea.value = text; state('稍后再试试吧'); }
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
   function stopAudio() {
     playbackTicket++;
+    finishReply(); narration = null;
     if (audio) { audio.pause(); audio.currentTime = 0; }
     if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
-    mouth = 0; if (root) { root.classList.remove('cp-playing'); root.querySelector('.cp-stop').hidden = true; setFrame(); }
+    mouth = 0; smoothedEnergy = 0; lastTick = 0; lastMouthChange = 0;
+    if (root) { root.classList.remove('cp-playing'); root.querySelector('.cp-stop').hidden = true; setFrame(); }
   }
-  function animateMouth() {
+  function animatePlayback(time = 0) {
     if (!audio || audio.paused || document.hidden) return;
-    if (analyser) {
-      const values = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(values);
-      let energy = 0; for (const value of values) energy += ((value - 128) / 128) ** 2;
-      const rms = Math.sqrt(energy / values.length); mouth = rms > .12 ? 2 : rms > .025 ? 1 : 0;
-    } else mouth = 0;
-    setFrame(); animationFrame = requestAnimationFrame(animateMouth);
+    animationFrame = requestAnimationFrame(animatePlayback);
+    if (time - lastTick < 50) return; lastTick = time;
+    if (narration && Number.isFinite(audio.duration) && audio.duration > 0) {
+      // Use the media clock, so buffering and slower devices cannot race ahead.
+      const progress = Math.min(1, audio.currentTime / audio.duration);
+      revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
+    }
+    if (analyser && samples) {
+      analyser.getFloatTimeDomainData(samples);
+      let energy = 0; for (const value of samples) energy += value * value;
+      smoothedEnergy = smoothedEnergy * .65 + Math.sqrt(energy / samples.length) * .35;
+      const target = smoothedEnergy < .018 ? 0 : Math.min(sprite().mouthFrames.length - 1, Math.round(smoothedEnergy / .14 * (sprite().mouthFrames.length - 1)));
+      if (target !== mouth && time - lastMouthChange >= 80) {
+        mouth += Math.sign(target - mouth) * Math.min(2, Math.abs(target - mouth)); lastMouthChange = time; setFrame();
+      }
+    }
   }
   function applyAudioSettings() {
     if (!audio) return;
@@ -144,11 +194,19 @@
   function prepareAudio() {
     if (audio) return;
     audio = new Audio(); audio.preload = 'auto';
+    audio.addEventListener('pause', () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; setFrame();
+    });
+    audio.addEventListener('playing', () => {
+      if (narration && opened && !document.hidden) {
+        if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
+      }
+    });
     audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) { stopAudio(); state('在这里，听你说'); } });
     audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { stopAudio(); report('音频播放失败，文字回复已经保留。'); } });
     const Context = window.AudioContext || window.webkitAudioContext;
     if (Context) {
-      try { audioContext = new Context(); analyser = audioContext.createAnalyser(); analyser.fftSize = 256;
+      try { audioContext = new Context(); analyser = audioContext.createAnalyser(); analyser.fftSize = 1024; samples = new Float32Array(analyser.fftSize);
         const source = audioContext.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioContext.destination);
       } catch (_) { analyser = null; }
     }
@@ -161,9 +219,9 @@
     audio.src = silence;
     audio.play().then(() => { if (audio.src === silence) audio.pause(); }).catch(() => {});
   }
-  async function playSpeech(message) {
+  async function playSpeech(message, view, ticket) {
     if (!service?.voice) throw new Error('女声服务还没有连接好，文字聊天可以继续使用。');
-    stopAudio(); const ticket = playbackTicket; state('准备把这句话说给你听'); report('');
+    state('准备把这句话说给你听'); report('');
     const cacheKey = message.id;
     let cached = audioCache.get(cacheKey);
     if (!cached) {
@@ -172,25 +230,33 @@
       cached = URL.createObjectURL(blob); audioCache.set(cacheKey, cached);
       if (audioCache.size > 10) { const oldest = audioCache.keys().next().value; URL.revokeObjectURL(audioCache.get(oldest)); audioCache.delete(oldest); }
     }
-    if (ticket !== playbackTicket || !opened || document.hidden) return;
+    if (ticket !== playbackTicket || !opened || document.hidden) { finishReply(view); return; }
     prepareAudio();
     audio.src = cached; applyAudioSettings();
     if (audioContext?.state === 'suspended') await audioContext.resume();
-    if (ticket !== playbackTicket || !opened || document.hidden) return;
+    if (ticket !== playbackTicket || !opened || document.hidden) { finishReply(view); return; }
     await audio.play();
-    if (ticket !== playbackTicket || !opened || document.hidden) { stopAudio(); return; }
+    if (ticket !== playbackTicket || !opened || document.hidden) { finishReply(view); audio.pause(); return; }
+    narration = {view}; revealReply(view, 1);
     root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
-    state('说给你听'); animateMouth();
+    state('说给你听'); animatePlayback();
   }
   function build() {
     root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手');
-    const avatar = () => { const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.backgroundImage = 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')'; return el; };
+    const avatar = () => {
+      const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.backgroundImage = 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')';
+      const atlas = sprite(); el.style.backgroundSize = `${atlas.columns * 100}% ${atlas.rows * 100}%`;
+      const lips = node('span', 'cp-mouth'), eyes = node('span', 'cp-eyes'); lips.hidden = true; eyes.hidden = true;
+      lips.style.clipPath = `ellipse(8% 6% at ${atlas.mouthCenter[0]}% ${atlas.mouthCenter[1]}%)`;
+      eyes.style.clipPath = `ellipse(23% 9% at ${atlas.eyeCenter[0]}% ${atlas.eyeCenter[1]}%)`;
+      el.append(lips, eyes); return el;
+    };
     const launcher = button('', 'cp-launcher', () => setOpen(true)); launcher.setAttribute('aria-label', '与' + config.name + '聊天'); launcher.setAttribute('aria-expanded', 'false');
     launcher.setAttribute('aria-controls', 'companion-panel'); launcher.append(avatar(), node('span', 'cp-launcher-label', config.name + ' · 说说话'));
     const panel = node('section', 'cp-panel'); panel.id = 'companion-panel'; panel.hidden = true; panel.setAttribute('aria-label', '聊天面板');
     const header = node('header', 'cp-header'); const title = node('div', 'cp-title', config.name); title.append(node('small', '', '你的博客伙伴'));
     const close = button('×', 'cp-icon', () => setOpen(false)); close.setAttribute('aria-label', '关闭聊天'); header.append(title, close);
-    const intro = node('div', 'cp-intro'); const copy = node('div', 'cp-intro-copy'); copy.append(node('strong', '', '留一点时间，聊聊今天。'), node('p', '', '聊近况，也陪你一起学习。'), node('span', 'cp-state', '在这里，听你说'));
+    const intro = node('div', 'cp-intro'); const copy = node('div', 'cp-intro-copy'); copy.append(node('strong', '', '可莉在这里！'), node('p', '', '旅行者，今天一起冒险吧。'), node('span', 'cp-state', '在这里，听你说'));
     const stop = button('停止播放', 'cp-stop', () => { stopAudio(); state('在这里，听你说'); }); stop.hidden = true; copy.append(stop); intro.append(avatar(), copy);
     const nav = node('div', 'cp-nav'); nav.append(node('span', 'cp-chip', '文字 + 自动语音'));
     quota = node('span', 'cp-quota'); nav.append(quota);
@@ -214,7 +280,7 @@
     panel.append(header, intro, nav, messageList, notice, form, disclosure, dataButtons); root.append(launcher, panel); document.body.append(root);
     welcome(); updateLimits(); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && opened) setOpen(false); });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); clearTimeout(blinkTimer); blinking = false; setFrame(); } else scheduleBlink(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); clearTimeout(blinkTimer); blinkStep = 0; setFrame(); } else scheduleBlink(); });
     document.addEventListener('pjax:send', () => { stopAudio(); });
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); scheduleBlink(); });
     window.addEventListener('pagehide', () => { stopAudio(); clearTimeout(blinkTimer); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
