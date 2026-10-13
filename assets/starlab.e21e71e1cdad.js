@@ -897,6 +897,8 @@
   let opened = false, busy = false, service = null, currentLimits = null, audio = null, audioContext = null, analyser = null;
   let animationFrame = null, blinkTimer = null, blinkStep = 0, mouth = 0, sessionPromise = null, playbackTicket = 0;
   let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMouthChange = 0, renderedFrame = '';
+  let healthPromise = null, healthCheckedAt = 0, welcomePending = false, welcomeStarting = false, welcomeBubble = null, welcomeTimer = null;
+  const welcomeKey = 'lsworld.klee.welcomed.v1';
   const audioCache = new Map();
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
   const node = (tag, className, text) => {
@@ -939,18 +941,18 @@
   };
   function updateLimits(limits) {
     if (limits) currentLimits = limits;
-    quota.textContent = currentLimits ? `今日可聊 ${Math.min(currentLimits.chatRemaining, currentLimits.voiceRemaining)} 次` : '每日限次体验';
-    quota.title = '每次回复自动朗读，每人每天最多 10 次；全站还有共享额度。';
+    quota.textContent = currentLimits ? `今天还能聊 ${Math.min(currentLimits.chatRemaining, currentLimits.voiceRemaining)} 次` : '';
     updateSend();
   }
   function updateSend() {
     if (!send) return;
     const exhausted = currentLimits && (!currentLimits.chatAvailable || !currentLimits.voiceAvailable || Math.min(currentLimits.chatRemaining, currentLimits.voiceRemaining) <= 0);
     send.disabled = busy || !service?.chat || (!service.demo && (!service.voice || exhausted));
+    if (exhausted && !busy && !narration) state('可莉要休息一会儿啦。');
   }
   async function request(path, method = 'GET', data, authenticated = true, raw = false) {
     if (!apiBase) throw new Error('助手正在准备连接，稍后再来找我吧。');
-    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 60000);
+    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path === '/respond' ? 110000 : 60000);
     try {
       const response = await fetch(apiBase + path, {method, headers: {...(data ? {'Content-Type': 'application/json'} : {}),
         ...(authenticated && token ? {'Authorization': 'Bearer ' + token} : {})}, body: data ? JSON.stringify(data) : undefined, signal: controller.signal});
@@ -958,6 +960,12 @@
         if (response.status === 401) { token = ''; persist(); sessionPromise = null; }
         let result; try { result = await response.json(); } catch (_) {}
         throw new Error(result?.error || '连接暂时没成功，稍后再试试吧。');
+      }
+      if (raw === 'reply') {
+        const metadata = response.headers.get('X-Companion-Reply');
+        if (!metadata) return await response.json();
+        const result = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(metadata), value => value.charCodeAt(0))));
+        return {...result, audioBlob: await response.blob()};
       }
       return raw ? await response.blob() : await response.json();
     } catch (error) { if (error.name === 'AbortError') throw new Error('这次等待有点久，稍后查看一下回复吧。'); throw error; }
@@ -972,6 +980,7 @@
   }
   function setOpen(value) {
     opened = value; root.querySelector('.cp-panel').hidden = !value;
+    if (value && welcomeBubble) welcomeBubble.hidden = true;
     root.querySelector('.cp-launcher').hidden = value;
     root.querySelector('.cp-launcher').setAttribute('aria-expanded', String(value));
     if (value) { refresh(); textarea.focus(); }
@@ -979,22 +988,27 @@
   }
   async function refresh() {
     try {
-      service = await request('/health', 'GET', null, false);
-      state(service.demo ? '本地演示 · 未调用模型' : service.chat ? '在这里，听你说' : '正在准备连接');
+      const [health, result] = await Promise.all([ensureHealth(), token ? request('/state') : null]); service = health;
+      if (!narration) state(service.demo ? '本地演示' : service.chat ? '嘟嘟可也在听。' : '可莉一会儿就来。');
       updateSend();
       if (service.demo) report('本地演示：回复用于验证界面，没有调用真实聊天模型。');
-      else if (!service.chat) report('聊天服务正在准备连接。');
+      else if (!service.chat) report('可莉一会儿就来，先看看博客吧。');
       else report('');
-      if (token) {
-        const result = await request('/state'); updateLimits(result.limits);
+      if (result) {
+        updateLimits(result.limits);
         if (!busy) { messageList.replaceChildren(); if (!result.messages.length) welcome(); result.messages.forEach(message => addMessage(message)); }
       }
     } catch (error) { updateSend(); report(error.message); }
   }
+  function ensureHealth() {
+    if (service && Date.now() - healthCheckedAt < 30000) return Promise.resolve(service);
+    if (!healthPromise) healthPromise = request('/health', 'GET', null, false).then(result => { service = result; healthCheckedAt = Date.now(); updateSend(); return result; }).finally(() => { healthPromise = null; });
+    return healthPromise;
+  }
   function welcome() { addMessage({role: 'assistant', text: config.greeting}); }
   function addMessage(message, pending = false) {
     const item = node('div', 'cp-message'); item.dataset.role = message.role;
-    const paragraph = node('p', '', pending ? '正在准备回复和语音…' : message.text); item.append(paragraph);
+    const paragraph = node('p', '', pending ? '唔…让可莉想一想。' : message.text); item.append(paragraph);
     if (pending) { item.classList.add('cp-pending'); item.setAttribute('aria-busy', 'true'); }
     const view = {item, paragraph, message, characters: [...String(message.text || '')], revealed: pending ? 0 : [...String(message.text || '')].length};
     if (!pending) addSources(view);
@@ -1028,24 +1042,25 @@
   async function submit(event) {
     event.preventDefault(); const text = textarea.value.trim(); if (!text || busy) return;
     if (send.disabled) return;
-    busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); const ticket = playbackTicket; state('想一想怎么回答你');
+    cancelWelcome(); busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); const ticket = playbackTicket; state('唔，让可莉想想…');
     primeAudio();
     let view = null;
     try {
       await ensureSession(); addMessage({role: 'user', text}); textarea.value = '';
       view = addMessage({role: 'assistant', text: ''}, true);
-      const result = await request('/chat', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true});
+      const result = await request('/respond', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true}, true, 'reply');
       view.message = result; view.characters = [...result.text]; updateLimits(result.limits);
-      report(result.demo ? '本地演示：没有调用真实聊天模型。' : ''); state('在这里，听你说');
+      report(result.demo ? '本地演示：没有调用真实聊天模型。' : ''); state('嘟嘟可也在听。');
       if (!result.demo && ticket === playbackTicket && opened && !document.hidden) {
         try { await playSpeech(result, view, ticket); }
-        catch (error) { finishReply(view); report(error.name === 'NotAllowedError' ? '浏览器阻止了自动播放，请允许此网站播放声音后再发送消息。' : error.message); state('文字已回复，语音暂时没成功'); }
+        catch (error) { finishReply(view); report(error.name === 'NotAllowedError' ? '咦，声音没出来，旅行者先看看这句话吧。' : error.message); state('可莉在这里呢。'); }
       } else finishReply(view);
-    } catch (error) { view?.item.remove(); report(error.message); textarea.value = text; state('稍后再试试吧'); }
+    } catch (error) { view?.item.remove(); report(error.message); textarea.value = text; state('再说一次好不好？'); }
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
   function stopAudio() {
     playbackTicket++;
+    if (narration?.welcome && welcomeBubble) { clearTimeout(welcomeTimer); welcomeTimer = setTimeout(() => { welcomeBubble.hidden = true; }, 1200); }
     finishReply(); narration = null;
     if (audio) { audio.pause(); audio.currentTime = 0; }
     if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
@@ -1056,19 +1071,21 @@
     if (!audio || audio.paused || document.hidden) return;
     animationFrame = requestAnimationFrame(animatePlayback);
     if (time - lastTick < 50) return; lastTick = time;
-    if (narration && Number.isFinite(audio.duration) && audio.duration > 0) {
+    if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
       revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
     }
-    if (analyser && samples) {
+    let rms = 0;
+    if (analyser && samples && audioContext?.state === 'running') {
       analyser.getFloatTimeDomainData(samples);
       let energy = 0; for (const value of samples) energy += value * value;
-      smoothedEnergy = smoothedEnergy * .65 + Math.sqrt(energy / samples.length) * .35;
-      const target = smoothedEnergy < .018 ? 0 : Math.min(sprite().mouthFrames.length - 1, Math.round(smoothedEnergy / .14 * (sprite().mouthFrames.length - 1)));
-      if (target !== mouth && time - lastMouthChange >= 80) {
-        mouth += Math.sign(target - mouth) * Math.min(2, Math.abs(target - mouth)); lastMouthChange = time; setFrame();
-      }
+      rms = Math.sqrt(energy / samples.length);
+    } else if (narration?.welcome) rms = config.welcome?.envelope[Math.floor(audio.currentTime / (config.welcome.step || .05))] || 0;
+    smoothedEnergy = smoothedEnergy * .65 + rms * .35;
+    const target = smoothedEnergy < .018 ? 0 : Math.min(sprite().mouthFrames.length - 1, Math.round(smoothedEnergy / .14 * (sprite().mouthFrames.length - 1)));
+    if (target !== mouth && time - lastMouthChange >= 80) {
+      mouth += Math.sign(target - mouth) * Math.min(2, Math.abs(target - mouth)); lastMouthChange = time; setFrame();
     }
   }
   function applyAudioSettings() {
@@ -1076,8 +1093,8 @@
     audio.playbackRate = 1;
     audio.preservesPitch = true;
   }
-  function prepareAudio() {
-    if (audio) return;
+  function prepareAudio(withAnalyser = false) {
+    if (!audio) {
     audio = new Audio(); audio.preload = 'auto';
     audio.addEventListener('pause', () => {
       if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; setFrame();
@@ -1087,10 +1104,11 @@
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
-    audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) { stopAudio(); state('在这里，听你说'); } });
-    audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { stopAudio(); report('音频播放失败，文字回复已经保留。'); } });
+    audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) { stopAudio(); state('嘟嘟可也在听。'); } });
+    audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { const greeting = narration?.welcome; stopAudio(); if (!greeting) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
+    }
     const Context = window.AudioContext || window.webkitAudioContext;
-    if (Context) {
+    if (withAnalyser && Context && !audioContext) {
       try { audioContext = new Context(); analyser = audioContext.createAnalyser(); analyser.fftSize = 1024; samples = new Float32Array(analyser.fftSize);
         const source = audioContext.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioContext.destination);
       } catch (_) { analyser = null; }
@@ -1098,7 +1116,7 @@
   }
   function primeAudio() {
     // Unlock the same audio element/context synchronously during the Send gesture.
-    prepareAudio();
+    prepareAudio(true);
     audioContext?.resume().catch(() => {});
     const silence = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAACAgICA';
     audio.src = silence;
@@ -1106,17 +1124,18 @@
   }
   async function playSpeech(message, view, ticket) {
     if (!service?.voice) throw new Error('女声服务还没有连接好，文字聊天可以继续使用。');
-    state('准备把这句话说给你听'); report('');
+    if (message.speechError) throw new Error(message.speechError);
+    state('嘿嘿，马上就好。'); report('');
     const cacheKey = message.id;
     let cached = audioCache.get(cacheKey);
     if (!cached) {
-      const result = await request('/speech', 'POST', {messageId: message.id}); updateLimits(result.limits);
-      const blob = await request('/audio/' + result.audioId, 'GET', null, true, true);
+      const blob = message.audioBlob;
+      if (!blob) throw new Error('可莉的声音还没传过来，先看看这句话吧。');
       cached = URL.createObjectURL(blob); audioCache.set(cacheKey, cached);
       if (audioCache.size > 10) { const oldest = audioCache.keys().next().value; URL.revokeObjectURL(audioCache.get(oldest)); audioCache.delete(oldest); }
     }
     if (ticket !== playbackTicket || !opened || document.hidden) { finishReply(view); return; }
-    prepareAudio();
+    prepareAudio(true);
     audio.src = cached; applyAudioSettings();
     if (audioContext?.state === 'suspended') await audioContext.resume();
     if (ticket !== playbackTicket || !opened || document.hidden) { finishReply(view); return; }
@@ -1124,7 +1143,37 @@
     if (ticket !== playbackTicket || !opened || document.hidden) { finishReply(view); audio.pause(); return; }
     narration = {view}; revealReply(view, 1);
     root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
-    state('说给你听'); animatePlayback();
+    state('可莉有话想说！'); animatePlayback();
+  }
+  function cancelWelcome() {
+    welcomePending = false; clearTimeout(welcomeTimer); if (welcomeBubble) welcomeBubble.hidden = true;
+    document.removeEventListener('pointerdown', welcomeGesture); document.removeEventListener('pointerup', welcomeGesture); document.removeEventListener('keydown', welcomeGesture);
+  }
+  function welcomeGesture(event) {
+    if (event.type === 'keydown' && (event.ctrlKey || event.altKey || event.metaKey)) return;
+    if (event.target.closest?.('.cp-welcome-close,.cp-icon,.cp-stop,.cp-form button')) return;
+    tryWelcome(true);
+  }
+  function tryWelcome(gesture = false) {
+    if (!welcomePending || welcomeStarting || busy || narration || document.hidden) return;
+    welcomeStarting = true; const ticket = playbackTicket;
+    prepareAudio(gesture); if (gesture) audioContext?.resume().catch(() => {});
+    const url = new URL(config.welcome.audio, location.origin).href;
+    if (audio.src !== url) audio.src = url;
+    audio.play().then(() => {
+      if (ticket !== playbackTicket || busy || document.hidden) { audio.pause(); return; }
+      cancelWelcome(); try { localStorage.setItem(welcomeKey, 'true'); } catch (_) {}
+      narration = {welcome: true}; root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
+      welcomeBubble.hidden = opened; state('可莉来啦！'); animatePlayback();
+    }).catch(error => { if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') cancelWelcome(); }).finally(() => { welcomeStarting = false; });
+  }
+  function startWelcome() {
+    if (!config.welcome?.audio) return;
+    try { if (localStorage.getItem(welcomeKey) === 'true') return; } catch (_) {}
+    welcomePending = true; welcomeBubble.hidden = false;
+    prepareAudio(); audio.src = new URL(config.welcome.audio, location.origin).href; audio.load();
+    document.addEventListener('pointerdown', welcomeGesture); document.addEventListener('pointerup', welcomeGesture); document.addEventListener('keydown', welcomeGesture);
+    tryWelcome();
   }
   function build() {
     root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手');
@@ -1137,14 +1186,13 @@
       el.append(lips, eyes); return el;
     };
     const launcher = button('', 'cp-launcher', () => setOpen(true)); launcher.setAttribute('aria-label', '与' + config.name + '聊天'); launcher.setAttribute('aria-expanded', 'false');
-    launcher.setAttribute('aria-controls', 'companion-panel'); launcher.append(avatar(), node('span', 'cp-launcher-label', config.name + ' · 说说话'));
+    launcher.setAttribute('aria-controls', 'companion-panel'); launcher.append(avatar(), node('span', 'cp-launcher-label', '来找可莉玩！'));
     const panel = node('section', 'cp-panel'); panel.id = 'companion-panel'; panel.hidden = true; panel.setAttribute('aria-label', '聊天面板');
-    const header = node('header', 'cp-header'); const title = node('div', 'cp-title', config.name); title.append(node('small', '', '你的博客伙伴'));
+    const header = node('header', 'cp-header'); const title = node('div', 'cp-title', config.name); title.append(node('small', '', '火花骑士'));
     const close = button('×', 'cp-icon', () => setOpen(false)); close.setAttribute('aria-label', '关闭聊天'); header.append(title, close);
-    const intro = node('div', 'cp-intro'); const copy = node('div', 'cp-intro-copy'); copy.append(node('strong', '', '可莉在这里！'), node('p', '', '旅行者，今天一起冒险吧。'), node('span', 'cp-state', '在这里，听你说'));
-    const stop = button('停止播放', 'cp-stop', () => { stopAudio(); state('在这里，听你说'); }); stop.hidden = true; copy.append(stop); intro.append(avatar(), copy);
-    const nav = node('div', 'cp-nav'); nav.append(node('span', 'cp-chip', '文字 + 自动语音'));
-    quota = node('span', 'cp-quota'); nav.append(quota);
+    const intro = node('div', 'cp-intro'); const copy = node('div', 'cp-intro-copy'); copy.append(node('strong', '', '一起去玩吧！'), node('span', 'cp-state', '嘟嘟可也在听。'));
+    const stop = button('先停一下', 'cp-stop', () => { stopAudio(); state('可莉在听呢！'); }); stop.setAttribute('aria-label', '停止播放'); stop.hidden = true; copy.append(stop); intro.append(avatar(), copy);
+    quota = node('span', 'cp-quota');
     messageList = node('div', 'cp-messages'); messageList.dataset.cpView = 'chat'; messageList.setAttribute('role', 'log'); messageList.setAttribute('aria-live', 'polite'); messageList.setAttribute('aria-label', '聊天记录');
     const dataButtons = node('div', 'cp-data-buttons');
     dataButtons.append(button('导出我的数据', '', async () => {
@@ -1152,24 +1200,31 @@
         const a = node('a'); a.href = url; a.download = 'companion-memory.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
       } catch (error) { report(error.message); }
     }), button('清空对话', '', async () => {
-      if (!window.confirm('清空这个浏览器的对话和相关保存数据？')) return;
+      if (!window.confirm('清空这段聊天，重新开始吗？')) return;
       try { await ensureSession(); const result = await request('/reset', 'DELETE'); messageList.replaceChildren(); welcome();
-        audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); stopAudio(); updateLimits(result.limits); report('对话已清空，今天的体验次数继续保留。');
+        audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); stopAudio(); updateLimits(result.limits); report('好耶，我们重新开始吧！');
       } catch (error) { report(error.message); }
     }));
     notice = node('p', 'cp-notice'); notice.hidden = true; notice.setAttribute('role', 'status');
-    form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 600; textarea.rows = 2; textarea.placeholder = '今天有什么想说的？'; textarea.setAttribute('aria-label', '聊天消息');
-    send = node('button', 'cp-primary', '发送'); send.type = 'submit'; form.append(textarea, send); form.addEventListener('submit', submit);
+    form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 600; textarea.rows = 2; textarea.placeholder = '想和可莉说什么？'; textarea.setAttribute('aria-label', '聊天消息');
+    send = node('button', 'cp-primary', '告诉可莉'); send.type = 'submit'; form.append(textarea, send); form.addEventListener('submit', submit);
     textarea.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });
-    const disclosure = node('p', 'cp-disclosure', '发送后回复会自动朗读；对话会用于模型和语音服务。');
-    panel.append(header, intro, nav, messageList, notice, form, disclosure, dataButtons); root.append(launcher, panel); document.body.append(root);
+    const options = node('details', 'cp-options'), summary = node('summary', '', '⋯'), menu = node('div', 'cp-options-menu');
+    summary.setAttribute('aria-label', '聊天选项'); menu.append(dataButtons, quota); options.append(summary, menu); header.insertBefore(options, close);
+    welcomeBubble = node('div', 'cp-welcome'); welcomeBubble.hidden = true; welcomeBubble.append(node('p', '', config.greeting), button('×', 'cp-welcome-close', () => {
+      cancelWelcome(); stopAudio(); try { localStorage.setItem(welcomeKey, 'true'); } catch (_) {}
+    }));
+    welcomeBubble.querySelector('button').setAttribute('aria-label', '停止欢迎语');
+    panel.append(header, intro, messageList, notice, form); root.append(welcomeBubble, launcher, panel); document.body.append(root);
     welcome(); updateLimits(); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && opened) setOpen(false); });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); clearTimeout(blinkTimer); blinkStep = 0; setFrame(); } else scheduleBlink(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); clearTimeout(blinkTimer); blinkStep = 0; setFrame(); } else { scheduleBlink(); tryWelcome(); } });
     document.addEventListener('pjax:send', () => { stopAudio(); });
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); scheduleBlink(); });
     window.addEventListener('pagehide', () => { stopAudio(); clearTimeout(blinkTimer); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
     window.addEventListener('pageshow', scheduleBlink);
+    const connect = node('link'); connect.rel = 'preconnect'; connect.href = apiBase; document.head.append(connect);
+    ensureHealth().catch(() => {}); startWelcome();
   }
   async function boot() {
     try {
