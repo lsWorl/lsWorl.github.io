@@ -1148,7 +1148,7 @@
       const response = await fetch('/companion-config.json', {cache: 'no-cache'}); if (!response.ok) return;
       config = await response.json(); if (!config.enabled) return;
       apiBase = String(config.apiBase || '').replace(/\/$/, '');
-      if (!apiBase && ['localhost','127.0.0.1'].includes(location.hostname)) apiBase = 'http://127.0.0.1:8787';
+      if (['localhost','127.0.0.1'].includes(location.hostname)) apiBase = 'http://127.0.0.1:8787';
       if (apiBase && !/^https?:\/\//.test(apiBase)) apiBase = '';
       build();
     } catch (_) { /* An unavailable assistant cannot break article navigation. */ }
