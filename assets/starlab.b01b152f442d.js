@@ -883,7 +883,7 @@
 
 ;
 /* js/companion.js */
-/* Keep the body still; animate only the mouth and eyelids from the sprite atlas. */
+/* Stable portrait layers; expressions and small gestures follow conversation state. */
 (() => {
   'use strict';
   if (window.__lsworldCompanion) return;
@@ -901,6 +901,8 @@
   const welcomeKey = 'lsworld.klee.welcomed.v1';
   const audioCache = new Map();
   let pcmPlayback = null;
+  let expression = 'neutral', reactionTimer = null, gestureTimer = null;
+  const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
   const node = (tag, className, text) => {
     const result = document.createElement(tag);
@@ -915,12 +917,61 @@
   const report = text => { notice.textContent = text; notice.hidden = !text; };
   const state = text => { root.querySelector('.cp-state').textContent = text; };
   const sprite = () => config.animation || {columns: 3, rows: 2, mouthFrames: [0,1,2], blinkFrames: [0,3,0], mouthCenter: [55.5,60.5], eyeCenter: [55.5,48]};
-  const framePosition = index => {
-    const atlas = sprite();
+  const framePosition = (index, atlas = sprite()) => {
     const x = atlas.columns > 1 ? index % atlas.columns / (atlas.columns - 1) * 100 : 0;
     const y = atlas.rows > 1 ? Math.floor(index / atlas.columns) / (atlas.rows - 1) * 100 : 0;
     return `${Number(x.toFixed(4))}% ${Number(y.toFixed(4))}%`;
   };
+  function expressionFor(text, fallback = 'happy') {
+    if (/难过|伤心|孤单|孤独|压力|不开心|烦恼|担心|害怕|没关系|别担心|陪着|抱抱|慢慢来|好累|有点累|累了|疲惫|难受|失败|做不到/.test(text)) return 'care';
+    if (/成功|做到了|完成了|厉害|真棒/.test(text)) return 'proud';
+    if (/哈哈|嘿嘿|嘻嘻/.test(text)) return 'laugh';
+    if (/好耶|开心|太棒|出发|一起玩|谢谢/.test(text)) return 'happy';
+    if (/为什么|如何|原理|公式|代码|算法|想想/.test(text)) return 'thinking';
+    if (/好奇|真的吗|什么呀|去哪|咦/.test(text)) return 'curious';
+    return fallback;
+  }
+  function setExpression(value) {
+    if (!root) return;
+    if (!Object.hasOwn(config.expressions?.frames || {}, value)) value = 'neutral';
+    if (expression === value && root.dataset.expression === value) return;
+    const previous = expression; expression = value; root.dataset.expression = value;
+    root.querySelectorAll('.cp-avatar').forEach(avatar => {
+      const back = avatar.querySelector('.cp-face-back'), front = avatar.querySelector('.cp-face-front');
+      if (!front || !config.expressions) return;
+      front.getAnimations().forEach(animation => animation.cancel());
+      back.style.setProperty('--cp-expression-position', framePosition(config.expressions.frames[previous] ?? 0, config.expressions));
+      front.style.setProperty('--cp-expression-position', framePosition(config.expressions.frames[value] ?? 0, config.expressions));
+      back.style.opacity = reducedMotion() ? '0' : '1';
+      if (!reducedMotion()) {
+        const fade = front.animate([{opacity:0},{opacity:1}], {duration:220,easing:'ease-out'});
+        fade.onfinish = () => { back.style.opacity = '0'; };
+      }
+    });
+    if (['laugh','wink'].includes(value)) { clearTimeout(blinkTimer); blinkStep = 0; setFrame(); }
+    else if (['laugh','wink'].includes(previous)) scheduleBlink();
+  }
+  function setPresence(value) { if (root) root.dataset.presence = value; }
+  function gesture(value) {
+    if (!root || document.hidden || reducedMotion() || root.dataset.gesture === value) return;
+    clearTimeout(gestureTimer); root.dataset.gesture = value;
+    gestureTimer = setTimeout(() => { root.dataset.gesture = ''; }, value === 'hello' ? 1000 : 760);
+  }
+  function settleCharacter(delay = 2400) {
+    clearTimeout(reactionTimer);
+    reactionTimer = setTimeout(() => {
+      if (busy || narration || document.hidden) return;
+      setPresence('idle'); setExpression('neutral');
+    }, delay);
+  }
+  function greetCharacter() {
+    clearTimeout(reactionTimer); setExpression('wink'); gesture('hello');
+    reactionTimer = setTimeout(() => {
+      if (document.hidden) return;
+      setExpression(narration?.view ? expressionFor(narration.view.paragraph.textContent, narration.view.mood) : busy ? 'thinking' : 'happy');
+      if (!busy && !narration) settleCharacter(1600);
+    }, 1400);
+  }
   const setFrame = () => {
     if (!root) return;
     const key = `${mouth}:${blinkStep}`; if (key === renderedFrame) return; renderedFrame = key;
@@ -933,7 +984,7 @@
   };
   const scheduleBlink = () => {
     clearTimeout(blinkTimer);
-    if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (document.hidden || reducedMotion() || ['laugh','wink'].includes(expression)) return;
     blinkTimer = setTimeout(function blink() {
       blinkStep++; setFrame();
       if (blinkStep < sprite().blinkFrames.length - 1) blinkTimer = setTimeout(blink, 40);
@@ -1002,8 +1053,8 @@
     if (value && welcomeBubble) welcomeBubble.hidden = true;
     root.querySelector('.cp-launcher').hidden = value;
     root.querySelector('.cp-launcher').setAttribute('aria-expanded', String(value));
-    if (value) { refresh(); textarea.focus(); }
-    else { stopAudio(); root.querySelector('.cp-launcher').focus(); }
+    if (value) { refresh(); textarea.focus(); setPresence('listening'); setExpression('happy'); gesture('hello'); settleCharacter(); }
+    else { stopAudio(); clearTimeout(reactionTimer); setPresence('idle'); setExpression('neutral'); root.querySelector('.cp-launcher').focus(); }
   }
   async function refresh() {
     try {
@@ -1062,19 +1113,25 @@
     event.preventDefault(); const text = textarea.value.trim(); if (!text || busy) return;
     if (send.disabled) return;
     cancelWelcome(); busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); const ticket = playbackTicket; state('唔，让可莉想想…');
+    clearTimeout(reactionTimer); setPresence('thinking'); setExpression('thinking');
     primeAudio();
     let view = null;
     try {
       await ensureSession(); addMessage({role: 'user', text}); textarea.value = '';
       view = addMessage({role: 'assistant', text: ''}, true);
+      view.mood = expressionFor(text, 'happy');
       const result = await request('/respond-stream', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true}, true, data => receiveStream(data, view, ticket));
       view.message = result; view.characters = [...result.text]; updateLimits(result.limits);
       if (result.demo) report('本地演示：没有调用真实聊天模型。');
-      if (!pcmPlayback || ticket !== playbackTicket) { finishReply(view); state('嘟嘟可也在听。'); }
+      if (!pcmPlayback || ticket !== playbackTicket) {
+        finishReply(view); state('嘟嘟可也在听。');
+        if (ticket === playbackTicket && opened) { setPresence('idle'); setExpression(expressionFor(result.text, view.mood)); settleCharacter(); }
+      }
     } catch (error) {
       if (view?.characters.length) { stopAudio(); finishReply(view); }
       else { view?.item.remove(); textarea.value = text; }
       report(error.message); state('再说一次好不好？');
+      setPresence('idle'); setExpression('care'); settleCharacter();
     }
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
@@ -1087,6 +1144,10 @@
     if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
     mouth = 0; smoothedEnergy = 0; lastTick = 0; lastMouthChange = 0;
     if (root) { root.classList.remove('cp-playing'); root.querySelector('.cp-stop').hidden = true; setFrame(); }
+    if (root) {
+      setPresence(busy ? 'thinking' : 'idle');
+      if (busy) setExpression('thinking'); else { if (expression === 'laugh' || expression === 'wink') setExpression('happy'); settleCharacter(); }
+    }
   }
   function animatePlayback(time = 0) {
     if (document.hidden || (!pcmPlayback && (!audio || audio.paused))) return;
@@ -1097,6 +1158,9 @@
       for (const span of playing.spans) { if (clock < span.time) break; played = span.offset + Math.min(span.duration, clock - span.time); }
       let count = 0;
       for (const sentence of playing.sentences.values()) {
+        if (sentence.words.length && played * 1000 >= sentence.words[0].begin_time && playing.activeSentence !== sentence && played * 1000 <= (sentence.endTime ?? Infinity)) {
+          playing.activeSentence = sentence; setExpression(expressionFor(sentence.text, playing.view.mood));
+        }
         for (const word of sentence.words) if (played * 1000 >= word.begin_time) count = Math.max(count, sentence.offset + word.characterEnd);
         if (sentence.endTime != null && played * 1000 >= sentence.endTime) count = Math.max(count, sentence.offset + [...sentence.text].length);
       }
@@ -1210,6 +1274,8 @@
     source.start(start);
     if (!root.classList.contains('cp-playing')) {
       root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
+      clearTimeout(reactionTimer); setPresence('speaking'); setExpression(expressionFor(playing.view.message.text || '', playing.view.mood));
+      gesture(expression === 'happy' || expression === 'laugh' || expression === 'proud' ? 'bounce' : 'nod');
       state('可莉有话想说！'); lastTick = 0; animatePlayback();
     }
   }
@@ -1245,16 +1311,17 @@
     if (event.target.closest?.('.cp-welcome-close,.cp-icon,.cp-stop,.cp-form button')) return;
     tryWelcome(true);
   }
-  function tryWelcome(gesture = false) {
+  function tryWelcome(withUserGesture = false) {
     if (!welcomePending || welcomeStarting || busy || narration || document.hidden) return;
     welcomeStarting = true; const ticket = playbackTicket;
-    prepareAudio(gesture); if (gesture) audioContext?.resume().catch(() => {});
+    prepareAudio(withUserGesture); if (withUserGesture) audioContext?.resume().catch(() => {});
     const url = new URL(config.welcome.audio, location.origin).href;
     if (audio.src !== url) audio.src = url;
     audio.play().then(() => {
       if (ticket !== playbackTicket || busy || document.hidden) { audio.pause(); return; }
       cancelWelcome(); try { localStorage.setItem(welcomeKey, 'true'); } catch (_) {}
       narration = {welcome: true}; root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
+      clearTimeout(reactionTimer); setPresence('speaking'); setExpression('happy'); gesture('hello');
       welcomeBubble.hidden = opened; state('可莉来啦！'); animatePlayback();
     }).catch(error => { if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') cancelWelcome(); }).finally(() => { welcomeStarting = false; });
   }
@@ -1267,14 +1334,29 @@
     tryWelcome();
   }
   function build() {
-    root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手');
-    const avatar = () => {
+    root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手'); root.dataset.presence = 'idle';
+    const avatar = (interactive = false) => {
+      const wrap = interactive ? button('', 'cp-avatar-wrap cp-character', greetCharacter) : node('div', 'cp-avatar-wrap');
+      if (interactive) wrap.setAttribute('aria-label', '和可莉打个招呼');
       const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.backgroundImage = 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')';
       const atlas = sprite(); el.style.backgroundSize = `${atlas.columns * 100}% ${atlas.rows * 100}%`;
+      if (config.expressions) {
+        const faces = config.expressions, eye = faces.eyeCenter || atlas.eyeCenter, lip = faces.mouthCenter || atlas.mouthCenter;
+        for (const className of ['cp-face-back','cp-face-front']) {
+          const layer = node('span', 'cp-expression-layer ' + className);
+          layer.style.setProperty('--cp-expression-image', 'url(' + JSON.stringify(new URL(faces.atlas, location.origin).href) + ')');
+          layer.style.setProperty('--cp-expression-size', `${faces.columns * 100}% ${faces.rows * 100}%`);
+          layer.style.setProperty('--cp-expression-position', framePosition(0, faces));
+          const eyes = node('span', 'cp-expression-eyes'), lips = node('span', 'cp-expression-mouth');
+          eyes.style.maskImage = `radial-gradient(ellipse 27% 12% at ${eye[0]}% ${eye[1]}%, #000 80%, transparent 100%)`;
+          lips.style.maskImage = `radial-gradient(ellipse 8% 6% at ${lip[0]}% ${lip[1]}%, #000 82%, transparent 100%)`;
+          layer.append(eyes, lips); el.append(layer);
+        }
+      }
       const lips = node('span', 'cp-mouth'), eyes = node('span', 'cp-eyes'); lips.hidden = true; eyes.hidden = true;
       lips.style.clipPath = `ellipse(8% 6% at ${atlas.mouthCenter[0]}% ${atlas.mouthCenter[1]}%)`;
       eyes.style.clipPath = `ellipse(23% 9% at ${atlas.eyeCenter[0]}% ${atlas.eyeCenter[1]}%)`;
-      el.append(lips, eyes); return el;
+      el.append(lips, eyes); const breath = node('span', 'cp-breath'); breath.append(el); wrap.append(breath); return wrap;
     };
     const launcher = button('', 'cp-launcher', () => setOpen(true)); launcher.setAttribute('aria-label', '与' + config.name + '聊天'); launcher.setAttribute('aria-expanded', 'false');
     launcher.setAttribute('aria-controls', 'companion-panel'); launcher.append(avatar(), node('span', 'cp-launcher-label', '来找可莉玩！'));
@@ -1282,7 +1364,7 @@
     const header = node('header', 'cp-header'); const title = node('div', 'cp-title', config.name); title.append(node('small', '', '火花骑士'));
     const close = button('×', 'cp-icon', () => setOpen(false)); close.setAttribute('aria-label', '关闭聊天'); header.append(title, close);
     const intro = node('div', 'cp-intro'); const copy = node('div', 'cp-intro-copy'); copy.append(node('strong', '', '一起去玩吧！'), node('span', 'cp-state', '嘟嘟可也在听。'));
-    const stop = button('先停一下', 'cp-stop', () => { stopAudio(); state('可莉在听呢！'); }); stop.setAttribute('aria-label', '停止播放'); stop.hidden = true; copy.append(stop); intro.append(avatar(), copy);
+    const stop = button('先停一下', 'cp-stop', () => { stopAudio(); state('可莉在听呢！'); }); stop.setAttribute('aria-label', '停止播放'); stop.hidden = true; copy.append(stop); intro.append(avatar(true), copy);
     quota = node('span', 'cp-quota');
     messageList = node('div', 'cp-messages'); messageList.dataset.cpView = 'chat'; messageList.setAttribute('role', 'log'); messageList.setAttribute('aria-live', 'polite'); messageList.setAttribute('aria-label', '聊天记录');
     const dataButtons = node('div', 'cp-data-buttons');
@@ -1300,6 +1382,10 @@
     form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 600; textarea.rows = 2; textarea.placeholder = '想和可莉说什么？'; textarea.setAttribute('aria-label', '聊天消息');
     send = node('button', 'cp-primary', '告诉可莉'); send.type = 'submit'; form.append(textarea, send); form.addEventListener('submit', submit);
     textarea.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });
+    textarea.addEventListener('input', () => {
+      if (busy || narration) return;
+      clearTimeout(reactionTimer); setPresence('listening'); setExpression(textarea.value.trim() ? 'curious' : 'neutral'); settleCharacter();
+    });
     const options = node('details', 'cp-options'), summary = node('summary', '', '⋯'), menu = node('div', 'cp-options-menu');
     summary.setAttribute('aria-label', '聊天选项'); menu.append(dataButtons, quota); options.append(summary, menu); header.insertBefore(options, close);
     welcomeBubble = node('div', 'cp-welcome'); welcomeBubble.hidden = true; welcomeBubble.append(node('p', '', config.greeting), button('×', 'cp-welcome-close', () => {
@@ -1307,13 +1393,25 @@
     }));
     welcomeBubble.querySelector('button').setAttribute('aria-label', '停止欢迎语');
     panel.append(header, intro, messageList, notice, form); root.append(welcomeBubble, launcher, panel); document.body.append(root);
-    welcome(); updateLimits(); scheduleBlink();
+    welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && opened) setOpen(false); });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); clearTimeout(blinkTimer); blinkStep = 0; setFrame(); } else { scheduleBlink(); tryWelcome(); } });
-    document.addEventListener('pjax:send', () => { stopAudio(); });
+    const pauseCharacter = () => {
+      clearTimeout(reactionTimer); clearTimeout(gestureTimer); clearTimeout(blinkTimer);
+      root.dataset.gesture = ''; setPresence(document.hidden ? 'hidden' : 'idle'); setExpression('neutral'); blinkStep = 0; setFrame();
+      root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
+      root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
+    };
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); pauseCharacter(); } else { setPresence('idle'); scheduleBlink(); tryWelcome(); } });
+    document.addEventListener('pjax:send', () => { stopAudio(); pauseCharacter(); });
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); scheduleBlink(); });
-    window.addEventListener('pagehide', () => { stopAudio(); clearTimeout(blinkTimer); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
-    window.addEventListener('pageshow', scheduleBlink);
+    window.addEventListener('pagehide', () => { stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
+    window.addEventListener('pageshow', () => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); });
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
+      clearTimeout(blinkTimer); clearTimeout(gestureTimer); blinkStep = 0; root.dataset.gesture = ''; setFrame();
+      root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
+      root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
+      if (!reducedMotion()) scheduleBlink();
+    });
     const connect = node('link'); connect.rel = 'preconnect'; connect.href = apiBase; document.head.append(connect);
     ensureHealth().catch(() => {}); startWelcome();
   }
