@@ -986,7 +986,7 @@
         const result = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(metadata), value => value.charCodeAt(0))));
         return {...result, audioBlob: await response.blob()};
       }
-      return raw ? await response.blob() : await response.json();
+      return raw && typeof raw !== 'function' ? await response.blob() : await response.json();
     } catch (error) { if (error.name === 'AbortError') throw new Error('这次等待有点久，稍后查看一下回复吧。'); throw error; }
     finally { clearTimeout(timer); }
   }
