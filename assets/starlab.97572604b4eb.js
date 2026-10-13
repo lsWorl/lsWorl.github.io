@@ -900,6 +900,7 @@
   let healthPromise = null, healthCheckedAt = 0, welcomePending = false, welcomeStarting = false, welcomeBubble = null, welcomeTimer = null;
   const welcomeKey = 'lsworld.klee.welcomed.v1';
   const audioCache = new Map();
+  let pcmPlayback = null;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
   const node = (tag, className, text) => {
     const result = document.createElement(tag);
@@ -952,7 +953,7 @@
   }
   async function request(path, method = 'GET', data, authenticated = true, raw = false) {
     if (!apiBase) throw new Error('助手正在准备连接，稍后再来找我吧。');
-    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path === '/respond' ? 110000 : 60000);
+    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path.startsWith('/respond') ? 110000 : 60000);
     try {
       const response = await fetch(apiBase + path, {method, headers: {...(data ? {'Content-Type': 'application/json'} : {}),
         ...(authenticated && token ? {'Authorization': 'Bearer ' + token} : {})}, body: data ? JSON.stringify(data) : undefined, signal: controller.signal});
@@ -960,6 +961,24 @@
         if (response.status === 401) { token = ''; persist(); sessionPromise = null; }
         let result; try { result = await response.json(); } catch (_) {}
         throw new Error(result?.error || '连接暂时没成功，稍后再试试吧。');
+      }
+      if (typeof raw === 'function' && response.headers.get('Content-Type')?.includes('text/event-stream')) {
+        const reader = response.body.getReader(), decoder = new TextDecoder(); let buffer = '', result = null, complete = false;
+        try {
+          while (true) {
+            const {done, value} = await reader.read(); buffer += decoder.decode(value, {stream: !done});
+            let boundary;
+            while ((boundary = buffer.indexOf('\n\n')) >= 0) {
+              const event = buffer.slice(0, boundary); buffer = buffer.slice(boundary + 2);
+              const line = event.split('\n').find(value => value.startsWith('data: ')); if (!line) continue;
+              const data = JSON.parse(line.slice(6)); raw(data);
+              if (data.type === 'done' || data.type === 'error') { complete = true; result = data.result; if (data.type === 'error' && !result) throw new Error(data.error); }
+            }
+            if (done) break;
+          }
+          if (!complete) throw new Error('可莉的声音断了一下，先看看这句话吧。');
+          return result;
+        } finally { await reader.cancel().catch(() => {}); }
       }
       if (raw === 'reply') {
         const metadata = response.headers.get('X-Companion-Reply');
@@ -1048,18 +1067,20 @@
     try {
       await ensureSession(); addMessage({role: 'user', text}); textarea.value = '';
       view = addMessage({role: 'assistant', text: ''}, true);
-      const result = await request('/respond', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true}, true, 'reply');
+      const result = await request('/respond-stream', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true}, true, data => receiveStream(data, view, ticket));
       view.message = result; view.characters = [...result.text]; updateLimits(result.limits);
-      report(result.demo ? '本地演示：没有调用真实聊天模型。' : ''); state('嘟嘟可也在听。');
-      if (!result.demo && ticket === playbackTicket && opened && !document.hidden) {
-        try { await playSpeech(result, view, ticket); }
-        catch (error) { finishReply(view); report(error.name === 'NotAllowedError' ? '咦，声音没出来，旅行者先看看这句话吧。' : error.message); state('可莉在这里呢。'); }
-      } else finishReply(view);
-    } catch (error) { view?.item.remove(); report(error.message); textarea.value = text; state('再说一次好不好？'); }
+      if (result.demo) report('本地演示：没有调用真实聊天模型。');
+      if (!pcmPlayback || ticket !== playbackTicket) { finishReply(view); state('嘟嘟可也在听。'); }
+    } catch (error) {
+      if (view?.characters.length) { stopAudio(); finishReply(view); }
+      else { view?.item.remove(); textarea.value = text; }
+      report(error.message); state('再说一次好不好？');
+    }
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
   function stopAudio() {
     playbackTicket++;
+    if (pcmPlayback) { for (const source of pcmPlayback.sources) { try { source.stop(); } catch (_) {} } pcmPlayback = null; }
     if (narration?.welcome && welcomeBubble) { clearTimeout(welcomeTimer); welcomeTimer = setTimeout(() => { welcomeBubble.hidden = true; }, 1200); }
     finishReply(); narration = null;
     if (audio) { audio.pause(); audio.currentTime = 0; }
@@ -1068,10 +1089,20 @@
     if (root) { root.classList.remove('cp-playing'); root.querySelector('.cp-stop').hidden = true; setFrame(); }
   }
   function animatePlayback(time = 0) {
-    if (!audio || audio.paused || document.hidden) return;
+    if (document.hidden || (!pcmPlayback && (!audio || audio.paused))) return;
     animationFrame = requestAnimationFrame(animatePlayback);
     if (time - lastTick < 50) return; lastTick = time;
-    if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
+    if (pcmPlayback) {
+      const playing = pcmPlayback, clock = audioContext.currentTime; let played = 0;
+      for (const span of playing.spans) { if (clock < span.time) break; played = span.offset + Math.min(span.duration, clock - span.time); }
+      let count = 0;
+      for (const sentence of playing.sentences.values()) {
+        for (const word of sentence.words) if (played * 1000 >= word.begin_time) count = Math.max(count, sentence.offset + word.characterEnd);
+        if (sentence.endTime != null && played * 1000 >= sentence.endTime) count = Math.max(count, sentence.offset + [...sentence.text].length);
+      }
+      if (count) revealReply(playing.view, count);
+      if (playing.finished && !playing.sources.size && !playing.pending.length) { stopAudio(); state('嘟嘟可也在听。'); return; }
+    } else if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
       revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
@@ -1121,6 +1152,66 @@
     const silence = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAACAgICA';
     audio.src = silence;
     audio.play().then(() => { if (audio.src === silence) audio.pause(); }).catch(() => {});
+  }
+  function receiveStream(data, view, ticket) {
+    if (data.type === 'phrase') {
+      view.message.text = (view.message.text || '') + data.text; view.characters = [...view.message.text];
+    }
+    if (data.result) { view.message = data.result; view.characters = [...data.result.text]; updateLimits(data.result.limits); }
+    if (ticket !== playbackTicket || !opened || document.hidden) { if (data.result) finishReply(view); return; }
+    if (data.type === 'start' || (!pcmPlayback && ['audio','alignment'].includes(data.type))) {
+      if (!audioContext || !analyser) throw new Error('咦，声音没出来，旅行者先看看这句话吧。');
+      pcmPlayback = {view, sources: new Set(), spans: [], sentences: new Map(), pending: [], pendingSamples: 0, offset: 0, nextTime: 0, finished: false};
+      narration = {view};
+    }
+    const playing = pcmPlayback;
+    if (data.type === 'alignment' && playing) {
+      const output = data.output, index = output.sentence?.index; if (!Number.isInteger(index)) return;
+      let sentence = playing.sentences.get(index);
+      if (!sentence) {
+        const offset = [...playing.sentences.values()].reduce((sum, item) => sum + [...item.text].length, 0);
+        sentence = {text: output.original_text || '', offset, words: [], endTime: null}; playing.sentences.set(index, sentence);
+      }
+      if (output.original_text) sentence.text = output.original_text;
+      if (output.sentence.words?.length) {
+        let cursor = 0;
+        sentence.words = output.sentence.words.map(word => {
+          const at = sentence.text.indexOf(word.text, cursor);
+          const end = at >= 0 ? at + word.text.length : cursor;
+          cursor = end; return {...word, characterEnd: [...sentence.text.slice(0, end)].length};
+        });
+      }
+      if (output.type === 'sentence-end') sentence.endTime = Math.max(...sentence.words.map(word => word.end_time), playing.offset * 1000);
+    }
+    if (data.type === 'audio' && playing) {
+      const bytes = Uint8Array.from(atob(data.data), value => value.charCodeAt(0));
+      if (bytes.length % 2) throw new Error('可莉的声音断了一下。');
+      const samples = new Float32Array(bytes.length / 2), values = new DataView(bytes.buffer);
+      for (let index = 0; index < samples.length; index++) samples[index] = values.getInt16(index * 2, true) / 32768;
+      playing.pending.push(samples); playing.pendingSamples += samples.length;
+      if (playing.pendingSamples >= 2880) flushPCM(playing);
+    }
+    if (data.type === 'done' || data.type === 'error') {
+      if (playing) { flushPCM(playing); playing.finished = true; }
+      if (data.textOnly || !playing?.spans.length) { stopAudio(); finishReply(view); }
+      if (data.type === 'error') report(data.error); else report('');
+    }
+  }
+  function flushPCM(playing) {
+    if (!playing.pendingSamples) return;
+    const buffer = audioContext.createBuffer(1, playing.pendingSamples, 24000), target = buffer.getChannelData(0); let offset = 0;
+    for (const part of playing.pending) { target.set(part, offset); offset += part.length; }
+    playing.pending = []; playing.pendingSamples = 0;
+    const source = audioContext.createBufferSource(); source.buffer = buffer; source.connect(analyser);
+    const start = Math.max(playing.nextTime, audioContext.currentTime + (playing.nextTime ? .015 : .06));
+    playing.spans.push({time: start, offset: playing.offset, duration: buffer.duration});
+    playing.offset += buffer.duration; playing.nextTime = start + buffer.duration; playing.sources.add(source);
+    source.onended = () => { playing.sources.delete(source); source.disconnect(); };
+    source.start(start);
+    if (!root.classList.contains('cp-playing')) {
+      root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
+      state('可莉有话想说！'); lastTick = 0; animatePlayback();
+    }
   }
   async function playSpeech(message, view, ticket) {
     if (!service?.voice) throw new Error('女声服务还没有连接好，文字聊天可以继续使用。');
