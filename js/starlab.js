@@ -14,6 +14,12 @@
   };
 
   function updateProgress() {
+    document.querySelectorAll('[data-home-track]').forEach(card => {
+      const nodes = JSON.parse(card.dataset.homeNodes || '[]');
+      const count = nodes.filter(slug => progress[slug] === true).length;
+      card.querySelector('[data-home-track-count]').textContent = `${count} / ${nodes.length}`;
+      card.querySelector('[data-home-track-bar]').style.width = (nodes.length ? count / nodes.length * 100 : 0) + '%';
+    });
     document.querySelectorAll('[data-read-node]').forEach(input => {
       input.checked = progress[input.dataset.readNode] === true;
       input.closest('.lab-node').classList.toggle('is-read', input.checked);
@@ -202,12 +208,13 @@
     const stopGradient = experiment ? setupExperiment(experiment) : () => {};
     const stopAI = window.initAILabs ? window.initAILabs() : () => {};
     const stopHome = window.initHomeMotion ? window.initHomeMotion() : () => {};
-    disposeExperiment = () => { stopGradient(); stopAI(); stopHome(); };
+    const stopHomeAI = window.initHomeAI ? window.initHomeAI() : () => {};
+    disposeExperiment = () => { stopGradient(); stopAI(); stopHome(); stopHomeAI(); };
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } });
       }, {threshold: 0.06});
-      document.querySelectorAll('.lab-track-card, .lab-post-card, .lab-project-card, .lab-section-heading').forEach((node,index) => {
+      document.querySelectorAll('.lab-track-card, .home-track-card, .lab-post-card, .lab-project-card, .lab-section-heading').forEach((node,index) => {
         node.classList.add('ai-reveal'); node.style.setProperty('--reveal-delay', (index % 3) * 40 + 'ms'); observer.observe(node);
       });
       const previous = disposeExperiment;

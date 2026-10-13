@@ -333,7 +333,7 @@
       });
       panels.forEach(panel=>{panel.hidden=panel.dataset.experimentPanel!==id;});
       // Tab navigation is independent of the numerical demos. Initialize each
-      // panel only when opened, so one component cannot disable all five tabs.
+      // panel only when opened, so one component cannot disable the other tabs.
       if(initializers[id]&&!initialized.has(id)&&!failed.has(id)) {
         const panel=panels.find(panel=>panel.dataset.experimentPanel===id);
         try {
