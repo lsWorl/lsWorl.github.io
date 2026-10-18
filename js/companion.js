@@ -17,6 +17,9 @@
   const audioCache = new Map();
   let pcmPlayback = null;
   let expression = 'neutral', reactionTimer = null, gestureTimer = null;
+  const articleKey = 'lsworld.klee.articles.v1';
+  let articleVisit = null, articleTimer = null, articleBubble = null, articleBubbleTimer = null;
+  let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
   const node = (tag, className, text) => {
@@ -164,6 +167,7 @@
     await sessionPromise;
   }
   function setOpen(value) {
+    if (value) cancelArticle();
     opened = value; root.querySelector('.cp-panel').hidden = !value;
     if (value && welcomeBubble) welcomeBubble.hidden = true;
     root.querySelector('.cp-launcher').hidden = value;
@@ -254,6 +258,10 @@
     playbackTicket++;
     if (pcmPlayback) { for (const source of pcmPlayback.sources) { try { source.stop(); } catch (_) {} } pcmPlayback = null; }
     if (narration?.welcome && welcomeBubble) { clearTimeout(welcomeTimer); welcomeTimer = setTimeout(() => { welcomeBubble.hidden = true; }, 1200); }
+    if (narration?.article && articleBubble) {
+      articleBubble.querySelector('p').textContent = narration.article.text;
+      clearTimeout(articleBubbleTimer); articleBubbleTimer = setTimeout(() => { articleBubble.hidden = true; }, 3500);
+    }
     finishReply(); narration = null;
     if (audio) { audio.pause(); audio.currentTime = 0; }
     if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
@@ -285,13 +293,19 @@
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
       revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
+    } else if (narration?.article && Number.isFinite(audio.duration) && audio.duration > 0) {
+      const characters = [...narration.article.text];
+      articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
     }
     let rms = 0;
     if (analyser && samples && audioContext?.state === 'running') {
       analyser.getFloatTimeDomainData(samples);
       let energy = 0; for (const value of samples) energy += value * value;
       rms = Math.sqrt(energy / samples.length);
-    } else if (narration?.welcome) rms = config.welcome?.envelope[Math.floor(audio.currentTime / (config.welcome.step || .05))] || 0;
+    } else {
+      const cached = narration?.welcome ? config.welcome : narration?.article;
+      if (cached) rms = cached.envelope?.[Math.floor(audio.currentTime / (cached.step || .05))] || 0;
+    }
     smoothedEnergy = smoothedEnergy * .65 + rms * .35;
     const target = smoothedEnergy < .018 ? 0 : Math.min(sprite().mouthFrames.length - 1, Math.round(smoothedEnergy / .14 * (sprite().mouthFrames.length - 1)));
     if (target !== mouth && time - lastMouthChange >= 80) {
@@ -310,12 +324,12 @@
       if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
-      if (narration && opened && !document.hidden) {
+      if (narration && (opened || narration.welcome || narration.article) && !document.hidden) {
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
     audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) { stopAudio(); state('嘟嘟可也在听。'); } });
-    audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { const greeting = narration?.welcome; stopAudio(); if (!greeting) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
+    audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
     }
     const Context = window.AudioContext || window.webkitAudioContext;
     if (withAnalyser && Context && !audioContext) {
@@ -443,10 +457,97 @@
   function startWelcome() {
     if (!config.welcome?.audio) return;
     try { if (localStorage.getItem(welcomeKey) === 'true') return; } catch (_) {}
-    welcomePending = true; welcomeBubble.hidden = false;
+    welcomedThisPage = true; welcomePending = true; welcomeBubble.hidden = false;
     prepareAudio(); audio.src = new URL(config.welcome.audio, location.origin).href; audio.load();
     document.addEventListener('pointerdown', welcomeGesture); document.addEventListener('pointerup', welcomeGesture); document.addEventListener('keydown', welcomeGesture);
     tryWelcome();
+  }
+  function articlePath() {
+    return location.pathname.replace(/\/index\.html$/, '/').replace(/\/?$/, '/');
+  }
+  function readArticleHistory() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(articleKey) || '{}');
+      if (stored && typeof stored === 'object' && !Array.isArray(stored)) articleHistory = stored;
+    } catch (_) { /* Keep the in-memory cooldown if storage is unavailable. */ }
+    const day = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    if (articleHistory.day !== day) articleHistory = {day, count: 0, paths: [], topics: [], lastAt: Number(articleHistory.lastAt) || 0};
+    if (!Array.isArray(articleHistory.paths)) articleHistory.paths = [];
+    if (!Array.isArray(articleHistory.topics)) articleHistory.topics = [];
+    return articleHistory;
+  }
+  function canApproachArticle(visit) {
+    if (articleVisit !== visit || visit.cancelled || visit.starting || document.hidden || opened || busy || narration || welcomePending || welcomeStarting) return false;
+    if (document.querySelector('input:focus,textarea:focus,[contenteditable=true]:focus') || window.getSelection()?.toString()) return false;
+    return ![...document.querySelectorAll('audio,video')].some(media => !media.paused && !media.ended && !media.muted && media.volume > 0);
+  }
+  function articleAvailable(visit) {
+    const history = readArticleHistory(), policy = config.article;
+    return (Number(history.count) || 0) < policy.dailyLimit
+      && Date.now() - (Number(history.lastAt) || 0) >= policy.cooldownMs
+      && !history.paths?.includes(visit.path) && !history.topics?.includes(visit.topic);
+  }
+  function cancelArticle() {
+    clearTimeout(articleTimer); articleTimer = null;
+    removeArticleUnlock();
+    if (articleVisit) articleVisit.cancelled = true;
+    if (narration?.article || articleVisit?.starting) stopAudio();
+    clearTimeout(articleBubbleTimer); if (articleBubble) articleBubble.hidden = true;
+  }
+  function removeArticleUnlock() {
+    for (const event of ['pointerup', 'touchend', 'keydown']) document.removeEventListener(event, unlockArticleAudio);
+  }
+  function unlockArticleAudio(event) {
+    if (!event.isTrusted || !articleVisit || !canApproachArticle(articleVisit)) return;
+    if (event.type === 'keydown' && (event.ctrlKey || event.altKey || event.metaKey)) return;
+    removeArticleUnlock(); primeAudio();
+  }
+  async function approachArticle(visit, line) {
+    const start = async () => {
+      if (!canApproachArticle(visit) || !articleAvailable(visit) || articlePath() !== visit.path) return;
+      // Reserve once before playback, including text-only autoplay fallback.
+      const history = readArticleHistory();
+      Object.assign(history, {count: (Number(history.count) || 0) + 1, lastAt: Date.now(),
+        paths: [...(Array.isArray(history.paths) ? history.paths : []), visit.path],
+        topics: [...(Array.isArray(history.topics) ? history.topics : []), visit.topic]});
+      try { localStorage.setItem(articleKey, JSON.stringify(history)); } catch (_) {}
+      visit.starting = true; const ticket = playbackTicket;
+      articleBubble.setAttribute('aria-label', line.text);
+      prepareAudio(); audio.src = new URL(line.audio, location.origin).href; applyAudioSettings();
+      audioContext?.resume().catch(() => {});
+      try {
+        await audio.play();
+        if (articleVisit !== visit || visit.cancelled || ticket !== playbackTicket || document.hidden || opened || busy) { audio.pause(); return; }
+        narration = {article: line}; root.classList.add('cp-playing');
+        articleBubble.querySelector('p').textContent = [...line.text][0]; articleBubble.hidden = false;
+        clearTimeout(reactionTimer); setPresence('speaking'); setExpression(line.mood || 'happy'); gesture('nod'); animatePlayback();
+      } catch (error) {
+        if (articleVisit !== visit || visit.cancelled || ticket !== playbackTicket || document.hidden || opened || busy) return;
+        // Browsers may block unsolicited audio. Show the one short line without a later surprise replay.
+        if (error.name === 'NotAllowedError') {
+          articleBubble.querySelector('p').textContent = line.text; articleBubble.hidden = false;
+          setExpression(line.mood || 'happy'); gesture('nod'); settleCharacter();
+          articleBubbleTimer = setTimeout(() => { articleBubble.hidden = true; }, 9000);
+        }
+      } finally { visit.starting = false; }
+    };
+    // Two open tabs share a cooldown; serialize the check and reservation when supported.
+    try { if (navigator.locks) await navigator.locks.request(articleKey, start); else await start(); } catch (_) {}
+  }
+  async function startArticle() {
+    cancelArticle();
+    const policy = config.article;
+    if (!policy?.enabled || welcomedThisPage || document.hidden || opened || !document.querySelector('#post #article-container')) return;
+    const visit = {path: articlePath(), entered: performance.now(), cancelled: false}; articleVisit = visit;
+    if (!articleManifestPromise) articleManifestPromise = fetch(policy.manifest, {cache: 'no-cache'})
+      .then(response => { if (!response.ok) throw new Error('Unavailable article lines'); return response.json(); })
+      .catch(() => { articleManifestPromise = null; return null; });
+    const manifest = await articleManifestPromise;
+    if (!manifest || articleVisit !== visit || visit.cancelled) return;
+    visit.topic = manifest.articles[visit.path]; const line = manifest.lines[visit.topic];
+    if (!line?.audio || !articleAvailable(visit) || Math.random() >= policy.probability) return;
+    for (const event of ['pointerup', 'touchend', 'keydown']) document.addEventListener(event, unlockArticleAudio, {passive: true});
+    articleTimer = setTimeout(() => { articleTimer = null; removeArticleUnlock(); approachArticle(visit, line); }, Math.max(0, policy.delayMs - (performance.now() - visit.entered)));
   }
   function build() {
     root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手'); root.dataset.presence = 'idle';
@@ -507,20 +608,24 @@
       cancelWelcome(); stopAudio(); try { localStorage.setItem(welcomeKey, 'true'); } catch (_) {}
     }));
     welcomeBubble.querySelector('button').setAttribute('aria-label', '停止欢迎语');
-    panel.append(header, intro, messageList, notice, form); root.append(welcomeBubble, launcher, panel); document.body.append(root);
+    articleBubble = node('div', 'cp-article'); articleBubble.hidden = true; articleBubble.setAttribute('role', 'status'); articleBubble.setAttribute('aria-live', 'polite');
+    const dismissArticle = button('×', 'cp-article-close', cancelArticle); dismissArticle.setAttribute('aria-label', '停止搭话');
+    const articleText = node('p'); articleText.setAttribute('aria-hidden', 'true'); articleBubble.append(articleText, dismissArticle);
+    panel.append(header, intro, messageList, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
-    document.addEventListener('keydown', event => { if (event.key === 'Escape' && opened) setOpen(false); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
     const pauseCharacter = () => {
       clearTimeout(reactionTimer); clearTimeout(gestureTimer); clearTimeout(blinkTimer);
       root.dataset.gesture = ''; setPresence(document.hidden ? 'hidden' : 'idle'); setExpression('neutral'); blinkStep = 0; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
     };
-    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAudio(); pauseCharacter(); } else { setPresence('idle'); scheduleBlink(); tryWelcome(); } });
-    document.addEventListener('pjax:send', () => { stopAudio(); pauseCharacter(); });
-    document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); scheduleBlink(); });
-    window.addEventListener('pagehide', () => { stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
-    window.addEventListener('pageshow', () => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelArticle(); stopAudio(); pauseCharacter(); } else { setPresence('idle'); scheduleBlink(); tryWelcome(); } });
+    document.addEventListener('pjax:send', () => { cancelArticle(); stopAudio(); pauseCharacter(); });
+    document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); welcomedThisPage = false; scheduleBlink(); startArticle(); });
+    window.addEventListener('pagehide', () => { cancelArticle(); stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
+    window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
+    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) cancelArticle(); }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
       clearTimeout(blinkTimer); clearTimeout(gestureTimer); blinkStep = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
@@ -528,7 +633,7 @@
       if (!reducedMotion()) scheduleBlink();
     });
     const connect = node('link'); connect.rel = 'preconnect'; connect.href = apiBase; document.head.append(connect);
-    ensureHealth().catch(() => {}); startWelcome();
+    ensureHealth().catch(() => {}); startWelcome(); startArticle();
   }
   async function boot() {
     try {

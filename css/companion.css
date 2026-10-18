@@ -91,9 +91,9 @@
 .cp-options .cp-data-buttons button { text-align: left; padding: 8px 10px; background: transparent; font-size: 12px; }
 .cp-options .cp-data-buttons button:hover { background: #f7eee3; }
 .cp-options .cp-quota { display: block; padding: 7px 10px 2px; border-top: 1px solid var(--cp-line); margin-top: 5px; font-size: 11px; }
-.cp-welcome { position: absolute; right: 0; bottom: calc(100% + 12px); width: 250px; padding: 14px 32px 14px 16px; border: 1px solid var(--cp-line); border-radius: 20px 20px 5px 20px; background: var(--cp-card); box-shadow: var(--cp-shadow); }
-.cp-welcome p { margin: 0; font-size: 13px; line-height: 1.7; }
-.cp-welcome-close { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: transparent; font-size: 16px; color: var(--cp-muted); }
+.cp-welcome, .cp-article { position: absolute; right: 0; bottom: calc(100% + 12px); width: 250px; padding: 14px 32px 14px 16px; border: 1px solid var(--cp-line); border-radius: 20px 20px 5px 20px; background: var(--cp-card); box-shadow: var(--cp-shadow); }
+.cp-welcome p, .cp-article p { margin: 0; font-size: 13px; line-height: 1.7; }
+.cp-welcome-close, .cp-article-close { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: transparent; font-size: 16px; color: var(--cp-muted); }
 [data-theme=dark] .companion { --cp-ink: #f3e8dd; --cp-muted: #c2ac98; --cp-card: #302520; --cp-line: #604538; }
 [data-theme=dark] .cp-intro { background: radial-gradient(ellipse at 20% 80%,#5e4234,transparent 65%); }
 [data-theme=dark] .cp-message, [data-theme=dark] .cp-memory-list li { background: #49392f; }
