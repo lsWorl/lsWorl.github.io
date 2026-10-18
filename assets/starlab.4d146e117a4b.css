@@ -735,6 +735,16 @@ body.lab-homepage #body-wrap { position:relative; z-index:1; }
 .cp-options .cp-data-buttons button { text-align: left; padding: 8px 10px; background: transparent; font-size: 12px; }
 .cp-options .cp-data-buttons button:hover { background: #f7eee3; }
 .cp-options .cp-quota { display: block; padding: 7px 10px 2px; border-top: 1px solid var(--cp-line); margin-top: 5px; font-size: 11px; }
+.cp-selection { display: flex; align-items: center; gap: 8px; padding: 8px 15px; border-top: 1px solid var(--cp-line); color: var(--cp-muted); font-size: 11px; }
+.cp-selection span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-selection button { flex: none; border-radius: 50%; background: transparent; font-size: 18px; }
+.cp-reading-list { flex: 1; min-height: 100px; overflow: auto; padding: 14px 16px; }
+.cp-reading-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.cp-reading-header button, .cp-reading-item button { padding: 5px 8px; border-radius: 9px; background: transparent; font-size: 11px; color: var(--cp-muted); }
+.cp-reading-list p { font-size: 12px; color: var(--cp-muted); }
+.cp-reading-item { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--cp-line); padding: 10px 0; }
+.cp-reading-item a { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 12px; color: var(--cp-ink); }
+.cp-reading-item button { flex: none; }
 .cp-welcome, .cp-article { position: absolute; right: 0; bottom: calc(100% + 12px); width: 250px; padding: 14px 32px 14px 16px; border: 1px solid var(--cp-line); border-radius: 20px 20px 5px 20px; background: var(--cp-card); box-shadow: var(--cp-shadow); }
 .cp-welcome p, .cp-article p { margin: 0; font-size: 13px; line-height: 1.7; }
 .cp-welcome-close, .cp-article-close { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: transparent; font-size: 16px; color: var(--cp-muted); }

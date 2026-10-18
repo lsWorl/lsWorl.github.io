@@ -905,6 +905,8 @@
   const articleKey = 'lsworld.klee.articles.v1';
   let articleVisit = null, articleTimer = null, articleBubble = null, articleBubbleTimer = null;
   let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
+  let selectionBox, readingList, readingSelection = '', readingSelectionPath = '';
+  const completedActions = new Set();
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
   const node = (tag, className, text) => {
@@ -1080,6 +1082,77 @@
     return healthPromise;
   }
   function welcome() { addMessage({role: 'assistant', text: config.greeting}); }
+  function readingContext() {
+    if (!config.reading?.enabled || service?.reading === false || !document.querySelector('#post #article-container')) return null;
+    let anchor = '';
+    try { anchor = decodeURIComponent(location.hash.slice(1)); } catch (_) {}
+    if (!anchor) {
+      for (const heading of document.querySelectorAll('#article-container h1[id],#article-container h2[id],#article-container h3[id],#article-container h4[id]')) {
+        if (heading.getBoundingClientRect().top <= 160) anchor = heading.id;
+      }
+    }
+    return {path: location.pathname, anchor,
+      selection: readingSelectionPath === location.pathname ? readingSelection : ''};
+  }
+  function updateSelection() {
+    if (!selectionBox) return;
+    const text = readingSelectionPath === location.pathname ? readingSelection : '';
+    selectionBox.hidden = !text || !readingList.hidden;
+    selectionBox.querySelector('span').textContent = text ? '一起看这段：' + [...text].slice(0, 40).join('') + ([...text].length > 40 ? '…' : '') : '';
+  }
+  function captureSelection() {
+    const article = document.querySelector('#post #article-container'), selection = window.getSelection();
+    if (!article || !selection?.rangeCount || selection.isCollapsed
+      || !article.contains(selection.anchorNode) || !article.contains(selection.focusNode)) return;
+    readingSelection = [...selection.toString().trim()].slice(0, 800).join('');
+    readingSelectionPath = location.pathname; updateSelection();
+  }
+  function articleHref(value) {
+    try {
+      const url = new URL(value);
+      if (url.origin !== (config.reading?.siteOrigin || location.origin) || !['https:','http:'].includes(url.protocol)) return null;
+      // Keep navigation on the current deployment, including Pages previews.
+      return url.pathname + url.search + url.hash;
+    } catch (_) { return null; }
+  }
+  function applyReadingActions(view) {
+    if (!view?.canAct || !opened || document.hidden || messageList.hidden || !view.item.isConnected || completedActions.has(view.message.id)) return;
+    const action = view.message.actions?.find(action => action.type === 'open_article');
+    const href = action && articleHref(action.url);
+    if (!href) return;
+    const key = 'lsworld.klee.action.' + view.message.id;
+    try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, 'done'); } catch (_) {}
+    completedActions.add(view.message.id); view.canAct = false;
+    location.assign(href);
+  }
+  function completePlayback() {
+    const view = pcmPlayback?.view || narration?.view;
+    stopAudio(); state('嘟嘟可也在听。'); applyReadingActions(view);
+  }
+  function showChat() {
+    readingList.hidden = true; messageList.hidden = false; form.hidden = false; updateSelection(); textarea.focus();
+  }
+  async function showReadLater() {
+    stopAudio(); readingList.replaceChildren(); readingList.hidden = false; messageList.hidden = true; form.hidden = true; updateSelection();
+    root.querySelector('.cp-options').open = false;
+    const header = node('div', 'cp-reading-header');
+    header.append(node('strong', '', '稍后阅读'), button('返回聊天', '', showChat)); readingList.append(header);
+    const loading = node('p', '', '可莉找找小本子…'); readingList.append(loading);
+    try {
+      await ensureSession(); const result = await request('/bookmarks'); loading.remove();
+      if (!result.articles.length) readingList.append(node('p', '', '还没有记下文章呢。看到喜欢的，可以让可莉收藏起来！'));
+      for (const article of result.articles) {
+        const href = articleHref(article.url); if (!href) continue;
+        const row = node('div', 'cp-reading-item'), link = node('a', '', article.title); link.href = href;
+        const remove = button('移除', '', async () => {
+          remove.disabled = true;
+          try { await request('/bookmarks/' + encodeURIComponent(article.id), 'DELETE'); row.remove(); }
+          catch (error) { report(error.message); remove.disabled = false; }
+        });
+        remove.setAttribute('aria-label', '移除收藏：' + article.title); row.append(link, remove); readingList.append(row);
+      }
+    } catch (error) { loading.textContent = error.message; }
+  }
   function addMessage(message, pending = false) {
     const item = node('div', 'cp-message'); item.dataset.role = message.role;
     const paragraph = node('p', '', pending ? '唔…让可莉想一想。' : message.text); item.append(paragraph);
@@ -1097,7 +1170,8 @@
       message.sources.forEach(source => {
         try {
           const url = new URL(source.url); if (!['http:','https:'].includes(url.protocol)) return;
-          const link = node('a', '', '↗ ' + source.title); link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; links.append(link);
+          const label = source.title + (source.heading && source.heading !== '正文' ? ' · ' + source.heading : '');
+          const link = node('a', '', '↗ ' + label); link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; links.append(link);
         } catch (_) {}
       });
       item.append(links);
@@ -1116,6 +1190,7 @@
   async function submit(event) {
     event.preventDefault(); const text = textarea.value.trim(); if (!text || busy) return;
     if (send.disabled) return;
+    captureSelection(); const reading = readingContext();
     cancelWelcome(); busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); const ticket = playbackTicket; state('唔，让可莉想想…');
     clearTimeout(reactionTimer); setPresence('thinking'); setExpression('thinking');
     primeAudio();
@@ -1124,8 +1199,9 @@
       await ensureSession(); addMessage({role: 'user', text}); textarea.value = '';
       view = addMessage({role: 'assistant', text: ''}, true);
       view.mood = expressionFor(text, 'happy');
-      const result = await request('/respond-stream', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true}, true, data => receiveStream(data, view, ticket));
+      const result = await request('/respond-stream', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true, ...(reading ? {reading} : {})}, true, data => receiveStream(data, view, ticket));
       view.message = result; view.characters = [...result.text]; updateLimits(result.limits);
+      readingSelection = ''; updateSelection();
       if (result.demo) report('本地演示：没有调用真实聊天模型。');
       if (!pcmPlayback || ticket !== playbackTicket) {
         finishReply(view); state('嘟嘟可也在听。');
@@ -1173,7 +1249,7 @@
         if (sentence.endTime != null && played * 1000 >= sentence.endTime) count = Math.max(count, sentence.offset + [...sentence.text].length);
       }
       if (count) revealReply(playing.view, count);
-      if (playing.finished && !playing.sources.size && !playing.pending.length) { stopAudio(); state('嘟嘟可也在听。'); return; }
+      if (playing.finished && !playing.sources.size && !playing.pending.length) { completePlayback(); return; }
     } else if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
@@ -1213,7 +1289,7 @@
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
-    audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) { stopAudio(); state('嘟嘟可也在听。'); } });
+    audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) completePlayback(); });
     audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
     }
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -1270,6 +1346,7 @@
       if (playing.pendingSamples >= 2880) flushPCM(playing);
     }
     if (data.type === 'done' || data.type === 'error') {
+      view.canAct = data.type === 'done' && !data.replayed && !data.textOnly;
       if (playing) { flushPCM(playing); playing.finished = true; }
       if (data.textOnly || !playing?.spans.length) { stopAudio(); finishReply(view); }
       if (data.type === 'error') report(data.error); else report('');
@@ -1469,18 +1546,29 @@
     quota = node('span', 'cp-quota');
     messageList = node('div', 'cp-messages'); messageList.dataset.cpView = 'chat'; messageList.setAttribute('role', 'log'); messageList.setAttribute('aria-live', 'polite'); messageList.setAttribute('aria-label', '聊天记录');
     const dataButtons = node('div', 'cp-data-buttons');
+    if (config.reading?.enabled) dataButtons.append(button('稍后阅读', '', showReadLater), button('收藏这篇文章', '', async () => {
+      const reading = readingContext();
+      if (!reading) { report('先打开一篇文章，再一起收藏吧。'); return; }
+      try { await ensureSession(); await request('/bookmarks', 'POST', {reading: {path: reading.path}}); report('好耶，可莉记到稍后阅读里啦！'); }
+      catch (error) { report(error.message); }
+      root.querySelector('.cp-options').open = false;
+    }));
     dataButtons.append(button('导出我的数据', '', async () => {
       try { await ensureSession(); const data = await request('/export'); const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
         const a = node('a'); a.href = url; a.download = 'companion-memory.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
       } catch (error) { report(error.message); }
     }), button('清空对话', '', async () => {
-      if (!window.confirm('清空这段聊天，重新开始吗？')) return;
+      if (!window.confirm('清空聊天、记忆和稍后阅读，重新开始吗？')) return;
       try { await ensureSession(); const result = await request('/reset', 'DELETE'); messageList.replaceChildren(); welcome();
-        audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); stopAudio(); updateLimits(result.limits); report('好耶，我们重新开始吧！');
+        audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); stopAudio(); readingSelection = ''; readingList.replaceChildren(); showChat(); updateLimits(result.limits); report('好耶，我们重新开始吧！');
       } catch (error) { report(error.message); }
     }));
     notice = node('p', 'cp-notice'); notice.hidden = true; notice.setAttribute('role', 'status');
     form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 600; textarea.rows = 2; textarea.placeholder = '想和可莉说什么？'; textarea.setAttribute('aria-label', '聊天消息');
+    readingList = node('section', 'cp-reading-list'); readingList.hidden = true; readingList.setAttribute('aria-label', '稍后阅读');
+    selectionBox = node('div', 'cp-selection'); selectionBox.hidden = true;
+    const clearSelection = button('×', '', () => { readingSelection = ''; updateSelection(); }); clearSelection.setAttribute('aria-label', '取消选中内容');
+    selectionBox.append(node('span'), clearSelection);
     send = node('button', 'cp-primary', '告诉可莉'); send.type = 'submit'; form.append(textarea, send); form.addEventListener('submit', submit);
     textarea.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });
     textarea.addEventListener('input', () => {
@@ -1496,7 +1584,8 @@
     articleBubble = node('div', 'cp-article'); articleBubble.hidden = true; articleBubble.setAttribute('role', 'status'); articleBubble.setAttribute('aria-live', 'polite');
     const dismissArticle = button('×', 'cp-article-close', cancelArticle); dismissArticle.setAttribute('aria-label', '停止搭话');
     const articleText = node('p'); articleText.setAttribute('aria-hidden', 'true'); articleBubble.append(articleText, dismissArticle);
-    panel.append(header, intro, messageList, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
+    panel.append(header, intro, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
+    document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
     const pauseCharacter = () => {
@@ -1506,7 +1595,7 @@
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
     };
     document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelArticle(); stopAudio(); pauseCharacter(); } else { setPresence('idle'); scheduleBlink(); tryWelcome(); } });
-    document.addEventListener('pjax:send', () => { cancelArticle(); stopAudio(); pauseCharacter(); });
+    document.addEventListener('pjax:send', () => { cancelArticle(); stopAudio(); pauseCharacter(); readingSelection = ''; updateSelection(); });
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); welcomedThisPage = false; scheduleBlink(); startArticle(); });
     window.addEventListener('pagehide', () => { cancelArticle(); stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
