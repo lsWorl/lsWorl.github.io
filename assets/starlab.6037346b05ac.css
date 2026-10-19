@@ -738,6 +738,16 @@ body.lab-homepage #body-wrap { position:relative; z-index:1; }
 .cp-selection { display: flex; align-items: center; gap: 8px; padding: 8px 15px; border-top: 1px solid var(--cp-line); color: var(--cp-muted); font-size: 11px; }
 .cp-selection span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cp-selection button { flex: none; border-radius: 50%; background: transparent; font-size: 18px; }
+.cp-study { flex: none; padding: 9px 16px; border-bottom: 1px solid var(--cp-line); background: var(--cp-card); font-size: 11px; }
+.cp-study summary { cursor: pointer; font-weight: 650; }
+.cp-study-article { display: block; margin-top: 7px; color: var(--cp-ink); overflow-wrap: anywhere; }
+.cp-study-time { color: var(--cp-muted); }
+.cp-study-steps { max-height: 110px; overflow: auto; padding-left: 20px; margin: 6px 0; color: var(--cp-muted); }
+.cp-study-steps li { padding: 2px 0; overflow-wrap: anywhere; }
+.cp-study-steps [aria-current=step] { color: var(--cp-ink); font-weight: 650; }
+.cp-study-current { margin: 4px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--cp-muted); }
+.cp-study-controls { display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-study-controls button { border: 1px solid var(--cp-line); border-radius: 12px; padding: 4px 9px; background: transparent; font-size: 11px; }
 .cp-reading-list { flex: 1; min-height: 100px; overflow: auto; padding: 14px 16px; }
 .cp-reading-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
 .cp-reading-header button, .cp-reading-item button { padding: 5px 8px; border-radius: 9px; background: transparent; font-size: 11px; color: var(--cp-muted); }

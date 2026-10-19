@@ -906,6 +906,7 @@
   let articleVisit = null, articleTimer = null, articleBubble = null, articleBubbleTimer = null;
   let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
   let selectionBox, readingList, readingSelection = '', readingSelectionPath = '';
+  let studyBox, currentStudy = null;
   const completedActions = new Set();
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
@@ -1005,6 +1006,7 @@
     if (!send) return;
     const exhausted = currentLimits && (!currentLimits.chatAvailable || !currentLimits.voiceAvailable || Math.min(currentLimits.chatRemaining, currentLimits.voiceRemaining) <= 0);
     send.disabled = busy || !service?.chat || (!service.demo && (!service.voice || exhausted));
+    root?.querySelectorAll('[data-study-prompt]').forEach(button => { button.disabled = send.disabled || service?.study === false; });
     if (exhausted && !busy && !narration) state('可莉要休息一会儿啦。');
   }
   async function request(path, method = 'GET', data, authenticated = true, raw = false) {
@@ -1072,6 +1074,7 @@
       else report('');
       if (result) {
         updateLimits(result.limits);
+        if (Object.hasOwn(result, 'study') && !busy) renderStudy(result.study);
         if (!busy) { messageList.replaceChildren(); if (!result.messages.length) welcome(); result.messages.forEach(message => addMessage(message)); }
       }
     } catch (error) { updateSend(); report(error.message); }
@@ -1130,10 +1133,11 @@
     stopAudio(); state('嘟嘟可也在听。'); applyReadingActions(view);
   }
   function showChat() {
-    readingList.hidden = true; messageList.hidden = false; form.hidden = false; updateSelection(); textarea.focus();
+    readingList.hidden = true; messageList.hidden = false; form.hidden = false; updateSelection(); renderStudy(currentStudy); textarea.focus();
   }
   async function showReadLater() {
     stopAudio(); readingList.replaceChildren(); readingList.hidden = false; messageList.hidden = true; form.hidden = true; updateSelection();
+    if (studyBox) studyBox.hidden = true;
     root.querySelector('.cp-options').open = false;
     const header = node('div', 'cp-reading-header');
     header.append(node('strong', '', '稍后阅读'), button('返回聊天', '', showChat)); readingList.append(header);
@@ -1152,6 +1156,35 @@
         remove.setAttribute('aria-label', '移除收藏：' + article.title); row.append(link, remove); readingList.append(row);
       }
     } catch (error) { loading.textContent = error.message; }
+  }
+  function studyPrompt(text) {
+    if (busy || send.disabled) return;
+    root.querySelector('.cp-options').open = false; showChat(); textarea.value = text; form.requestSubmit();
+  }
+  function renderStudy(value) {
+    if (!studyBox) return;
+    currentStudy = value && Array.isArray(value.steps) && value.steps.length > 0 && value.steps.length <= 5
+      && value.steps[value.currentStep] && articleHref(value.article?.url) ? value : null;
+    const expanded = studyBox.querySelector('details')?.open || false;
+    studyBox.replaceChildren(); studyBox.hidden = !currentStudy || !readingList.hidden;
+    if (!currentStudy) return;
+    const study = currentStudy, details = node('details'), summary = node('summary', '', study.status === 'completed' ? '好耶，这篇学完啦！'
+      : (study.status === 'paused' ? '下次接着学' : '一起学') + ' · 第 ' + (study.currentStep + 1) + '/' + study.steps.length + ' 步');
+    details.open = expanded;
+    const article = node('a', 'cp-study-article', study.article.title); article.href = articleHref(study.article.url);
+    const list = node('ol', 'cp-study-steps');
+    study.steps.forEach((step, index) => {
+      const item = node('li', '', step.title);
+      if (index === study.currentStep) item.setAttribute('aria-current', 'step');
+      list.append(item);
+    });
+    details.append(summary, article, node('span', 'cp-study-time', '约 ' + study.minutes + ' 分钟'), list);
+    const current = node('p', 'cp-study-current', study.steps[study.currentStep].title), controls = node('div', 'cp-study-controls');
+    const action = (label, prompt) => { const control = button(label, '', () => studyPrompt(prompt)); control.dataset.studyPrompt = prompt; return control; };
+    if (study.status === 'paused') controls.append(action('接着学', '继续上次学习'));
+    else if (study.status === 'completed') controls.append(action('再学一遍', '从头学上次那篇文章'));
+    else controls.append(action('换个说法', '没听懂，换个说法'), action('懂了，下一步', '懂了，下一步'));
+    studyBox.append(details, current, controls); updateSend();
   }
   function addMessage(message, pending = false) {
     const item = node('div', 'cp-message'); item.dataset.role = message.role;
@@ -1314,6 +1347,8 @@
     audio.play().then(() => { if (audio.src === silence) audio.pause(); }).catch(() => {});
   }
   function receiveStream(data, view, ticket) {
+    if (data.type === 'study') renderStudy(data.study);
+    if (data.result && Object.hasOwn(data.result, 'study')) renderStudy(data.result.study);
     if (data.type === 'text') {
       view.hasTextStream = true; view.message.text = data.text; view.characters = [...data.text];
       revealReply(view, view.characters.length);
@@ -1558,6 +1593,16 @@
     quota = node('span', 'cp-quota');
     messageList = node('div', 'cp-messages'); messageList.dataset.cpView = 'chat'; messageList.setAttribute('role', 'log'); messageList.setAttribute('aria-live', 'polite'); messageList.setAttribute('aria-label', '聊天记录');
     const dataButtons = node('div', 'cp-data-buttons');
+    if (config.reading?.enabled) {
+      const start = button('一起学这篇', '', () => {
+        if (!readingContext()) { report('先打开想学的文章，再一起读吧！'); return; }
+        studyPrompt('带我用十五分钟一步步学懂这篇文章');
+      });
+      start.dataset.studyPrompt = 'start';
+      const resume = button('接着上次学', '', () => studyPrompt('继续上次学习')); resume.dataset.studyPrompt = 'resume';
+      const pause = button('先休息一下', '', () => studyPrompt('暂停学习')); pause.dataset.studyPrompt = 'pause';
+      dataButtons.append(start, resume, pause);
+    }
     if (config.reading?.enabled) dataButtons.append(button('稍后阅读', '', showReadLater), button('收藏这篇文章', '', async () => {
       const reading = readingContext();
       if (!reading) { report('先打开一篇文章，再一起收藏吧。'); return; }
@@ -1570,14 +1615,15 @@
         const a = node('a'); a.href = url; a.download = 'companion-memory.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
       } catch (error) { report(error.message); }
     }), button('清空对话', '', async () => {
-      if (!window.confirm('清空聊天、记忆和稍后阅读，重新开始吗？')) return;
+      if (!window.confirm('清空聊天、记忆、学习进度和稍后阅读，重新开始吗？')) return;
       try { await ensureSession(); const result = await request('/reset', 'DELETE'); messageList.replaceChildren(); welcome();
-        audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); stopAudio(); readingSelection = ''; readingList.replaceChildren(); showChat(); updateLimits(result.limits); report('好耶，我们重新开始吧！');
+        audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); stopAudio(); readingSelection = ''; readingList.replaceChildren(); renderStudy(null); showChat(); updateLimits(result.limits); report('好耶，我们重新开始吧！');
       } catch (error) { report(error.message); }
     }));
     notice = node('p', 'cp-notice'); notice.hidden = true; notice.setAttribute('role', 'status');
     form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 600; textarea.rows = 2; textarea.placeholder = '想和可莉说什么？'; textarea.setAttribute('aria-label', '聊天消息');
     readingList = node('section', 'cp-reading-list'); readingList.hidden = true; readingList.setAttribute('aria-label', '稍后阅读');
+    studyBox = node('section', 'cp-study'); studyBox.hidden = true; studyBox.setAttribute('aria-label', '一起学习');
     selectionBox = node('div', 'cp-selection'); selectionBox.hidden = true;
     const clearSelection = button('×', '', () => { readingSelection = ''; updateSelection(); }); clearSelection.setAttribute('aria-label', '取消选中内容');
     selectionBox.append(node('span'), clearSelection);
@@ -1596,7 +1642,7 @@
     articleBubble = node('div', 'cp-article'); articleBubble.hidden = true; articleBubble.setAttribute('role', 'status'); articleBubble.setAttribute('aria-live', 'polite');
     const dismissArticle = button('×', 'cp-article-close', cancelArticle); dismissArticle.setAttribute('aria-label', '停止搭话');
     const articleText = node('p'); articleText.setAttribute('aria-hidden', 'true'); articleBubble.append(articleText, dismissArticle);
-    panel.append(header, intro, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
+    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
     document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
