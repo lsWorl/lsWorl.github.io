@@ -22,6 +22,7 @@
   let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
   let selectionBox, readingList, readingSelection = '', readingSelectionPath = '';
   let studyBox, currentStudy = null;
+  let labVoiceRun = null, labManifestPromise = null, labBubble = null;
   const completedActions = new Set();
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
@@ -171,6 +172,7 @@
     await sessionPromise;
   }
   function setOpen(value) {
+    if (value && labVoiceRun) stopAudio();
     if (value) cancelArticle();
     opened = value; root.querySelector('.cp-panel').hidden = !value;
     if (value && welcomeBubble) welcomeBubble.hidden = true;
@@ -244,6 +246,11 @@
     location.assign(href);
   }
   function completePlayback() {
+    if (labVoiceRun && narration?.lab) {
+      if (!audio?.ended) return;
+      const completed = labVoiceRun; labVoiceRun = null;
+      stopAudio(); state('这一部分讲完啦，试试习题吧！'); completed.callbacks.onEnded?.(); return;
+    }
     const view = pcmPlayback?.view || narration?.view;
     stopAudio(); state('嘟嘟可也在听。'); applyReadingActions(view);
   }
@@ -370,6 +377,8 @@
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
   function stopAudio() {
+    const interruptedLab = labVoiceRun; labVoiceRun = null;
+    if (labBubble) labBubble.hidden = true;
     playbackTicket++;
     if (pcmPlayback) { for (const source of pcmPlayback.sources) { try { source.stop(); } catch (_) {} } pcmPlayback = null; }
     if (narration?.welcome && welcomeBubble) { clearTimeout(welcomeTimer); welcomeTimer = setTimeout(() => { welcomeBubble.hidden = true; }, 1200); }
@@ -386,6 +395,34 @@
       setPresence(busy ? 'thinking' : 'idle');
       if (busy) setExpression('thinking'); else { if (expression === 'laugh' || expression === 'wink') setExpression('happy'); settleCharacter(); }
     }
+    interruptedLab?.callbacks.onCancel?.();
+  }
+  function failLabVoice(error) {
+    const failed = labVoiceRun; labVoiceRun = null; stopAudio(); failed?.callbacks.onError?.(error);
+  }
+  async function playLabVoice(id, callbacks) {
+    if (busy) { callbacks.onError?.(new Error('可莉正在回答聊天，请等回答结束后再开始讲解。')); return; }
+    if (opened) setOpen(false);
+    cancelWelcome(); cancelArticle(); stopAudio(); primeAudio();
+    const run = {id, callbacks, owner: callbacks.owner}; labVoiceRun = run;
+    try {
+      if (!/^\w+-\d+$/.test(id)) throw new Error('无法找到这一节的讲解。');
+      if (!labManifestPromise) labManifestPromise = fetch('/lab-narration.json', {cache: 'no-cache'})
+        .then(response => { if (!response.ok) throw new Error('讲解音频暂时无法加载，请重试。'); return response.json(); })
+        .catch(error => { labManifestPromise = null; throw error; });
+      const manifest = await labManifestPromise;
+      if (labVoiceRun !== run) return;
+      const line = manifest.lines[id], [type, position] = id.split('-');
+      if (!line || line.text !== window.LabCurriculum?.[type]?.[Number(position)]?.text || !/^\/audio\/lab\/[a-z0-9-]+\.wav$/.test(line.audio)) throw new Error('这一节的可莉语音尚未准备好，请重试或阅读后答题。');
+      if (document.hidden || !/^\/lab\//.test(location.pathname)) { stopAudio(); return; }
+      audio.src = new URL(line.audio, location.origin).href; applyAudioSettings();
+      narration = {lab: line}; root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
+      labBubble.querySelector('p').textContent = [...line.text][0]; labBubble.setAttribute('aria-label', line.text); labBubble.hidden = false;
+      clearTimeout(reactionTimer); setPresence('speaking'); setExpression('happy'); gesture('nod');
+      await audio.play();
+      if (labVoiceRun !== run) return;
+      callbacks.onStart?.(line); if (!animationFrame) animatePlayback();
+    } catch (error) { if (labVoiceRun === run) failLabVoice(error); }
   }
   function animatePlayback(time = 0) {
     if (document.hidden || (!pcmPlayback && (!audio || audio.paused))) return;
@@ -407,6 +444,10 @@
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
       revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
+    } else if (narration?.lab && Number.isFinite(audio.duration) && audio.duration > 0) {
+      const characters = [...narration.lab.text];
+      const subtitle = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
+      labBubble.querySelector('p').textContent = subtitle; labVoiceRun?.callbacks.onProgress?.(subtitle);
     } else if (narration?.article && Number.isFinite(audio.duration) && audio.duration > 0) {
       const characters = [...narration.article.text];
       articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
@@ -417,7 +458,7 @@
       let energy = 0; for (const value of samples) energy += value * value;
       rms = Math.sqrt(energy / samples.length);
     } else {
-      const cached = narration?.welcome ? config.welcome : narration?.article;
+      const cached = narration?.welcome ? config.welcome : narration?.article || narration?.lab;
       if (cached) rms = cached.envelope?.[Math.floor(audio.currentTime / (cached.step || .05))] || 0;
     }
     smoothedEnergy = smoothedEnergy * .65 + rms * .35;
@@ -439,12 +480,12 @@
       if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
-      if (narration && (opened || narration.welcome || narration.article) && !document.hidden) {
+      if (narration && (opened || narration.welcome || narration.article || narration.lab) && !document.hidden) {
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
     audio.addEventListener('ended', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) completePlayback(); });
-    audio.addEventListener('error', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
+    audio.addEventListener('error', () => { if (labVoiceRun && narration?.lab) { failLabVoice(new Error('这段音频没有加载成功，请重试或阅读后答题。')); return; } if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
     }
     const Context = window.AudioContext || window.webkitAudioContext;
     if (withAnalyser && Context && !audioContext) {
@@ -757,7 +798,11 @@
     articleBubble = node('div', 'cp-article'); articleBubble.hidden = true; articleBubble.setAttribute('role', 'status'); articleBubble.setAttribute('aria-live', 'polite');
     const dismissArticle = button('×', 'cp-article-close', cancelArticle); dismissArticle.setAttribute('aria-label', '停止搭话');
     const articleText = node('p'); articleText.setAttribute('aria-hidden', 'true'); articleBubble.append(articleText, dismissArticle);
-    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
+    labBubble = node('div', 'cp-lab'); labBubble.hidden = true; labBubble.setAttribute('role', 'status');
+    const labText = node('p'); labText.setAttribute('aria-hidden', 'true');
+    const dismissLab = button('×', 'cp-article-close', stopAudio); dismissLab.setAttribute('aria-label', '暂停算法讲解'); labBubble.append(labText, dismissLab);
+    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, labBubble, launcher, panel); document.body.append(root);
+    window.KleeLabVoice = {play: playLabVoice, stop: owner => { if (labVoiceRun?.owner === owner) stopAudio(); }};
     document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
@@ -772,7 +817,7 @@
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); welcomedThisPage = false; scheduleBlink(); startArticle(); });
     window.addEventListener('pagehide', () => { cancelArticle(); stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
-    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) cancelArticle(); }, true);
+    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); if (event.target !== audio && labVoiceRun) stopAudio(); } }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
       clearTimeout(blinkTimer); clearTimeout(gestureTimer); blinkStep = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));

@@ -6,17 +6,34 @@
   else root.LabMath = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  function softmax(logits, temperature = 1, topK = logits.length) {
+  function softmaxTrace(logits, temperature = 1, topK = logits.length) {
     if (!(temperature > 0) || !Number.isFinite(temperature)) throw new Error('Temperature must be positive.');
     const eligible = logits.map((value, index) => ({value,index})).filter(item=>Number.isFinite(item.value))
       .sort((a,b)=>b.value-a.value || a.index-b.index).slice(0, Math.max(1,topK));
     const result = logits.map(()=>0);
-    if (!eligible.length) return result;
-    const max = eligible[0].value;
+    const max = eligible.length ? eligible[0].value : 0;
     const weights = eligible.map(item=>Math.exp((item.value-max)/temperature));
     const total = weights.reduce((a,b)=>a+b,0);
     eligible.forEach((item,index)=>{result[item.index]=weights[index]/total;});
-    return result;
+    return {logits:logits.slice(),temperature,eligible:eligible.map(item=>item.index),max,
+      scaled:logits.map(value=>value/temperature),weights:logits.map((_,i)=>{
+        const index=eligible.findIndex(item=>item.index===i);return index<0?0:weights[index];
+      }),total,probabilities:result};
+  }
+  function softmax(logits, temperature = 1, topK = logits.length) {
+    return softmaxTrace(logits,temperature,topK).probabilities;
+  }
+  function sampleTrace(logits, temperature, topK, draw) {
+    if (!(draw>=0 && draw<1)) throw new Error('Draw must be in [0, 1).');
+    const trace=softmaxTrace(logits,temperature,topK);
+    let cumulative=0,selected=-1;
+    const intervals=trace.probabilities.map((p,i)=>{
+      const start=cumulative;cumulative+=p;
+      if(selected<0 && p>0 && draw<cumulative) selected=i;
+      return {start,end:cumulative};
+    });
+    if(selected<0) selected=trace.probabilities.findLastIndex(p=>p>0);
+    return {...trace,draw,intervals,selected};
   }
   const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
   const cosine = (a,b) => {
@@ -27,6 +44,20 @@
     return queries.map((query,row)=>softmax(keys.map((key,column)=>
       causal && column>row ? -Infinity : dot(query,key)/Math.sqrt(query.length)), temperature));
   }
+  function attentionTrace(query, keys, values, row, causal) {
+    const products=keys.map(key=>query.map((value,i)=>value*key[i]));
+    const scores=products.map(terms=>terms.reduce((a,b)=>a+b,0));
+    const scaled=scores.map(value=>value/Math.sqrt(query.length));
+    const masked=scaled.map((value,i)=>causal&&i>row?-Infinity:value);
+    const probabilities=softmax(masked);
+    const contributions=values.map((value,i)=>value.map(v=>v*probabilities[i]));
+    const output=values[0].map((_,j)=>contributions.reduce((sum,v)=>sum+v[j],0));
+    return {query:query.slice(),keys:keys.map(v=>v.slice()),values:values.map(v=>v.slice()),products,scores,scaled,masked,probabilities,contributions,output};
+  }
+  function gradientTrace(weight,rate) {
+    const gradient=2*weight,change=rate*gradient,next=weight-change;
+    return {weight,rate,loss:weight*weight,gradient,change,next,nextLoss:next*next};
+  }
   const vocabulary = ['模型','微调','显存','量化','检索','文档','注意力','训练','参数','向量','知识','学习率','损失','lora','qlora','rag','transformer'];
   function counts(text) {
     const lower=text.toLowerCase();
@@ -34,12 +65,18 @@
       ? (lower.match(new RegExp('\\b'+term+'\\b','g'))||[]).length
       : lower.split(term).length-1);
   }
-  function retrieve(query, documents, topK = 3) {
+  function retrievalTrace(query, documents, topK = 3) {
     const vectors=documents.map(doc=>counts(doc.title+' '+doc.text));
     const idf=vocabulary.map((_,index)=>Math.log((1+documents.length)/(1+vectors.filter(v=>v[index]>0).length))+1);
-    const q=counts(query).map((value,index)=>value*idf[index]);
-    return documents.map((doc,index)=>({...doc,score:cosine(q,vectors[index].map((value,j)=>value*idf[j]))}))
-      .sort((a,b)=>b.score-a.score || a.id-b.id).filter(doc=>doc.score>0).slice(0,topK);
+    const queryCounts=counts(query),q=queryCounts.map((value,index)=>value*idf[index]);
+    const weighted=vectors.map(v=>v.map((value,j)=>value*idf[j]));
+    const ranked=documents.map((doc,index)=>({...doc,score:cosine(q,weighted[index])}))
+      .sort((a,b)=>b.score-a.score || a.id-b.id);
+    return {vocabulary:vocabulary.slice(),counts:vectors,queryCounts,idf,queryVector:q,vectors:weighted,ranked,
+      found:ranked.filter(doc=>doc.score>0).slice(0,topK)};
+  }
+  function retrieve(query, documents, topK = 3) {
+    return retrievalTrace(query,documents,topK).found;
   }
   function contextFor(documents, budget) {
     let remaining=budget;
@@ -59,10 +96,11 @@
     return {w:Array.from({length:4},()=>[rng()*2-1,rng()*2-1]),b:Array.from({length:4},()=>rng()-.5),v:Array.from({length:4},()=>rng()*2-1),c:0};
   }
   function forward(net,x) {
-    const hidden=net.w.map((weights,j)=>Math.tanh(dot(weights,x)+net.b[j]));
+    const preactivation=net.w.map((weights,j)=>dot(weights,x)+net.b[j]);
+    const hidden=preactivation.map(value=>Math.tanh(value));
     const z=dot(net.v,hidden)+net.c;
     const output=1/(1+Math.exp(-z));
-    return {hidden,output};
+    return {hidden,output,preactivation,z};
   }
   const datasets = {
     xor: [{x:[-1,-1],y:0},{x:[-1,1],y:1},{x:[1,-1],y:1},{x:[1,1],y:0}],
@@ -98,8 +136,324 @@
     }
     return gradients(net,data);
   }
-  return {softmax,dot,cosine,attention,retrieve,contextFor,network,forward,gradients,train,datasets};
+  function networkTrace(net,data,rate,sample=0,neuron=0) {
+    const before=JSON.parse(JSON.stringify(net)),after=JSON.parse(JSON.stringify(net));
+    const {x,y}=data[sample],prediction=forward(before,x),batch=gradients(before,data);
+    const delta=prediction.output-y;
+    const hiddenDelta=prediction.hidden.map((h,j)=>delta*before.v[j]*(1-h*h));
+    const sampleGradient=gradients(before,[data[sample]]).gradient;
+    train(after,data,rate);
+    return {before,after,x:x.slice(),y,prediction,delta,hiddenDelta,sampleGradient,batch,
+      nextLoss:gradients(after,data).loss,neuron,sample,rate};
+  }
+  return {softmax,softmaxTrace,sampleTrace,dot,cosine,attention,attentionTrace,gradientTrace,retrieve,retrievalTrace,contextFor,random,network,forward,gradients,train,networkTrace,datasets};
 });
+
+;
+/* js/lab-curriculum.js */
+/* Fixed lesson speech and section assessments; shared by browser and asset tools. */
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.LabCurriculum=api;})(typeof globalThis!=='undefined'?globalThis:this,()=>{
+  const part=(text,prompt,options,answer,explanation)=>({text,quiz:{prompt,options,answer,explanation}});
+  return {
+    gradient:[
+      part('旅行者，可莉先带你看损失！这里把参数平方，得到当前损失。对照表里的数值，看看这个点离最低点有多远。','本实验的损失 L(w) 如何计算？',['把 w 平方','把 w 乘以学习率','直接取 w'],0,'本实验定义 L(w) = w²，最低点是 w = 0。'),
+      part('现在看切线的斜率，也就是梯度。这个函数的梯度是参数的两倍。梯度为正时，我们向左走，才能沿着负梯度下降。','梯度为正时，梯度下降会让参数往哪边移动？',['向右增大','向左减小','保持不变'],1,'更新公式是 w′ = w − ηg；学习率为正、梯度为正时，参数会减小。'),
+      part('接着，把学习率和梯度相乘，得到更新量。学习率就像步子的大小，可不是越大越好哦！先看看这一脚会迈多远。','参数更新量 Δ 等于什么？',['学习率加梯度','损失除以梯度','学习率乘梯度'],2,'Δ = ηg，它带有符号；更新参数时还要减去这个量。'),
+      part('最后，从旧参数里减去更新量，再计算新损失。对照前后两列，检查损失有没有变小。看懂以后，我们才真正执行更新。','判断这一步有没有降低损失，应当比较什么？',['只看动画走得快不快','比较更新前后的损失','只看参数的正负'],1,'参数可能跨过 0；比较 L′ 和 L 才能确认损失是否降低。')
+    ],
+    sampling:[
+      part('可莉先把每个候选分数除以温度。温度越低，分数之间的差距越明显。看看柱子的变化，概率会更集中还是更平均呢？','降低温度通常会让概率分布怎样变化？',['更集中在高分候选','所有候选概率都相同','自动增加新词'],0,'同一组 logit 除以更小的正温度后，差距扩大，Softmax 更偏向高分候选。'),
+      part('这一步只留下分数最高的几个候选。被移除的词，概率就变成零啦。即使继续抽很多次，也抽不到它们。','被 Top-K 移除的候选还能被采到吗？',['偶尔可以','本次分布中不能','温度高就一定可以'],1,'筛选之后才在保留候选中归一化，被移除的项概率为 0。'),
+      part('现在把分数变成指数权重，再除以权重总和。这样所有概率加起来就是一。减去最大分数，只是为了让计算更稳定。','为什么计算 Softmax 时可以先减去最大分数？',['会增加词汇量','能改变正确答案','提高数值稳定性且不改变概率'],2,'所有指数项同时乘以同一系数，归一化时会抵消，概率保持不变。'),
+      part('每个词占据一段概率区间。随机数落进哪一段，就选中哪个词。注意哦，现在只是预演，点击执行后才会记录这次采样。','随机数应当怎样决定采样结果？',['总是选择分数最高的词','选择随机数落入的累计概率区间','按候选字数选择'],1,'区间左闭右开，长度就是候选概率；边界属于右边的非空区间。')
+    ],
+    attention:[
+      part('旅行者，把查询向量和每个键向量的相同维度相乘，再把结果加起来。可莉把每一项都展开了，这就是一次点积匹配。','Q 与 K 的点积怎样计算？',['只比较第一维','所有维度先求平均','相同维相乘再求和'],2,'点积是对应维度乘积的总和，表格展示了每个乘数与最终分数。'),
+      part('点积分数还要除以维度数的平方根。这里有四个维度，所以除以二。先控制分数尺度，再继续计算权重。','本实验维度为 4，缩放分数时除以多少？',['2','4','16'],0,'缩放因子是 √d，因此 √4 = 2。'),
+      part('接下来戴上因果遮罩！当前位置后面的词都被挡住，不能提前偷看。它们的分数设为负无穷，稍后权重就会变成零。','因果遮罩会挡住哪些位置？',['当前位置之前的全部词','当前位置之后的词','当前位置自己'],1,'因果注意力允许读取自己和过去的位置，屏蔽未来位置。'),
+      part('现在用 Softmax 把分数变成权重。被挡住的位置权重是零，剩下的位置重新分配，总和为一。这些数表示混合比例。','一行注意力权重的总和是多少？',['等于维度数','不固定','1'],2,'Softmax 对未屏蔽的位置归一化；被屏蔽位置占 0，整行仍为 1。'),
+      part('有了权重，还要读取值向量。每个值向量乘以自己的权重，再逐维相加，才得到输出。可莉把每一份贡献都列出来啦！','注意力最终输出怎样得到？',['对 V 向量按注意力权重加权求和','直接把 Q 原样输出','只输出权重最大的数字'],0,'输出 O = AV；注意力权重负责分配比例，V 提供被混合的信息。')
+    ],
+    rag:[
+      part('可莉先找问题里命中的关键词，数一数各出现几次。这里使用固定词表，所以没收录的同义词，也可能一个都匹配不到。','查询没有命中任何示例关键词时，会怎样？',['自动找到语义最相近的文档','得到零向量，无法匹配示例资料','自动调用大模型补全'],1,'本实验使用固定词表而非语义 Embedding；零向量的余弦相似度按 0 处理。'),
+      part('接着给关键词分配权重。出现在越少文档里的词，区分能力通常越强，权重越高。问题和文档都必须使用同一套词表。','在这里，出现在更少文档中的词通常有什么特点？',['IDF 更高','IDF 永远为零','会被完全删除'],0,'IDF = ln((1 + N)/(1 + DF)) + 1，DF 越小，IDF 越高。'),
+      part('现在比较问题和文档向量的方向。余弦相似度越高，排序越靠前。这里只保留分数大于零的前几篇，不能凭空制造证据。','本实验按什么选择检索结果？',['正文越长越优先','只按标题字数','余弦相似度从高到低，且分数大于零'],2,'检索先按相似度降序排序，再保留正分数的 Top-K 篇。'),
+      part('最后把检索到的正文依次放进上下文。字符预算用完就停，后面的文档可能被截断。取回很多篇，也不代表能全部放进去。','Top-K 增大后，正文一定都能完整进入上下文吗？',['一定可以','还取决于字符预算','只取决于标题长度'],1,'Top-K 限制篇数，字符预算限制实际正文长度；它也不等于模型的 token 预算。')
+    ],
+    network:[
+      part('可莉选一个样本，先计算输入乘权重，再加偏置。经过双曲正切激活函数，就得到隐藏神经元的输出。描边标出了正在查看的神经元。','隐藏层在加权求和后，还进行了什么运算？',['除以样本编号','使用 tanh 激活','直接四舍五入'],1,'隐藏层使用 h = tanh(w·x + b)，为网络引入非线性。'),
+      part('隐藏层的结果继续送到输出层，再变成零到一之间的概率。交叉熵检查这个概率和目标标签差多少，注意区分单个样本与平均损失。','输出层的 sigmoid 将输出转换到哪个范围？',['零到一之间','负一到一之间','所有实数'],0,'sigmoid 的输出在 0 与 1 之间，本实验把它解释为类别 1 的预测概率。'),
+      part('接下来把输出误差往回传。先算预测概率减去标签，再沿连接传到隐藏层，乘以激活函数的导数，就能找到权重的梯度。','本实验输出层的误差梯度 δout 是什么？',['标签加预测概率','损失乘学习率','预测概率减标签'],2,'sigmoid 配合二元交叉熵时，对输出 logit 的导数简化为 p − y。'),
+      part('一个样本的梯度还不能代表全部训练数据。可莉把四个样本的梯度相加，再除以四。真正更新时，我们使用这个平均值。','训练按钮使用哪一份梯度更新参数？',['四个样本的平均梯度','只用当前查看样本的梯度','随机把梯度改成零'],0,'本实验使用全批梯度：四个样本的梯度求和后除以 4。'),
+      part('最后，用学习率乘以平均梯度，从旧参数中减掉它。执行时所有权重和偏置都会更新，然后重新计算损失，看看网络有没有进步！','一次真实训练更新会改变哪些参数？',['只改变描边神经元','全部可训练权重和偏置','只改变正在查看的输入'],1,'表格只展开一条权重，但执行时会同时更新网络全部权重和偏置。')
+    ]
+  };
+});
+
+;
+/* js/lab-learning.js */
+/* Teaching views consume the same numerical traces as the experiments. */
+(() => {
+  'use strict';
+  const M=window.LabMath;
+  const n=value=>value===-Infinity?'−∞':Number.isFinite(value)?(Math.abs(value)>1e5?value.toExponential(3):value.toFixed(4)):'—';
+  const vector=values=>'['+values.map(n).join(', ')+']';
+  const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
+  const step=(title,formula,explanation,rows,code,visual)=>({title,formula,explanation,rows,code,visual});
+  const words=['好','冷','热','糟','猫'],tokens=['我','在','学习','AI'];
+  const bar=(labels,values)=>({kind:'bars',labels,values});
+  const lessons={
+    gradient(d) {
+      const t=M.gradientTrace(d.weight,d.rate),rows=[['当前参数','w',n(t.weight)],['当前损失',n(t.weight)+'²',n(t.loss)]];
+      const visual={kind:'gradient',...t};
+      return {title:'跟完一次参数更新',intro:'从当前参数出发，逐项计算下一步。浏览步骤不会更新参数；最后可执行这次更新。',
+        steps:[
+          step('读取参数','L(w) = w²','损失衡量当前位置离最低点有多远。先预测下一步损失会怎样变化。',rows,'loss = w * w',{...visual,phase:0}),
+          step('求梯度','g = dL/dw = 2w','切线斜率是梯度。梯度为正时，沿负梯度方向向左；为负时向右。',[['梯度','2 × '+n(t.weight),n(t.gradient)]],'gradient = 2 * w',{...visual,phase:1}),
+          step('计算更新量','Δ = ηg','学习率控制沿负梯度方向走多远，更新时要减去这个带符号的量。',[['学习率','η',n(t.rate)],['更新量',n(t.rate)+' × '+n(t.gradient),n(t.change)]],'change = rate * gradient',{...visual,phase:2}),
+          step('更新并验证','w′ = w − Δ; L′ = (w′)²','观察连线的终点。跨过最低点后，损失仍可能降低；步子太大则可能升高。',[
+            ['新参数',n(t.weight)+' − ('+n(t.change)+')',n(t.next)],['新损失',n(t.next)+'²',n(t.nextLoss)],['损失变化','L′ − L',n(t.nextLoss-t.loss)]],
+          'next = w - rate * gradient\nnextLoss = next * next',{...visual,phase:3})],
+        question:{prompt:'按当前学习率执行一次更新，损失会怎样？',options:['降低','不变','升高'],answer:Math.abs(t.nextLoss-t.loss)<1e-12?1:t.nextLoss<t.loss?0:2,explanation:`本次损失从 ${n(t.loss)} 变为 ${n(t.nextLoss)}。判断依据是实际的新旧损失。`},
+        challenge:'调整初始参数为非零值，找到让参数一步到达 0 的学习率，并执行一次更新。',
+        check:{ok:d.iteration===1&&d.initial!==0&&Math.abs(d.weight)<1e-10,text:d.iteration===1&&d.initial!==0&&Math.abs(d.weight)<1e-10?'完成！η = 0.5 时，w′ = (1 − 2η)w = 0。':'先重置到非零初始参数，再调整学习率；目标是恰好更新一步后到达 0。'},commit:'执行这次更新'};
+    },
+    sampling(d) {
+      const t=M.sampleTrace(d.logits,d.temperature,d.topK,d.draw);
+      const intervals={kind:'intervals',...t};
+      return {title:'看清一个词如何被采到',intro:'这里预演下一次采样。固定种子和参数后，随机数序列可以复现；浏览步骤不会消耗随机数。',steps:[
+        step('缩放分数','sᵢ = logitᵢ / T','温度缩放候选分数。低温放大分数间的差距。',words.map((w,i)=>[w,n(d.logits[i])+' / '+n(d.temperature),n(t.scaled[i])]),'scaled = logits.map(value => value / temperature)',bar(words,t.scaled)),
+        step('筛选候选','保留分数最高的 K 项','被 Top-K 移除的词概率为 0。并列时按原候选顺序选择，保证可复现。',words.map((w,i)=>[w,'Top-'+d.topK,t.eligible.includes(i)?'保留':'移除']),'eligible = sortDescending(logits).slice(0, topK)',bar(words,t.probabilities)),
+        step('归一化概率','pᵢ = exp((logitᵢ − max) / T) / Σ exp','减去最大分数可以避免指数溢出，归一化后的概率不变。',words.map((w,i)=>[w,'指数权重 '+n(t.weights[i]),n(t.probabilities[i])]),'weight = exp((logit - max) / temperature)\np = weight / total',bar(words,t.probabilities)),
+        step('用随机数选词','取 r 所落入的累计概率区间','区间左闭右开。只有点击执行才会记录本次采样，并准备下一个随机数。',words.map((w,i)=>[w,`[${n(t.intervals[i].start)}, ${n(t.intervals[i].end)})`,t.selected===i?'← r = '+n(t.draw):'']),
+          'r = random()\nselected = firstIndex(cumulativeProbability > r)',intervals)],
+        question:{prompt:'Top-K = 1 时，多次采样能得到几个不同候选词？',options:['最多一个','仍可得到所有词'],answer:0,explanation:'只保留一个候选时，它的概率为 1；温度和随机数都不会让已移除的词重新出现。'},
+        challenge:'把 Top-K 调到 1，再采样一次，验证只有一个候选的概率非零。',check:{ok:d.topK===1&&d.total>0,text:d.topK===1&&d.total>0?'完成！保留的候选概率为 1，其他候选为 0。':'调整 Top-K 后统计会重置，接着点击“采样一次”或执行预演。'},commit:'执行这次采样'};
+    },
+    attention(d) {
+      const t=M.attentionTrace(d.queries[d.selected],d.keys,d.values,d.selected,d.causal);
+      return {title:'从 Q / K 一直算到输出',intro:'Q 决定寻找什么，K 用于匹配，V 提供被加权的信息。这里使用手工向量演示完整计算。',steps:[
+        step('逐项乘加','scoreⱼ = Q · Kⱼ','当前 Q = '+vector(t.query)+'。同一维先相乘，再把各维结果加起来。选择其他查询词会重新计算本行。',tokens.map((w,i)=>[w,t.query.map((q,j)=>n(q)+' × '+n(t.keys[i][j])).join(' + '),n(t.scores[i])]),'score = query.reduce((sum, q, i) => sum + q * key[i], 0)',bar(tokens,t.scores)),
+        step('缩放分数','sⱼ = scoreⱼ / √d; d = 4','这里除以 √4 = 2，以控制点积随维度增大带来的尺度变化。',tokens.map((w,i)=>[w,n(t.scores[i])+' / 2',n(t.scaled[i])]),'scaled = score / Math.sqrt(query.length)',bar(tokens,t.scaled)),
+        step('应用遮罩','未来位置 → −∞','因果遮罩禁止当前词读取未来位置；−∞ 在 Softmax 后对应概率 0。',tokens.map((w,i)=>[w,'位置 '+(i+1),n(t.masked[i])]),'masked = causal && column > row ? -Infinity : scaled',bar(tokens,t.masked.map(v=>Number.isFinite(v)?v:0))),
+        step('得到权重','A = softmax(maskedScores)','未屏蔽位置之间重新归一化。注意力权重表示这次运算的混合比例。',tokens.map((w,i)=>[w,n(t.masked[i]),n(t.probabilities[i])]),'attention = softmax(maskedScores)',bar(tokens,t.probabilities)),
+        step('加权读取 V','output = Σ Aⱼ Vⱼ','权重乘以每个 V，再逐维相加，得到输出向量。V 是独立的示例向量，权重本身还不是输出。',[
+          ...tokens.map((w,i)=>[w,n(t.probabilities[i])+' × '+vector(t.values[i]),vector(t.contributions[i])]),['输出','逐维求和',vector(t.output)]],
+          'output = values[0].map((_, j) =>\n  values.reduce((sum, v, i) => sum + attention[i] * v[j], 0))',bar(['输出维度 1','输出维度 2'],t.output))],
+        question:{prompt:'打开因果遮罩，第一个词能够读取哪些位置？',options:['只能读取自己','可以读取全部词'],answer:0,explanation:'第一行只保留第一个位置，Softmax 后权重为 [1, 0, 0, 0]，输出等于第一个 V。'},
+        challenge:'选择“我”并开启因果遮罩，验证它的输出等于自身 V。',check:{ok:d.selected===0&&d.causal,text:d.selected===0&&d.causal?'完成！第一个词权重为 1，输出等于 V₁ = '+vector(d.values[0])+'。':'用上方查询词按钮选择“我”，并勾选因果遮罩。'}};
+    },
+    rag(d) {
+      const t=M.retrievalTrace(d.query,d.documents,d.topK),context=M.contextFor(t.found,d.budget);
+      const active=t.vocabulary.map((term,i)=>({term,i})).filter(({i})=>t.queryCounts[i]>0);
+      const docRows=d.documents.map((doc,i)=>[doc.title,
+        `点积 ${n(M.dot(t.queryVector,t.vectors[i]))} / (${n(Math.sqrt(M.dot(t.queryVector,t.queryVector)))} × ${n(Math.sqrt(M.dot(t.vectors[i],t.vectors[i])))})\n文档向量 ${vector(t.vectors[i])}`,
+        n(M.cosine(t.queryVector,t.vectors[i]))]);
+      return {title:'追踪证据如何进入上下文',intro:'固定关键词 TF-IDF 演示。没有调用 Embedding 模型或生成模型；未收录的同义词可能无法匹配。',steps:[
+        step('识别关键词','TF = 关键词出现次数','查询和文档使用同一词表。中文按子串计数，英文按完整词匹配；空查询或无命中会得到零向量。',active.length?active.map(({term,i})=>[term,'查询词频',String(t.queryCounts[i])]):[['无命中','查询为零向量','相似度全部为 0']],
+          'queryCounts = counts(query)',bar(active.map(v=>v.term),active.map(v=>t.queryCounts[v.i]))),
+        step('构造 TF-IDF','IDF = ln((1 + N)/(1 + DF)) + 1','较少文档包含的关键词有更高 IDF。文档向量同时统计标题与正文，所有向量共用这套词表顺序。',active.length?active.map(({term,i})=>[term,'TF '+t.queryCounts[i]+' × IDF '+n(t.idf[i]),n(t.queryVector[i])]):[['无关键词','没有非零向量分量','0']],
+          'idf = log((1 + documentCount) / (1 + documentFrequency)) + 1\nvector = termCounts.map((tf, i) => tf * idf[i])',bar(active.map(v=>v.term),active.map(v=>t.queryVector[v.i]))),
+        step('相似度与排序','cos(q, d) = (q · d) / (‖q‖ ‖d‖)','下表向量维度依次为：'+t.vocabulary.join('、')+'。只保留相似度大于 0 的前 K 篇。',docRows,
+          'score = dot(query, doc) / (norm(query) * norm(doc))\nfound = ranked.filter(doc => doc.score > 0).slice(0, topK)',bar(t.ranked.map(v=>v.title),t.ranked.map(v=>v.score))),
+        step('按预算组装','依次取正文，直到字符预算耗尽','预算只统计正文的 Unicode 字符，不含标题、来源标记与提示词，也不等于模型 token 数。',t.ranked.map(doc=>{
+          const chosen=t.found.some(v=>v.id===doc.id),part=context.find(v=>v.id===doc.id);
+          return [doc.title,'相似度 '+n(doc.score),part?`${Array.from(part.excerpt).length} 字符${part.truncated?' · 已截断':''}`:chosen?'已检索 · 预算不足':doc.score>0?'未进入 Top-K':'关键词无交集'];
+        }),'context = contextFor(found, characterBudget)',bar(context.map(v=>v.title),context.map(v=>Array.from(v.excerpt).length)))],
+        question:{prompt:'把 Top-K 调大后，所有检索到的正文一定完整进入上下文吗？',options:['不一定，还受预算限制','一定会完整进入'],answer:0,explanation:'Top-K 控制检索篇数，字符预算控制实际放入的正文长度，后面的文档可能被截断或完全放不下。'},
+        challenge:'保留有匹配的查询，将预算调到 80 字符以内，让至少一篇文档发生截断。',check:{ok:d.budget<=80&&context.some(v=>v.truncated),text:d.budget<=80&&context.some(v=>v.truncated)?'完成！检索结果仍存在，但正文因预算不足被截断。':'使用“低显存微调”等示例问题，缩小正文预算，并查看最后一步的入选原因。'}};
+    },
+    network(d) {
+      const t=M.networkTrace(d.net,M.datasets[d.dataset],d.rate,d.sample,d.neuron),j=d.neuron;
+      const h=t.prediction.hidden[j],z=t.prediction.preactivation[j];
+      const visual={kind:'network',trace:t};
+      return {title:'拆开一次真实训练更新',intro:'选中样本用于展开计算；实际更新使用四个样本的平均梯度。切换样本或神经元不会训练网络。',steps:[
+        step('输入与隐藏层','zⱼ = wⱼ · x + bⱼ; hⱼ = tanh(zⱼ)','连线表示权重，节点显示激活值。当前展开第 '+(j+1)+' 个隐藏神经元。',[
+          ['样本',vector(t.x),'目标 '+t.y],['加权求和',`${n(t.before.w[j][0])} × ${t.x[0]} + ${n(t.before.w[j][1])} × ${t.x[1]} + ${n(t.before.b[j])}`,n(z)],['隐藏激活','tanh('+n(z)+')',n(h)]],
+          'z = dot(weights, x) + bias\nhidden = Math.tanh(z)',visual),
+        step('输出与损失','p = sigmoid(v · h + c)','sigmoid 把输出压到 0 到 1。损失衡量预测概率与标签的差异，下表同时给出样本损失和全批损失。',[
+          ['输出 logit','Σ vⱼhⱼ + c',n(t.prediction.z)],['预测概率','sigmoid(z)',n(t.prediction.output)],['样本损失','−y ln(p) − (1−y) ln(1−p)',n(M.gradients(t.before,[M.datasets[d.dataset][d.sample]]).loss)],['四样本平均损失','mean(loss)',n(t.batch.loss)]],
+          'p = 1 / (1 + Math.exp(-z))\nloss = -y * Math.log(p) - (1-y) * Math.log(1-p)',visual),
+        step('反向传播','δout = p − y; δⱼ = δout vⱼ (1 − hⱼ²)','先由输出误差回传到隐藏层，再乘以输入，得到选中样本对权重的梯度。',[
+          ['输出梯度','p − y',n(t.delta)],['隐藏梯度',`δout × v${j+1} × (1 − h${j+1}²)`,n(t.hiddenDelta[j])],['样本 ∂L/∂wⱼ₁','δⱼ × x₁',n(t.sampleGradient.w[j][0])]],
+          'delta = p - y\nhiddenDelta = delta * v[j] * (1 - hidden[j] ** 2)\nsampleGradient = hiddenDelta * x[0]',visual),
+        step('汇总批梯度','g = (g₁ + g₂ + g₃ + g₄) / 4','训练按钮使用全批梯度。选中样本的梯度与平均梯度可能方向不同，不能用一个样本替代整个批次。',[
+          ...M.datasets[d.dataset].map((sample,i)=>['样本 '+(i+1),vector(sample.x),n(M.gradients(t.before,[sample]).gradient.w[j][0])]),['平均梯度','四项求和 / 4',n(t.batch.gradient.w[j][0])]],
+          'gradient = mean(samples.map(sample => gradients(net, [sample])))',visual),
+        step('更新全部参数','θ′ = θ − ηg','这里只展开一条权重，执行时会同时更新全部权重和偏置。新损失由更新后的网络重新计算。',[
+          ['原权重',`w${j+1},1`,n(t.before.w[j][0])],['更新量',n(d.rate)+' × '+n(t.batch.gradient.w[j][0]),n(d.rate*t.batch.gradient.w[j][0])],['新权重','原权重 − 更新量',n(t.after.w[j][0])],['更新后平均损失','重新前向计算',n(t.nextLoss)]],
+          'weight -= rate * batchGradient\nnextLoss = gradients(updatedNet, data).loss',{...visual,after:true})],
+        question:{prompt:'仅切换“查看样本”，网络的参数会变化吗？',options:['不会，只改变展开对象','会，立刻用该样本训练'],answer:0,explanation:'查看样本和训练是独立操作。只有训练按钮或“执行一次更新”才修改参数。'},
+        challenge:'在 XOR 数据上训练，让四样本平均交叉熵低于 0.30，观察隐藏层与分类边界。',check:{ok:d.dataset==='xor'&&t.batch.loss<.3,text:d.dataset==='xor'&&t.batch.loss<.3?'完成！损失已低于 0.30。这里仅有四个训练点，还不能说明泛化能力。':'选择 XOR，连续训练或分批训练，观察平均损失是否降到 0.30 以下。'},commit:'执行一次更新'};
+    }
+  };
+
+  function drawVisual(host,visual) {
+    host.replaceChildren();
+    if(!visual)return;
+    const NS='http://www.w3.org/2000/svg';
+    const svg=(tag,attrs,text)=>{const el=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));if(text!==undefined)el.textContent=text;return el;};
+    if(visual.kind==='bars') {
+      const max=Math.max(1e-10,...visual.values.map(Math.abs));
+      visual.labels.forEach((label,i)=>{
+        const row=node('div','lesson-bar-row'),track=node('span','lesson-bar-track'),fill=node('span','lesson-bar-fill');
+        fill.style.width=Math.abs(visual.values[i])/max*100+'%';if(visual.values[i]<0)fill.classList.add('is-negative');track.append(fill);
+        row.append(node('span','',label),track,node('code','',n(visual.values[i])));host.append(row);
+      });
+      if(!visual.labels.length)host.append(node('p','','当前没有非零分量。'));
+      host.append(node('small','','条长表示数值的绝对大小，橙色表示负值；精确数值见右侧。'));return;
+    }
+    const stacked=visual.kind==='network'&&window.matchMedia('(max-width:600px)').matches;
+    const canvas=svg('svg',{viewBox:visual.kind==='network'?(stacked?'0 0 340 430':'0 0 560 280'):'0 0 560 240',role:'img','aria-label':visual.kind==='gradient'?'损失曲线、当前参数与更新方向':visual.kind==='network'?'2 到 4 到 1 网络，连线表示权重，节点表示激活值':'累计概率区间与随机数落点'});
+    if(visual.kind==='gradient') {
+      const domain=Math.max(4,Math.abs(visual.weight)*1.25,Math.abs(visual.next)*1.25),x=w=>35+(w+domain)/(2*domain)*490,y=l=>205-l/(domain*domain)*170;
+      canvas.append(svg('path',{d:'M35 205H525',class:'lesson-axis'}));
+      canvas.append(svg('path',{d:Array.from({length:101},(_,i)=>{const w=-domain+i/100*domain*2;return `${i?'L':'M'}${x(w)},${y(w*w)}`;}).join(' '),class:'lesson-curve'}));
+      canvas.append(svg('circle',{cx:x(visual.weight),cy:y(visual.loss),r:7,class:'lesson-dot'}));
+      canvas.append(svg('text',{x:35,y:20},'L(w) = w² · 紫点为当前参数'));
+      if(visual.phase===1){const dx=domain*.2,w=visual.weight;canvas.append(svg('line',{x1:x(w-dx),y1:y(visual.loss-visual.gradient*dx),x2:x(w+dx),y2:y(visual.loss+visual.gradient*dx),class:'lesson-tangent'}));}
+      if(visual.phase>=2){canvas.append(svg('line',{x1:x(visual.weight),y1:y(visual.loss),x2:x(visual.next),y2:y(visual.nextLoss),class:'lesson-tangent'}));canvas.append(svg('circle',{cx:x(visual.next),cy:y(visual.nextLoss),r:7,class:'lesson-next'}));}
+      canvas.append(svg('text',{x:35,y:232},'当前 w = '+n(visual.weight)+(visual.phase>=2?' → 下一步 w = '+n(visual.next):'')));
+    } else if(visual.kind==='intervals') {
+      const colors=['#7569af','#6a9bbd','#669d85','#c48c60','#ad769d'];
+      visual.probabilities.forEach((p,i)=>{if(p>0){canvas.append(svg('rect',{x:30+visual.intervals[i].start*500,y:60,width:p*500,height:55,fill:colors[i]}));canvas.append(svg('text',{x:30+(visual.intervals[i].start+p/2)*500,y:145,'text-anchor':'middle'},words[i]));}});
+      const x=30+visual.draw*500;canvas.append(svg('line',{x1:x,y1:35,x2:x,y2:122,class:'lesson-tangent'}));
+      canvas.append(svg('text',{x:30,y:190},`r = ${n(visual.draw)} → ${words[visual.selected]}`));canvas.append(svg('text',{x:30,y:220},'0                                       累计概率                                       1'));
+    } else {
+      const t=visual.trace,net=visual.after?t.after:t.before,p=M.forward(net,t.x);
+      const input=i=>stacked?[105+i*130,55]:[65,90+i*100],hidden=j=>stacked?[45+j*83,205]:[270,40+j*65],output=stacked?[170,355]:[495,140];
+      for(let i=0;i<2;i++)for(let j=0;j<4;j++){const [x1,y1]=input(i),[x2,y2]=hidden(j);canvas.append(svg('line',{x1,y1,x2,y2,class:'lesson-edge','stroke-width':1+Math.min(4,Math.abs(net.w[j][i])),stroke:net.w[j][i]<0?'#c48c60':'#817bba'}));}
+      for(let j=0;j<4;j++){const [x1,y1]=hidden(j),[x2,y2]=output;canvas.append(svg('line',{x1,y1,x2,y2,class:'lesson-edge','stroke-width':1+Math.min(4,Math.abs(net.v[j])),stroke:net.v[j]<0?'#c48c60':'#817bba'}));}
+      const point=(x,y,text,selected=false)=>{canvas.append(svg('circle',{cx:x,cy:y,r:27,class:selected?'lesson-node is-selected':'lesson-node'}));canvas.append(svg('text',{x,y:y+5,'text-anchor':'middle'},text));};
+      t.x.forEach((v,i)=>point(...input(i),String(v)));p.hidden.forEach((v,j)=>point(...hidden(j),v.toFixed(2),j===t.neuron));point(...output,p.output.toFixed(2));
+      if(stacked){canvas.append(svg('text',{x:15,y:110},'输入 x'));canvas.append(svg('text',{x:15,y:260},'隐藏层 tanh · 描边表示选中神经元'));canvas.append(svg('text',{x:15,y:410},visual.after?'下次更新后的预测预览':'当前预测 · sigmoid 输出'));}
+      else canvas.append(svg('text',{x:20,y:275},'输入                         隐藏层 tanh                          '+(visual.after?'下次更新预览':'当前输出')));
+    }
+    host.append(canvas);
+  }
+
+  const controllers=new WeakMap();
+  function mount(root,type,commit,pause) {
+    if(controllers.has(root))return controllers.get(root);
+    const heading=root.querySelector('.lab-experiment-heading');
+    const mode=node('div','lab-learning-mode'),explore=node('button','ai-preset','自由探索'),learn=node('button','ai-preset','分步学习');
+    mode.setAttribute('role','group');mode.setAttribute('aria-label','实验模式');
+    [explore,learn].forEach(b=>{b.type='button';mode.append(b);});explore.setAttribute('aria-pressed','true');learn.setAttribute('aria-pressed','false');
+    const box=node('section','lab-lesson');box.hidden=true;box.setAttribute('aria-label','算法分步学习');
+    const title=node('h3'),intro=node('p','lesson-intro'),steps=node('ol','lesson-steps'),content=node('div','lesson-content'),visual=node('div','lesson-visual');
+    const detail=node('div','lesson-detail'),stepTitle=node('h4'),formula=node('p','lesson-formula'),explanation=node('p'),tableWrap=node('div','lesson-table-wrap'),table=node('table','lesson-table'),codeDetails=node('details','lesson-code'),code=node('code');
+    const thead=node('thead'),tr=node('tr');['对象','计算 / 输入','结果'].forEach(text=>{const th=node('th','',text);th.scope='col';tr.append(th);});thead.append(tr);const tbody=node('tbody');table.append(thead,tbody);tableWrap.append(table);
+    const pre=node('pre');pre.append(code);codeDetails.append(node('summary','','对应计算代码'),pre);
+    detail.append(stepTitle,formula,explanation,tableWrap,codeDetails);content.append(visual,detail);
+    const nav=node('div','lesson-nav'),prev=node('button','ai-preset','上一步'),next=node('button','ai-preset','下一步'),play=node('button','ai-preset','可莉语音讲解'),restart=node('button','ai-preset','从头查看'),apply=node('button','lab-button lab-button-primary');
+    [prev,next,play,restart,apply].forEach(b=>{b.type='button';nav.append(b);});
+    const status=node('p','lesson-position');status.setAttribute('role','status');
+    const question=node('details','lesson-question'),questionTitle=node('summary','','先预测，再查看计算'),questionPrompt=node('p'),options=node('div','lesson-options'),answer=node('p','lesson-feedback');answer.setAttribute('role','status');question.append(questionTitle,questionPrompt,options,answer);
+    const speechBox=node('div','lesson-speech'),speechState=node('strong'),transcript=node('p','lesson-transcript'),readInstead=node('button','ai-preset','阅读后答题');
+    speechBox.hidden=true;readInstead.hidden=true;readInstead.type='button';speechState.setAttribute('role','status');transcript.setAttribute('aria-live','off');speechBox.append(node('span','lesson-speaker','✦ 可莉领学'),speechState,transcript,readInstead);
+    const quiz=node('dialog','lesson-quiz'),quizTitle=node('h3'),quizPrompt=node('p','lesson-quiz-prompt'),quizOptions=node('div','lesson-quiz-options'),quizFeedback=node('div','lesson-quiz-feedback'),quizNav=node('div','lesson-quiz-nav');
+    quizTitle.id='lesson-quiz-title-'+type;quiz.setAttribute('aria-labelledby',quizTitle.id);quizFeedback.setAttribute('role','status');
+    const quizPause=node('button','ai-preset','先暂停'),quizReplay=node('button','ai-preset','重听本节'),quizContinue=node('button','lab-button lab-button-primary','答对后继续');
+    [quizPause,quizReplay,quizContinue].forEach(b=>{b.type='button';quizNav.append(b);});quiz.append(node('span','lesson-speaker','可莉的小检查'),quizTitle,quizPrompt,quizOptions,quizFeedback,quizNav);
+    const challenge=node('div','lesson-challenge'),task=node('p'),check=node('button','ai-preset','检查目标'),feedback=node('div','lesson-feedback lesson-challenge-feedback');check.type='button';feedback.setAttribute('role','status');feedback.tabIndex=-1;challenge.append(node('strong','','动手挑战'),task,check,feedback);
+    box.append(title,intro,speechBox,question,steps,content,status,nav,challenge,quiz);heading.after(mode,box);
+    let model=null,index=0,signature='',revision=0,session=null,voiceSerial=0,quizPassed=false;
+    const curriculum=window.LabCurriculum?.[type]||[];
+    const closeQuiz=()=>{if(quiz.open)quiz.close();};
+    function playbackUI() {
+      if(!model)return;
+      const running=session&&['loading','speaking'].includes(session.phase);
+      play.textContent=running?'暂停可莉讲解':session&&session.phase!=='complete'?'继续可莉讲解':'可莉语音讲解';
+      speechBox.hidden=!session;readInstead.hidden=session?.phase!=='error';question.hidden=Boolean(session);
+      steps.querySelectorAll('button').forEach((b,i)=>{b.disabled=Boolean(session&&session.phase!=='complete'&&i>session.unlocked);});
+      prev.disabled=index===0;next.disabled=index===model.steps.length-1||Boolean(session&&session.phase!=='complete'&&index+1>session.unlocked);
+      apply.disabled=model.canCommit===false||Boolean(session&&session.phase!=='complete');
+      root.dataset.lessonPhase=session?.phase||'manual';
+    }
+    const stop=()=>{
+      voiceSerial++;window.KleeLabVoice?.stop(root);closeQuiz();
+      if(session&&session.phase!=='complete'){session.phase='paused';speechState.textContent='已暂停，继续后重听当前部分；答题通过才会前进。';}
+      playbackUI();
+    };
+    const freeze=()=>{if(pause)pause();stop();};
+    function render() {
+      if(!model)return;
+      const current=model.steps[index];
+      const focusedStep=Array.from(steps.querySelectorAll('button')).indexOf(document.activeElement);
+      steps.replaceChildren();model.steps.forEach((s,i)=>{const li=node('li'),b=node('button','',`${i+1}. ${s.title}`);b.type='button';if(i===index)b.setAttribute('aria-current','step');b.addEventListener('click',()=>{freeze();index=i;render();});li.append(b);steps.append(li);});
+      if(focusedStep>=0)steps.querySelectorAll('button')[focusedStep]?.focus({preventScroll:true});
+      stepTitle.textContent=current.title;formula.textContent=current.formula;explanation.textContent=current.explanation;code.textContent=current.code;
+      tbody.replaceChildren();current.rows.forEach(row=>{const tr=node('tr');row.forEach((value,i)=>{const cell=node(i?'td':'th','',String(value));if(i===0)cell.scope='row';tr.append(cell);});tbody.append(tr);});drawVisual(visual,current.visual);
+      status.textContent=`第 ${index+1} / ${model.steps.length} 步 · 下方参数改变时，从第一步重新计算。`;
+      apply.hidden=!model.commit||index!==model.steps.length-1;apply.textContent=model.commit||'';
+      playbackUI();
+      root.dataset.lessonStep=String(index);root.dataset.lessonRevision=String(revision);
+    }
+    const setMode=learning=>{freeze();box.hidden=!learning;root.classList.toggle('is-learning',learning);explore.setAttribute('aria-pressed',String(!learning));learn.setAttribute('aria-pressed',String(learning));render();};
+    explore.addEventListener('click',()=>setMode(false));learn.addEventListener('click',()=>setMode(true));
+    prev.addEventListener('click',()=>{freeze();index=Math.max(0,index-1);render();});next.addEventListener('click',()=>{if(next.disabled)return;freeze();index=Math.min(model.steps.length-1,index+1);render();});restart.addEventListener('click',()=>{freeze();session=null;index=0;render();});
+    function showQuiz() {
+      if(!session||document.hidden||box.hidden||root.hidden){stop();return;}
+      const assessment=curriculum[index]?.quiz;if(!assessment)return;
+      session.phase='quiz';quizPassed=false;quizTitle.textContent=`第 ${index+1} 部分 · ${model.steps[index].title}`;
+      quizPrompt.textContent=assessment.prompt;quizOptions.replaceChildren();quizFeedback.replaceChildren();delete quizFeedback.dataset.correct;
+      quizContinue.disabled=true;quizContinue.textContent='答对后继续';
+      assessment.options.forEach((text,i)=>{
+        const b=node('button','lesson-quiz-option',text);b.type='button';b.setAttribute('aria-pressed','false');
+        b.addEventListener('click',()=>{
+          if(!session||session.phase!=='quiz'||quizPassed)return;
+          quizOptions.querySelectorAll('button').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));
+          const correct=i===assessment.answer;quizFeedback.dataset.correct=String(correct);
+          quizFeedback.replaceChildren(node('strong','',correct?'答对啦！':'还差一点，再试一次'),node('p','',assessment.explanation));
+          if(correct){quizPassed=true;session.passed.add(index);session.unlocked=Math.max(session.unlocked,Math.min(index+1,model.steps.length-1));quizContinue.disabled=false;quizContinue.textContent=index===model.steps.length-1?'完成本次讲解':'进入下一部分';quizContinue.focus();}
+          playbackUI();
+        });quizOptions.append(b);
+      });
+      speechState.textContent='这一部分讲完啦，完成小检查后再继续。';playbackUI();quiz.showModal();
+    }
+    function speakPart() {
+      if(!session)return;closeQuiz();session.phase='loading';quizPassed=false;
+      const ticket=++voiceSerial,part=curriculum[index];
+      speechState.textContent='可莉正在准备这一部分的语音…';transcript.textContent='';playbackUI();
+      const current=()=>ticket===voiceSerial&&session;
+      const onError=error=>{if(!current())return;session.phase='error';speechState.textContent=error.message||'语音暂时不可用，请重试或阅读后答题。';transcript.textContent=part?.text||model.steps[index].explanation;playbackUI();};
+      if(!window.KleeLabVoice||!part){onError(new Error('可莉的语音还没有准备好，可以重试或阅读本节后答题。'));return;}
+      try {
+        Promise.resolve(window.KleeLabVoice.play(`${type}-${index}`,{owner:root,
+          onStart:()=>{if(!current())return;session.phase='speaking';speechState.textContent='可莉正在讲解 · '+model.steps[index].title;playbackUI();},
+          onProgress:text=>{if(current())transcript.textContent=text;},
+          onEnded:()=>{if(!current())return;transcript.textContent=part.text;showQuiz();},
+          onCancel:()=>{if(current())stop();},onError
+        })).catch(onError);
+      } catch(error){onError(error);}
+    }
+    play.addEventListener('click',()=>{
+      if(session&&['loading','speaking'].includes(session.phase)){stop();return;}
+      freeze();if(!session||session.phase==='complete'){session={phase:'paused',unlocked:0,passed:new Set()};index=0;render();}speakPart();
+    });
+    quizPause.addEventListener('click',stop);quiz.addEventListener('cancel',event=>{event.preventDefault();stop();});
+    quizReplay.addEventListener('click',()=>{stop();speakPart();});
+    readInstead.addEventListener('click',()=>{if(session?.phase==='error'){transcript.textContent=curriculum[index]?.text||'';showQuiz();}});
+    quizContinue.addEventListener('click',()=>{
+      if(!session||session.phase!=='quiz'||!quizPassed)return;closeQuiz();
+      if(index===model.steps.length-1){session.phase='complete';speechState.textContent=`学完啦！${model.steps.length} 个部分的小检查全部通过。接着试试动手挑战吧！`;render();return;}
+      index++;render();speakPart();
+    });
+    apply.addEventListener('click',()=>{freeze();if(commit)commit();});
+    check.addEventListener('click',()=>{
+      feedback.replaceChildren(node('strong','',model.check.ok?'✓ 目标达成！':'再调整一下，马上就好'),node('p','',model.check.text));feedback.dataset.passed=String(model.check.ok);
+      feedback.focus({preventScroll:true});feedback.scrollIntoView({block:'nearest',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    });
+    const controller={stop,update(data){
+      const key=JSON.stringify(data);if(key===signature)return;signature=key;stop();session=null;index=0;revision++;
+      model=lessons[type](data);model.canCommit=data.canCommit;title.textContent=model.title;intro.textContent=model.intro;task.textContent=model.challenge;feedback.textContent='';delete feedback.dataset.passed;
+      questionPrompt.textContent=model.question.prompt;options.replaceChildren();answer.textContent='';
+      model.question.options.forEach((text,i)=>{const b=node('button','ai-preset',text);b.type='button';b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{options.querySelectorAll('button').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));answer.textContent=(i===model.question.answer?'判断正确。':'再对照计算看看。')+model.question.explanation;});options.append(b);});
+      render();
+    }};controllers.set(root,controller);return controller;
+  }
+  window.LabLearning={mount};
+})();
 
 ;
 /* js/ai-experiments.js */
@@ -108,6 +462,8 @@
   'use strict';
   let M = window.LabMath;
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const teaching=(root,type,commit,pause)=>window.LabLearning?window.LabLearning.mount(root,type,commit,pause):{update(){},stop(){}};
+  const seedValue=input=>Math.max(0,Math.min(999999,Math.trunc(Number(input.value)||0)));
   const element = (tag, cls, text) => {
     const node=document.createElement(tag);
     if(cls) node.className=cls;
@@ -125,9 +481,12 @@
     const logits=[...root.querySelectorAll('[data-token-logit]')];
     const temperature=root.querySelector('#sampling-temperature');
     const topK=root.querySelector('#sampling-top-k');
+    const seed=root.querySelector('#sampling-seed');
     const button=root.querySelector('[data-sample-run]');
     let counts=words.map(()=>0), probabilities=[], frame=null, batch=0, last=0;
-    const stop=()=>{if(frame!==null) cancelAnimationFrame(frame);frame=null;button.textContent='采样 100 次';};
+    let rng=M.random(seedValue(seed)),draw=rng();
+    const lesson=teaching(root,'sampling',()=>{stop();sample();},()=>stop());
+    const stop=()=>{lesson.stop();if(frame!==null) cancelAnimationFrame(frame);frame=null;button.textContent='采样 100 次';};
     function render() {
       probabilities=M.softmax(logits.map(input=>Number(input.value)||0),Number(temperature.value),Number(topK.value));
       const total=counts.reduce((a,b)=>a+b,0);
@@ -140,18 +499,19 @@
         root.querySelector(`[data-token-row="${index}"]`).classList.toggle('is-muted',probabilities[index]===0);
       });
       root.querySelector('[data-sampling-status]').textContent=total ? `已采样 ${total} 次` : '尚未采样';
+      lesson.update({logits:logits.map(input=>Number(input.value)||0),temperature:Number(temperature.value),topK:Number(topK.value),draw,total});
     }
     function sample() {
-      const draw=Math.random(); let sum=0,index=probabilities.length-1;
-      for(let i=0;i<probabilities.length;i++) {sum+=probabilities[i];if(draw<sum){index=i;break;}}
+      const trace=M.sampleTrace(logits.map(input=>Number(input.value)||0),Number(temperature.value),Number(topK.value),draw),index=trace.selected;
+      draw=rng();
       counts[index]++;
       const output=root.querySelector('[data-sampled-token]');
       output.textContent=words[index];
       root.querySelectorAll('[data-token-row]').forEach((row,i)=>row.classList.toggle('is-sampled',i===index));
       render();
     }
-    const reset=()=>{stop();counts=words.map(()=>0);root.querySelector('[data-sampled-token]').textContent='…';render();};
-    [...logits,temperature,topK].forEach(input=>input.addEventListener('input',reset));
+    const reset=()=>{stop();rng=M.random(seedValue(seed));draw=rng();counts=words.map(()=>0);root.querySelector('[data-sampled-token]').textContent='…';root.querySelectorAll('[data-token-row]').forEach(row=>row.classList.remove('is-sampled'));render();};
+    [...logits,temperature,topK,seed].forEach(input=>input.addEventListener('input',reset));
     root.querySelector('[data-sample-once]').addEventListener('click',()=>{stop();sample();});
     root.querySelector('[data-sample-reset]').addEventListener('click',reset);
     button.addEventListener('click',()=>{
@@ -173,11 +533,13 @@
     const words=['我','在','学习','AI'];
     const keys=[[1,0,0,0],[0,.8,.2,0],[0,.3,1,.4],[0,.1,.8,1]];
     const queries=keys.map(vector=>vector.slice());
+    const values=[[1,0],[0,1],[1,1],[-1,.5]];
     let selected=2;
     const grid=root.querySelector('[data-attention-grid]');
     const mask=root.querySelector('[data-causal-mask]');
     const inputs=[...root.querySelectorAll('[data-query-dimension]')];
     const cells=[];
+    const lesson=teaching(root,'attention');
     grid.append(element('span','ai-matrix-corner','Q / K'));
     words.forEach(word=>grid.append(element('span','ai-matrix-label',word)));
     words.forEach((word,row)=>{
@@ -209,12 +571,15 @@
           element('strong','',mask.checked&&column>selected?'已屏蔽':(weights[selected][column]*100).toFixed(1)+'%'));
         details.append(row);
       });
+      const trace=M.attentionTrace(queries[selected],keys,values,selected,mask.checked);
+      root.querySelector('[data-attention-output]').textContent='['+trace.output.map(v=>v.toFixed(4)).join(', ')+']';
+      lesson.update({queries,keys,values,selected,causal:mask.checked});
     }
     function select(index) {selected=index;inputs.forEach((input,i)=>{input.value=queries[index][i];});render();}
     root.querySelectorAll('[data-query-token]').forEach((button,index)=>button.addEventListener('click',()=>select(index)));
     inputs.forEach((input,index)=>input.addEventListener('input',()=>{queries[selected][index]=Number(input.value);render();}));
     mask.addEventListener('change',render);
-    select(selected);return ()=>{};
+    select(selected);return ()=>lesson.stop();
   }
 
   function rag(root) {
@@ -227,7 +592,8 @@
     ];
     const query=root.querySelector('#rag-query'), topK=root.querySelector('#rag-top-k'), budget=root.querySelector('#rag-budget');
     const button=root.querySelector('[data-rag-run]');let frame=null;
-    const stop=()=>{if(frame!==null)cancelAnimationFrame(frame);frame=null;button.textContent='演示流程';};
+    const lesson=teaching(root,'rag',null,()=>stop());
+    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;button.textContent='演示流程';};
     function stage(index,done=false) {
       root.querySelectorAll('[data-rag-stage]').forEach((node,i)=>{
         node.classList.toggle('is-active',i===index&&!done);node.classList.toggle('is-complete',i<index||done);
@@ -253,6 +619,7 @@
       const source=context.map(doc=>`[${doc.id}] ${doc.title}\n${doc.excerpt}${doc.truncated?'…':''}`).join('\n\n');
       root.querySelector('[data-rag-context]').textContent=`问题：${query.value||'（空）'}\n\n参考资料：\n${source||'（无匹配资料）'}\n\n请根据参考资料回答，并标明引用来源。`;
       root.querySelector('[data-rag-status]').textContent=found.length?`检索到 ${found.length} 篇相关资料`:'没有匹配资料';
+      lesson.update({query:query.value,documents,topK:Number(topK.value),budget:Number(budget.value)});
       stage(0);
     }
     [query,topK,budget].forEach(input=>input.addEventListener('input',()=>{stop();render();}));
@@ -277,13 +644,15 @@
     const rate=root.querySelector('#network-learning-rate');
     const run=root.querySelector('[data-network-run]');
     const cells=root.querySelector('[data-boundary-cells]'),points=root.querySelector('[data-network-points]');
+    const seed=root.querySelector('#network-seed'),sample=root.querySelector('#network-inspect-sample'),neuron=root.querySelector('#network-inspect-neuron');
     let net=M.network(),dataset='xor',epoch=0,losses=[],frame=null,last=0;
+    const lesson=teaching(root,'network',()=>{stop();step(1);},()=>stop());
     const grid=[];
     for(let row=0;row<24;row++)for(let col=0;col<24;col++) {
       const cell=svg('rect',{x:50+col*15,y:20+row*11.25,width:15.3,height:11.55});
       cells.append(cell);grid.push({cell,x:[-1.5+(col+.5)/24*3,1.5-(row+.5)/24*3]});
     }
-    const stop=()=>{if(frame!==null)cancelAnimationFrame(frame);frame=null;run.textContent='开始训练';};
+    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;run.textContent='开始训练';};
     function render() {
       const metric=M.gradients(net,M.datasets[dataset]);
       root.querySelector('#network-rate-value').textContent=Number(rate.value).toFixed(2);
@@ -303,20 +672,25 @@
       const max=Math.max(1,...losses.map(entry=>entry.loss));
       root.querySelector('[data-network-loss-line]').setAttribute('d',losses.map((entry,index)=>`${index?'L':'M'}${20+(epoch?entry.epoch/epoch:0)*400},${85-entry.loss/max*68}`).join(' '));
       root.querySelector('[data-network-status]').textContent=epoch ? metric.loss<.018?'训练完成，四个样本均已正确分类':`已训练 ${epoch} 步`:'网络已初始化';
+      lesson.update({net,dataset,rate:Number(rate.value),sample:Number(sample.value),neuron:Number(neuron.value),epoch,canCommit:epoch<3000});
       return metric;
     }
-    function step() {
-      M.train(net,M.datasets[dataset],Number(rate.value),Math.min(50,3000-epoch));epoch=Math.min(3000,epoch+50);
+    function step(count=50) {
+      const amount=Math.min(count,3000-epoch);if(amount<=0)return true;
+      M.train(net,M.datasets[dataset],Number(rate.value),amount);epoch+=amount;
       const metric=M.gradients(net,M.datasets[dataset]);losses.push({epoch,loss:metric.loss});render();
       return epoch>=3000 || (metric.loss<.018&&metric.accuracy===1);
     }
-    function reset() {stop();net=M.network();epoch=0;losses=[{epoch:0,loss:M.gradients(net,M.datasets[dataset]).loss}];render();}
+    function reset() {stop();net=M.network(seedValue(seed));epoch=0;losses=[{epoch:0,loss:M.gradients(net,M.datasets[dataset]).loss}];render();}
     root.querySelectorAll('[data-network-dataset]').forEach(button=>button.addEventListener('click',()=>{
       dataset=button.dataset.networkDataset;root.querySelectorAll('[data-network-dataset]').forEach(node=>node.setAttribute('aria-pressed',String(node===button)));reset();
     }));
     rate.addEventListener('input',render);
+    seed.addEventListener('input',reset);
+    [sample,neuron].forEach(input=>input.addEventListener('change',()=>{stop();render();}));
     root.querySelector('[data-network-reset]').addEventListener('click',reset);
     root.querySelector('[data-network-step]').addEventListener('click',()=>{stop();step();});
+    root.querySelector('[data-network-step-once]').addEventListener('click',()=>{stop();step(1);});
     run.addEventListener('click',()=>{
       if(frame!==null){stop();return;}
       if(epoch>=3000)reset();
@@ -331,11 +705,16 @@
     reset();return stop;
   }
 
+  const gradientSessions=new WeakMap();
   window.setupGradientExperiment=root=>{
+    if(gradientSessions.has(root)) {
+      const session=gradientSessions.get(root);session.resume();return session.pause;
+    }
     const rate=root.querySelector('#lab-learning-rate'),initial=root.querySelector('#lab-start-weight'),speed=root.querySelector('#lab-playback-speed');
     const button=root.querySelector('[data-lab-run]');
     let weight=Number(initial.value),history=[weight],frame=null,animation=null,playing=false;
-    const stop=()=>{if(frame!==null)cancelAnimationFrame(frame);frame=null;animation=null;playing=false;button.textContent='连续播放';draw(weight);};
+    const lesson=teaching(root,'gradient',()=>{stop();step();},()=>stop());
+    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;animation=null;playing=false;button.textContent='连续播放';draw(weight);};
     const finished=()=>history.length>40||Math.abs(weight)<.0001||Math.abs(weight)>1000;
     const number=value=>Math.abs(value)>=10000?value.toExponential(2):value.toFixed(4);
     function draw(displayWeight=weight) {
@@ -379,10 +758,11 @@
       }
       if(history.length>40)description+=' 本轮已达到 40 步。';
       root.querySelector('[data-lab-status]').textContent=status;root.querySelector('[data-lab-explanation]').textContent=description;
+      lesson.update({weight,rate:eta,initial:Number(initial.value),iteration:history.length-1,canCommit:!finished()});
     }
     function begin(time) {
       if(finished()){stop();return;}
-      const from=weight;weight*=1-2*Number(rate.value);history.push(weight);
+      const from=weight;weight=M.gradientTrace(weight,Number(rate.value)).next;history.push(weight);
       animation={from,to:weight,start:time,duration:620/Number(speed.value)};render();
     }
     function tick(time) {
@@ -394,7 +774,7 @@
     }
     function step() {
       if(finished())return;
-      if(reduced()){weight*=1-2*Number(rate.value);history.push(weight);render();draw();return;}
+      if(reduced()){weight=M.gradientTrace(weight,Number(rate.value)).next;history.push(weight);render();draw();return;}
       begin(performance.now());frame=requestAnimationFrame(tick);
     }
     const reset=()=>{stop();weight=Number(initial.value);history=[weight];render();draw();};
@@ -408,8 +788,9 @@
       if(reduced()){while(!finished())step();return;}
       playing=true;button.textContent='暂停播放';step();
     });
-    document.addEventListener('lab:panel-change',stop);
-    reset();return ()=>{stop();document.removeEventListener('lab:panel-change',stop);};
+    const resume=()=>document.addEventListener('lab:panel-change',stop);
+    const pause=()=>{stop();document.removeEventListener('lab:panel-change',stop);};
+    gradientSessions.set(root,{resume,pause});resume();reset();return pause;
   };
 
   const sessions = new WeakMap();
@@ -907,6 +1288,7 @@
   let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
   let selectionBox, readingList, readingSelection = '', readingSelectionPath = '';
   let studyBox, currentStudy = null;
+  let labVoiceRun = null, labManifestPromise = null, labBubble = null;
   const completedActions = new Set();
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
@@ -1056,6 +1438,7 @@
     await sessionPromise;
   }
   function setOpen(value) {
+    if (value && labVoiceRun) stopAudio();
     if (value) cancelArticle();
     opened = value; root.querySelector('.cp-panel').hidden = !value;
     if (value && welcomeBubble) welcomeBubble.hidden = true;
@@ -1129,6 +1512,11 @@
     location.assign(href);
   }
   function completePlayback() {
+    if (labVoiceRun && narration?.lab) {
+      if (!audio?.ended) return;
+      const completed = labVoiceRun; labVoiceRun = null;
+      stopAudio(); state('这一部分讲完啦，试试习题吧！'); completed.callbacks.onEnded?.(); return;
+    }
     const view = pcmPlayback?.view || narration?.view;
     stopAudio(); state('嘟嘟可也在听。'); applyReadingActions(view);
   }
@@ -1255,6 +1643,8 @@
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
   function stopAudio() {
+    const interruptedLab = labVoiceRun; labVoiceRun = null;
+    if (labBubble) labBubble.hidden = true;
     playbackTicket++;
     if (pcmPlayback) { for (const source of pcmPlayback.sources) { try { source.stop(); } catch (_) {} } pcmPlayback = null; }
     if (narration?.welcome && welcomeBubble) { clearTimeout(welcomeTimer); welcomeTimer = setTimeout(() => { welcomeBubble.hidden = true; }, 1200); }
@@ -1271,6 +1661,34 @@
       setPresence(busy ? 'thinking' : 'idle');
       if (busy) setExpression('thinking'); else { if (expression === 'laugh' || expression === 'wink') setExpression('happy'); settleCharacter(); }
     }
+    interruptedLab?.callbacks.onCancel?.();
+  }
+  function failLabVoice(error) {
+    const failed = labVoiceRun; labVoiceRun = null; stopAudio(); failed?.callbacks.onError?.(error);
+  }
+  async function playLabVoice(id, callbacks) {
+    if (busy) { callbacks.onError?.(new Error('可莉正在回答聊天，请等回答结束后再开始讲解。')); return; }
+    if (opened) setOpen(false);
+    cancelWelcome(); cancelArticle(); stopAudio(); primeAudio();
+    const run = {id, callbacks, owner: callbacks.owner}; labVoiceRun = run;
+    try {
+      if (!/^\w+-\d+$/.test(id)) throw new Error('无法找到这一节的讲解。');
+      if (!labManifestPromise) labManifestPromise = fetch('/lab-narration.json', {cache: 'no-cache'})
+        .then(response => { if (!response.ok) throw new Error('讲解音频暂时无法加载，请重试。'); return response.json(); })
+        .catch(error => { labManifestPromise = null; throw error; });
+      const manifest = await labManifestPromise;
+      if (labVoiceRun !== run) return;
+      const line = manifest.lines[id], [type, position] = id.split('-');
+      if (!line || line.text !== window.LabCurriculum?.[type]?.[Number(position)]?.text || !/^\/audio\/lab\/[a-z0-9-]+\.wav$/.test(line.audio)) throw new Error('这一节的可莉语音尚未准备好，请重试或阅读后答题。');
+      if (document.hidden || !/^\/lab\//.test(location.pathname)) { stopAudio(); return; }
+      audio.src = new URL(line.audio, location.origin).href; applyAudioSettings();
+      narration = {lab: line}; root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
+      labBubble.querySelector('p').textContent = [...line.text][0]; labBubble.setAttribute('aria-label', line.text); labBubble.hidden = false;
+      clearTimeout(reactionTimer); setPresence('speaking'); setExpression('happy'); gesture('nod');
+      await audio.play();
+      if (labVoiceRun !== run) return;
+      callbacks.onStart?.(line); if (!animationFrame) animatePlayback();
+    } catch (error) { if (labVoiceRun === run) failLabVoice(error); }
   }
   function animatePlayback(time = 0) {
     if (document.hidden || (!pcmPlayback && (!audio || audio.paused))) return;
@@ -1292,6 +1710,10 @@
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
       revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
+    } else if (narration?.lab && Number.isFinite(audio.duration) && audio.duration > 0) {
+      const characters = [...narration.lab.text];
+      const subtitle = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
+      labBubble.querySelector('p').textContent = subtitle; labVoiceRun?.callbacks.onProgress?.(subtitle);
     } else if (narration?.article && Number.isFinite(audio.duration) && audio.duration > 0) {
       const characters = [...narration.article.text];
       articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
@@ -1302,7 +1724,7 @@
       let energy = 0; for (const value of samples) energy += value * value;
       rms = Math.sqrt(energy / samples.length);
     } else {
-      const cached = narration?.welcome ? config.welcome : narration?.article;
+      const cached = narration?.welcome ? config.welcome : narration?.article || narration?.lab;
       if (cached) rms = cached.envelope?.[Math.floor(audio.currentTime / (cached.step || .05))] || 0;
     }
     smoothedEnergy = smoothedEnergy * .65 + rms * .35;
@@ -1324,12 +1746,12 @@
       if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
-      if (narration && (opened || narration.welcome || narration.article) && !document.hidden) {
+      if (narration && (opened || narration.welcome || narration.article || narration.lab) && !document.hidden) {
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
     audio.addEventListener('ended', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) completePlayback(); });
-    audio.addEventListener('error', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
+    audio.addEventListener('error', () => { if (labVoiceRun && narration?.lab) { failLabVoice(new Error('这段音频没有加载成功，请重试或阅读后答题。')); return; } if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
     }
     const Context = window.AudioContext || window.webkitAudioContext;
     if (withAnalyser && Context && !audioContext) {
@@ -1642,7 +2064,11 @@
     articleBubble = node('div', 'cp-article'); articleBubble.hidden = true; articleBubble.setAttribute('role', 'status'); articleBubble.setAttribute('aria-live', 'polite');
     const dismissArticle = button('×', 'cp-article-close', cancelArticle); dismissArticle.setAttribute('aria-label', '停止搭话');
     const articleText = node('p'); articleText.setAttribute('aria-hidden', 'true'); articleBubble.append(articleText, dismissArticle);
-    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
+    labBubble = node('div', 'cp-lab'); labBubble.hidden = true; labBubble.setAttribute('role', 'status');
+    const labText = node('p'); labText.setAttribute('aria-hidden', 'true');
+    const dismissLab = button('×', 'cp-article-close', stopAudio); dismissLab.setAttribute('aria-label', '暂停算法讲解'); labBubble.append(labText, dismissLab);
+    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, labBubble, launcher, panel); document.body.append(root);
+    window.KleeLabVoice = {play: playLabVoice, stop: owner => { if (labVoiceRun?.owner === owner) stopAudio(); }};
     document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
@@ -1657,7 +2083,7 @@
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); welcomedThisPage = false; scheduleBlink(); startArticle(); });
     window.addEventListener('pagehide', () => { cancelArticle(); stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
-    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) cancelArticle(); }, true);
+    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); if (event.target !== audio && labVoiceRun) stopAudio(); } }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
       clearTimeout(blinkTimer); clearTimeout(gestureTimer); blinkStep = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));

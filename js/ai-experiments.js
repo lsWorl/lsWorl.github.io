@@ -3,6 +3,8 @@
   'use strict';
   let M = window.LabMath;
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const teaching=(root,type,commit,pause)=>window.LabLearning?window.LabLearning.mount(root,type,commit,pause):{update(){},stop(){}};
+  const seedValue=input=>Math.max(0,Math.min(999999,Math.trunc(Number(input.value)||0)));
   const element = (tag, cls, text) => {
     const node=document.createElement(tag);
     if(cls) node.className=cls;
@@ -20,9 +22,12 @@
     const logits=[...root.querySelectorAll('[data-token-logit]')];
     const temperature=root.querySelector('#sampling-temperature');
     const topK=root.querySelector('#sampling-top-k');
+    const seed=root.querySelector('#sampling-seed');
     const button=root.querySelector('[data-sample-run]');
     let counts=words.map(()=>0), probabilities=[], frame=null, batch=0, last=0;
-    const stop=()=>{if(frame!==null) cancelAnimationFrame(frame);frame=null;button.textContent='采样 100 次';};
+    let rng=M.random(seedValue(seed)),draw=rng();
+    const lesson=teaching(root,'sampling',()=>{stop();sample();},()=>stop());
+    const stop=()=>{lesson.stop();if(frame!==null) cancelAnimationFrame(frame);frame=null;button.textContent='采样 100 次';};
     function render() {
       probabilities=M.softmax(logits.map(input=>Number(input.value)||0),Number(temperature.value),Number(topK.value));
       const total=counts.reduce((a,b)=>a+b,0);
@@ -35,18 +40,19 @@
         root.querySelector(`[data-token-row="${index}"]`).classList.toggle('is-muted',probabilities[index]===0);
       });
       root.querySelector('[data-sampling-status]').textContent=total ? `已采样 ${total} 次` : '尚未采样';
+      lesson.update({logits:logits.map(input=>Number(input.value)||0),temperature:Number(temperature.value),topK:Number(topK.value),draw,total});
     }
     function sample() {
-      const draw=Math.random(); let sum=0,index=probabilities.length-1;
-      for(let i=0;i<probabilities.length;i++) {sum+=probabilities[i];if(draw<sum){index=i;break;}}
+      const trace=M.sampleTrace(logits.map(input=>Number(input.value)||0),Number(temperature.value),Number(topK.value),draw),index=trace.selected;
+      draw=rng();
       counts[index]++;
       const output=root.querySelector('[data-sampled-token]');
       output.textContent=words[index];
       root.querySelectorAll('[data-token-row]').forEach((row,i)=>row.classList.toggle('is-sampled',i===index));
       render();
     }
-    const reset=()=>{stop();counts=words.map(()=>0);root.querySelector('[data-sampled-token]').textContent='…';render();};
-    [...logits,temperature,topK].forEach(input=>input.addEventListener('input',reset));
+    const reset=()=>{stop();rng=M.random(seedValue(seed));draw=rng();counts=words.map(()=>0);root.querySelector('[data-sampled-token]').textContent='…';root.querySelectorAll('[data-token-row]').forEach(row=>row.classList.remove('is-sampled'));render();};
+    [...logits,temperature,topK,seed].forEach(input=>input.addEventListener('input',reset));
     root.querySelector('[data-sample-once]').addEventListener('click',()=>{stop();sample();});
     root.querySelector('[data-sample-reset]').addEventListener('click',reset);
     button.addEventListener('click',()=>{
@@ -68,11 +74,13 @@
     const words=['我','在','学习','AI'];
     const keys=[[1,0,0,0],[0,.8,.2,0],[0,.3,1,.4],[0,.1,.8,1]];
     const queries=keys.map(vector=>vector.slice());
+    const values=[[1,0],[0,1],[1,1],[-1,.5]];
     let selected=2;
     const grid=root.querySelector('[data-attention-grid]');
     const mask=root.querySelector('[data-causal-mask]');
     const inputs=[...root.querySelectorAll('[data-query-dimension]')];
     const cells=[];
+    const lesson=teaching(root,'attention');
     grid.append(element('span','ai-matrix-corner','Q / K'));
     words.forEach(word=>grid.append(element('span','ai-matrix-label',word)));
     words.forEach((word,row)=>{
@@ -104,12 +112,15 @@
           element('strong','',mask.checked&&column>selected?'已屏蔽':(weights[selected][column]*100).toFixed(1)+'%'));
         details.append(row);
       });
+      const trace=M.attentionTrace(queries[selected],keys,values,selected,mask.checked);
+      root.querySelector('[data-attention-output]').textContent='['+trace.output.map(v=>v.toFixed(4)).join(', ')+']';
+      lesson.update({queries,keys,values,selected,causal:mask.checked});
     }
     function select(index) {selected=index;inputs.forEach((input,i)=>{input.value=queries[index][i];});render();}
     root.querySelectorAll('[data-query-token]').forEach((button,index)=>button.addEventListener('click',()=>select(index)));
     inputs.forEach((input,index)=>input.addEventListener('input',()=>{queries[selected][index]=Number(input.value);render();}));
     mask.addEventListener('change',render);
-    select(selected);return ()=>{};
+    select(selected);return ()=>lesson.stop();
   }
 
   function rag(root) {
@@ -122,7 +133,8 @@
     ];
     const query=root.querySelector('#rag-query'), topK=root.querySelector('#rag-top-k'), budget=root.querySelector('#rag-budget');
     const button=root.querySelector('[data-rag-run]');let frame=null;
-    const stop=()=>{if(frame!==null)cancelAnimationFrame(frame);frame=null;button.textContent='演示流程';};
+    const lesson=teaching(root,'rag',null,()=>stop());
+    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;button.textContent='演示流程';};
     function stage(index,done=false) {
       root.querySelectorAll('[data-rag-stage]').forEach((node,i)=>{
         node.classList.toggle('is-active',i===index&&!done);node.classList.toggle('is-complete',i<index||done);
@@ -148,6 +160,7 @@
       const source=context.map(doc=>`[${doc.id}] ${doc.title}\n${doc.excerpt}${doc.truncated?'…':''}`).join('\n\n');
       root.querySelector('[data-rag-context]').textContent=`问题：${query.value||'（空）'}\n\n参考资料：\n${source||'（无匹配资料）'}\n\n请根据参考资料回答，并标明引用来源。`;
       root.querySelector('[data-rag-status]').textContent=found.length?`检索到 ${found.length} 篇相关资料`:'没有匹配资料';
+      lesson.update({query:query.value,documents,topK:Number(topK.value),budget:Number(budget.value)});
       stage(0);
     }
     [query,topK,budget].forEach(input=>input.addEventListener('input',()=>{stop();render();}));
@@ -172,13 +185,15 @@
     const rate=root.querySelector('#network-learning-rate');
     const run=root.querySelector('[data-network-run]');
     const cells=root.querySelector('[data-boundary-cells]'),points=root.querySelector('[data-network-points]');
+    const seed=root.querySelector('#network-seed'),sample=root.querySelector('#network-inspect-sample'),neuron=root.querySelector('#network-inspect-neuron');
     let net=M.network(),dataset='xor',epoch=0,losses=[],frame=null,last=0;
+    const lesson=teaching(root,'network',()=>{stop();step(1);},()=>stop());
     const grid=[];
     for(let row=0;row<24;row++)for(let col=0;col<24;col++) {
       const cell=svg('rect',{x:50+col*15,y:20+row*11.25,width:15.3,height:11.55});
       cells.append(cell);grid.push({cell,x:[-1.5+(col+.5)/24*3,1.5-(row+.5)/24*3]});
     }
-    const stop=()=>{if(frame!==null)cancelAnimationFrame(frame);frame=null;run.textContent='开始训练';};
+    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;run.textContent='开始训练';};
     function render() {
       const metric=M.gradients(net,M.datasets[dataset]);
       root.querySelector('#network-rate-value').textContent=Number(rate.value).toFixed(2);
@@ -198,20 +213,25 @@
       const max=Math.max(1,...losses.map(entry=>entry.loss));
       root.querySelector('[data-network-loss-line]').setAttribute('d',losses.map((entry,index)=>`${index?'L':'M'}${20+(epoch?entry.epoch/epoch:0)*400},${85-entry.loss/max*68}`).join(' '));
       root.querySelector('[data-network-status]').textContent=epoch ? metric.loss<.018?'训练完成，四个样本均已正确分类':`已训练 ${epoch} 步`:'网络已初始化';
+      lesson.update({net,dataset,rate:Number(rate.value),sample:Number(sample.value),neuron:Number(neuron.value),epoch,canCommit:epoch<3000});
       return metric;
     }
-    function step() {
-      M.train(net,M.datasets[dataset],Number(rate.value),Math.min(50,3000-epoch));epoch=Math.min(3000,epoch+50);
+    function step(count=50) {
+      const amount=Math.min(count,3000-epoch);if(amount<=0)return true;
+      M.train(net,M.datasets[dataset],Number(rate.value),amount);epoch+=amount;
       const metric=M.gradients(net,M.datasets[dataset]);losses.push({epoch,loss:metric.loss});render();
       return epoch>=3000 || (metric.loss<.018&&metric.accuracy===1);
     }
-    function reset() {stop();net=M.network();epoch=0;losses=[{epoch:0,loss:M.gradients(net,M.datasets[dataset]).loss}];render();}
+    function reset() {stop();net=M.network(seedValue(seed));epoch=0;losses=[{epoch:0,loss:M.gradients(net,M.datasets[dataset]).loss}];render();}
     root.querySelectorAll('[data-network-dataset]').forEach(button=>button.addEventListener('click',()=>{
       dataset=button.dataset.networkDataset;root.querySelectorAll('[data-network-dataset]').forEach(node=>node.setAttribute('aria-pressed',String(node===button)));reset();
     }));
     rate.addEventListener('input',render);
+    seed.addEventListener('input',reset);
+    [sample,neuron].forEach(input=>input.addEventListener('change',()=>{stop();render();}));
     root.querySelector('[data-network-reset]').addEventListener('click',reset);
     root.querySelector('[data-network-step]').addEventListener('click',()=>{stop();step();});
+    root.querySelector('[data-network-step-once]').addEventListener('click',()=>{stop();step(1);});
     run.addEventListener('click',()=>{
       if(frame!==null){stop();return;}
       if(epoch>=3000)reset();
@@ -226,11 +246,16 @@
     reset();return stop;
   }
 
+  const gradientSessions=new WeakMap();
   window.setupGradientExperiment=root=>{
+    if(gradientSessions.has(root)) {
+      const session=gradientSessions.get(root);session.resume();return session.pause;
+    }
     const rate=root.querySelector('#lab-learning-rate'),initial=root.querySelector('#lab-start-weight'),speed=root.querySelector('#lab-playback-speed');
     const button=root.querySelector('[data-lab-run]');
     let weight=Number(initial.value),history=[weight],frame=null,animation=null,playing=false;
-    const stop=()=>{if(frame!==null)cancelAnimationFrame(frame);frame=null;animation=null;playing=false;button.textContent='连续播放';draw(weight);};
+    const lesson=teaching(root,'gradient',()=>{stop();step();},()=>stop());
+    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;animation=null;playing=false;button.textContent='连续播放';draw(weight);};
     const finished=()=>history.length>40||Math.abs(weight)<.0001||Math.abs(weight)>1000;
     const number=value=>Math.abs(value)>=10000?value.toExponential(2):value.toFixed(4);
     function draw(displayWeight=weight) {
@@ -274,10 +299,11 @@
       }
       if(history.length>40)description+=' 本轮已达到 40 步。';
       root.querySelector('[data-lab-status]').textContent=status;root.querySelector('[data-lab-explanation]').textContent=description;
+      lesson.update({weight,rate:eta,initial:Number(initial.value),iteration:history.length-1,canCommit:!finished()});
     }
     function begin(time) {
       if(finished()){stop();return;}
-      const from=weight;weight*=1-2*Number(rate.value);history.push(weight);
+      const from=weight;weight=M.gradientTrace(weight,Number(rate.value)).next;history.push(weight);
       animation={from,to:weight,start:time,duration:620/Number(speed.value)};render();
     }
     function tick(time) {
@@ -289,7 +315,7 @@
     }
     function step() {
       if(finished())return;
-      if(reduced()){weight*=1-2*Number(rate.value);history.push(weight);render();draw();return;}
+      if(reduced()){weight=M.gradientTrace(weight,Number(rate.value)).next;history.push(weight);render();draw();return;}
       begin(performance.now());frame=requestAnimationFrame(tick);
     }
     const reset=()=>{stop();weight=Number(initial.value);history=[weight];render();draw();};
@@ -303,8 +329,9 @@
       if(reduced()){while(!finished())step();return;}
       playing=true;button.textContent='暂停播放';step();
     });
-    document.addEventListener('lab:panel-change',stop);
-    reset();return ()=>{stop();document.removeEventListener('lab:panel-change',stop);};
+    const resume=()=>document.addEventListener('lab:panel-change',stop);
+    const pause=()=>{stop();document.removeEventListener('lab:panel-change',stop);};
+    gradientSessions.set(root,{resume,pause});resume();reset();return pause;
   };
 
   const sessions = new WeakMap();
