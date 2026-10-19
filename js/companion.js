@@ -124,7 +124,7 @@
   }
   async function request(path, method = 'GET', data, authenticated = true, raw = false) {
     if (!apiBase) throw new Error('助手正在准备连接，稍后再来找我吧。');
-    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path.startsWith('/respond') ? 110000 : 60000);
+    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path.startsWith('/respond') ? 195000 : 60000);
     try {
       const response = await fetch(apiBase + path, {method, headers: {...(data ? {'Content-Type': 'application/json'} : {}),
         ...(authenticated && token ? {'Authorization': 'Bearer ' + token} : {})}, body: data ? JSON.stringify(data) : undefined, signal: controller.signal});
@@ -323,7 +323,13 @@
         if (ticket === playbackTicket && opened) { setPresence('idle'); setExpression(expressionFor(result.text, view.mood)); settleCharacter(); }
       }
     } catch (error) {
-      if (view?.characters.length) { stopAudio(); finishReply(view); }
+      if (view?.characters.length) {
+        view.canAct = false;
+        // A broken transport must not discard audio already buffered for this
+        // reply. Explicit Stop / close / a new turn still cancel immediately.
+        if (pcmPlayback?.view === view) { flushPCM(pcmPlayback); pcmPlayback.finished = true; }
+        finishReply(view);
+      }
       else { view?.item.remove(); textarea.value = text; }
       report(error.message); state('再说一次好不好？');
       setPresence('idle'); setExpression('care'); settleCharacter();
@@ -355,16 +361,15 @@
     if (pcmPlayback) {
       const playing = pcmPlayback, clock = audioContext.currentTime; let played = 0;
       for (const span of playing.spans) { if (clock < span.time) break; played = span.offset + Math.min(span.duration, clock - span.time); }
-      let count = 0;
       for (const sentence of playing.sentences.values()) {
         if (sentence.words.length && played * 1000 >= sentence.words[0].begin_time && playing.activeSentence !== sentence && played * 1000 <= (sentence.endTime ?? Infinity)) {
           playing.activeSentence = sentence; setExpression(expressionFor(sentence.text, playing.view.mood));
         }
-        for (const word of sentence.words) if (played * 1000 >= word.begin_time) count = Math.max(count, sentence.offset + word.characterEnd);
-        if (sentence.endTime != null && played * 1000 >= sentence.endTime) count = Math.max(count, sentence.offset + [...sentence.text].length);
       }
-      if (count) revealReply(playing.view, count);
-      if (playing.finished && !playing.sources.size && !playing.pending.length) { completePlayback(); return; }
+      // Web Audio's source-ended event uses the rendering clock. Leave the
+      // output device's queued tail time to drain before navigation/cleanup.
+      const outputDelay = (audioContext.baseLatency || 0) + (audioContext.outputLatency || 0) + .04;
+      if (playing.finished && !playing.sources.size && !playing.pending.length && clock >= playing.nextTime + outputDelay) { completePlayback(); return; }
     } else if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
@@ -397,6 +402,7 @@
     if (!audio) {
     audio = new Audio(); audio.preload = 'auto';
     audio.addEventListener('pause', () => {
+      if (pcmPlayback) return;
       if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
@@ -404,8 +410,8 @@
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
-    audio.addEventListener('ended', () => { if (root.classList.contains('cp-playing')) completePlayback(); });
-    audio.addEventListener('error', () => { if (root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
+    audio.addEventListener('ended', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) completePlayback(); });
+    audio.addEventListener('error', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
     }
     const Context = window.AudioContext || window.webkitAudioContext;
     if (withAnalyser && Context && !audioContext) {
@@ -423,10 +429,16 @@
     audio.play().then(() => { if (audio.src === silence) audio.pause(); }).catch(() => {});
   }
   function receiveStream(data, view, ticket) {
-    if (data.type === 'phrase') {
+    if (data.type === 'text') {
+      view.hasTextStream = true; view.message.text = data.text; view.characters = [...data.text];
+      revealReply(view, view.characters.length);
+    }
+    if (data.type === 'phrase' && !view.hasTextStream) {
       view.message.text = (view.message.text || '') + data.text; view.characters = [...view.message.text];
+      revealReply(view, view.characters.length);
     }
     if (data.result) { view.message = data.result; view.characters = [...data.result.text]; updateLimits(data.result.limits); }
+    if (data.type === 'text-end' || data.result) finishReply(view);
     if (ticket !== playbackTicket || !opened || document.hidden) { if (data.result) finishReply(view); return; }
     if (data.type === 'start' || (!pcmPlayback && ['audio','alignment'].includes(data.type))) {
       if (!audioContext || !analyser) throw new Error('咦，声音没出来，旅行者先看看这句话吧。');
