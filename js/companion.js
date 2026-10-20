@@ -777,7 +777,7 @@
       } catch (error) { report(error.message); }
     }));
     notice = node('p', 'cp-notice'); notice.hidden = true; notice.setAttribute('role', 'status');
-    form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 600; textarea.rows = 2; textarea.placeholder = '想和可莉说什么？'; textarea.setAttribute('aria-label', '聊天消息');
+    form = node('form', 'cp-form'); textarea = node('textarea'); textarea.maxLength = 1200; textarea.rows = 2; textarea.placeholder = '想和可莉说什么？'; textarea.setAttribute('aria-label', '聊天消息');
     readingList = node('section', 'cp-reading-list'); readingList.hidden = true; readingList.setAttribute('aria-label', '稍后阅读');
     studyBox = node('section', 'cp-study'); studyBox.hidden = true; studyBox.setAttribute('aria-label', '一起学习');
     selectionBox = node('div', 'cp-selection'); selectionBox.hidden = true;
