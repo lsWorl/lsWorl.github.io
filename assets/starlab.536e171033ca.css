@@ -117,7 +117,7 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
 .lab-post-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
 .lab-post-card { overflow: hidden; border-radius: 15px; background: var(--lab-surface); border: 1px solid var(--lab-border); transition: transform .2s,box-shadow .2s; }
 .lab-post-card:hover { transform: translateY(-3px); box-shadow: var(--lab-shadow); }
-.lab-post-image { display: block; aspect-ratio: 16/8; overflow: hidden; background: var(--lab-soft); }
+.lab-post-image { display: block; aspect-ratio: 16/9; overflow: hidden; background: var(--lab-soft); }
 .lab-post-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
 .lab-post-card:hover .lab-post-image img { transform: scale(1.035); }
 .lab-post-body { padding: 19px 20px 15px; }
@@ -165,7 +165,7 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
 .lab-map-footer { padding: 30px 0 0; font-size: 12px; color: var(--lab-muted); }
 .lab-project-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
 .lab-project-card { border: 1px solid var(--lab-border); border-radius: var(--lab-radius); overflow: hidden; background: var(--lab-surface); }
-.lab-project-image { display: block; position: relative; height: 245px; overflow: hidden; }
+.lab-project-image { display: block; position: relative; aspect-ratio: 16/9; overflow: hidden; }
 .lab-project-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
 .lab-project-card:hover .lab-project-image img { transform: scale(1.035); }
 .lab-project-body { padding: 26px 28px; }
@@ -178,8 +178,8 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
 .lab-closing-card { display: flex; align-items: center; gap: 16px; padding: 24px; margin-top: 34px; border-radius: 14px; background: var(--lab-soft); color: var(--lab-muted); }
 .lab-closing-card > span { color: var(--lab-accent); font-size: 25px; }
 .lab-closing-card > p { flex: 1; font-size: 12px; }
-.lab-companion-hero { position: relative; overflow: hidden; border-radius: var(--lab-radius); height: 410px; }
-.lab-companion-hero > img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 47%; }
+.lab-companion-hero { position: relative; overflow: hidden; border-radius: var(--lab-radius); height: 410px; background: var(--lab-soft); }
+.lab-companion-hero > img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
 .lab-companion-hero > .lab-image-badge { top: auto; bottom: 18px; letter-spacing: 0; font-size: 10px; }
 .lab-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
 .lab-detail-panel { padding: 28px; border: 1px solid var(--lab-border); border-radius: 15px; background: var(--lab-surface); }
@@ -233,8 +233,9 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
 #post,#page,#archive,.card-widget,.recent-post-item { border: 1px solid var(--lab-border); border-radius: 15px; box-shadow: var(--lab-shadow); }
 #post { padding: 38px 40px; }
 #post #post-info { margin-bottom: 28px; padding-bottom: 25px; border-bottom: 1px solid var(--lab-border); }
-.lab-article-cover { aspect-ratio: 16/7; overflow: hidden; border-radius: 12px; margin-bottom: 30px; background: var(--lab-soft); }
+.lab-article-cover { aspect-ratio: 16/9; overflow: hidden; border-radius: 12px; margin-bottom: 30px; background: var(--lab-soft); }
 .lab-article-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lab-cover-credit { margin: -20px 0 26px; color: var(--lab-muted); font-size: 12px; text-align: right; line-height: 1.6; }
 #post .post-title { font-size: 29px; font-weight: 700; line-height: 1.6; }
 #article-container { font-size: 15px; line-height: 2; }
 #article-container h2 { padding-top: 10px; margin-top: 35px; }
@@ -310,7 +311,7 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
   .lab-node-header > a { font-size: 15px; }
   .lab-read-toggle { margin-left: 44px; padding: 6px 10px; }
   .lab-project-grid,.lab-detail-grid { grid-template-columns: 1fr; }
-  .lab-project-image { height: 220px; }
+  .lab-project-image { aspect-ratio: 16/9; }
   .lab-project-body { padding: 23px; }
   .lab-closing-card { flex-wrap: wrap; padding: 20px; }
   .lab-closing-card > a { padding-left: 38px; }
