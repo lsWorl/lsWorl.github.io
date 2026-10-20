@@ -773,9 +773,9 @@ body.lab-homepage #body-wrap { position:relative; z-index:1; }
 .cp-body, .cp-head { background-image: var(--cp-atlas-image); }
 .cp-body { mask-image: linear-gradient(transparent 78%, #000 80%); }
 .cp-head-sway { transform-origin: 52% 82%; animation: cp-head-sway 7s ease-in-out infinite; }
-.cp-head { mask-image: linear-gradient(#000 80%, transparent 86%); transform-origin: 52% 82%; transform: perspective(500px) translate3d(var(--cp-look-x, 0px), calc(var(--cp-look-y, 0px) + var(--cp-speech-lift, 0px)), 0) rotateX(var(--cp-look-pitch, 0deg)) rotateY(var(--cp-look-yaw, 0deg)) rotateZ(var(--cp-look-roll, 0deg)); transition: transform 420ms cubic-bezier(.2,.7,.3,1); }
+.cp-head { mask-image: linear-gradient(#000 80%, transparent 86%); transform-origin: 52% 82%; transform: perspective(500px) translate3d(var(--cp-look-x, 0px), var(--cp-look-y, 0px), 0) rotateX(var(--cp-look-pitch, 0deg)) rotateY(var(--cp-look-yaw, 0deg)) rotateZ(var(--cp-look-roll, 0deg)); transition: transform 420ms cubic-bezier(.2,.7,.3,1); }
 .cp-expression-eyes, .cp-eyes, .cp-eyes-next { transform: translate(var(--cp-look-eye-x, 0px), var(--cp-look-eye-y, 0px)); transition: transform 300ms ease-out; }
-.cp-mouth, .cp-mouth-next, .cp-eyes, .cp-eyes-next { position: absolute; inset: 0; background-image: inherit; background-size: inherit; background-repeat: no-repeat; pointer-events: none; }
+.cp-mouth, .cp-eyes, .cp-eyes-next { position: absolute; inset: 0; background-image: inherit; background-size: inherit; background-repeat: no-repeat; pointer-events: none; }
 .cp-expression-layer, .cp-expression-eyes, .cp-expression-mouth { position: absolute; inset: 0; pointer-events: none; }
 .cp-face-back { opacity: 0; }
 .cp-expression-eyes, .cp-expression-mouth { background-image: var(--cp-expression-image); background-size: var(--cp-expression-size); background-position: var(--cp-expression-position); background-repeat: no-repeat; }

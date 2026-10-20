@@ -11,7 +11,7 @@
   let root, config, apiBase, notice, messageList, quota, textarea, send, form;
   let opened = false, busy = false, service = null, currentLimits = null, audio = null, audioContext = null, analyser = null;
   let animationFrame = null, blinkTimer = null, blinkFrame = null, blinkStep = 0, mouth = 0, sessionPromise = null, playbackTicket = 0;
-  let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMotionTick = 0, mouthTarget = 0, lastMouthSample = 0, renderedFrame = '';
+  let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMouthChange = 0, renderedFrame = '';
   let lookFrame = null, lookTimer = null, lookPoint = null;
   const portraitLayers = [];
   let healthPromise = null, healthCheckedAt = 0, welcomePending = false, welcomeStarting = false, welcomeBubble = null, welcomeTimer = null;
@@ -112,9 +112,10 @@
   const setFrame = () => {
     if (!root) return;
     const key = `${mouth.toFixed(3)}:${blinkStep.toFixed(3)}`; if (key === renderedFrame) return; renderedFrame = key;
-    root.style.setProperty('--cp-speech-lift', `${(-Math.min(1, mouth / 4) * .65).toFixed(2)}px`);
-    portraitLayers.forEach(({lips, lipsNext, eyes, eyesNext}) => {
-      blendPose(lips, lipsNext, sprite().mouthFrames, mouth);
+    portraitLayers.forEach(({lips, eyes, eyesNext}) => {
+      const mouthPosition = framePosition(sprite().mouthFrames[mouth]);
+      lips.hidden = mouth === 0;
+      if (lips.style.backgroundPosition !== mouthPosition) lips.style.backgroundPosition = mouthPosition;
       blendPose(eyes, eyesNext, sprite().blinkFrames, blinkStep, true);
     });
   };
@@ -437,7 +438,7 @@
     finishReply(); narration = null;
     if (audio) { audio.pause(); audio.currentTime = 0; }
     if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
-    mouth = 0; mouthTarget = 0; smoothedEnergy = 0; lastTick = 0; lastMotionTick = 0; lastMouthSample = 0;
+    mouth = 0; smoothedEnergy = 0; lastTick = 0; lastMouthChange = 0;
     if (root) { root.classList.remove('cp-playing'); root.querySelector('.cp-stop').hidden = true; setFrame(); }
     if (root) {
       setPresence(busy ? 'thinking' : 'idle');
@@ -475,38 +476,32 @@
   function animatePlayback(time = 0) {
     if (document.hidden || (!pcmPlayback && (!audio || audio.paused))) return;
     animationFrame = requestAnimationFrame(animatePlayback);
-    const delta = lastMotionTick ? Math.min(64, Math.max(0, time - lastMotionTick)) : 1000 / 60;
-    lastMotionTick = time;
-    // Text and playback bookkeeping need only 20 Hz; facial movement follows
-    // every display frame, with elapsed-time smoothing on 30/60/120 Hz screens.
-    if (!lastTick || time - lastTick >= 50) {
-      lastTick = time;
-      if (pcmPlayback) {
-        const playing = pcmPlayback, clock = audioContext.currentTime; let played = 0;
-        for (const span of playing.spans) { if (clock < span.time) break; played = span.offset + Math.min(span.duration, clock - span.time); }
-        for (const sentence of playing.sentences.values()) {
-          if (sentence.words.length && played * 1000 >= sentence.words[0].begin_time && playing.activeSentence !== sentence && played * 1000 <= (sentence.endTime ?? Infinity)) {
-            playing.activeSentence = sentence; setExpression(expressionFor(sentence.text, playing.view.mood));
-          }
+    if (time - lastTick < 50) return; lastTick = time;
+    if (pcmPlayback) {
+      const playing = pcmPlayback, clock = audioContext.currentTime; let played = 0;
+      for (const span of playing.spans) { if (clock < span.time) break; played = span.offset + Math.min(span.duration, clock - span.time); }
+      for (const sentence of playing.sentences.values()) {
+        if (sentence.words.length && played * 1000 >= sentence.words[0].begin_time && playing.activeSentence !== sentence && played * 1000 <= (sentence.endTime ?? Infinity)) {
+          playing.activeSentence = sentence; setExpression(expressionFor(sentence.text, playing.view.mood));
         }
-        // Web Audio's source-ended event uses the rendering clock. Leave the
-        // output device's queued tail time to drain before navigation/cleanup.
-        const outputDelay = (audioContext.baseLatency || 0) + (audioContext.outputLatency || 0) + .04;
-        if (playing.finished && !playing.sources.size && !playing.pending.length && clock >= playing.nextTime + outputDelay) { completePlayback(); return; }
-      } else if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
-        // Use the media clock, so buffering and slower devices cannot race ahead.
-        const progress = Math.min(1, audio.currentTime / audio.duration);
-        revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
-      } else if (narration?.lab && Number.isFinite(audio.duration) && audio.duration > 0) {
-        const characters = [...narration.lab.text];
-        const subtitle = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
-        labBubble.querySelector('p').textContent = subtitle; labVoiceRun?.callbacks.onProgress?.(subtitle);
-      } else if (narration?.article && Number.isFinite(audio.duration) && audio.duration > 0) {
-        const characters = [...narration.article.text];
-        articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
       }
+      // Web Audio's source-ended event uses the rendering clock. Leave the
+      // output device's queued tail time to drain before navigation/cleanup.
+      const outputDelay = (audioContext.baseLatency || 0) + (audioContext.outputLatency || 0) + .04;
+      if (playing.finished && !playing.sources.size && !playing.pending.length && clock >= playing.nextTime + outputDelay) { completePlayback(); return; }
+    } else if (narration?.view && Number.isFinite(audio.duration) && audio.duration > 0) {
+      // Use the media clock, so buffering and slower devices cannot race ahead.
+      const progress = Math.min(1, audio.currentTime / audio.duration);
+      revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
+    } else if (narration?.lab && Number.isFinite(audio.duration) && audio.duration > 0) {
+      const characters = [...narration.lab.text];
+      const subtitle = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
+      labBubble.querySelector('p').textContent = subtitle; labVoiceRun?.callbacks.onProgress?.(subtitle);
+    } else if (narration?.article && Number.isFinite(audio.duration) && audio.duration > 0) {
+      const characters = [...narration.article.text];
+      articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
     }
-    if (reducedMotion()) { mouth = 0; mouthTarget = 0; smoothedEnergy = 0; lastMouthSample = 0; setFrame(); return; }
+    if (reducedMotion()) { mouth = 0; smoothedEnergy = 0; setFrame(); return; }
     let rms = 0;
     if (analyser && samples && audioContext?.state === 'running') {
       analyser.getFloatTimeDomainData(samples);
@@ -514,22 +509,13 @@
       rms = Math.sqrt(energy / samples.length);
     } else {
       const cached = narration?.welcome ? config.welcome : narration?.article || narration?.lab;
-      if (cached?.envelope) {
-        const offset = audio.currentTime / (cached.step || .05), index = Math.floor(offset), mix = offset - index;
-        rms = (cached.envelope[index] || 0) * (1 - mix) + (cached.envelope[index + 1] || 0) * mix;
-      }
+      if (cached) rms = cached.envelope?.[Math.floor(audio.currentTime / (cached.step || .05))] || 0;
     }
-    // Display refresh is not articulation speed. Hold the speech target for
-    // 110 ms, damp phoneme peaks and reserve the largest poses for expressions.
-    smoothedEnergy += (rms - smoothedEnergy) * (1 - Math.exp(-delta / (rms > smoothedEnergy ? 70 : 110)));
-    if (!lastMouthSample || time - lastMouthSample >= 110) {
-      mouthTarget = Math.min(1, Math.max(0, (smoothedEnergy - .018) / .14)) * (sprite().mouthFrames.length - 1) * .62;
-      lastMouthSample = time;
+    smoothedEnergy = smoothedEnergy * .65 + rms * .35;
+    const target = smoothedEnergy < .018 ? 0 : Math.min(sprite().mouthFrames.length - 1, Math.round(smoothedEnergy / .14 * (sprite().mouthFrames.length - 1)));
+    if (target !== mouth && time - lastMouthChange >= 80) {
+      mouth += Math.sign(target - mouth) * Math.min(2, Math.abs(target - mouth)); lastMouthChange = time; setFrame();
     }
-    const change = (mouthTarget - mouth) * (1 - Math.exp(-delta / (mouthTarget > mouth ? 85 : 120)));
-    mouth += Math.max(-delta * .018, Math.min(delta * .018, change));
-    if (mouth < .008) mouth = 0;
-    setFrame();
   }
   function applyAudioSettings() {
     if (!audio) return;
@@ -541,7 +527,7 @@
     audio = new Audio(); audio.preload = 'auto';
     audio.addEventListener('pause', () => {
       if (pcmPlayback) return;
-      if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; mouthTarget = 0; smoothedEnergy = 0; lastMotionTick = 0; lastMouthSample = 0; setFrame();
+      if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; smoothedEnergy = 0; lastTick = 0; lastMouthChange = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
       if (narration && (opened || narration.welcome || narration.article || narration.lab) && !document.hidden) {
@@ -801,14 +787,16 @@
           layer.append(eyes, lips); head.append(layer);
         }
       }
-      const lips = node('span', 'cp-mouth'), lipsNext = node('span', 'cp-mouth-next'), eyes = node('span', 'cp-eyes'), eyesNext = node('span', 'cp-eyes-next');
-      for (const layer of [lips, lipsNext, eyes, eyesNext]) {
+      const lips = node('span', 'cp-mouth'), eyes = node('span', 'cp-eyes'), eyesNext = node('span', 'cp-eyes-next');
+      lips.hidden = true; lips.setAttribute('aria-hidden', 'true');
+      lips.style.clipPath = `ellipse(8% 6% at ${atlas.mouthCenter[0]}% ${atlas.mouthCenter[1]}%)`;
+      for (const layer of [eyes, eyesNext]) {
         layer.hidden = true; layer.setAttribute('aria-hidden', 'true');
-        const isMouth = layer === lips || layer === lipsNext, center = isMouth ? atlas.mouthCenter : atlas.eyeCenter;
-        layer.style.maskImage = `radial-gradient(ellipse ${isMouth ? '8% 6%' : '23% 9%'} at ${center[0]}% ${center[1]}%, #000 78%, transparent 100%)`;
+        const center = atlas.eyeCenter;
+        layer.style.maskImage = `radial-gradient(ellipse 23% 9% at ${center[0]}% ${center[1]}%, #000 78%, transparent 100%)`;
       }
-      portraitLayers.push({lips, lipsNext, eyes, eyesNext});
-      head.append(lips, lipsNext, eyes, eyesNext); pivot.append(head); el.append(body, pivot);
+      portraitLayers.push({lips, eyes, eyesNext});
+      head.append(lips, eyes, eyesNext); pivot.append(head); el.append(body, pivot);
       const breath = node('span', 'cp-breath'); breath.append(el); wrap.append(breath); return wrap;
     };
     const launcher = button('', 'cp-launcher', () => setOpen(true)); launcher.setAttribute('aria-label', '与' + config.name + '聊天'); launcher.setAttribute('aria-expanded', 'false');
@@ -894,7 +882,7 @@
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
     document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); if (event.target !== audio && labVoiceRun) stopAudio(); } }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
-      stopBlink(); resetLook(); clearTimeout(gestureTimer); mouth = 0; mouthTarget = 0; lastMouthSample = 0; root.dataset.gesture = ''; setFrame();
+      stopBlink(); resetLook(); clearTimeout(gestureTimer); mouth = 0; lastMouthChange = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
       if (!reducedMotion()) scheduleBlink();
