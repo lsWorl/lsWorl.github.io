@@ -1387,7 +1387,7 @@
   };
   function resetLook() {
     cancelAnimationFrame(lookFrame); clearTimeout(lookTimer); lookFrame = null; lookPoint = null;
-    for (const name of ['x','y','pitch','yaw','roll','eye-x','eye-y']) root?.style.removeProperty('--cp-look-' + name);
+    for (const name of ['x','y']) root?.style.removeProperty('--cp-look-' + name);
   }
   function lookAtPointer(event) {
     if (event.pointerType !== 'mouse' || document.hidden || reducedMotion()) return;
@@ -1400,8 +1400,11 @@
       const clamp = value => Math.max(-1, Math.min(1, value));
       const x = clamp((lookPoint.x - bounds.x - bounds.width / 2) / Math.max(240, innerWidth * .6));
       const y = clamp((lookPoint.y - bounds.y - bounds.height / 2) / Math.max(240, innerHeight * .6));
-      for (const [name,value,unit] of [['x',x*1.1,'px'],['y',y*.65,'px'],['pitch',-y*5,'deg'],['yaw',x*10,'deg'],['roll',x*2,'deg'],['eye-x',x*.4,'px'],['eye-y',y*.2,'px']]) {
-        root.style.setProperty('--cp-look-' + name, value.toFixed(3) + unit);
+      // Keep the small bitmap on whole pixels. Nested perspective, rotation
+      // and fractional eye offsets repeatedly resampled the face and softened it.
+      const density = window.devicePixelRatio || 1;
+      for (const [name,value] of [['x',Math.round(x*2*density)/density],['y',Math.round(y*density)/density]]) {
+        root.style.setProperty('--cp-look-' + name, value + 'px');
       }
       clearTimeout(lookTimer); lookTimer = setTimeout(resetLook, 1800);
     });
@@ -1657,6 +1660,24 @@
     if (!view) return;
     revealReply(view, view.characters.length); view.item.setAttribute('aria-busy', 'false'); addSources(view);
   }
+  function offerVoiceRetry(view) {
+    if (!view.message.id || view.item.querySelector('.cp-retry-voice')) return;
+    const actions = node('div', 'cp-message-actions');
+    const retry = button('重试语音', 'cp-retry-voice', async () => {
+      if (busy) return;
+      busy = true; updateSend(); retry.disabled = true; stopAudio(); primeAudio();
+      const ticket = playbackTicket; state('正在重新准备这段声音…'); report('');
+      try {
+        const spoken = await request('/speech', 'POST', {messageId:view.message.id}); updateLimits(spoken.limits);
+        if (ticket !== playbackTicket || !opened || document.hidden) return;
+        const audioBlob = await request('/audio/' + encodeURIComponent(spoken.audioId), 'GET', null, true, true);
+        await playSpeech({...view.message, audioBlob}, view, ticket);
+        if (ticket === playbackTicket) actions.remove();
+      } catch (error) { report(error.message); state('文字已保留，声音暂时没连上。'); }
+      finally { busy = false; retry.disabled = false; updateSend(); }
+    });
+    actions.append(retry); view.item.append(actions);
+  }
   async function submit(event) {
     event.preventDefault(); const text = textarea.value.trim(); if (!text || busy) return;
     if (send.disabled) return;
@@ -1832,6 +1853,11 @@
     if (data.result) { view.message = data.result; view.characters = [...data.result.text]; updateLimits(data.result.limits); }
     if (data.type === 'text-end' || data.result) finishReply(view);
     if (ticket !== playbackTicket || !opened || document.hidden) { if (data.result) finishReply(view); return; }
+    if (data.type === 'voice-status' && !root.classList.contains('cp-playing')) {
+      view.voiceStatus = data.status;
+      state(data.status === 'reconnecting' ? '声音连接有点慢，正在重连…' : '可莉正在准备声音…');
+    }
+    if (data.type === 'text-end' && !root.classList.contains('cp-playing')) state(view.voiceStatus === 'reconnecting' ? '声音连接有点慢，正在重连…' : '文字好了，声音正在准备…');
     if (data.type === 'start' || (!pcmPlayback && ['audio','alignment'].includes(data.type))) {
       if (!audioContext || !analyser) throw new Error('咦，声音没出来，旅行者先看看这句话吧。');
       pcmPlayback = {view, sources: new Set(), spans: [], sentences: new Map(), pending: [], pendingSamples: 0, offset: 0, nextTime: 0, finished: false};
@@ -1868,7 +1894,8 @@
       view.canAct = data.type === 'done' && !data.replayed && !data.textOnly;
       if (playing) { flushPCM(playing); playing.finished = true; }
       if (data.textOnly || !playing?.spans.length) { stopAudio(); finishReply(view); }
-      if (data.type === 'error') report(data.error); else report('');
+      if (data.type === 'error') { report(data.error); offerVoiceRetry(view); }
+      else { report(''); if (data.textOnly) offerVoiceRetry(view); }
     }
   }
   function flushPCM(playing) {
@@ -2032,6 +2059,8 @@
   }
   function build() {
     root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手'); root.dataset.presence = 'idle';
+    const alignPixels = () => { root.style.setProperty('--cp-pixel', 1 / (window.devicePixelRatio || 1) + 'px'); resetLook(); };
+    alignPixels(); window.addEventListener('resize', alignPixels, {passive:true});
     const avatar = (interactive = false) => {
       const wrap = interactive ? button('', 'cp-avatar-wrap cp-character', greetCharacter) : node('div', 'cp-avatar-wrap');
       if (interactive) wrap.setAttribute('aria-label', '和可莉打个招呼');
