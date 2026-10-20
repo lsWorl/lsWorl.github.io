@@ -766,10 +766,10 @@ body.lab-homepage #body-wrap { position:relative; z-index:1; }
 }
 .cp-launcher { padding: 0; background: transparent; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 5px 12px #57375524); }
 .cp-avatar-wrap { width: 140px; height: 140px; flex: none; }
-.cp-breath { display: block; width: 100%; height: 100%; animation: cp-breathe 5.5s ease-in-out infinite; pointer-events: none; }
+.cp-breath { display: block; width: 100%; height: 100%; transform-origin: 52% 84%; animation: cp-breathe 5.5s ease-in-out infinite; pointer-events: none; }
 .cp-character { padding: 0; background: transparent; border-radius: 24px; }
 .cp-avatar { position: relative; width: 100%; height: 100%; background-size: 300% 200%; background-position: 0 0; background-repeat: no-repeat; transform-origin: 52% 84%; transform: rotate(var(--cp-tilt, 0deg)); transition: transform 600ms cubic-bezier(.2,.75,.25,1); }
-.cp-mouth, .cp-eyes { position: absolute; inset: 0; background-image: inherit; background-size: inherit; background-repeat: no-repeat; pointer-events: none; }
+.cp-mouth, .cp-mouth-next, .cp-eyes, .cp-eyes-next { position: absolute; inset: 0; background-image: inherit; background-size: inherit; background-repeat: no-repeat; pointer-events: none; }
 .cp-expression-layer, .cp-expression-eyes, .cp-expression-mouth { position: absolute; inset: 0; pointer-events: none; }
 .cp-face-back { opacity: 0; }
 .cp-expression-eyes, .cp-expression-mouth { background-image: var(--cp-expression-image); background-size: var(--cp-expression-size); background-position: var(--cp-expression-position); background-repeat: no-repeat; }
@@ -879,7 +879,7 @@ body.lab-homepage #body-wrap { position:relative; z-index:1; }
 [data-theme=dark] .cp-options .cp-data-buttons button:hover { background: #503c30; }
 [data-theme=dark] .cp-nav button[aria-pressed=true] { background: #9a6aba; }
 [data-theme=dark] .cp-launcher-label { color: #49344e; }
-@keyframes cp-breathe { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes cp-breathe { 0%,100% { transform: translateY(0) rotate(-.3deg) scale(1); } 50% { transform: translateY(-2px) rotate(.3deg) scale(1.008); } }
 @keyframes cp-nod { 0%,100% { transform: rotate(var(--cp-tilt, 0deg)); } 45% { transform: translateY(2px) rotate(calc(var(--cp-tilt, 0deg) + 1deg)); } }
 @keyframes cp-bounce { 0%,100% { transform: rotate(var(--cp-tilt, 0deg)); } 40% { transform: translateY(-3px) rotate(calc(var(--cp-tilt, 0deg) - 1deg)); } 72% { transform: translateY(.5px) rotate(var(--cp-tilt, 0deg)); } }
 @keyframes cp-hello { 0%,100% { transform: rotate(var(--cp-tilt, 0deg)); } 28% { transform: rotate(-3deg); } 64% { transform: rotate(2deg); } }
@@ -894,5 +894,6 @@ body.lab-homepage #body-wrap { position:relative; z-index:1; }
 @media (prefers-reduced-motion: reduce) {
   .companion .cp-avatar, .companion .cp-breath { animation: none !important; transition: none; transform: none; }
   .cp-messages { scroll-behavior: auto; }
+  .cp-playing .cp-expression-mouth { visibility: visible; }
 }
 .companion[data-presence=hidden] .cp-breath { animation-play-state: paused; }
