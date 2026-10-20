@@ -98,11 +98,12 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
 .lab-track-bottom { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--lab-border); color: var(--tone-ink); font-size: 9px; }
 .lab-track-bottom > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lab-track-bottom > span:last-child { font-size: 17px; }
-.lab-featured { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; border: 1px solid var(--lab-border); border-radius: var(--lab-radius); background: var(--lab-surface); }
-.lab-featured-art { position: relative; min-height: 265px; }
-.lab-featured-art img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; object-position: 70% center; }
+.lab-featured { display: grid; grid-template-columns: minmax(0,min(44%,560px)) minmax(0,1fr); overflow: hidden; border: 1px solid var(--lab-border); border-radius: var(--lab-radius); background: var(--lab-surface); }
+.lab-featured-art { position: relative; min-width: 0; align-self: center; background: var(--lab-soft); }
+.lab-featured-art img { display: block; width: 100%; height: auto; object-fit: contain; object-position: center; }
+.lab-featured-credit { display: block; padding: 6px 12px; color: var(--lab-muted); font-size: 11px; line-height: 1.6; text-align: right; }
 .lab-image-badge { position: absolute; top: 18px; left: 18px; color: #fff; background: rgba(35,28,62,.62); padding: 4px 10px; border: 1px solid rgba(255,255,255,.22); border-radius: 6px; font-size: 9px; letter-spacing: 1.3px; backdrop-filter: blur(8px); }
-.lab-featured-copy { padding: 29px 34px; }
+.lab-featured-copy { min-width: 0; align-self: center; padding: 29px 34px; }
 .lab-featured-copy h3 { font-size: 28px; margin: 7px 0 0; font-weight: 750; line-height: 1.5; }
 .lab-featured-copy .lab-featured-subtitle { font-size: 13px; color: var(--lab-ink); margin-bottom: 13px; }
 .lab-featured-copy > p { color: var(--lab-muted); font-size: 12px; line-height: 1.9; }
@@ -290,7 +291,6 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
   .lab-track-card { padding: 16px 14px; }
   .lab-featured-copy { padding: 24px; }
   .lab-featured { grid-template-columns: 1fr; }
-  .lab-featured-art { min-height: 230px; }
   .lab-featured-copy h3 { font-size: 25px; }
   .lab-experiment-callout { flex-wrap: wrap; gap: 13px; padding: 18px; }
   .lab-experiment-callout > div { flex: 1; }
