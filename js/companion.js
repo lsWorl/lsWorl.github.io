@@ -11,7 +11,8 @@
   let root, config, apiBase, notice, messageList, quota, textarea, send, form;
   let opened = false, busy = false, service = null, currentLimits = null, audio = null, audioContext = null, analyser = null;
   let animationFrame = null, blinkTimer = null, blinkFrame = null, blinkStep = 0, mouth = 0, sessionPromise = null, playbackTicket = 0;
-  let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMotionTick = 0, renderedFrame = '';
+  let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMotionTick = 0, mouthTarget = 0, lastMouthSample = 0, renderedFrame = '';
+  let lookFrame = null, lookTimer = null, lookPoint = null;
   const portraitLayers = [];
   let healthPromise = null, healthCheckedAt = 0, welcomePending = false, welcomeStarting = false, welcomeBubble = null, welcomeTimer = null;
   const welcomeKey = 'lsworld.klee.welcomed.v1';
@@ -111,11 +112,33 @@
   const setFrame = () => {
     if (!root) return;
     const key = `${mouth.toFixed(3)}:${blinkStep.toFixed(3)}`; if (key === renderedFrame) return; renderedFrame = key;
+    root.style.setProperty('--cp-speech-lift', `${(-Math.min(1, mouth / 4) * .65).toFixed(2)}px`);
     portraitLayers.forEach(({lips, lipsNext, eyes, eyesNext}) => {
       blendPose(lips, lipsNext, sprite().mouthFrames, mouth);
       blendPose(eyes, eyesNext, sprite().blinkFrames, blinkStep, true);
     });
   };
+  function resetLook() {
+    cancelAnimationFrame(lookFrame); clearTimeout(lookTimer); lookFrame = null; lookPoint = null;
+    for (const name of ['x','y','pitch','yaw','roll','eye-x','eye-y']) root?.style.removeProperty('--cp-look-' + name);
+  }
+  function lookAtPointer(event) {
+    if (event.pointerType !== 'mouse' || document.hidden || reducedMotion()) return;
+    lookPoint = {x:event.clientX,y:event.clientY};
+    if (lookFrame !== null) return;
+    lookFrame = requestAnimationFrame(() => {
+      lookFrame = null;
+      if (!lookPoint || document.hidden || reducedMotion()) return;
+      const bounds = root.querySelector(opened ? '.cp-intro .cp-avatar-wrap' : '.cp-launcher .cp-avatar-wrap').getBoundingClientRect();
+      const clamp = value => Math.max(-1, Math.min(1, value));
+      const x = clamp((lookPoint.x - bounds.x - bounds.width / 2) / Math.max(240, innerWidth * .6));
+      const y = clamp((lookPoint.y - bounds.y - bounds.height / 2) / Math.max(240, innerHeight * .6));
+      for (const [name,value,unit] of [['x',x*1.1,'px'],['y',y*.65,'px'],['pitch',-y*5,'deg'],['yaw',x*10,'deg'],['roll',x*2,'deg'],['eye-x',x*.4,'px'],['eye-y',y*.2,'px']]) {
+        root.style.setProperty('--cp-look-' + name, value.toFixed(3) + unit);
+      }
+      clearTimeout(lookTimer); lookTimer = setTimeout(resetLook, 1800);
+    });
+  }
   function stopBlink() {
     clearTimeout(blinkTimer); cancelAnimationFrame(blinkFrame); blinkFrame = null; blinkStep = 0; setFrame();
   }
@@ -196,6 +219,7 @@
     await sessionPromise;
   }
   function setOpen(value) {
+    resetLook();
     if (value && labVoiceRun) stopAudio();
     if (value) cancelArticle();
     opened = value; root.querySelector('.cp-panel').hidden = !value;
@@ -413,7 +437,7 @@
     finishReply(); narration = null;
     if (audio) { audio.pause(); audio.currentTime = 0; }
     if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
-    mouth = 0; smoothedEnergy = 0; lastTick = 0; lastMotionTick = 0;
+    mouth = 0; mouthTarget = 0; smoothedEnergy = 0; lastTick = 0; lastMotionTick = 0; lastMouthSample = 0;
     if (root) { root.classList.remove('cp-playing'); root.querySelector('.cp-stop').hidden = true; setFrame(); }
     if (root) {
       setPresence(busy ? 'thinking' : 'idle');
@@ -482,7 +506,7 @@
         articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
       }
     }
-    if (reducedMotion()) { mouth = 0; smoothedEnergy = 0; setFrame(); return; }
+    if (reducedMotion()) { mouth = 0; mouthTarget = 0; smoothedEnergy = 0; lastMouthSample = 0; setFrame(); return; }
     let rms = 0;
     if (analyser && samples && audioContext?.state === 'running') {
       analyser.getFloatTimeDomainData(samples);
@@ -495,9 +519,15 @@
         rms = (cached.envelope[index] || 0) * (1 - mix) + (cached.envelope[index + 1] || 0) * mix;
       }
     }
-    smoothedEnergy += (rms - smoothedEnergy) * (1 - Math.exp(-delta / (rms > smoothedEnergy ? 32 : 75)));
-    const target = Math.min(1, Math.max(0, (smoothedEnergy - .012) / .128)) * (sprite().mouthFrames.length - 1);
-    mouth += (target - mouth) * (1 - Math.exp(-delta / (target > mouth ? 34 : 55)));
+    // Display refresh is not articulation speed. Hold the speech target for
+    // 110 ms, damp phoneme peaks and reserve the largest poses for expressions.
+    smoothedEnergy += (rms - smoothedEnergy) * (1 - Math.exp(-delta / (rms > smoothedEnergy ? 70 : 110)));
+    if (!lastMouthSample || time - lastMouthSample >= 110) {
+      mouthTarget = Math.min(1, Math.max(0, (smoothedEnergy - .018) / .14)) * (sprite().mouthFrames.length - 1) * .62;
+      lastMouthSample = time;
+    }
+    const change = (mouthTarget - mouth) * (1 - Math.exp(-delta / (mouthTarget > mouth ? 85 : 120)));
+    mouth += Math.max(-delta * .018, Math.min(delta * .018, change));
     if (mouth < .008) mouth = 0;
     setFrame();
   }
@@ -511,7 +541,7 @@
     audio = new Audio(); audio.preload = 'auto';
     audio.addEventListener('pause', () => {
       if (pcmPlayback) return;
-      if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; lastMotionTick = 0; setFrame();
+      if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; mouthTarget = 0; smoothedEnergy = 0; lastMotionTick = 0; lastMouthSample = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
       if (narration && (opened || narration.welcome || narration.article || narration.lab) && !document.hidden) {
@@ -753,8 +783,11 @@
     const avatar = (interactive = false) => {
       const wrap = interactive ? button('', 'cp-avatar-wrap cp-character', greetCharacter) : node('div', 'cp-avatar-wrap');
       if (interactive) wrap.setAttribute('aria-label', '和可莉打个招呼');
-      const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.backgroundImage = 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')';
+      const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.setProperty('--cp-atlas-image', 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')');
       const atlas = sprite(); el.style.backgroundSize = `${atlas.columns * 100}% ${atlas.rows * 100}%`;
+      // Lightweight layered portrait, not a Cubism model: the head and its
+      // facial overlays move together above the stationary shoulders.
+      const body = node('span', 'cp-body'), pivot = node('span', 'cp-head-sway'), head = node('span', 'cp-head');
       if (config.expressions) {
         const faces = config.expressions, eye = faces.eyeCenter || atlas.eyeCenter, lip = faces.mouthCenter || atlas.mouthCenter;
         for (const className of ['cp-face-back','cp-face-front']) {
@@ -765,7 +798,7 @@
           const eyes = node('span', 'cp-expression-eyes'), lips = node('span', 'cp-expression-mouth');
           eyes.style.maskImage = `radial-gradient(ellipse 27% 12% at ${eye[0]}% ${eye[1]}%, #000 80%, transparent 100%)`;
           lips.style.maskImage = `radial-gradient(ellipse 8% 6% at ${lip[0]}% ${lip[1]}%, #000 82%, transparent 100%)`;
-          layer.append(eyes, lips); el.append(layer);
+          layer.append(eyes, lips); head.append(layer);
         }
       }
       const lips = node('span', 'cp-mouth'), lipsNext = node('span', 'cp-mouth-next'), eyes = node('span', 'cp-eyes'), eyesNext = node('span', 'cp-eyes-next');
@@ -775,7 +808,8 @@
         layer.style.maskImage = `radial-gradient(ellipse ${isMouth ? '8% 6%' : '23% 9%'} at ${center[0]}% ${center[1]}%, #000 78%, transparent 100%)`;
       }
       portraitLayers.push({lips, lipsNext, eyes, eyesNext});
-      el.append(lips, lipsNext, eyes, eyesNext); const breath = node('span', 'cp-breath'); breath.append(el); wrap.append(breath); return wrap;
+      head.append(lips, lipsNext, eyes, eyesNext); pivot.append(head); el.append(body, pivot);
+      const breath = node('span', 'cp-breath'); breath.append(el); wrap.append(breath); return wrap;
     };
     const launcher = button('', 'cp-launcher', () => setOpen(true)); launcher.setAttribute('aria-label', '与' + config.name + '聊天'); launcher.setAttribute('aria-expanded', 'false');
     launcher.setAttribute('aria-controls', 'companion-panel'); launcher.append(avatar(), node('span', 'cp-launcher-label', '来找可莉玩！'));
@@ -843,9 +877,12 @@
     window.KleeLabVoice = {play: playLabVoice, stop: owner => { if (labVoiceRun?.owner === owner) stopAudio(); }};
     document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
+    document.addEventListener('pointermove', lookAtPointer, {passive:true});
+    document.documentElement.addEventListener('pointerleave', resetLook);
+    window.addEventListener('blur', resetLook);
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
     const pauseCharacter = () => {
-      clearTimeout(reactionTimer); clearTimeout(gestureTimer); stopBlink();
+      clearTimeout(reactionTimer); clearTimeout(gestureTimer); stopBlink(); resetLook();
       root.dataset.gesture = ''; setPresence(document.hidden ? 'hidden' : 'idle'); setExpression('neutral'); blinkStep = 0; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
@@ -857,7 +894,7 @@
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
     document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); if (event.target !== audio && labVoiceRun) stopAudio(); } }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
-      stopBlink(); clearTimeout(gestureTimer); mouth = 0; root.dataset.gesture = ''; setFrame();
+      stopBlink(); resetLook(); clearTimeout(gestureTimer); mouth = 0; mouthTarget = 0; lastMouthSample = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
       if (!reducedMotion()) scheduleBlink();
