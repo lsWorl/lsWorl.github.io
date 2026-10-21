@@ -1389,6 +1389,8 @@
     const exhausted = currentLimits && (!currentLimits.chatAvailable || !currentLimits.voiceAvailable || Math.min(currentLimits.chatRemaining, currentLimits.voiceRemaining) <= 0);
     send.disabled = busy || !service?.chat || (!service.demo && (!service.voice || exhausted));
     root?.querySelectorAll('[data-study-prompt]').forEach(button => { button.disabled = send.disabled || service?.study === false; });
+    root?.querySelectorAll('[data-study-prompt="resume"]').forEach(button=>{button.hidden=currentStudy?.status!=='paused';});
+    root?.querySelectorAll('[data-study-prompt="pause"]').forEach(button=>{button.hidden=currentStudy?.status!=='active';});
     if (exhausted && !busy && !narration) state('可莉要休息一会儿啦。');
   }
   async function request(path, method = 'GET', data, authenticated = true, raw = false) {
@@ -1561,6 +1563,7 @@
       && value.steps[value.currentStep] && articleHref(value.article?.url) ? value : null;
     const expanded = studyBox.querySelector('details')?.open || false;
     studyBox.replaceChildren(); studyBox.hidden = !currentStudy || !readingList.hidden;
+    updateSend();
     if (!currentStudy) return;
     const study = currentStudy, details = node('details'), summary = node('summary', '', study.status === 'completed' ? '好耶，这篇学完啦！'
       : (study.status === 'paused' ? '下次接着学' : '一起学') + ' · 第 ' + (study.currentStep + 1) + '/' + study.steps.length + ' 步');
@@ -2109,8 +2112,8 @@
         studyPrompt('带我用十五分钟一步步学懂这篇文章');
       });
       start.dataset.studyPrompt = 'start';
-      const resume = button('接着上次学', '', () => studyPrompt('继续上次学习')); resume.dataset.studyPrompt = 'resume';
-      const pause = button('先休息一下', '', () => studyPrompt('暂停学习')); pause.dataset.studyPrompt = 'pause';
+      const resume = button('接着上次学', '', () => studyPrompt('继续上次学习')); resume.dataset.studyPrompt = 'resume';resume.hidden=true;
+      const pause = button('先休息一下', '', () => studyPrompt('暂停学习')); pause.dataset.studyPrompt = 'pause';pause.hidden=true;
       dataButtons.append(start, resume, pause);
     }
     if(config.reading?.enabled)dataButtons.append(button('概括本节','',()=>studyPrompt('概括当前这一节')),button('概括全文','',()=>studyPrompt('概括整篇文章的主要内容')));
