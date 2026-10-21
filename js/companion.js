@@ -10,10 +10,8 @@
   let token = typeof saved.token === 'string' ? saved.token : '';
   let root, config, apiBase, notice, messageList, quota, textarea, send, form;
   let opened = false, busy = false, service = null, currentLimits = null, audio = null, audioContext = null, analyser = null;
-  let animationFrame = null, blinkTimer = null, blinkFrame = null, blinkStep = 0, mouth = 0, sessionPromise = null, playbackTicket = 0;
+  let animationFrame = null, blinkTimer = null, blinkStep = 0, mouth = 0, sessionPromise = null, playbackTicket = 0;
   let narration = null, samples = null, smoothedEnergy = 0, lastTick = 0, lastMouthChange = 0, renderedFrame = '';
-  let lookFrame = null, lookTimer = null, lookPoint = null;
-  const portraitLayers = [];
   let healthPromise = null, healthCheckedAt = 0, welcomePending = false, welcomeStarting = false, welcomeBubble = null, welcomeTimer = null;
   const welcomeKey = 'lsworld.klee.welcomed.v1';
   const audioCache = new Map();
@@ -22,7 +20,7 @@
   const articleKey = 'lsworld.klee.articles.v1';
   let articleVisit = null, articleTimer = null, articleBubble = null, articleBubbleTimer = null;
   let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
-  let selectionBox, readingList, readingSelection = '', readingSelectionPath = '';
+  let selectionBox, readingList, readingSelection = '', readingSelectionPath = '',readingSelectionAnchor='',readingSelectionTotal=0;
   let studyBox, currentStudy = null;
   let labVoiceRun = null, labManifestPromise = null, labBubble = null;
   const completedActions = new Set();
@@ -72,7 +70,7 @@
         fade.onfinish = () => { back.style.opacity = '0'; };
       }
     });
-    if (['laugh','wink'].includes(value)) stopBlink();
+    if (['laugh','wink'].includes(value)) { clearTimeout(blinkTimer); blinkStep = 0; setFrame(); }
     else if (['laugh','wink'].includes(previous)) scheduleBlink();
   }
   function setPresence(value) { if (root) root.dataset.presence = value; }
@@ -96,72 +94,23 @@
       if (!busy && !narration) settleCharacter(1600);
     }, 1400);
   }
-  // Blend complete poses, never interpolate atlas coordinates (which would slide
-  // neighbouring cells through the face). The body stays on the original frame.
-  function blendPose(base, next, frames, position, transient = false) {
-    const lower = Math.floor(position), upper = Math.min(lower + 1, frames.length - 1), mix = position - lower;
-    const resting = position < .001 || transient && position >= frames.length - 1;
-    base.hidden = resting || transient && lower === 0;
-    next.hidden = resting || mix < .001 || transient && upper === frames.length - 1;
-    const basePosition = framePosition(frames[lower]), nextPosition = framePosition(frames[upper]);
-    if (base.style.backgroundPosition !== basePosition) base.style.backgroundPosition = basePosition;
-    if (next.style.backgroundPosition !== nextPosition) next.style.backgroundPosition = nextPosition;
-    base.style.opacity = transient && upper === frames.length - 1 ? (1 - mix).toFixed(3) : '1';
-    next.style.opacity = mix.toFixed(3);
-  }
   const setFrame = () => {
     if (!root) return;
-    const key = `${mouth.toFixed(3)}:${blinkStep.toFixed(3)}`; if (key === renderedFrame) return; renderedFrame = key;
-    portraitLayers.forEach(({lips, eyes, eyesNext}) => {
-      const mouthPosition = framePosition(sprite().mouthFrames[mouth]);
-      lips.hidden = mouth === 0;
-      if (lips.style.backgroundPosition !== mouthPosition) lips.style.backgroundPosition = mouthPosition;
-      blendPose(eyes, eyesNext, sprite().blinkFrames, blinkStep, true);
+    const key = `${mouth}:${blinkStep}`; if (key === renderedFrame) return; renderedFrame = key;
+    root.querySelectorAll('.cp-avatar').forEach(avatar => {
+      const lips = avatar.querySelector('.cp-mouth'), eyes = avatar.querySelector('.cp-eyes');
+      const mouthPosition = framePosition(sprite().mouthFrames[mouth]), eyePosition = framePosition(sprite().blinkFrames[blinkStep]);
+      lips.hidden = mouth === 0; if (lips.style.backgroundPosition !== mouthPosition) lips.style.backgroundPosition = mouthPosition;
+      eyes.hidden = blinkStep === 0; if (eyes.style.backgroundPosition !== eyePosition) eyes.style.backgroundPosition = eyePosition;
     });
   };
-  function resetLook() {
-    cancelAnimationFrame(lookFrame); clearTimeout(lookTimer); lookFrame = null; lookPoint = null;
-    for (const name of ['x','y']) root?.style.removeProperty('--cp-look-' + name);
-  }
-  function lookAtPointer(event) {
-    if (event.pointerType !== 'mouse' || document.hidden || reducedMotion()) return;
-    lookPoint = {x:event.clientX,y:event.clientY};
-    if (lookFrame !== null) return;
-    lookFrame = requestAnimationFrame(() => {
-      lookFrame = null;
-      if (!lookPoint || document.hidden || reducedMotion()) return;
-      const bounds = root.querySelector(opened ? '.cp-intro .cp-avatar-wrap' : '.cp-launcher .cp-avatar-wrap').getBoundingClientRect();
-      const clamp = value => Math.max(-1, Math.min(1, value));
-      const x = clamp((lookPoint.x - bounds.x - bounds.width / 2) / Math.max(240, innerWidth * .6));
-      const y = clamp((lookPoint.y - bounds.y - bounds.height / 2) / Math.max(240, innerHeight * .6));
-      // Keep the small bitmap on whole pixels. Nested perspective, rotation
-      // and fractional eye offsets repeatedly resampled the face and softened it.
-      const density = window.devicePixelRatio || 1;
-      for (const [name,value] of [['x',Math.round(x*2*density)/density],['y',Math.round(y*density)/density]]) {
-        root.style.setProperty('--cp-look-' + name, value + 'px');
-      }
-      clearTimeout(lookTimer); lookTimer = setTimeout(resetLook, 1800);
-    });
-  }
-  function stopBlink() {
-    clearTimeout(blinkTimer); cancelAnimationFrame(blinkFrame); blinkFrame = null; blinkStep = 0; setFrame();
-  }
   const scheduleBlink = () => {
-    stopBlink();
+    clearTimeout(blinkTimer);
     if (document.hidden || reducedMotion() || ['laugh','wink'].includes(expression)) return;
-    blinkTimer = setTimeout(() => {
-      const start = performance.now(), middle = Math.floor((sprite().blinkFrames.length - 1) / 2);
-      const ease = value => value * value * (3 - 2 * value);
-      const blink = time => {
-        if (document.hidden || reducedMotion() || ['laugh','wink'].includes(expression)) { stopBlink(); return; }
-        const elapsed = time - start;
-        if (elapsed >= 320) { scheduleBlink(); return; }
-        // Fast closure, a brief closed pause, then a gentler opening.
-        blinkStep = elapsed < 95 ? middle * ease(elapsed / 95) : elapsed < 130 ? middle
-          : middle + (sprite().blinkFrames.length - 1 - middle) * ease((elapsed - 130) / 190);
-        setFrame(); blinkFrame = requestAnimationFrame(blink);
-      };
-      blinkFrame = requestAnimationFrame(blink);
+    blinkTimer = setTimeout(function blink() {
+      blinkStep++; setFrame();
+      if (blinkStep < sprite().blinkFrames.length - 1) blinkTimer = setTimeout(blink, 40);
+      else { blinkStep = 0; setFrame(); scheduleBlink(); }
     }, 3000 + Math.random() * 3500);
   };
   function updateLimits(limits) {
@@ -178,7 +127,7 @@
   }
   async function request(path, method = 'GET', data, authenticated = true, raw = false) {
     if (!apiBase) throw new Error('助手正在准备连接，稍后再来找我吧。');
-    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path.startsWith('/respond') ? 195000 : 60000);
+    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), path.startsWith('/respond') ? 330000 : 60000);
     try {
       const response = await fetch(apiBase + path, {method, headers: {...(data ? {'Content-Type': 'application/json'} : {}),
         ...(authenticated && token ? {'Authorization': 'Bearer ' + token} : {})}, body: data ? JSON.stringify(data) : undefined, signal: controller.signal});
@@ -223,7 +172,6 @@
     await sessionPromise;
   }
   function setOpen(value) {
-    resetLook();
     if (value && labVoiceRun) stopAudio();
     if (value) cancelArticle();
     opened = value; root.querySelector('.cp-panel').hidden = !value;
@@ -256,27 +204,31 @@
   function welcome() { addMessage({role: 'assistant', text: config.greeting}); }
   function readingContext() {
     if (!config.reading?.enabled || service?.reading === false || !document.querySelector('#post #article-container')) return null;
-    let anchor = '';
-    try { anchor = decodeURIComponent(location.hash.slice(1)); } catch (_) {}
+    let anchor = readingSelection && readingSelectionPath===location.pathname?readingSelectionAnchor:'';
     if (!anchor) {
       for (const heading of document.querySelectorAll('#article-container h1[id],#article-container h2[id],#article-container h3[id],#article-container h4[id]')) {
         if (heading.getBoundingClientRect().top <= 160) anchor = heading.id;
       }
     }
+    if(!anchor){try{anchor=decodeURIComponent(location.hash.slice(1));}catch{}}
     return {path: location.pathname, anchor,
-      selection: readingSelectionPath === location.pathname ? readingSelection : ''};
+      contentHash:document.querySelector('#post #article-container')?.dataset.companionHash||document.querySelector('meta[name="companion-content-hash"]')?.content||'',
+      selectionTruncated:readingSelectionTotal>(config.reading.maxSelection||2000),selection: readingSelectionPath === location.pathname ? readingSelection : ''};
   }
   function updateSelection() {
     if (!selectionBox) return;
     const text = readingSelectionPath === location.pathname ? readingSelection : '';
     selectionBox.hidden = !text || !readingList.hidden;
-    selectionBox.querySelector('span').textContent = text ? '一起看这段：' + [...text].slice(0, 40).join('') + ([...text].length > 40 ? '…' : '') : '';
+    selectionBox.querySelector('span').textContent = text ? '一起看这段：' + [...text].slice(0, 40).join('') + ([...text].length > 40 ? '…' : '')+(readingSelectionTotal>(config.reading.maxSelection||2000)?'（先读取前2000字）':'') : '';
   }
   function captureSelection() {
     const article = document.querySelector('#post #article-container'), selection = window.getSelection();
     if (!article || !selection?.rangeCount || selection.isCollapsed
       || !article.contains(selection.anchorNode) || !article.contains(selection.focusNode)) return;
-    readingSelection = [...selection.toString().trim()].slice(0, 800).join('');
+    const characters=[...selection.toString().trim()];readingSelectionTotal=characters.length;
+    readingSelection=characters.slice(0,config.reading.maxSelection||2000).join('');readingSelectionAnchor='';
+    const start=selection.getRangeAt(0).startContainer;
+    for(const heading of article.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]'))if(heading===start || heading.contains(start) || heading.compareDocumentPosition(start)&Node.DOCUMENT_POSITION_FOLLOWING)readingSelectionAnchor=heading.id;
     readingSelectionPath = location.pathname; updateSelection();
   }
   function articleHref(value) {
@@ -303,8 +255,10 @@
       const completed = labVoiceRun; labVoiceRun = null;
       stopAudio(); state('这一部分讲完啦，试试习题吧！'); completed.callbacks.onEnded?.(); return;
     }
+    const failure = pcmPlayback?.failure;
     const view = pcmPlayback?.view || narration?.view;
     stopAudio(); state('嘟嘟可也在听。'); applyReadingActions(view);
+    if(failure){report(failure);offerVoiceRetry(view);state('声音中途断开了，文字已经保留。');}
   }
   function showChat() {
     readingList.hidden = true; messageList.hidden = false; form.hidden = false; updateSelection(); renderStudy(currentStudy); textarea.focus();
@@ -371,6 +325,9 @@
   }
   function addSources(view) {
     const {message, item} = view;
+    renderReadingDetail(view);
+    const currentHash=document.querySelector('#post #article-container')?.dataset.companionHash;
+    if(currentHash && message.sources?.some(source=>{try{return new URL(source.url).pathname===location.pathname && source.contentHash && source.contentHash!==currentHash;}catch{return false;}}) && !item.querySelector('.cp-source-stale'))item.append(node('small','cp-source-stale','这条解释对应文章的旧版本。'));
     if (item.querySelector('.cp-sources')) return;
     if (message.sources?.length) {
       const links = node('div', 'cp-sources');
@@ -383,6 +340,33 @@
       });
       item.append(links);
     }
+  }
+  function renderReadingDetail(view){
+    const {message,item}=view;
+    if(message.reading && !item.querySelector('.cp-reading-range')){
+      const range=message.reading;item.append(node('small','cp-reading-range','阅读范围：'+range.label+(range.partial?'（部分内容）':'')));
+      if(range.nextCursor!==null && range.nextCursor!==undefined)item.append(button('继续读本节','cp-read-next',()=>studyPrompt('继续读本节的下一段')));
+    }
+    if(!message.detail || item.querySelector('.cp-answer-detail'))return;
+    const details=node('details','cp-answer-detail');details.open=true;
+    details.append(node('summary','','详细说明'));const body=node('div','cp-answer-body');
+    const inline=(parent,text)=>{for(const part of text.split(/(`[^`\n]+`|\*\*[^*\n]+\*\*)/g)){if(part.startsWith('`')&&part.endsWith('`'))parent.append(node('code','',part.slice(1,-1)));else if(part.startsWith('**')&&part.endsWith('**'))parent.append(node('strong','',part.slice(2,-2)));else parent.append(document.createTextNode(part));}};
+    let paragraph=[],codeLines=null;
+    const flush=()=>{if(!paragraph.length)return;const p=node('p');inline(p,paragraph.join('\n'));body.append(p);paragraph=[];};
+    const finishCode=()=>{const block=node('div','cp-code-block'),pre=node('pre'),code=node('code','',codeLines.join('\n'));
+      const copy=button('复制代码','cp-copy-code',async()=>{try{await navigator.clipboard.writeText(code.textContent);copy.textContent='已复制';}catch{copy.textContent='请选中代码复制';}});pre.append(code);block.append(copy,pre);body.append(block);codeLines=null;};
+    for(const line of String(message.detail).split('\n')){
+      if(/^\s*```/.test(line)){if(codeLines===null){flush();codeLines=[];}else finishCode();continue;}
+      if(codeLines!==null){codeLines.push(line);continue;}
+      if(!line.trim()){flush();continue;}
+      if(/^#{1,4}\s/.test(line)){flush();const heading=node('h4');inline(heading,line.replace(/^#+\s*/,''));body.append(heading);}
+      else paragraph.push(line);
+    }
+    if(codeLines!==null)finishCode();flush();details.append(body);
+    const controls=node('div','cp-detail-controls');controls.append(node('small','','语音讲解要点，完整内容见上方。'),button('展开阅读','cp-expand-reading',event=>{
+      const expanded=root.classList.toggle('cp-reading-expanded');event.currentTarget.textContent=expanded?'收起阅读':'展开阅读';
+    }));details.append(controls);item.append(details);
+    const math=window.MathJax;if(math?.typesetPromise)Promise.resolve(math.startup?.promise).then(()=>math.typesetPromise([body])).catch(()=>{});
   }
   function revealReply(view, count) {
     count = Math.max(view.revealed, Math.min(view.characters.length, count));
@@ -415,7 +399,7 @@
   async function submit(event) {
     event.preventDefault(); const text = textarea.value.trim(); if (!text || busy) return;
     if (send.disabled) return;
-    captureSelection(); const reading = readingContext();
+    captureSelection(); const reading = readingContext();report('');
     cancelWelcome(); busy = true; send.disabled = true; textarea.disabled = true; stopAudio(); const ticket = playbackTicket; state('唔，让可莉想想…');
     clearTimeout(reactionTimer); setPresence('thinking'); setExpression('thinking');
     primeAudio();
@@ -424,7 +408,7 @@
       await ensureSession(); addMessage({role: 'user', text}); textarea.value = '';
       view = addMessage({role: 'assistant', text: ''}, true);
       view.mood = expressionFor(text, 'happy');
-      const result = await request('/respond-stream', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true, ...(reading ? {reading} : {})}, true, data => receiveStream(data, view, ticket));
+      const result = await request('/respond-stream', 'POST', {text, requestId: crypto.randomUUID(), autoSpeak: true, voiceProtocol:2,readingProtocol:2, ...(reading ? {reading} : {})}, true, data => receiveStream(data, view, ticket));
       view.message = result; view.characters = [...result.text]; updateLimits(result.limits);
       readingSelection = ''; updateSelection();
       if (result.demo) report('本地演示：没有调用真实聊天模型。');
@@ -433,16 +417,19 @@
         if (ticket === playbackTicket && opened) { setPresence('idle'); setExpression(expressionFor(result.text, view.mood)); settleCharacter(); }
       }
     } catch (error) {
+      let deferred=false;
       if (view?.characters.length) {
         view.canAct = false;
         // A broken transport must not discard audio already buffered for this
         // reply. Explicit Stop / close / a new turn still cancel immediately.
-        if (pcmPlayback?.view === view) { flushPCM(pcmPlayback); pcmPlayback.finished = true; }
+        if (pcmPlayback?.view === view) {
+          flushPCM(pcmPlayback);pcmPlayback.finished=true;
+          if(pcmPlayback.sources.size){pcmPlayback.failure=error.message;deferred=true;state('正在播放已收到的声音…');}
+        }
         finishReply(view);
       }
       else { view?.item.remove(); textarea.value = text; }
-      report(error.message); state('再说一次好不好？');
-      setPresence('idle'); setExpression('care'); settleCharacter();
+      if(!deferred){report(error.message);state('再说一次好不好？');setPresence('idle');setExpression('care');settleCharacter();}
     }
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
@@ -574,6 +561,7 @@
     audio.play().then(() => { if (audio.src === silence) audio.pause(); }).catch(() => {});
   }
   function receiveStream(data, view, ticket) {
+    if(data.type==='reading-status'){state(data.status==='summarizing'?'正在读全文，第 '+data.current+' / '+data.total+' 组…':'正在读'+(data.label||'相关原文')+'…');return;}
     if (data.type === 'study') renderStudy(data.study);
     if (data.result && Object.hasOwn(data.result, 'study')) renderStudy(data.result.study);
     if (data.type === 'text') {
@@ -589,7 +577,7 @@
     if (ticket !== playbackTicket || !opened || document.hidden) { if (data.result) finishReply(view); return; }
     if (data.type === 'voice-status' && !root.classList.contains('cp-playing')) {
       view.voiceStatus = data.status;
-      state(data.status === 'reconnecting' ? '声音连接有点慢，正在重连…' : '可莉正在准备声音…');
+      state(data.status === 'resuming' ? '声音正在从上一句接着准备…' : data.status === 'reconnecting' ? '声音连接有点慢，正在重连…' : '可莉正在准备声音…');
     }
     if (data.type === 'text-end' && !root.classList.contains('cp-playing')) state(view.voiceStatus === 'reconnecting' ? '声音连接有点慢，正在重连…' : '文字好了，声音正在准备…');
     if (data.type === 'start' || (!pcmPlayback && ['audio','alignment'].includes(data.type))) {
@@ -624,13 +612,36 @@
       playing.pending.push(samples); playing.pendingSamples += samples.length;
       if (playing.pendingSamples >= 2880) flushPCM(playing);
     }
+    if(data.type === 'audio-trim' && playing) trimPCM(playing,data.offsetMs);
     if (data.type === 'done' || data.type === 'error') {
       view.canAct = data.type === 'done' && !data.replayed && !data.textOnly;
       if (playing) { flushPCM(playing); playing.finished = true; }
       if (data.textOnly || !playing?.spans.length) { stopAudio(); finishReply(view); }
-      if (data.type === 'error') { report(data.error); offerVoiceRetry(view); }
+      if (data.type === 'error') {
+        if(playing && pcmPlayback===playing && playing.sources.size){
+          // The provider can fail long before the queued audio reaches the
+          // speaker. Let it drain before showing the final failure/retry UI.
+          playing.failure=data.error;state('正在播放已收到的声音…');
+        }else{report(data.error);offerVoiceRetry(view);}
+      }
       else { report(''); if (data.textOnly) offerVoiceRetry(view); }
     }
+  }
+  function trimPCM(playing,offsetMs) {
+    if(!Number.isFinite(offsetMs) || offsetMs<0 || offsetMs/1000>playing.offset+playing.pendingSamples/24000+.001)throw new Error('语音续读位置无效。');
+    const cutoff=offsetMs/1000,clock=audioContext.currentTime;
+    playing.pending=[];playing.pendingSamples=0;
+    let nextTime=clock+.06;
+    for(const span of playing.spans){
+      if(span.offset>=cutoff){try{span.source.stop();}catch{}playing.sources.delete(span.source);}
+      else if(span.offset+span.duration>cutoff){
+        span.duration=cutoff-span.offset;nextTime=Math.max(nextTime,span.time+span.duration);
+        try{span.source.stop(Math.max(clock,span.time+span.duration));}catch{}
+      }else nextTime=Math.max(nextTime,span.time+span.duration);
+    }
+    playing.spans=playing.spans.filter(span=>span.offset<cutoff);playing.offset=cutoff;playing.nextTime=nextTime;
+    for(const [index,sentence] of playing.sentences)if(sentence.endTime===null || sentence.endTime>offsetMs)playing.sentences.delete(index);
+    playing.activeSentence=null;
   }
   function flushPCM(playing) {
     if (!playing.pendingSamples) return;
@@ -639,7 +650,7 @@
     playing.pending = []; playing.pendingSamples = 0;
     const source = audioContext.createBufferSource(); source.buffer = buffer; source.connect(analyser);
     const start = Math.max(playing.nextTime, audioContext.currentTime + (playing.nextTime ? .015 : .06));
-    playing.spans.push({time: start, offset: playing.offset, duration: buffer.duration});
+    playing.spans.push({time: start, offset: playing.offset, duration: buffer.duration,source});
     playing.offset += buffer.duration; playing.nextTime = start + buffer.duration; playing.sources.add(source);
     source.onended = () => { playing.sources.delete(source); source.disconnect(); };
     source.start(start);
@@ -793,16 +804,11 @@
   }
   function build() {
     root = node('aside', 'companion'); root.setAttribute('aria-label', config.name + '陪伴助手'); root.dataset.presence = 'idle';
-    const alignPixels = () => { root.style.setProperty('--cp-pixel', 1 / (window.devicePixelRatio || 1) + 'px'); resetLook(); };
-    alignPixels(); window.addEventListener('resize', alignPixels, {passive:true});
     const avatar = (interactive = false) => {
       const wrap = interactive ? button('', 'cp-avatar-wrap cp-character', greetCharacter) : node('div', 'cp-avatar-wrap');
       if (interactive) wrap.setAttribute('aria-label', '和可莉打个招呼');
-      const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.setProperty('--cp-atlas-image', 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')');
+      const el = node('div', 'cp-avatar'); el.setAttribute('aria-hidden', 'true'); el.style.backgroundImage = 'url(' + JSON.stringify(new URL(config.avatar, location.origin).href) + ')';
       const atlas = sprite(); el.style.backgroundSize = `${atlas.columns * 100}% ${atlas.rows * 100}%`;
-      // Lightweight layered portrait, not a Cubism model: the head and its
-      // facial overlays move together above the stationary shoulders.
-      const body = node('span', 'cp-body'), pivot = node('span', 'cp-head-sway'), head = node('span', 'cp-head');
       if (config.expressions) {
         const faces = config.expressions, eye = faces.eyeCenter || atlas.eyeCenter, lip = faces.mouthCenter || atlas.mouthCenter;
         for (const className of ['cp-face-back','cp-face-front']) {
@@ -813,20 +819,13 @@
           const eyes = node('span', 'cp-expression-eyes'), lips = node('span', 'cp-expression-mouth');
           eyes.style.maskImage = `radial-gradient(ellipse 27% 12% at ${eye[0]}% ${eye[1]}%, #000 80%, transparent 100%)`;
           lips.style.maskImage = `radial-gradient(ellipse 8% 6% at ${lip[0]}% ${lip[1]}%, #000 82%, transparent 100%)`;
-          layer.append(eyes, lips); head.append(layer);
+          layer.append(eyes, lips); el.append(layer);
         }
       }
-      const lips = node('span', 'cp-mouth'), eyes = node('span', 'cp-eyes'), eyesNext = node('span', 'cp-eyes-next');
-      lips.hidden = true; lips.setAttribute('aria-hidden', 'true');
+      const lips = node('span', 'cp-mouth'), eyes = node('span', 'cp-eyes'); lips.hidden = true; eyes.hidden = true;
       lips.style.clipPath = `ellipse(8% 6% at ${atlas.mouthCenter[0]}% ${atlas.mouthCenter[1]}%)`;
-      for (const layer of [eyes, eyesNext]) {
-        layer.hidden = true; layer.setAttribute('aria-hidden', 'true');
-        const center = atlas.eyeCenter;
-        layer.style.maskImage = `radial-gradient(ellipse 23% 9% at ${center[0]}% ${center[1]}%, #000 78%, transparent 100%)`;
-      }
-      portraitLayers.push({lips, eyes, eyesNext});
-      head.append(lips, eyes, eyesNext); pivot.append(head); el.append(body, pivot);
-      const breath = node('span', 'cp-breath'); breath.append(el); wrap.append(breath); return wrap;
+      eyes.style.clipPath = `ellipse(23% 9% at ${atlas.eyeCenter[0]}% ${atlas.eyeCenter[1]}%)`;
+      el.append(lips, eyes); const breath = node('span', 'cp-breath'); breath.append(el); wrap.append(breath); return wrap;
     };
     const launcher = button('', 'cp-launcher', () => setOpen(true)); launcher.setAttribute('aria-label', '与' + config.name + '聊天'); launcher.setAttribute('aria-expanded', 'false');
     launcher.setAttribute('aria-controls', 'companion-panel'); launcher.append(avatar(), node('span', 'cp-launcher-label', '来找可莉玩！'));
@@ -848,6 +847,7 @@
       const pause = button('先休息一下', '', () => studyPrompt('暂停学习')); pause.dataset.studyPrompt = 'pause';
       dataButtons.append(start, resume, pause);
     }
+    if(config.reading?.enabled)dataButtons.append(button('概括本节','',()=>studyPrompt('概括当前这一节')),button('概括全文','',()=>studyPrompt('概括整篇文章的主要内容')));
     if (config.reading?.enabled) dataButtons.append(button('稍后阅读', '', showReadLater), button('收藏这篇文章', '', async () => {
       const reading = readingContext();
       if (!reading) { report('先打开一篇文章，再一起收藏吧。'); return; }
@@ -871,7 +871,7 @@
     studyBox = node('section', 'cp-study'); studyBox.hidden = true; studyBox.setAttribute('aria-label', '一起学习');
     selectionBox = node('div', 'cp-selection'); selectionBox.hidden = true;
     const clearSelection = button('×', '', () => { readingSelection = ''; updateSelection(); }); clearSelection.setAttribute('aria-label', '取消选中内容');
-    selectionBox.append(node('span'), clearSelection);
+    selectionBox.append(node('span'),button('解释','',()=>studyPrompt('解释选中这段内容')),button('概括','',()=>studyPrompt('概括选中这段内容')), clearSelection);
     send = node('button', 'cp-primary', '告诉可莉'); send.type = 'submit'; form.append(textarea, send); form.addEventListener('submit', submit);
     textarea.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });
     textarea.addEventListener('input', () => {
@@ -894,12 +894,9 @@
     window.KleeLabVoice = {play: playLabVoice, stop: owner => { if (labVoiceRun?.owner === owner) stopAudio(); }};
     document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
-    document.addEventListener('pointermove', lookAtPointer, {passive:true});
-    document.documentElement.addEventListener('pointerleave', resetLook);
-    window.addEventListener('blur', resetLook);
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
     const pauseCharacter = () => {
-      clearTimeout(reactionTimer); clearTimeout(gestureTimer); stopBlink(); resetLook();
+      clearTimeout(reactionTimer); clearTimeout(gestureTimer); clearTimeout(blinkTimer);
       root.dataset.gesture = ''; setPresence(document.hidden ? 'hidden' : 'idle'); setExpression('neutral'); blinkStep = 0; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
@@ -911,7 +908,7 @@
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
     document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); if (event.target !== audio && labVoiceRun) stopAudio(); } }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
-      stopBlink(); resetLook(); clearTimeout(gestureTimer); mouth = 0; lastMouthChange = 0; root.dataset.gesture = ''; setFrame();
+      clearTimeout(blinkTimer); blinkStep = 0; clearTimeout(gestureTimer); mouth = 0; lastMouthChange = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
       root.querySelectorAll('.cp-face-back').forEach(layer => { layer.style.opacity = '0'; });
       if (!reducedMotion()) scheduleBlink();
