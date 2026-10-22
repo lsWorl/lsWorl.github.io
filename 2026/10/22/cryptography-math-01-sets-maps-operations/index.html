@@ -1,0 +1,1217 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>密码学数学基础（一）：集合、映射与二元运算 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f8f7fc"><meta name="description" content="根据数论与代数课件整理对数、数集、集合族与划分、单射满射双射、复合与逆映射、二元运算，通过图例、手算和巩固练习理解基础符号。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="密码学数学基础（一）：集合、映射与二元运算">
+<meta property="og:url" content="https://lsworl.top/2026/10/22/cryptography-math-01-sets-maps-operations/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="根据数论与代数课件整理对数、数集、集合族与划分、单射满射双射、复合与逆映射、二元运算，通过图例、手算和巩固练习理解基础符号。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp">
+<meta property="article:published_time" content="2026-10-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-22T15:34:00.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="密码学">
+<meta property="article:tag" content="数论">
+<meta property="article:tag" content="抽象代数">
+<meta property="article:tag" content="集合">
+<meta property="article:tag" content="映射">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "密码学数学基础（一）：集合、映射与二元运算",
+  "url": "https://lsworl.top/2026/10/22/cryptography-math-01-sets-maps-operations/",
+  "image": "https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp",
+  "datePublished": "2026-10-21T16:00:00.000Z",
+  "dateModified": "2026-10-22T15:34:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.top"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/starlab/mark.svg"><link rel="canonical" href="https://lsworl.top/2026/10/22/cryptography-math-01-sets-maps-operations/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#151523')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f8f7fc')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '密码学数学基础（一）：集合、映射与二元运算',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/assets/starlab.e2ed3441c4bc.css" data-starlab-assets><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+<script type="application/ld+json" class="lab-artwork-metadata">{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2021.webp","name":"可莉 2021 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© miHoYo","isBasedOn":"https://twitter.com/GenshinImpact/status/1419870158143721476","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2022.webp","name":"可莉 2022 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1552141732321628160","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp","name":"可莉 2023 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1684413674231037952","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp","name":"可莉 2024 年生日插画","creditText":"tokki","creator":{"@type":"Person","name":"tokki","url":"https://twitter.com/tokki_517"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1817047433395994971","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"}]}</script><meta name="companion-content-hash" content="a53fe8bf94f2d68e4be782b2"><meta name="companion-knowledge-version" content="870beab5e5f7463289df2efc"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">129</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">156</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/starlab/mark.svg" alt="Logo"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">密码学数学基础（一）：集合、映射与二元运算</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">密码学数学基础（一）：集合、映射与二元运算</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-21T16:00:00.000Z" title="发表于 2026-10-22 00:00:00">2026-10-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-22T15:34:00.000Z" title="更新于 2026-10-22 23:34:00">2026-10-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><div class="lab-article-cover"><img src="/images/starlab/covers/klee-birthday-2023.webp" alt="密码学数学基础（一）：集合、映射与二元运算 · 主题封面" width="1280" height="720" decoding="async" fetchpriority="high"></div><p class="lab-cover-credit">插画：原神官方</p><article class="container post-content" id="article-container" data-companion-hash="a53fe8bf94f2d68e4be782b2" data-companion-version="870beab5e5f7463289df2efc"><p>读密码学里的数学表达式，第一步不是记住复杂定理，而是知道：<strong>对象属于什么集合、映射把它送到哪里、运算能不能做、做完能不能还原。</strong></p>
+<p>本文整理《Number Theory and Algebra in Cryptography》Lecture 1 的知识部分。重点是概念的使用、具体计算和容易混淆的记号，不展开公理体系与长篇证明。</p>
+<p>例如，看到下面的式子时，应该能判断它的输入范围、计算顺序，以及逆运算的顺序：</p>
+
+$$
+E=g\circ f,\qquad E^{-1}=f^{-1}\circ g^{-1}
+$$
+
+
+<span id="more"></span>
+
+<h2 id="1-对数与指数：先确认底数"><a href="#1-对数与指数：先确认底数" class="headerlink" title="1. 对数与指数：先确认底数"></a>1. 对数与指数：先确认底数</h2><p>课件采用以下约定：</p>
+<table>
+<thead>
+<tr>
+<th>记号</th>
+<th>含义</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\log x$</td>
+<td>自然对数，也就是 $\ln x$</td>
+<td>$\log e=1$</td>
+</tr>
+<tr>
+<td>$\log_b x$</td>
+<td>以 $b$ 为底的对数</td>
+<td>$\log_2 8=3$</td>
+</tr>
+<tr>
+<td>$e^x$、$\exp[x]$</td>
+<td>自然指数函数</td>
+<td>$\exp[0]=1$</td>
+</tr>
+</tbody></table>
+<p>在实数范围内，$\log_b x$ 要求 $x&gt;0$、$b&gt;0$ 且 $b\ne1$。</p>
+<p>对数回答的问题是：“底数乘方多少次，可以得到这个数？”</p>
+
+$$
+2^5=32\quad\Longleftrightarrow\quad\log_2 32=5
+$$
+
+
+<p>换底公式可以把不同底数的对数联系起来：</p>
+
+$$
+\log_b x=\frac{\ln x}{\ln b}
+$$
+
+
+<p>比如有 $2^8=256$ 种可能，那么 $\log_2 256=8$。长度为 8 的二进制串恰好也有 256 种，因为每个位置有两种选择。</p>
+<p><strong>不要混淆“可能性的数量”和“一个整数的二进制位数”。</strong> 对正整数 $n$，其二进制位数是：</p>
+
+$$
+\lfloor\log_2 n\rfloor+1
+$$
+
+
+<p>因此整数 256 的二进制写法是 <code>100000000</code>，有 9 位；但表示从 0 到 255 的 256 种取值，只需要 8 位。</p>
+<p>这里讨论的是普通实数对数。后续密码学中的“离散对数”是另一类问题，不能直接用普通的 <code>log</code> 函数求解。</p>
+<h2 id="2-常见数集与自然数约定"><a href="#2-常见数集与自然数约定" class="headerlink" title="2. 常见数集与自然数约定"></a>2. 常见数集与自然数约定</h2><table>
+<thead>
+<tr>
+<th>数集</th>
+<th>记号</th>
+<th>元素示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>自然数</td>
+<td>$\mathbb N$</td>
+<td>$0,1,2,\ldots$</td>
+</tr>
+<tr>
+<td>整数</td>
+<td>$\mathbb Z$</td>
+<td>$\ldots,-2,-1,0,1,2,\ldots$</td>
+</tr>
+<tr>
+<td>有理数</td>
+<td>$\mathbb Q$</td>
+<td>能写成 $a/b$ 的数，其中 $a,b\in\mathbb Z$、$b\ne0$</td>
+</tr>
+<tr>
+<td>实数</td>
+<td>$\mathbb R$</td>
+<td>有理数以及 $\sqrt2$、$\pi$ 等无理数</td>
+</tr>
+<tr>
+<td>复数</td>
+<td>$\mathbb C$</td>
+<td>$a+bi$，其中 $a,b\in\mathbb R$、$i^2=-1$</td>
+</tr>
+</tbody></table>
+<p>它们满足：</p>
+
+$$
+\mathbb N\subsetneq\mathbb Z\subsetneq\mathbb Q
+\subsetneq\mathbb R\subsetneq\mathbb C
+$$
+
+
+<p><strong>本文把 0 算作自然数。</strong> 有些教材从 1 开始定义自然数，所以遇到 $\mathbb N$ 时要先看作者的约定。</p>
+<p>课件还列出了 Peano 公理。就后续读写算法而言，可以先抓住“从 0 开始，通过后继不断得到下一个自然数”的思路；第五条对应数学归纳法：先验证起点，再说明“对 $n$ 成立就对 $n+1$ 成立”。这里不展开公理化构造。</p>
+<p>复数运算已经在<a href="/2023/10/19/fu-bian-han-shu-fu-shu-yu-fu-bian-han-shu/">复数与复变函数的基础文章</a>中整理，本文不重复展开。</p>
+<h2 id="3-集合：元素、子集与集合运算"><a href="#3-集合：元素、子集与集合运算" class="headerlink" title="3. 集合：元素、子集与集合运算"></a>3. 集合：元素、子集与集合运算</h2><h3 id="3-1-属于和包含不是一回事"><a href="#3-1-属于和包含不是一回事" class="headerlink" title="3.1 属于和包含不是一回事"></a>3.1 属于和包含不是一回事</h3><p>设：</p>
+
+$$
+A=\{1,2,3\},\qquad B=\{2,3,4\}
+$$
+
+
+<p>那么：</p>
+<ul>
+<li>$1\in A$：1 是集合 $A$ 的一个元素。</li>
+<li>$\{1\}\subseteq A$：集合 $\{1\}$ 的每个元素都属于 $A$。</li>
+<li>$\{1,2\}\subsetneq A$：它是 $A$ 的子集，但不等于 $A$，所以是真子集。</li>
+<li>$A\subseteq A$ 成立，但 $A\subsetneq A$ 不成立。</li>
+</ul>
+<p>不能把 $1\in A$ 随意写成 $1\subseteq A$；前者讨论“元素与集合”，后者需要讨论“集合与集合”。</p>
+<h3 id="3-2-并、交、差分别在选什么"><a href="#3-2-并、交、差分别在选什么" class="headerlink" title="3.2 并、交、差分别在选什么"></a>3.2 并、交、差分别在选什么</h3><table>
+<thead>
+<tr>
+<th>运算</th>
+<th>选择规则</th>
+<th>上面例子的结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$A\cup B$</td>
+<td>属于 $A$ 或属于 $B$</td>
+<td>$\{1,2,3,4\}$</td>
+</tr>
+<tr>
+<td>$A\cap B$</td>
+<td>同时属于 $A$ 和 $B$</td>
+<td>$\{2,3\}$</td>
+</tr>
+<tr>
+<td>$A\setminus B$</td>
+<td>属于 $A$，但不属于 $B$</td>
+<td>$\{1\}$</td>
+</tr>
+<tr>
+<td>$B\setminus A$</td>
+<td>属于 $B$，但不属于 $A$</td>
+<td>$\{4\}$</td>
+</tr>
+</tbody></table>
+<p>差集通常不满足交换律：$A\setminus B\ne B\setminus A$。</p>
+<p>集合不保留重复次数，也不以书写顺序区分：</p>
+
+$$
+\{1,1,2\}=\{1,2\}=\{2,1\}
+$$
+
+
+<p>有限集合的元素个数叫作基数，记作 $|A|$。这里 $|A|=3$，$|A\cap B|=2$，因此：</p>
+
+$$
+|A\cup B|=|A|+|B|-|A\cap B|=3+3-2=4
+$$
+
+
+<p>减去交集，是因为 2 和 3 在前两项中各被数了两次。</p>
+<h3 id="3-3-空集与“装着空集的集合”"><a href="#3-3-空集与“装着空集的集合”" class="headerlink" title="3.3 空集与“装着空集的集合”"></a>3.3 空集与“装着空集的集合”</h3>$\varnothing$ 没有任何元素，所以 $|\varnothing|=0$。但 $\{\varnothing\}$ 有一个元素，这个元素恰好是空集，因此：
+
+
+$$
+\varnothing\ne\{\varnothing\},\qquad |\{\varnothing\}|=1
+$$
+
+
+<p>空集是任何集合的子集，但不一定是任何集合的元素。例如对 $A=\{1,2,3\}$，有 $\varnothing\subseteq A$，却没有 $\varnothing\in A$。</p>
+<h2 id="4-笛卡尔积：把多个选择组成有序输入"><a href="#4-笛卡尔积：把多个选择组成有序输入" class="headerlink" title="4. 笛卡尔积：把多个选择组成有序输入"></a>4. 笛卡尔积：把多个选择组成有序输入</h2><p>设：</p>
+
+$$
+A=\{0,1\},\qquad B=\{a,b,c\}
+$$
+
+
+<p>笛卡尔积是所有有序对的集合：</p>
+
+$$
+A\times B=\{(0,a),(0,b),(0,c),(1,a),(1,b),(1,c)\}
+$$
+
+
+<p>第一个位置从 $A$ 中选，第二个位置从 $B$ 中选，所以：</p>
+
+$$
+|A\times B|=|A|\,|B|=2\times3=6
+$$
+
+
+<p>有序对和普通集合不同：$(0,1)\ne(1,0)$，因为位置代表不同角色。因此通常不能把 $A\times B$ 和 $B\times A$ 当作同一个集合。</p>
+<h3 id="4-1-多个位置组成元组"><a href="#4-1-多个位置组成元组" class="headerlink" title="4.1 多个位置组成元组"></a>4.1 多个位置组成元组</h3>$S_1\times\cdots\times S_n$ 中的元素是 $(a_1,\ldots,a_n)$，其中每个 $a_i\in S_i$。
+
+<p>课件专门使用 $S^{\times n}$ 表示 $n$ 份 $S$ 的笛卡尔积，以免和其他用途的 $S^n$ 混淆。于是：</p>
+
+$$
+\{0,1\}^{\times3}
+=\{(0,0,0),(0,0,1),\ldots,(1,1,1)\}
+$$
+
+
+<p>这个集合包含 $2^3=8$ 个三元组。更一般地，长度为 $n$ 的二进制串有 $2^n$ 种。</p>
+<p>课件还用 $x^{\times n}$ 表示重复的元组 $(x,\ldots,x)$。例如 $1^{\times3}=(1,1,1)$，<strong>不是数值乘方 $1^3$</strong>。这是课件的特定记号，阅读时要看上下文。</p>
+<h2 id="5-族与序列：保留“索引对应哪个对象”"><a href="#5-族与序列：保留“索引对应哪个对象”" class="headerlink" title="5. 族与序列：保留“索引对应哪个对象”"></a>5. 族与序列：保留“索引对应哪个对象”</h2><p>设索引集合 $I=\{1,2,3\}$，并指定：</p>
+
+$$
+x_1=5,\qquad x_2=5,\qquad x_3=9
+$$
+
+
+<p>这时有三个不同概念：</p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>关注什么</th>
+<th>是否保留重复对应</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>集合 $\{x_i:i\in I\}=\{5,9\}$</td>
+<td>出现过哪些值</td>
+<td>不保留重复次数</td>
+</tr>
+<tr>
+<td>族 $(x_i)_{i\in I}$</td>
+<td>每个索引对应什么</td>
+<td>保留 $x_1=x_2$ 这两个位置</td>
+</tr>
+<tr>
+<td>序列 $(5,5,9)$</td>
+<td>按索引顺序排列的值</td>
+<td>保留顺序和重复</td>
+</tr>
+</tbody></table>
+<p>课件把族写成 $\{x_i\}_{i\in I}$。本文有时用圆括号 $(x_i)_{i\in I}$，只是为了在视觉上与普通集合区分。</p>
+<p><strong>族并不要求有顺序。</strong> 只有当索引集带有相应顺序时，才能按索引排列；由连续整数索引的族，就是这里讨论的序列。</p>
+<p>还可以把族看成一个函数：</p>
+
+$$
+f:I\to\{5,9\},\qquad f(1)=5,\ f(2)=5,\ f(3)=9
+$$
+
+
+<p>“族”和“函数”的对应关系很直接：<strong>索引是输入，被索引的对象是输出。</strong></p>
+<h2 id="6-集合族、两两不交与划分"><a href="#6-集合族、两两不交与划分" class="headerlink" title="6. 集合族、两两不交与划分"></a>6. 集合族、两两不交与划分</h2><h3 id="6-1-多个集合的并与交"><a href="#6-1-多个集合的并与交" class="headerlink" title="6.1 多个集合的并与交"></a>6.1 多个集合的并与交</h3><p>设：</p>
+
+$$
+S_1=\{0,1,2\},\quad S_2=\{1,2,3\},\quad S_3=\{2,3,4\}
+$$
+
+
+<p>则：</p>
+
+$$
+\bigcup_{i=1}^{3}S_i=\{0,1,2,3,4\},\qquad
+\bigcap_{i=1}^{3}S_i=\{2\}
+$$
+
+
+<ul>
+<li>$x\in\bigcup_{i\in I}S_i$：<strong>至少存在一个</strong> $i$，使 $x\in S_i$。</li>
+<li>$x\in\bigcap_{i\in I}S_i$：<strong>对每个</strong> $i$，都有 $x\in S_i$。</li>
+</ul>
+<p>课件讨论交集时要求 $I\ne\varnothing$。如果要讨论空索引族的交集，就需要额外说明所在的全集等约定，不在这里直接套用非空情形的直觉。</p>
+<h3 id="6-2-“两两不交”比“总交集为空”更强"><a href="#6-2-“两两不交”比“总交集为空”更强" class="headerlink" title="6.2 “两两不交”比“总交集为空”更强"></a>6.2 “两两不交”比“总交集为空”更强</h3>$S_i\cap S_j=\varnothing$ 对任意不同的 $i,j$ 都成立，才叫两两不交。
+
+<p>例如：</p>
+
+$$
+T_1=\{1,2\},\quad T_2=\{2,3\},\quad T_3=\{1,3\}
+$$
+
+
+<p>虽然 $T_1\cap T_2\cap T_3=\varnothing$，但 $T_1\cap T_2=\{2\}$，所以它们并非两两不交。</p>
+<h3 id="6-3-划分：每个元素恰好进入一个分组"><a href="#6-3-划分：每个元素恰好进入一个分组" class="headerlink" title="6.3 划分：每个元素恰好进入一个分组"></a>6.3 划分：每个元素恰好进入一个分组</h3><p>要把集合 $S$ 划分成若干组，需要同时满足：</p>
+<ol>
+<li>每组非空。</li>
+<li>不同组两两不交。</li>
+<li>所有组的并集等于 $S$，不能遗漏元素。</li>
+</ol>
+<p>例如把 $S=\{0,1,\ldots,8\}$ 按除以 3 的余数分组：</p>
+
+$$
+P_0=\{0,3,6\},\quad P_1=\{1,4,7\},\quad P_2=\{2,5,8\}
+$$
+
+
+<p><img src="/images/cryptography/lecture-1-partition.svg" alt="集合的划分：三个非空分组互不重叠，并覆盖0至8"></p>
+<p>9 个元素全部出现，且每个只出现一次，因此这三个组构成 $S$ 的一个划分。模运算、等价类等后续知识，会反复使用这种“按规则分组”的思路。</p>
+<h2 id="7-区间与无穷：边界属于不属于集合"><a href="#7-区间与无穷：边界属于不属于集合" class="headerlink" title="7. 区间与无穷：边界属于不属于集合"></a>7. 区间与无穷：边界属于不属于集合</h2><p>对实数 $a\le b$：</p>
+<table>
+<thead>
+<tr>
+<th>区间</th>
+<th>条件</th>
+<th>端点情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$[a,b]$</td>
+<td>$a\le x\le b$</td>
+<td>两端都包含</td>
+</tr>
+<tr>
+<td>$(a,b)$</td>
+<td>$a&lt;x&lt;b$</td>
+<td>两端都不包含</td>
+</tr>
+<tr>
+<td>$[a,b)$</td>
+<td>$a\le x&lt;b$</td>
+<td>只包含左端</td>
+</tr>
+<tr>
+<td>$(a,b]$</td>
+<td>$a&lt;x\le b$</td>
+<td>只包含右端</td>
+</tr>
+</tbody></table>
+<p>例如 $2\in[2,5)$，但 $5\notin[2,5)$。区间描述的是实数范围，$[2,5)$ 不是只有整数 2、3、4，还包含 2.5 等实数。</p>
+<p>还可以写 $[0,\infty)$ 或 $(-\infty,3]$。这里 $\pm\infty$ <strong>不是实数元素</strong>，所以无穷一端不用表示“包含端点”的方括号。</p>
+<p>在扩展实数的相应约定下，对有限实数 $x$，可以写 $x+\infty=\infty$，但不能把无穷当作普通数随意消去：</p>
+
+$$
+\infty-\infty,\qquad 0\cdot\infty
+$$
+
+
+<p>在这里都没有定义。若它们出现在极限问题中，是需要进一步分析的不定式，而不是已经算出了一个值。</p>
+<h2 id="8-函数与映射：输入范围也是定义的一部分"><a href="#8-函数与映射：输入范围也是定义的一部分" class="headerlink" title="8. 函数与映射：输入范围也是定义的一部分"></a>8. 函数与映射：输入范围也是定义的一部分</h2><p>写出：</p>
+
+$$
+f:A\to B
+$$
+
+
+<p>意味着对每个 $a\in A$，都有<strong>唯一一个</strong> $f(a)\in B$。</p>
+<ul>
+<li>$A$ 是定义域：允许输入什么。</li>
+<li>$B$ 是陪域：声明输出属于哪个集合。</li>
+<li>$f(A)=\{f(a):a\in A\}$ 是像集，也常称实际值域：真正能得到哪些输出。</li>
+</ul>
+<p>一定有 $f(A)\subseteq B$，但不一定等于 $B$。为了避免“值域”一词在不同教材中的用法差异，下面统一区分“陪域”和“像集”。</p>
+<p>例如 $f:\mathbb R\to\mathbb R$、$f(x)=x^2$ 的像集是 $[0,\infty)$，不是整个陪域 $\mathbb R$。</p>
+<h3 id="8-1-单射：不同输入不碰到同一个输出"><a href="#8-1-单射：不同输入不碰到同一个输出" class="headerlink" title="8.1 单射：不同输入不碰到同一个输出"></a>8.1 单射：不同输入不碰到同一个输出</h3><p>单射要求：</p>
+
+$$
+f(a)=f(b)\Longrightarrow a=b
+$$
+
+
+<p>等价地，$a\ne b$ 时必有 $f(a)\ne f(b)$。它不要求陪域的每个元素都被用上。</p>
+<p>例：$A=\{0,1,2\}$、$B=\{a,b,c,d\}$，指定 $0\mapsto a$、$1\mapsto b$、$2\mapsto c$。这是单射，虽然没有输入映到 $d$。</p>
+<h3 id="8-2-满射：陪域里的每个元素都能被取到"><a href="#8-2-满射：陪域里的每个元素都能被取到" class="headerlink" title="8.2 满射：陪域里的每个元素都能被取到"></a>8.2 满射：陪域里的每个元素都能被取到</h3><p>满射要求 $f(A)=B$，即每个 $b\in B$ 都有至少一个原像。</p>
+<p>例：$A=\{0,1,2\}$、$B=\{a,b\}$，指定 $0\mapsto a$、$1\mapsto b$、$2\mapsto a$。这是满射，但 0 和 2 碰到了同一个输出，因此不是单射。</p>
+<h3 id="8-3-双射：既不碰撞，也不遗漏"><a href="#8-3-双射：既不碰撞，也不遗漏" class="headerlink" title="8.3 双射：既不碰撞，也不遗漏"></a>8.3 双射：既不碰撞，也不遗漏</h3><p>同时满足单射和满射，就叫双射。例如在 $A=\{0,1,2\}$、$B=\{a,b,c\}$ 之间，指定 $0\mapsto c$、$1\mapsto a$、$2\mapsto b$，便得到双射。</p>
+<p><img src="/images/cryptography/lecture-1-mappings.svg" alt="单射、满射、双射的三个有限集合例子"></p>
+<p>对元素数相等的两个<strong>有限集合</strong>，单射和满射等价；不能把“有限且元素数相等”的前提丢掉。例如 $f:\mathbb N\to\mathbb N$、$f(n)=n+1$ 是单射，却取不到 0，所以不是满射。</p>
+<h3 id="8-4-同一个公式，改变集合后性质会改变"><a href="#8-4-同一个公式，改变集合后性质会改变" class="headerlink" title="8.4 同一个公式，改变集合后性质会改变"></a>8.4 同一个公式，改变集合后性质会改变</h3><p>仍用 $f(x)=x^2$：</p>
+<table>
+<thead>
+<tr>
+<th>定义域 → 陪域</th>
+<th>单射？</th>
+<th>满射？</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\mathbb R\to\mathbb R$</td>
+<td>否</td>
+<td>否</td>
+<td>$f(-1)=f(1)$，而负数取不到</td>
+</tr>
+<tr>
+<td>$\mathbb R\to[0,\infty)$</td>
+<td>否</td>
+<td>是</td>
+<td>每个非负数都能取到，但正负输入仍会碰撞</td>
+</tr>
+<tr>
+<td>$[0,\infty)\to[0,\infty)$</td>
+<td>是</td>
+<td>是</td>
+<td>非负输入与非负输出一一对应</td>
+</tr>
+</tbody></table>
+<p>因此，判断函数性质时，不能只看公式。</p>
+<h2 id="9-逆映射、恒等映射、限制与扩张"><a href="#9-逆映射、恒等映射、限制与扩张" class="headerlink" title="9. 逆映射、恒等映射、限制与扩张"></a>9. 逆映射、恒等映射、限制与扩张</h2><h3 id="9-1-逆映射不是倒数"><a href="#9-1-逆映射不是倒数" class="headerlink" title="9.1 逆映射不是倒数"></a>9.1 逆映射不是倒数</h3><p>若 $f:A\to B$ 是双射，才能在整个 $B$ 上定义双侧逆映射 $f^{-1}:B\to A$，使：</p>
+
+$$
+f^{-1}(f(a))=a,\qquad f(f^{-1}(b))=b
+$$
+
+
+<p>例如 $f:\mathbb R\to\mathbb R$、$f(x)=2x+1$，由 $y=2x+1$ 解出 $x$：</p>
+
+$$
+f^{-1}(y)=\frac{y-1}{2}
+$$
+
+
+<p>所以 $f(3)=7$、$f^{-1}(7)=3$。这里 $f^{-1}(y)$ 不是 $1/f(y)$。</p>
+<p>单射但非满射的函数，可以在自己的<strong>像集</strong>上反向还原，却不能在声明的整个陪域上拥有双侧逆映射。</p>
+<p>还有一种容易混淆的写法是集合的原像。即使 $f(x)=x^2$ 在 $\mathbb R$ 上没有逆函数，仍可以写 $f^{-1}(\{1\})=\{-1,1\}$；这里输入的是一个集合，表示“所有映到这个集合里的输入”，并不表示存在逆函数。</p>
+<h3 id="9-2-恒等映射与包含映射"><a href="#9-2-恒等映射与包含映射" class="headerlink" title="9.2 恒等映射与包含映射"></a>9.2 恒等映射与包含映射</h3><p>恒等映射 $\operatorname{id}_A:A\to A$ 不改变元素：</p>
+
+$$
+\operatorname{id}_A(a)=a
+$$
+
+
+<p>若 $A'\subseteq A$，包含映射 $i:A'\to A$ 也规定 $i(a)=a$，但它把同一个元素视为更大集合中的元素。若 $A'\subsetneq A$，这个包含映射是单射，却不是满射。</p>
+<h3 id="9-3-限制与扩张：规则不变，允许的输入改变"><a href="#9-3-限制与扩张：规则不变，允许的输入改变" class="headerlink" title="9.3 限制与扩张：规则不变，允许的输入改变"></a>9.3 限制与扩张：规则不变，允许的输入改变</h3><p>给定 $f:A\to B$ 和 $A'\subseteq A$，把 $f$ 的输入限制在 $A'$ 上，得到：</p>
+
+$$
+f|_{A'}:A'\to B,\qquad f|_{A'}(a)=f(a)
+$$
+
+
+<p>例如把 $f:\mathbb R\to\mathbb R$、$f(x)=x^2$ 限制在 $A'=\{-2,-1,0,1,2\}$ 上，它的像集变成 $\{0,1,4\}$，但公式仍是平方。</p>
+<p>反过来，如果一个更大定义域上的函数在原定义域内与旧函数一致，就叫旧函数的一个扩张。扩张只要求原来部分的值不变，不保证一定存在或唯一，也不自动要求连续等额外性质。</p>
+<h2 id="10-函数复合：从右向左执行"><a href="#10-函数复合：从右向左执行" class="headerlink" title="10. 函数复合：从右向左执行"></a>10. 函数复合：从右向左执行</h2><p>若 $f:A\to B$、$g:B\to C$，复合映射为：</p>
+
+$$
+g\circ f:A\to C,\qquad (g\circ f)(a)=g(f(a))
+$$
+
+
+<p><strong>右边的函数先执行。</strong> $g\circ f$ 是先做 $f$，再做 $g$。</p>
+<p>设 $f(x)=x+1$、$g(x)=2x$，都在实数上定义，则：</p>
+
+$$
+(g\circ f)(3)=g(4)=8,\qquad
+(f\circ g)(3)=f(6)=7
+$$
+
+
+<p>这说明函数复合一般不满足交换律。更一般地，要先确认前一步的实际输出能作为后一步输入；若集合接不上，连复合本身都可能无法按声明定义。</p>
+<h3 id="10-1-复合满足结合律，不意味着可以换顺序"><a href="#10-1-复合满足结合律，不意味着可以换顺序" class="headerlink" title="10.1 复合满足结合律，不意味着可以换顺序"></a>10.1 复合满足结合律，不意味着可以换顺序</h3><p>当映射的定义域、陪域衔接时：</p>
+
+$$
+(h\circ g)\circ f=h\circ(g\circ f)
+$$
+
+
+<p>左右两边都是对输入先做 $f$，再做 $g$，最后做 $h$。改变括号不改变执行顺序，但把函数前后交换是另一回事。</p>
+<h3 id="10-2-复合的逆，要倒着撤销"><a href="#10-2-复合的逆，要倒着撤销" class="headerlink" title="10.2 复合的逆，要倒着撤销"></a>10.2 复合的逆，要倒着撤销</h3><p>若 $f$、$g$ 都是双射：</p>
+
+$$
+(g\circ f)^{-1}=f^{-1}\circ g^{-1}
+$$
+
+
+<p>上面的输入 3 经过“加 1，再乘 2”变成 8，还原时必须“先除以 2，再减 1”：</p>
+
+$$
+8\xrightarrow{g^{-1}}4\xrightarrow{f^{-1}}3
+$$
+
+
+<p>不能仍按正向顺序撤销，否则先减 1、再除以 2 会得到 3.5。</p>
+<h2 id="11-映射的幂：重复执行，不是把输出乘方"><a href="#11-映射的幂：重复执行，不是把输出乘方" class="headerlink" title="11. 映射的幂：重复执行，不是把输出乘方"></a>11. 映射的幂：重复执行，不是把输出乘方</h2><p>当 $f:A\to A$ 时，可以反复把输出送回同一个函数：</p>
+
+$$
+f^2=f\circ f,\qquad f^3=f\circ f\circ f,\qquad
+f^0=\operatorname{id}_A
+$$
+
+
+<p>比如 $f(x)=x+1$：</p>
+
+$$
+f^2(3)=f(f(3))=f(4)=5
+$$
+
+
+<p>而 $(f(3))^2=4^2=16$。<strong>映射的复合幂与函数值的数值乘方不同。</strong></p>
+<p>若 $f$ 是双射，还能重复执行逆映射，记作 $f^{-n}=(f^{-1})^n$。这里 $f^{-2}(3)=1$。</p>
+<p>某些教材又会用 $\sin^2 x$ 表示 $(\sin x)^2$，因此看到上标时要结合作者约定；本文的 $f^n$ 沿用课件的复合幂含义。</p>
+<h2 id="12-二元运算：两个输入，输出仍在同一个集合"><a href="#12-二元运算：两个输入，输出仍在同一个集合" class="headerlink" title="12. 二元运算：两个输入，输出仍在同一个集合"></a>12. 二元运算：两个输入，输出仍在同一个集合</h2><p>集合 $S$ 上的二元运算，是一个映射：</p>
+
+$$
+\star:S\times S\to S,\qquad (a,b)\mapsto a\star b
+$$
+
+
+<p>这个定义同时要求：对 $S$ 中的<strong>每一对</strong>输入，结果都存在、唯一，并且仍属于 $S$。</p>
+<table>
+<thead>
+<tr>
+<th>集合与运算</th>
+<th>是该集合上的二元运算吗？</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>整数上的加法</td>
+<td>是</td>
+<td>任意两个整数相加仍是整数</td>
+</tr>
+<tr>
+<td>整数上的减法</td>
+<td>是</td>
+<td>结果仍是整数，不要求交换律或结合律</td>
+</tr>
+<tr>
+<td>自然数上的减法</td>
+<td>否</td>
+<td>$1-2=-1\notin\mathbb N$</td>
+</tr>
+<tr>
+<td>有理数上的除法</td>
+<td>否</td>
+<td>分母可以为 0，并非每一对输入都有结果</td>
+</tr>
+<tr>
+<td>非零有理数上的除法</td>
+<td>是</td>
+<td>除数非零，结果也非零</td>
+</tr>
+</tbody></table>
+<h3 id="12-1-结合律：允许改变括号"><a href="#12-1-结合律：允许改变括号" class="headerlink" title="12.1 结合律：允许改变括号"></a>12.1 结合律：允许改变括号</h3><p>结合律要求：</p>
+
+$$
+(a\star b)\star c=a\star(b\star c)
+$$
+
+
+<p>加法满足结合律。但减法不满足：</p>
+
+$$
+(5-3)-1=1,\qquad 5-(3-1)=3
+$$
+
+
+<p>因此不能因为减法是二元运算，就直接省略括号而不说明规则。</p>
+<h3 id="12-2-交换律：允许交换两个输入的位置"><a href="#12-2-交换律：允许交换两个输入的位置" class="headerlink" title="12.2 交换律：允许交换两个输入的位置"></a>12.2 交换律：允许交换两个输入的位置</h3><p>交换律要求 $a\star b=b\star a$。加法满足交换律，字符串拼接则不满足：<code>&quot;ab&quot; + &quot;cd&quot;</code> 得到 <code>&quot;abcd&quot;</code>，交换后得到 <code>&quot;cdab&quot;</code>。</p>
+<p>但字符串拼接满足结合律：无论先拼接前两个还是后两个，<code>&quot;a&quot;</code>、<code>&quot;b&quot;</code>、<code>&quot;c&quot;</code> 最后都得到 <code>&quot;abc&quot;</code>。这说明<strong>结合律与交换律是两个独立的问题</strong>。</p>
+<p>反方向也有例子：在实数上定义 $a\star b=(a+b)/2$，这个运算满足交换律，却不满足结合律：</p>
+
+$$
+(0\star0)\star2=1,\qquad 0\star(0\star2)=\frac12
+$$
+
+
+<h3 id="12-3-子集的封闭性：缩小范围后还能不能一直算"><a href="#12-3-子集的封闭性：缩小范围后还能不能一直算" class="headerlink" title="12.3 子集的封闭性：缩小范围后还能不能一直算"></a>12.3 子集的封闭性：缩小范围后还能不能一直算</h3><p>假设 $\star$ 已经是 $S$ 上的二元运算。对 $S'\subseteq S$，若任意 $a,b\in S'$ 都有 $a\star b\in S'$，就称 $S'$ 对这个运算封闭。</p>
+<p>例如在整数加法下：</p>
+<ul>
+<li>偶数集合封闭，因为 $2m+2n=2(m+n)$ 仍是偶数。</li>
+<li>奇数集合不封闭，因为 $1+3=4$ 不是奇数。</li>
+<li>$\{0,1\}$ 对加法不封闭，因为 $1+1=2$；但对乘法封闭，因为任意乘积仍是 0 或 1。</li>
+</ul>
+<p><strong>封闭性必须同时说明集合和运算。</strong> 只说“这个集合封闭”是不完整的。</p>
+<h2 id="13-串联例子：一个有限集合上的可逆变换"><a href="#13-串联例子：一个有限集合上的可逆变换" class="headerlink" title="13. 串联例子：一个有限集合上的可逆变换"></a>13. 串联例子：一个有限集合上的可逆变换</h2><p>下面是为本文补充的教学例子，用来串起集合、映射、复合、逆映射和封闭性。</p>
+<h3 id="13-1-确定输入和输出集合"><a href="#13-1-确定输入和输出集合" class="headerlink" title="13.1 确定输入和输出集合"></a>13.1 确定输入和输出集合</h3><p>取：</p>
+
+$$
+S=\{0,1,2,3,4,5,6\}
+$$
+
+
+<p>约定 $a\bmod7$ 是把整数 $a$ 除以 7 后，取 0 至 6 中的余数，例如 $12\bmod7=5$、$-2\bmod7=5$。</p>
+<p>定义两个从 $S$ 到 $S$ 的映射：</p>
+
+$$
+f(x)=3x\bmod7,\qquad g(x)=(x+2)\bmod7
+$$
+
+
+<p>列出全部输入，就能直接检查是否双射：</p>
+<table>
+<thead>
+<tr>
+<th>$x$</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$f(x)$</td>
+<td>0</td>
+<td>3</td>
+<td>6</td>
+<td>2</td>
+<td>5</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>$g(x)$</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>$E(x)=g(f(x))$</td>
+<td>2</td>
+<td>5</td>
+<td>1</td>
+<td>4</td>
+<td>0</td>
+<td>3</td>
+<td>6</td>
+</tr>
+</tbody></table>
+<p>每行输出都恰好包含 $S$ 的 7 个元素，没有重复或遗漏，所以三个映射都是双射。</p>
+<h3 id="13-2-正向计算：先乘，再加"><a href="#13-2-正向计算：先乘，再加" class="headerlink" title="13.2 正向计算：先乘，再加"></a>13.2 正向计算：先乘，再加</h3><p>定义 $E=g\circ f$。输入 $m=4$：</p>
+
+$$
+4\xrightarrow{f}12\bmod7=5
+\xrightarrow{g}7\bmod7=0
+$$
+
+
+<p>因此 $E(4)=0$。也可以合并写为 $E(x)=(3x+2)\bmod7$。</p>
+<h3 id="13-3-反向计算：先撤销加法，再撤销乘法"><a href="#13-3-反向计算：先撤销加法，再撤销乘法" class="headerlink" title="13.3 反向计算：先撤销加法，再撤销乘法"></a>13.3 反向计算：先撤销加法，再撤销乘法</h3><p>撤销 $g$ 很直接：$g^{-1}(c)=(c-2)\bmod7$。</p>
+<p>撤销 $f$ 不能直接使用普通实数除法，因为取余丢掉了整数商；这里要利用：</p>
+
+$$
+3\times5=15\equiv1\pmod7
+$$
+
+
+<p>也就是说，模 7 意义下乘以 3 后再乘以 5，相当于不改变原来的余数。因此：</p>
+
+$$
+f^{-1}(y)=5y\bmod7,\qquad
+D(c)=f^{-1}(g^{-1}(c))=5(c-2)\bmod7
+$$
+
+
+<p>对输出 $c=0$：</p>
+
+$$
+0\xrightarrow{g^{-1}}(-2)\bmod7=5
+\xrightarrow{f^{-1}}25\bmod7=4
+$$
+
+
+<p><img src="/images/cryptography/lecture-1-reversible-map.svg" alt="模7可逆变换：正向先乘3再加2，反向先减2再乘5"></p>
+<p>最后回到原输入：$D(E(4))=4$。</p>
+<h3 id="13-4-为什么不能随便换一个乘数"><a href="#13-4-为什么不能随便换一个乘数" class="headerlink" title="13.4 为什么不能随便换一个乘数"></a>13.4 为什么不能随便换一个乘数</h3><p>把集合改成 $T=\{0,1,\ldots,7\}$，定义 $h(x)=2x\bmod8$，则：</p>
+
+$$
+h(0)=0=h(4)
+$$
+
+
+<p>它不是单射，像集只有 $\{0,2,4,6\}$。仅看到输出 0，无法判断原输入是 0 还是 4，因此不存在整个 $T$ 上的双侧逆映射。</p>
+<p>这与前面“不同输入不能碰到同一个输出”的要求完全对应。<strong>可逆性是还原输入的条件，但可逆本身并不等于密码学安全。</strong></p>
+<h2 id="14-最容易混淆的记号"><a href="#14-最容易混淆的记号" class="headerlink" title="14. 最容易混淆的记号"></a>14. 最容易混淆的记号</h2><table>
+<thead>
+<tr>
+<th>容易混淆的对象</th>
+<th>应该怎样区分</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$x\in A$ 与 $X\subseteq A$</td>
+<td>前者是元素属于集合，后者是集合包含关系</td>
+</tr>
+<tr>
+<td>$\varnothing$ 与 $\{\varnothing\}$</td>
+<td>一个没有元素，一个有一个元素</td>
+</tr>
+<tr>
+<td>集合、族、序列</td>
+<td>分别关注不同的值、索引对应、按顺序的对应</td>
+</tr>
+<tr>
+<td>总交集为空与两两不交</td>
+<td>两两不交要求任意两个不同分组都无公共元素</td>
+</tr>
+<tr>
+<td>陪域 $B$ 与像集 $f(A)$</td>
+<td>声明的输出集合不一定全部被取到</td>
+</tr>
+<tr>
+<td>单射与满射</td>
+<td>单射不碰撞；满射不遗漏陪域元素</td>
+</tr>
+<tr>
+<td>$f^{-1}$ 与 $1/f$</td>
+<td>逆映射与数值倒数不是一回事</td>
+</tr>
+<tr>
+<td>$g\circ f$ 与 $f\circ g$</td>
+<td>复合从右向左执行，一般不能换顺序</td>
+</tr>
+<tr>
+<td>$f^n(x)$ 与 $(f(x))^n$</td>
+<td>本文前者是反复执行映射，后者是数值乘方</td>
+</tr>
+<tr>
+<td>结合律与交换律</td>
+<td>一个改变括号，一个改变输入次序</td>
+</tr>
+<tr>
+<td>封闭与可逆</td>
+<td>输出留在集合里，并不保证能唯一还原输入</td>
+</tr>
+</tbody></table>
+<p>读完这一讲，应该能先看清集合与映射的范围，再讨论运算性质。后续学习整数、同余、欧几里得算法和群环域时，这些符号会一直使用；本篇先把它们的含义和计算方式固定下来。</p>
+<h2 id="15-巩固练习"><a href="#15-巩固练习" class="headerlink" title="15. 巩固练习"></a>15. 巩固练习</h2><p>下面 10 道题按“记号辨析 → 映射计算 → 运算与可逆性”排列。建议先独立写出结果与理由，再查看第 16 节；</p>
+<h3 id="练习-1：可能性数量不等于整数位数"><a href="#练习-1：可能性数量不等于整数位数" class="headerlink" title="练习 1：可能性数量不等于整数位数"></a>练习 1：可能性数量不等于整数位数</h3><p>对应第 1、2、7 节。</p>
+<ol>
+<li>长度为 6 的二进制串共有多少种？求这个数量的以 2 为底的对数。</li>
+<li>正整数 64 的二进制表示需要多少位？为什么和上一问中的长度不同？</li>
+<li>按本文约定，$0\in\mathbb N$ 是否成立？$\infty\in[0,\infty)$ 是否成立？</li>
+</ol>
+<h3 id="练习-2：元素、子集与集合运算"><a href="#练习-2：元素、子集与集合运算" class="headerlink" title="练习 2：元素、子集与集合运算"></a>练习 2：元素、子集与集合运算</h3><p>对应第 3 节。设：</p>
+
+$$
+A=\{0,1,2\},\qquad B=\{1,2,3\},\qquad C=\{\varnothing,0\}
+$$
+
+
+<ol>
+<li>求 $A\cup B$、$A\cap B$、$A\setminus B$，以及 $|A\cup B|$。</li>
+<li>判断下面四个命题，并分别说明原因：</li>
+</ol>
+
+$$
+\varnothing\in C,\qquad \varnothing\subseteq C,\qquad
+\{0\}\in C,\qquad \{0\}\subseteq C
+$$
+
+
+<h3 id="练习-3：有序对和重复位置"><a href="#练习-3：有序对和重复位置" class="headerlink" title="练习 3：有序对和重复位置"></a>练习 3：有序对和重复位置</h3><p>对应第 4、5 节。</p>
+<ol>
+<li>设 $A=\{0,1\}$、$B=\{a,b\}$，列出 $A\times B$。其中有 $(a,0)$ 吗？</li>
+<li>设 $I=\{1,2,3\}$，且 $x_1=4,x_2=4,x_3=7$。集合 $\{x_i:i\in I\}$ 有几个元素？序列 $(x_1,x_2,x_3)$ 有几个位置？</li>
+</ol>
+<h3 id="练习-4：哪些分组才是划分"><a href="#练习-4：哪些分组才是划分" class="headerlink" title="练习 4：哪些分组才是划分"></a>练习 4：哪些分组才是划分</h3><p>对应第 6 节。设 $S=\{0,1,2,3,4,5\}$，判断下列三组分组方案是否构成 $S$ 的划分：</p>
+
+$$
+\mathcal P=\big\{\{0,2,4\},\{1,3,5\}\big\}
+$$
+$$
+\mathcal Q=\big\{\{0,1,2\},\{2,3\},\{4,5\}\big\}
+$$
+$$
+\mathcal R=\big\{\{0,1\},\{2,3\}\big\}
+$$
+
+
+<p>另外，$\mathcal Q$ 中三个分组的总交集是否为空？这能否说明它们两两不交？</p>
+<h3 id="练习-5：只改变集合，映射性质会怎样变化"><a href="#练习-5：只改变集合，映射性质会怎样变化" class="headerlink" title="练习 5：只改变集合，映射性质会怎样变化"></a>练习 5：只改变集合，映射性质会怎样变化</h3><p>对应第 8、9 节。设 $A=\{0,1,2\}$、$B=\{0,1,2,3\}$，定义 $f:A\to B$：</p>
+
+$$
+f(0)=1,\qquad f(1)=3,\qquad f(2)=1
+$$
+
+
+<ol>
+<li>求像集 $f(A)$，判断它是否为单射、满射、双射。</li>
+<li>保留原定义域和对应规则，只把陪域改成 $B'=\{1,3\}$，得到的新映射是否为双射？</li>
+<li>在上一问基础上，再把定义域限制为 $A'=\{0,1\}$，得到 $h:A'\to B'$。它是否可逆？若可逆，写出全部逆向对应。</li>
+</ol>
+<h3 id="练习-6：原像存在，不代表逆函数存在"><a href="#练习-6：原像存在，不代表逆函数存在" class="headerlink" title="练习 6：原像存在，不代表逆函数存在"></a>练习 6：原像存在，不代表逆函数存在</h3><p>对应第 8.4、9.1 节。设 $f:\mathbb R\to\mathbb R$、$f(x)=x^2$。</p>
+<ol>
+<li>求集合的原像 $f^{-1}(\{4\})$ 和 $f^{-1}(\{-1\})$。</li>
+<li>为什么这不能说明 $f$ 有逆函数？</li>
+<li>若定义 $q:[0,\infty)\to[0,\infty)$、$q(x)=x^2$，求 $q^{-1}(y)$，并用 $y=4$ 验证。</li>
+</ol>
+<h3 id="练习-7：先复合，再倒着还原"><a href="#练习-7：先复合，再倒着还原" class="headerlink" title="练习 7：先复合，再倒着还原"></a>练习 7：先复合，再倒着还原</h3><p>对应第 10 节。设 $f,g:\mathbb R\to\mathbb R$：</p>
+
+$$
+f(x)=x+2,\qquad g(x)=3x,\qquad E=g\circ f
+$$
+
+
+<ol>
+<li>分别计算 $(g\circ f)(1)$ 和 $(f\circ g)(1)$。</li>
+<li>写出 $E(x)$ 和 $E^{-1}(y)$，计算 $E^{-1}(E(1))$。</li>
+<li>如果错误地按 $g^{-1}\circ f^{-1}$ 的顺序还原 $E(1)$，会得到什么？</li>
+</ol>
+<h3 id="练习-8：映射的幂与数值的幂"><a href="#练习-8：映射的幂与数值的幂" class="headerlink" title="练习 8：映射的幂与数值的幂"></a>练习 8：映射的幂与数值的幂</h3><p>对应第 11 节。本题规定 $f:\mathbb Z\to\mathbb Z$、$f(x)=x+2$，上标表示映射的复合幂。分别计算：</p>
+
+$$
+f^0(1),\qquad f^2(1),\qquad f^{-2}(1),\qquad (f(1))^2
+$$
+
+
+<p>为什么 $f^2(1)$ 与 $(f(1))^2$ 这两种写法不能混用？</p>
+<h3 id="练习-9：新运算也要逐项检查性质"><a href="#练习-9：新运算也要逐项检查性质" class="headerlink" title="练习 9：新运算也要逐项检查性质"></a>练习 9：新运算也要逐项检查性质</h3><p>对应第 12 节。在整数集合上定义：</p>
+
+$$
+a\star b=a+b+1
+$$
+
+
+<ol>
+<li>它是不是 $\mathbb Z$ 上的二元运算？</li>
+<li>是否满足交换律和结合律？请对任意整数 $a,b,c$ 展开计算，而不是只试几个数。</li>
+<li>偶数集合对这个运算是否封闭？它对普通加法的封闭性，能否直接用于这里？</li>
+</ol>
+<h3 id="练习-10：有限集合上的变换与还原"><a href="#练习-10：有限集合上的变换与还原" class="headerlink" title="练习 10：有限集合上的变换与还原"></a>练习 10：有限集合上的变换与还原</h3><p>对应第 13 节。设 $S=\{0,1,2,3,4\}$，定义：</p>
+
+$$
+E:S\to S,\qquad E(x)=(2x+1)\bmod5
+$$
+
+
+<ol>
+<li>按输入 0、1、2、3、4 的顺序列出输出，判断是否为双射。</li>
+<li>利用 $2\times3\equiv1\pmod5$ 写出逆映射 $D$，并计算 $D(E(3))$。</li>
+<li>若改为 $T=\{0,1,2,3,4,5\}$ 上的 $H(x)=2x\bmod6$，它是否仍可逆？给出一对碰撞输入。</li>
+<li>一个变换是双射，是否就足以说明它具有密码学安全性？</li>
+</ol>
+<h2 id="16-参考答案与解析"><a href="#16-参考答案与解析" class="headerlink" title="16. 参考答案与解析"></a>16. 参考答案与解析</h2><p>核对时重点看推理：否定一个“对所有输入成立”的性质，一个反例就够；肯定这种性质，则要覆盖全部输入，或给出一般性的计算依据。</p>
+<h3 id="练习-1-解析"><a href="#练习-1-解析" class="headerlink" title="练习 1 解析"></a>练习 1 解析</h3><p>长度为 6 的二进制串，每个位置有两种选择，所以共有 $2^6=64$ 种，且 $\log_2 64=6$。</p>
+<p>整数 64 的二进制表示为 <code>1000000</code>，需要 7 位，也可以用 $\lfloor\log_2 64\rfloor+1=7$ 验证。6 位二进制串表示的是 0 至 63 共 64 种取值，不包含整数 64。</p>
+<p>按本文约定，$0\in\mathbb N$ 成立；$\infty\in[0,\infty)$ 不成立。这个区间中的元素都是非负实数，无穷只是表示没有有限的上界，并不是一个被包含的实数端点。</p>
+<h3 id="练习-2-解析"><a href="#练习-2-解析" class="headerlink" title="练习 2 解析"></a>练习 2 解析</h3>
+$$
+A\cup B=\{0,1,2,3\},\qquad A\cap B=\{1,2\},\qquad
+A\setminus B=\{0\},\qquad |A\cup B|=4
+$$
+
+
+<p>四个命题依次为：成立、成立、不成立、成立。</p>
+<ul>
+<li>$\varnothing\in C$：空集被直接列为 $C$ 的一个元素。</li>
+<li>$\varnothing\subseteq C$：空集是任何集合的子集。</li>
+<li>$\{0\}\notin C$：$C$ 的两个元素是空集和数 0，没有集合 $\{0\}$。</li>
+<li>$\{0\}\subseteq C$：左边集合唯一的元素 0 确实属于 $C$。</li>
+</ul>
+<h3 id="练习-3-解析"><a href="#练习-3-解析" class="headerlink" title="练习 3 解析"></a>练习 3 解析</h3>
+$$
+A\times B=\{(0,a),(0,b),(1,a),(1,b)\}
+$$
+
+
+<p>其中没有 $(a,0)$，因为第一个位置必须来自 $A$，第二个位置必须来自 $B$；它属于 $B\times A$。</p>
+<p>集合 $\{x_i:i\in I\}=\{4,7\}$ 只有 2 个元素；序列 $(4,4,7)$ 有 3 个位置。前两个位置虽然取值相同，仍是两个不同的索引位置，不能合并。</p>
+<h3 id="练习-4-解析"><a href="#练习-4-解析" class="headerlink" title="练习 4 解析"></a>练习 4 解析</h3><ul>
+<li>$\mathcal P$ 是划分：两组非空、互不相交，并且覆盖整个 $S$。</li>
+<li>$\mathcal Q$ 不是划分：元素 2 同时属于前两组，违反两两不交。</li>
+<li>$\mathcal R$ 不是划分：遗漏了 4 和 5，并集不等于 $S$。</li>
+</ul>
+$\mathcal Q$ 中三个分组的总交集为空，因为没有一个元素同时属于三组；但前两组的交集是 $\{2\}$。所以“没有三组共同拥有的元素”不等于“任意两组都没有公共元素”。
+
+<h3 id="练习-5-解析"><a href="#练习-5-解析" class="headerlink" title="练习 5 解析"></a>练习 5 解析</h3><p>原映射的像集是 $f(A)=\{1,3\}$。因为 $f(0)=f(2)=1$，它不是单射；因为陪域中的 0 和 2 都取不到，它也不是满射，因此不是双射。</p>
+<p>只把陪域改为 $B'=\{1,3\}$ 后，新映射成为满射，但输入 0 和 2 的碰撞仍然存在，所以仍不是单射或双射。改变陪域只能消除这里的“遗漏”，不会消除碰撞。</p>
+<p>再把定义域限制为 $A'=\{0,1\}$ 后，$h(0)=1,h(1)=3$。没有碰撞，也没有遗漏 $B'$ 中的元素，因此是双射，其逆映射为：</p>
+
+$$
+h^{-1}:B'\to A',\qquad h^{-1}(1)=0,\qquad h^{-1}(3)=1
+$$
+
+
+<h3 id="练习-6-解析"><a href="#练习-6-解析" class="headerlink" title="练习 6 解析"></a>练习 6 解析</h3>
+$$
+f^{-1}(\{4\})=\{-2,2\},\qquad f^{-1}(\{-1\})=\varnothing
+$$
+
+
+<p>这里求的是“所有能映到指定集合中的输入”，结果可以有多个元素，也可以为空，并不要求存在逆函数。原映射有 $f(-2)=f(2)=4$ 的碰撞，而且取不到任何负数，既非单射也非满射。</p>
+<p>对 $q:[0,\infty)\to[0,\infty)$，每个非负输出恰好对应一个非负输入，所以：</p>
+
+$$
+q^{-1}(y)=\sqrt y\quad(y\ge0),\qquad
+q^{-1}(4)=2,\qquad q(2)=4
+$$
+
+
+<p>注意，这里的逆函数值是数 2，不是集合 $\{-2,2\}$，也不是倒数 $1/q(4)=1/16$。</p>
+<h3 id="练习-7-解析"><a href="#练习-7-解析" class="headerlink" title="练习 7 解析"></a>练习 7 解析</h3>
+$$
+(g\circ f)(1)=g(3)=9,\qquad
+(f\circ g)(1)=f(3)=5
+$$
+
+
+<p>正向先加 2 再乘 3，所以 $E(x)=3(x+2)=3x+6$。反向必须先除以 3，再减 2：</p>
+
+$$
+E^{-1}(y)=(f^{-1}\circ g^{-1})(y)=\frac y3-2,\qquad
+E^{-1}(E(1))=\frac93-2=1
+$$
+
+
+<p>如果把撤销顺序写反，会得到：</p>
+
+$$
+(g^{-1}\circ f^{-1})(9)=\frac{9-2}{3}=\frac73\ne1
+$$
+
+
+<h3 id="练习-8-解析"><a href="#练习-8-解析" class="headerlink" title="练习 8 解析"></a>练习 8 解析</h3>
+$$
+f^0(1)=1,\qquad f^2(1)=f(f(1))=f(3)=5
+$$
+$$
+f^{-1}(x)=x-2,\qquad f^{-2}(1)=(1-2)-2=-3
+$$
+$$
+(f(1))^2=3^2=9
+$$
+
+
+<p>复合幂表示连续执行同一个映射，因此本题 $f^n(x)=x+2n$；数值乘方则是把一次输出相乘。重复“加 2”和把输出“平方”显然是两种不同操作。</p>
+<h3 id="练习-9-解析"><a href="#练习-9-解析" class="headerlink" title="练习 9 解析"></a>练习 9 解析</h3><p>任意两个整数相加再加 1，结果存在、唯一，且仍是整数，所以这是 $\mathbb Z$ 上的二元运算。</p>
+<p>对任意整数 $a,b,c$：</p>
+
+$$
+a\star b=a+b+1=b+a+1=b\star a
+$$
+$$
+(a\star b)\star c=(a+b+1)+c+1=a+b+c+2
+$$
+$$
+a\star(b\star c)=a+(b+c+1)+1=a+b+c+2
+$$
+
+
+<p>因此交换律、结合律都成立。这里用的是任意输入的一般计算，而不是用有限次试算代替证明。</p>
+<p>偶数集合对这个运算不封闭：$0\star0=1$ 已经构成反例。一般地，$(2m)\star(2n)=2(m+n)+1$ 是奇数。偶数集合对普通加法封闭，不代表它对换过规则的新运算也封闭。</p>
+<h3 id="练习-10-解析"><a href="#练习-10-解析" class="headerlink" title="练习 10 解析"></a>练习 10 解析</h3><table>
+<thead>
+<tr>
+<th>$x$</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$E(x)$</td>
+<td>1</td>
+<td>3</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>全部输出恰好把 $S$ 中的元素各取到一次，因此是双射。先撤销加 1，再在模 5 意义下乘以 2 的逆元 3，得到：</p>
+
+$$
+D(c)=3(c-1)\bmod5
+$$
+$$
+E(3)=7\bmod5=2,\qquad D(2)=3(2-1)\bmod5=3
+$$
+
+
+<p>不仅这一对数能还原，对任意 $x\in S$，都有：</p>
+
+$$
+D(E(x))\equiv3((2x+1)-1)=6x\equiv x\pmod5
+$$
+
+
+<p>因为 $D(E(x))$ 和 $x$ 都取 0 至 4 中的代表元，所以它们实际相等。类似地，$E(D(c))\equiv2\cdot3(c-1)+1\equiv c\pmod5$，也会还原任意 $c\in S$。</p>
+<p>换成模 6 的映射后，$H(0)=H(3)=0$，两个不同输入发生碰撞，所以不存在整个 $T$ 上的双侧逆映射。</p>
+<h2 id="课件来源"><a href="#课件来源" class="headerlink" title="课件来源"></a>课件来源</h2><p>本文根据《Number Theory and Algebra in Cryptography》Lecture 1: Introduction and preliminaries 整理。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.top">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.top/2026/10/22/cryptography-math-01-sets-maps-operations/">https://lsworl.top/2026/10/22/cryptography-math-01-sets-maps-operations/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.top" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E8%AE%BA/">数论</a><a class="post-meta__tags" href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数</a><a class="post-meta__tags" href="/tags/%E9%9B%86%E5%90%88/">集合</a><a class="post-meta__tags" href="/tags/%E6%98%A0%E5%B0%84/">映射</a></div><div class="post-share"><div class="social-share" data-image="/images/starlab/covers/klee-birthday-2023.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/10/12/nlp-rag-retrieval-augmented-generation/" title="RAG检索增强生成：从向量检索到Hugging Face知识库问答"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" onerror="onerror=null;src='/images/starlab/covers/klee-birthday-2021.webp'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">RAG检索增强生成：从向量检索到Hugging Face知识库问答</div></div><div class="info-2"><div class="info-item-1">承接Hugging Face与SFT，从文档切分、句向量、余弦相似度、Top-K、重排序和上下文预算理解RAG，手算检索与下一个token的生成，并实现可检查的本地知识库问答项目。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">记录机器学习、自然语言处理和开发实践。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">129</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">156</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">文章按主题整理在学习路线中。<br><a href="/map/">查看学习路线 ↗</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AF%B9%E6%95%B0%E4%B8%8E%E6%8C%87%E6%95%B0%EF%BC%9A%E5%85%88%E7%A1%AE%E8%AE%A4%E5%BA%95%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">1. 对数与指数：先确认底数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%B8%B8%E8%A7%81%E6%95%B0%E9%9B%86%E4%B8%8E%E8%87%AA%E7%84%B6%E6%95%B0%E7%BA%A6%E5%AE%9A"><span class="toc-number">2.</span> <span class="toc-text">2. 常见数集与自然数约定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%9B%86%E5%90%88%EF%BC%9A%E5%85%83%E7%B4%A0%E3%80%81%E5%AD%90%E9%9B%86%E4%B8%8E%E9%9B%86%E5%90%88%E8%BF%90%E7%AE%97"><span class="toc-number">3.</span> <span class="toc-text">3. 集合：元素、子集与集合运算</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%B1%9E%E4%BA%8E%E5%92%8C%E5%8C%85%E5%90%AB%E4%B8%8D%E6%98%AF%E4%B8%80%E5%9B%9E%E4%BA%8B"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 属于和包含不是一回事</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%B9%B6%E3%80%81%E4%BA%A4%E3%80%81%E5%B7%AE%E5%88%86%E5%88%AB%E5%9C%A8%E9%80%89%E4%BB%80%E4%B9%88"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 并、交、差分别在选什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%A9%BA%E9%9B%86%E4%B8%8E%E2%80%9C%E8%A3%85%E7%9D%80%E7%A9%BA%E9%9B%86%E7%9A%84%E9%9B%86%E5%90%88%E2%80%9D"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 空集与“装着空集的集合”</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%AC%9B%E5%8D%A1%E5%B0%94%E7%A7%AF%EF%BC%9A%E6%8A%8A%E5%A4%9A%E4%B8%AA%E9%80%89%E6%8B%A9%E7%BB%84%E6%88%90%E6%9C%89%E5%BA%8F%E8%BE%93%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">4. 笛卡尔积：把多个选择组成有序输入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%A4%9A%E4%B8%AA%E4%BD%8D%E7%BD%AE%E7%BB%84%E6%88%90%E5%85%83%E7%BB%84"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 多个位置组成元组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%97%8F%E4%B8%8E%E5%BA%8F%E5%88%97%EF%BC%9A%E4%BF%9D%E7%95%99%E2%80%9C%E7%B4%A2%E5%BC%95%E5%AF%B9%E5%BA%94%E5%93%AA%E4%B8%AA%E5%AF%B9%E8%B1%A1%E2%80%9D"><span class="toc-number">5.</span> <span class="toc-text">5. 族与序列：保留“索引对应哪个对象”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E9%9B%86%E5%90%88%E6%97%8F%E3%80%81%E4%B8%A4%E4%B8%A4%E4%B8%8D%E4%BA%A4%E4%B8%8E%E5%88%92%E5%88%86"><span class="toc-number">6.</span> <span class="toc-text">6. 集合族、两两不交与划分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%A4%9A%E4%B8%AA%E9%9B%86%E5%90%88%E7%9A%84%E5%B9%B6%E4%B8%8E%E4%BA%A4"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 多个集合的并与交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E2%80%9C%E4%B8%A4%E4%B8%A4%E4%B8%8D%E4%BA%A4%E2%80%9D%E6%AF%94%E2%80%9C%E6%80%BB%E4%BA%A4%E9%9B%86%E4%B8%BA%E7%A9%BA%E2%80%9D%E6%9B%B4%E5%BC%BA"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 “两两不交”比“总交集为空”更强</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%88%92%E5%88%86%EF%BC%9A%E6%AF%8F%E4%B8%AA%E5%85%83%E7%B4%A0%E6%81%B0%E5%A5%BD%E8%BF%9B%E5%85%A5%E4%B8%80%E4%B8%AA%E5%88%86%E7%BB%84"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 划分：每个元素恰好进入一个分组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%8C%BA%E9%97%B4%E4%B8%8E%E6%97%A0%E7%A9%B7%EF%BC%9A%E8%BE%B9%E7%95%8C%E5%B1%9E%E4%BA%8E%E4%B8%8D%E5%B1%9E%E4%BA%8E%E9%9B%86%E5%90%88"><span class="toc-number">7.</span> <span class="toc-text">7. 区间与无穷：边界属于不属于集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%87%BD%E6%95%B0%E4%B8%8E%E6%98%A0%E5%B0%84%EF%BC%9A%E8%BE%93%E5%85%A5%E8%8C%83%E5%9B%B4%E4%B9%9F%E6%98%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86"><span class="toc-number">8.</span> <span class="toc-text">8. 函数与映射：输入范围也是定义的一部分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%8D%95%E5%B0%84%EF%BC%9A%E4%B8%8D%E5%90%8C%E8%BE%93%E5%85%A5%E4%B8%8D%E7%A2%B0%E5%88%B0%E5%90%8C%E4%B8%80%E4%B8%AA%E8%BE%93%E5%87%BA"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 单射：不同输入不碰到同一个输出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E6%BB%A1%E5%B0%84%EF%BC%9A%E9%99%AA%E5%9F%9F%E9%87%8C%E7%9A%84%E6%AF%8F%E4%B8%AA%E5%85%83%E7%B4%A0%E9%83%BD%E8%83%BD%E8%A2%AB%E5%8F%96%E5%88%B0"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 满射：陪域里的每个元素都能被取到</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%8F%8C%E5%B0%84%EF%BC%9A%E6%97%A2%E4%B8%8D%E7%A2%B0%E6%92%9E%EF%BC%8C%E4%B9%9F%E4%B8%8D%E9%81%97%E6%BC%8F"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 双射：既不碰撞，也不遗漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E5%90%8C%E4%B8%80%E4%B8%AA%E5%85%AC%E5%BC%8F%EF%BC%8C%E6%94%B9%E5%8F%98%E9%9B%86%E5%90%88%E5%90%8E%E6%80%A7%E8%B4%A8%E4%BC%9A%E6%94%B9%E5%8F%98"><span class="toc-number">8.4.</span> <span class="toc-text">8.4 同一个公式，改变集合后性质会改变</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E9%80%86%E6%98%A0%E5%B0%84%E3%80%81%E6%81%92%E7%AD%89%E6%98%A0%E5%B0%84%E3%80%81%E9%99%90%E5%88%B6%E4%B8%8E%E6%89%A9%E5%BC%A0"><span class="toc-number">9.</span> <span class="toc-text">9. 逆映射、恒等映射、限制与扩张</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E9%80%86%E6%98%A0%E5%B0%84%E4%B8%8D%E6%98%AF%E5%80%92%E6%95%B0"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 逆映射不是倒数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E6%81%92%E7%AD%89%E6%98%A0%E5%B0%84%E4%B8%8E%E5%8C%85%E5%90%AB%E6%98%A0%E5%B0%84"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 恒等映射与包含映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E9%99%90%E5%88%B6%E4%B8%8E%E6%89%A9%E5%BC%A0%EF%BC%9A%E8%A7%84%E5%88%99%E4%B8%8D%E5%8F%98%EF%BC%8C%E5%85%81%E8%AE%B8%E7%9A%84%E8%BE%93%E5%85%A5%E6%94%B9%E5%8F%98"><span class="toc-number">9.3.</span> <span class="toc-text">9.3 限制与扩张：规则不变，允许的输入改变</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%87%BD%E6%95%B0%E5%A4%8D%E5%90%88%EF%BC%9A%E4%BB%8E%E5%8F%B3%E5%90%91%E5%B7%A6%E6%89%A7%E8%A1%8C"><span class="toc-number">10.</span> <span class="toc-text">10. 函数复合：从右向左执行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E5%A4%8D%E5%90%88%E6%BB%A1%E8%B6%B3%E7%BB%93%E5%90%88%E5%BE%8B%EF%BC%8C%E4%B8%8D%E6%84%8F%E5%91%B3%E7%9D%80%E5%8F%AF%E4%BB%A5%E6%8D%A2%E9%A1%BA%E5%BA%8F"><span class="toc-number">10.1.</span> <span class="toc-text">10.1 复合满足结合律，不意味着可以换顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E5%A4%8D%E5%90%88%E7%9A%84%E9%80%86%EF%BC%8C%E8%A6%81%E5%80%92%E7%9D%80%E6%92%A4%E9%94%80"><span class="toc-number">10.2.</span> <span class="toc-text">10.2 复合的逆，要倒着撤销</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%98%A0%E5%B0%84%E7%9A%84%E5%B9%82%EF%BC%9A%E9%87%8D%E5%A4%8D%E6%89%A7%E8%A1%8C%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%8A%8A%E8%BE%93%E5%87%BA%E4%B9%98%E6%96%B9"><span class="toc-number">11.</span> <span class="toc-text">11. 映射的幂：重复执行，不是把输出乘方</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E4%BA%8C%E5%85%83%E8%BF%90%E7%AE%97%EF%BC%9A%E4%B8%A4%E4%B8%AA%E8%BE%93%E5%85%A5%EF%BC%8C%E8%BE%93%E5%87%BA%E4%BB%8D%E5%9C%A8%E5%90%8C%E4%B8%80%E4%B8%AA%E9%9B%86%E5%90%88"><span class="toc-number">12.</span> <span class="toc-text">12. 二元运算：两个输入，输出仍在同一个集合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E7%BB%93%E5%90%88%E5%BE%8B%EF%BC%9A%E5%85%81%E8%AE%B8%E6%94%B9%E5%8F%98%E6%8B%AC%E5%8F%B7"><span class="toc-number">12.1.</span> <span class="toc-text">12.1 结合律：允许改变括号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E4%BA%A4%E6%8D%A2%E5%BE%8B%EF%BC%9A%E5%85%81%E8%AE%B8%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E8%BE%93%E5%85%A5%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-number">12.2.</span> <span class="toc-text">12.2 交换律：允许交换两个输入的位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E5%AD%90%E9%9B%86%E7%9A%84%E5%B0%81%E9%97%AD%E6%80%A7%EF%BC%9A%E7%BC%A9%E5%B0%8F%E8%8C%83%E5%9B%B4%E5%90%8E%E8%BF%98%E8%83%BD%E4%B8%8D%E8%83%BD%E4%B8%80%E7%9B%B4%E7%AE%97"><span class="toc-number">12.3.</span> <span class="toc-text">12.3 子集的封闭性：缩小范围后还能不能一直算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E4%B8%B2%E8%81%94%E4%BE%8B%E5%AD%90%EF%BC%9A%E4%B8%80%E4%B8%AA%E6%9C%89%E9%99%90%E9%9B%86%E5%90%88%E4%B8%8A%E7%9A%84%E5%8F%AF%E9%80%86%E5%8F%98%E6%8D%A2"><span class="toc-number">13.</span> <span class="toc-text">13. 串联例子：一个有限集合上的可逆变换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E7%A1%AE%E5%AE%9A%E8%BE%93%E5%85%A5%E5%92%8C%E8%BE%93%E5%87%BA%E9%9B%86%E5%90%88"><span class="toc-number">13.1.</span> <span class="toc-text">13.1 确定输入和输出集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E6%AD%A3%E5%90%91%E8%AE%A1%E7%AE%97%EF%BC%9A%E5%85%88%E4%B9%98%EF%BC%8C%E5%86%8D%E5%8A%A0"><span class="toc-number">13.2.</span> <span class="toc-text">13.2 正向计算：先乘，再加</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-%E5%8F%8D%E5%90%91%E8%AE%A1%E7%AE%97%EF%BC%9A%E5%85%88%E6%92%A4%E9%94%80%E5%8A%A0%E6%B3%95%EF%BC%8C%E5%86%8D%E6%92%A4%E9%94%80%E4%B9%98%E6%B3%95"><span class="toc-number">13.3.</span> <span class="toc-text">13.3 反向计算：先撤销加法，再撤销乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-4-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E9%9A%8F%E4%BE%BF%E6%8D%A2%E4%B8%80%E4%B8%AA%E4%B9%98%E6%95%B0"><span class="toc-number">13.4.</span> <span class="toc-text">13.4 为什么不能随便换一个乘数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E6%9C%80%E5%AE%B9%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E8%AE%B0%E5%8F%B7"><span class="toc-number">14.</span> <span class="toc-text">14. 最容易混淆的记号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E5%B7%A9%E5%9B%BA%E7%BB%83%E4%B9%A0"><span class="toc-number">15.</span> <span class="toc-text">15. 巩固练习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1%EF%BC%9A%E5%8F%AF%E8%83%BD%E6%80%A7%E6%95%B0%E9%87%8F%E4%B8%8D%E7%AD%89%E4%BA%8E%E6%95%B4%E6%95%B0%E4%BD%8D%E6%95%B0"><span class="toc-number">15.1.</span> <span class="toc-text">练习 1：可能性数量不等于整数位数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2%EF%BC%9A%E5%85%83%E7%B4%A0%E3%80%81%E5%AD%90%E9%9B%86%E4%B8%8E%E9%9B%86%E5%90%88%E8%BF%90%E7%AE%97"><span class="toc-number">15.2.</span> <span class="toc-text">练习 2：元素、子集与集合运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3%EF%BC%9A%E6%9C%89%E5%BA%8F%E5%AF%B9%E5%92%8C%E9%87%8D%E5%A4%8D%E4%BD%8D%E7%BD%AE"><span class="toc-number">15.3.</span> <span class="toc-text">练习 3：有序对和重复位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-4%EF%BC%9A%E5%93%AA%E4%BA%9B%E5%88%86%E7%BB%84%E6%89%8D%E6%98%AF%E5%88%92%E5%88%86"><span class="toc-number">15.4.</span> <span class="toc-text">练习 4：哪些分组才是划分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-5%EF%BC%9A%E5%8F%AA%E6%94%B9%E5%8F%98%E9%9B%86%E5%90%88%EF%BC%8C%E6%98%A0%E5%B0%84%E6%80%A7%E8%B4%A8%E4%BC%9A%E6%80%8E%E6%A0%B7%E5%8F%98%E5%8C%96"><span class="toc-number">15.5.</span> <span class="toc-text">练习 5：只改变集合，映射性质会怎样变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-6%EF%BC%9A%E5%8E%9F%E5%83%8F%E5%AD%98%E5%9C%A8%EF%BC%8C%E4%B8%8D%E4%BB%A3%E8%A1%A8%E9%80%86%E5%87%BD%E6%95%B0%E5%AD%98%E5%9C%A8"><span class="toc-number">15.6.</span> <span class="toc-text">练习 6：原像存在，不代表逆函数存在</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-7%EF%BC%9A%E5%85%88%E5%A4%8D%E5%90%88%EF%BC%8C%E5%86%8D%E5%80%92%E7%9D%80%E8%BF%98%E5%8E%9F"><span class="toc-number">15.7.</span> <span class="toc-text">练习 7：先复合，再倒着还原</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-8%EF%BC%9A%E6%98%A0%E5%B0%84%E7%9A%84%E5%B9%82%E4%B8%8E%E6%95%B0%E5%80%BC%E7%9A%84%E5%B9%82"><span class="toc-number">15.8.</span> <span class="toc-text">练习 8：映射的幂与数值的幂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-9%EF%BC%9A%E6%96%B0%E8%BF%90%E7%AE%97%E4%B9%9F%E8%A6%81%E9%80%90%E9%A1%B9%E6%A3%80%E6%9F%A5%E6%80%A7%E8%B4%A8"><span class="toc-number">15.9.</span> <span class="toc-text">练习 9：新运算也要逐项检查性质</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-10%EF%BC%9A%E6%9C%89%E9%99%90%E9%9B%86%E5%90%88%E4%B8%8A%E7%9A%84%E5%8F%98%E6%8D%A2%E4%B8%8E%E8%BF%98%E5%8E%9F"><span class="toc-number">15.10.</span> <span class="toc-text">练习 10：有限集合上的变换与还原</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88%E4%B8%8E%E8%A7%A3%E6%9E%90"><span class="toc-number">16.</span> <span class="toc-text">16. 参考答案与解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.1.</span> <span class="toc-text">练习 1 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.2.</span> <span class="toc-text">练习 2 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.3.</span> <span class="toc-text">练习 3 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-4-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.4.</span> <span class="toc-text">练习 4 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-5-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.5.</span> <span class="toc-text">练习 5 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-6-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.6.</span> <span class="toc-text">练习 6 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-7-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.7.</span> <span class="toc-text">练习 7 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-8-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.8.</span> <span class="toc-text">练习 8 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-9-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.9.</span> <span class="toc-text">练习 9 解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-10-%E8%A7%A3%E6%9E%90"><span class="toc-number">16.10.</span> <span class="toc-text">练习 10 解析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E4%BB%B6%E6%9D%A5%E6%BA%90"><span class="toc-number">17.</span> <span class="toc-text">课件来源</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/10/22/cryptography-math-01-sets-maps-operations/" title="密码学数学基础（一）：集合、映射与二元运算"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="密码学数学基础（一）：集合、映射与二元运算"/></a><div class="content"><a class="title" href="/2026/10/22/cryptography-math-01-sets-maps-operations/" title="密码学数学基础（一）：集合、映射与二元运算">密码学数学基础（一）：集合、映射与二元运算</a><time datetime="2026-10-21T16:00:00.000Z" title="发表于 2026-10-22 00:00:00">2026-10-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/12/nlp-rag-retrieval-augmented-generation/" title="RAG检索增强生成：从向量检索到Hugging Face知识库问答"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="RAG检索增强生成：从向量检索到Hugging Face知识库问答"/></a><div class="content"><a class="title" href="/2026/10/12/nlp-rag-retrieval-augmented-generation/" title="RAG检索增强生成：从向量检索到Hugging Face知识库问答">RAG检索增强生成：从向量检索到Hugging Face知识库问答</a><time datetime="2026-10-11T16:00:00.000Z" title="发表于 2026-10-12 00:00:00">2026-10-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/09/15/machine-learning-linear-regression-advanced/" title="线性回归进阶：从设计矩阵到概率解释与基函数"><img src="/images/starlab/covers/klee-birthday-2022.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="线性回归进阶：从设计矩阵到概率解释与基函数"/></a><div class="content"><a class="title" href="/2026/09/15/machine-learning-linear-regression-advanced/" title="线性回归进阶：从设计矩阵到概率解释与基函数">线性回归进阶：从设计矩阵到概率解释与基函数</a><time datetime="2026-09-14T16:00:00.000Z" title="发表于 2026-09-15 00:00:00">2026-09-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/09/04/nlp-qlora-4bit-finetuning/" title="SFT（四）：QLoRA的4-bit量化与LoRA微调原理"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="SFT（四）：QLoRA的4-bit量化与LoRA微调原理"/></a><div class="content"><a class="title" href="/2026/09/04/nlp-qlora-4bit-finetuning/" title="SFT（四）：QLoRA的4-bit量化与LoRA微调原理">SFT（四）：QLoRA的4-bit量化与LoRA微调原理</a><time datetime="2026-09-03T16:00:00.000Z" title="发表于 2026-09-04 00:00:00">2026-09-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型"/></a><div class="content"><a class="title" href="/2026/08/24/nlp-sft-trl-lora/" title="SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型">SFT（三）：使用TRL SFTTrainer与LoRA微调对话模型</a><time datetime="2026-08-24T15:59:00.000Z" title="发表于 2026-08-24 23:59:00">2026-08-24</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text">学习笔记与项目记录<br>封面插画：原神官方 · tokki</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script src="/assets/starlab.3a667b014b49.js" defer data-starlab-assets></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索概念、算法或项目…" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5-b1"></script></div></div></body></html>

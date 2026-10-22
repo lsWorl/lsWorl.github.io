@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="380" viewBox="0 0 1040 380" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">按除以3的余数划分集合</title>
+  <desc id="desc">集合0至8被分成余数0、1、2三组，各组非空、两两不交，合起来覆盖原集合。</desc>
+  <rect width="1040" height="380" fill="#fff"/>
+  <text x="32" y="46" font-size="27" font-weight="bold" fill="#263640">集合的划分：每个元素恰好进入一个分组</text>
+  <text x="32" y="84" font-size="21" fill="#526171">S = {0, 1, 2, 3, 4, 5, 6, 7, 8}，按除以 3 的余数分组</text>
+  <g font-size="23" text-anchor="middle">
+    <rect x="32" y="120" width="300" height="150" rx="6" fill="#eef5fc" stroke="#8aadd3"/>
+    <text x="182" y="161" fill="#2e5c94" font-weight="bold">P₀：余数为 0</text>
+    <text x="182" y="221" font-size="30" fill="#263640">0　3　6</text>
+    <rect x="370" y="120" width="300" height="150" rx="6" fill="#edf8f3" stroke="#7fbca6"/>
+    <text x="520" y="161" fill="#28755d" font-weight="bold">P₁：余数为 1</text>
+    <text x="520" y="221" font-size="30" fill="#263640">1　4　7</text>
+    <rect x="708" y="120" width="300" height="150" rx="6" fill="#fff4f2" stroke="#d49b92"/>
+    <text x="858" y="161" fill="#a34e43" font-weight="bold">P₂：余数为 2</text>
+    <text x="858" y="221" font-size="30" fill="#263640">2　5　8</text>
+  </g>
+  <text x="32" y="318" font-size="22" fill="#263640">非空 + 两两不交 + 覆盖 S，三个条件缺一不可。</text>
+  <text x="32" y="351" font-size="20" fill="#526171">只检查所有分组的总交集为空，不能保证这是一个划分。</text>
+</svg>

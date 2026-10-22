@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="470" viewBox="0 0 1080 470" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">单射、满射与双射对照</title>
+  <desc id="desc">左图每个输入对应不同输出但d未被取到；中图a和b都被取到但0与2都映到a；右图三个输入与三个输出一一对应。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#637485"/></marker></defs>
+  <rect width="1080" height="470" fill="#fff"/>
+  <text x="30" y="45" font-size="27" font-weight="bold" fill="#263640">单射看碰撞，满射看陪域，双射同时满足两者</text>
+  <g font-size="23" text-anchor="middle" fill="#263640">
+    <text x="180" y="98" font-weight="bold" fill="#2e5c94">单射，但不是满射</text>
+    <text x="540" y="98" font-weight="bold" fill="#28755d">满射，但不是单射</text>
+    <text x="900" y="98" font-weight="bold" fill="#a34e43">双射</text>
+  </g>
+  <g stroke="#e0e6eb"><path d="M360 82V424M720 82V424"/></g>
+  <g stroke="#637485" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M106 170H240"/><path d="M106 240H240"/><path d="M106 310H240"/>
+    <path d="M466 170H600"/><path d="M466 240H600"/><path d="M466 310L600 170"/>
+    <path d="M826 170L960 310"/><path d="M826 240L960 170"/><path d="M826 310L960 240"/>
+  </g>
+  <g font-size="23" text-anchor="middle" fill="#263640">
+    <g fill="#eef5fc" stroke="#8aadd3"><circle cx="80" cy="170" r="24"/><circle cx="80" cy="240" r="24"/><circle cx="80" cy="310" r="24"/><circle cx="270" cy="170" r="24"/><circle cx="270" cy="240" r="24"/><circle cx="270" cy="310" r="24"/><circle cx="270" cy="380" r="24"/></g>
+    <text x="80" y="178">0</text><text x="80" y="248">1</text><text x="80" y="318">2</text><text x="270" y="178">a</text><text x="270" y="248">b</text><text x="270" y="318">c</text><text x="270" y="388">d</text>
+    <g fill="#edf8f3" stroke="#7fbca6"><circle cx="440" cy="170" r="24"/><circle cx="440" cy="240" r="24"/><circle cx="440" cy="310" r="24"/><circle cx="630" cy="170" r="24"/><circle cx="630" cy="240" r="24"/></g>
+    <text x="440" y="178">0</text><text x="440" y="248">1</text><text x="440" y="318">2</text><text x="630" y="178">a</text><text x="630" y="248">b</text>
+    <g fill="#fff4f2" stroke="#d49b92"><circle cx="800" cy="170" r="24"/><circle cx="800" cy="240" r="24"/><circle cx="800" cy="310" r="24"/><circle cx="990" cy="170" r="24"/><circle cx="990" cy="240" r="24"/><circle cx="990" cy="310" r="24"/></g>
+    <text x="800" y="178">0</text><text x="800" y="248">1</text><text x="800" y="318">2</text><text x="990" y="178">a</text><text x="990" y="248">b</text><text x="990" y="318">c</text>
+    <text x="180" y="447" font-size="20">d 没有原像</text><text x="540" y="447" font-size="20">0 和 2 的输出相同</text><text x="900" y="447" font-size="20">不碰撞，也不遗漏</text>
+  </g>
+</svg>

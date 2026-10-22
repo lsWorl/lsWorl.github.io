@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="430" viewBox="0 0 1040 430" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">模7变换的正向与反向计算</title>
+  <desc id="desc">正向输入4先乘3取模7得到5，再加2取模7得到0；反向从0先减2取模7得到5，再乘5取模7还原4。只是可逆性教学例子，不代表安全加密。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#637485"/></marker></defs>
+  <rect width="1040" height="430" fill="#fff"/>
+  <text x="32" y="45" font-size="27" font-weight="bold" fill="#263640">复合的逆：最后做的操作，最先撤销</text>
+  <text x="32" y="84" font-size="21" fill="#526171">所有结果均取模 7，留在 S = {0, 1, 2, 3, 4, 5, 6} 中</text>
+  <g stroke="#637485" stroke-width="2" marker-end="url(#arrow)"><path d="M190 172H425"/><path d="M615 172H850"/><path d="M190 310H425"/><path d="M615 310H850"/></g>
+  <g font-size="21" fill="#263640" text-anchor="middle">
+    <text x="310" y="143">f：乘 3，再取模 7</text><text x="735" y="143">g：加 2，再取模 7</text>
+    <text x="310" y="281">g⁻¹：减 2，再取模 7</text><text x="735" y="281">f⁻¹：乘 5，再取模 7</text>
+  </g>
+  <g text-anchor="middle" font-size="28" font-weight="bold">
+    <g fill="#eef5fc" stroke="#8aadd3"><rect x="32" y="148" width="150" height="62" rx="6"/><rect x="445" y="148" width="150" height="62" rx="6"/><rect x="858" y="148" width="150" height="62" rx="6"/></g>
+    <g fill="#2e5c94"><text x="107" y="189">输入 4</text><text x="520" y="189">中间值 5</text><text x="933" y="189">输出 0</text></g>
+    <g fill="#edf8f3" stroke="#7fbca6"><rect x="32" y="286" width="150" height="62" rx="6"/><rect x="445" y="286" width="150" height="62" rx="6"/><rect x="858" y="286" width="150" height="62" rx="6"/></g>
+    <g fill="#28755d"><text x="107" y="327">输出 0</text><text x="520" y="327">中间值 5</text><text x="933" y="327">还原 4</text></g>
+  </g>
+  <text x="32" y="397" font-size="21" fill="#526171">3 × 5 ≡ 1 (mod 7)，所以模 7 下乘 5 可以撤销乘 3。可逆不等于安全。</text>
+</svg>
