@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">同一组区间，不同目标对应不同最优方案</title>
+  <desc id="desc">课件八个任务a到h及其权重。最大数量方案b、e、h含三个任务，收益41；最大权重方案d、h含两个任务，收益42。区间端点相接时兼容。</desc>
+  <rect width="1100" height="760" fill="#fff"/>
+  <text x="30" y="43" font-size="28" font-weight="bold" fill="#263640">任务没有变，优化目标变了</text>
+  <text x="30" y="79" font-size="21" fill="#607080">区间采用 [开始, 结束)，端点相接不冲突；w 表示任务权重。</text>
+  <g stroke="#e4e9ee" stroke-width="1"><path d="M180 121V454M252 121V454M324 121V454M396 121V454M468 121V454M540 121V454M612 121V454M684 121V454M756 121V454M828 121V454M900 121V454M972 121V454"/></g>
+  <path d="M180 123H995" stroke="#748391" stroke-width="1.5"/>
+  <g text-anchor="middle" font-size="19" fill="#526171"><text x="180" y="114">0</text><text x="252" y="114">1</text><text x="324" y="114">2</text><text x="396" y="114">3</text><text x="468" y="114">4</text><text x="540" y="114">5</text><text x="612" y="114">6</text><text x="684" y="114">7</text><text x="756" y="114">8</text><text x="828" y="114">9</text><text x="900" y="114">10</text><text x="972" y="114">11</text></g>
+  <g fill="#8fa4b7"><rect x="180" y="147" width="432" height="24" rx="2"/><rect x="252" y="183" width="216" height="24" rx="2"/><rect x="396" y="219" width="144" height="24" rx="2"/><rect x="396" y="255" width="360" height="24" rx="2"/><rect x="468" y="291" width="216" height="24" rx="2"/><rect x="540" y="327" width="288" height="24" rx="2"/><rect x="612" y="363" width="288" height="24" rx="2"/><rect x="756" y="399" width="216" height="24" rx="2"/></g>
+  <g font-size="21" fill="#354351"><text x="30" y="167">a / w=23</text><text x="30" y="203">b / w=12</text><text x="30" y="239">c / w=20</text><text x="30" y="275">d / w=26</text><text x="30" y="311">e / w=13</text><text x="30" y="347">f / w=20</text><text x="30" y="383">g / w=11</text><text x="30" y="419">h / w=16</text></g>
+  <path d="M30 455H1068" stroke="#dfe5eb"/>
+  <text x="30" y="499" font-size="23" font-weight="bold" fill="#277759">数量最优：b、e、h，共 3 个任务，总权重 41</text>
+  <g fill="#368566"><rect x="252" y="523" width="216" height="40" rx="3"/><rect x="468" y="523" width="216" height="40" rx="3"/><rect x="756" y="523" width="216" height="40" rx="3"/></g>
+  <g text-anchor="middle" font-size="22" fill="#fff"><text x="360" y="550">b / 12</text><text x="576" y="550">e / 13</text><text x="864" y="550">h / 16</text></g>
+  <text x="30" y="617" font-size="23" font-weight="bold" fill="#2f6397">权重最优：d、h，共 2 个任务，总权重 42</text>
+  <g fill="#3f75a7"><rect x="396" y="641" width="360" height="40" rx="3"/><rect x="756" y="641" width="216" height="40" rx="3"/></g>
+  <g text-anchor="middle" font-size="22" fill="#fff"><text x="576" y="668">d / 26</text><text x="864" y="668">h / 16</text></g>
+  <text x="30" y="730" font-size="21" fill="#607080">横向位置始终对应同一时间轴。“选得更多”与“总收益更高”是两个目标。</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="540" viewBox="0 0 1040 540" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">竞争选址中后手的保证收益</title>
+  <desc id="desc">三个顶点u、v、w构成路径，权重为2、9、2。先手选u时后手得2，选v时后手得0，选w时后手得2。因此后手的最坏保证收益为0。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#8293a3"/></marker></defs>
+  <rect width="1040" height="540" fill="#fff"/>
+  <text x="30" y="43" font-size="28" font-weight="bold" fill="#263640">“有一局拿到2”与“每一局保证拿到2”不同</text>
+  <text x="30" y="80" font-size="21" fill="#607080">选中一个顶点后，它本身及相邻顶点都不能再选；双方收益分别计算。</text>
+  <path d="M350 145H690" stroke="#8293a3" stroke-width="2.5"/>
+  <g fill="#edf5ff" stroke="#6e90b2" stroke-width="2"><circle cx="350" cy="145" r="26"/><circle cx="520" cy="145" r="26"/><circle cx="690" cy="145" r="26"/></g>
+  <g text-anchor="middle" font-size="23" fill="#263640"><text x="350" y="153">u</text><text x="520" y="153">v</text><text x="690" y="153">w</text><text x="350" y="114">2</text><text x="520" y="114">9</text><text x="690" y="114">2</text></g>
+  <text x="520" y="217" text-anchor="middle" font-size="23" font-weight="bold" fill="#354351">先手可以怎样选？</text>
+  <g fill="none" stroke="#8293a3" stroke-width="2" marker-end="url(#arrow)"><path d="M520 233L185 282"/><path d="M520 233V282"/><path d="M520 233L855 282"/></g>
+  <g text-anchor="middle" font-size="23" fill="#354351"><text x="185" y="321">选 u，封住 u、v</text><text x="520" y="321">选 v，封住全部顶点</text><text x="855" y="321">选 w，封住 v、w</text></g>
+  <g text-anchor="middle" font-size="22"><text x="185" y="369" fill="#287759">后手选 w，得到2</text><text x="520" y="369" fill="#a14e40">后手无点可选，得到0</text><text x="855" y="369" fill="#287759">后手选 u，得到2</text></g>
+  <path d="M30 407H1010" stroke="#dfe5eb"/>
+  <text x="520" y="458" text-anchor="middle" font-size="27" font-weight="bold" fill="#263640">最坏保证 = min(2, 0, 2) = 0</text>
+  <text x="520" y="505" text-anchor="middle" font-size="21" fill="#607080">“保证”必须覆盖对手的所有合法选择，不能只挑对自己有利的分支。</text>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="510" viewBox="0 0 1100 510" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">最大独立集与极大独立集的区别</title>
+  <desc id="desc">两幅图使用完全相同的九条边。左图选1、4、5、6，是大小4的最大独立集；右图选2、7，不能直接增加顶点，是大小2的极大独立集，但不是最大独立集。</desc>
+  <defs>
+    <g id="edges" fill="none" stroke="#9daab7" stroke-width="2.2"><path d="M120 155H420M120 155L70 280M420 155L70 280M420 155L345 265M420 155L475 265M70 280L170 380M345 265L420 380M475 265L420 380M170 380H420"/></g>
+    <g id="nodes" stroke="#718497" stroke-width="2" fill="#edf1f5"><circle cx="120" cy="155" r="24"/><circle cx="420" cy="155" r="24"/><circle cx="70" cy="280" r="24"/><circle cx="345" cy="265" r="24"/><circle cx="475" cy="265" r="24"/><circle cx="170" cy="380" r="24"/><circle cx="420" cy="380" r="24"/></g>
+    <g id="labels" text-anchor="middle" font-size="23" fill="#263640"><text x="120" y="163">1</text><text x="420" y="163">2</text><text x="70" y="288">3</text><text x="345" y="273">4</text><text x="475" y="273">5</text><text x="170" y="388">6</text><text x="420" y="388">7</text></g>
+  </defs>
+  <rect width="1100" height="510" fill="#fff"/>
+  <text x="30" y="44" font-size="28" font-weight="bold" fill="#263640">不能再加一个顶点，不代表已经选得最多</text>
+  <path d="M550 80V440" stroke="#dfe5eb"/>
+  <g transform="translate(10 0)">
+    <text x="265" y="100" text-anchor="middle" font-size="24" font-weight="bold" fill="#287759">最大独立集：{1, 4, 5, 6}</text>
+    <use href="#edges"/><use href="#nodes"/>
+    <g fill="#bfe6d5" stroke="#338565" stroke-width="2.5"><circle cx="120" cy="155" r="24"/><circle cx="345" cy="265" r="24"/><circle cx="475" cy="265" r="24"/><circle cx="170" cy="380" r="24"/></g>
+    <use href="#labels"/>
+    <text x="265" y="464" text-anchor="middle" font-size="21" fill="#526171">达到上界4：三角形最多1个，其余最多3个</text>
+  </g>
+  <g transform="translate(560 0)">
+    <text x="265" y="100" text-anchor="middle" font-size="24" font-weight="bold" fill="#9c641d">极大但非最大：{2, 7}</text>
+    <use href="#edges"/><use href="#nodes"/>
+    <g fill="#ffe0b3" stroke="#b87c2c" stroke-width="2.5"><circle cx="420" cy="155" r="24"/><circle cx="420" cy="380" r="24"/></g>
+    <use href="#labels"/>
+    <text x="265" y="464" text-anchor="middle" font-size="21" fill="#526171">其余点都有冲突，但当前只有2个顶点</text>
+  </g>
+</svg>

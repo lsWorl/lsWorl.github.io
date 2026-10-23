@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="410" viewBox="0 0 1080 410" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">问题、算法与程序的三个层次</title>
+  <desc id="desc">问题说明输入、合法输出和目标，算法给出求解步骤与正确性理由，程序负责具体实现和边界处理。测试实现与证明算法是不同的检查。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#64748b"/></marker></defs>
+  <rect width="1080" height="410" fill="#fff"/>
+  <text x="30" y="46" font-size="28" font-weight="bold" fill="#263640">先规定正确答案，再设计求解步骤，最后实现</text>
+  <g fill="none" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)"><path d="M320 175H378"/><path d="M700 175H758"/></g>
+  <g stroke-width="1.5"><rect x="30" y="102" width="290" height="160" rx="6" fill="#edf5ff" stroke="#91afd1"/><rect x="390" y="102" width="310" height="160" rx="6" fill="#eaf7f0" stroke="#86b8a0"/><rect x="770" y="102" width="280" height="160" rx="6" fill="#fff3e7" stroke="#d2ad83"/></g>
+  <g font-size="25" font-weight="bold" text-anchor="middle"><text x="175" y="141" fill="#2b5986">问题模型</text><text x="545" y="141" fill="#267254">算法</text><text x="910" y="141" fill="#9b5b1c">程序</text></g>
+  <g font-size="21" fill="#354351"><text x="55" y="184">输入与合法输出是什么？</text><text x="55" y="224">约束和优化目标是什么？</text><text x="415" y="184">按什么步骤得到答案？</text><text x="415" y="224">正确性与资源开销如何？</text><text x="795" y="184">用语言和数据结构实现</text><text x="795" y="224">处理边界、类型和异常</text></g>
+  <path d="M30 302H1050" stroke="#dfe5eb"/>
+  <text x="30" y="342" font-size="22" fill="#354351">证明算法：对所有合法输入成立。测试程序：检查实现与特定边界样例。</text>
+  <text x="30" y="380" font-size="21" fill="#667381">同一个问题可以有多种算法；同一个算法也可以有多种语言实现。</text>
+</svg>

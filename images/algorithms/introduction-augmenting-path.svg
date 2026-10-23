@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="490" viewBox="0 0 1100 490" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">通过增广路重新安排匹配</title>
+  <desc id="desc">A可以匹配1或2，B只能匹配1。初始A匹配1，沿B到1到A到2的交替路径翻转选择，最终得到B匹配1和A匹配2。</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#338565"/></marker><marker id="undo" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#b35b47"/></marker></defs>
+  <rect width="1100" height="490" fill="#fff"/>
+  <text x="30" y="44" font-size="28" font-weight="bold" fill="#263640">岗位被占用后，仍可能通过调整增加匹配</text>
+  <text x="30" y="80" font-size="21" fill="#607080">可用边始终只有 A-1、A-2、B-1；两条线相交处不是顶点。</text>
+  <path d="M365 105V396M730 105V396" stroke="#e0e6ed"/>
+  <g text-anchor="middle" font-size="23" font-weight="bold" fill="#354351"><text x="180" y="120">① 初始匹配：1条边</text><text x="545" y="120">② 找到交替路径</text><text x="910" y="120">③ 翻转后：2条边</text></g>
+  <g transform="translate(0 30)">
+    <path d="M85 165L285 305M85 305L285 165" stroke="#bac4ce" stroke-width="2"/>
+    <path d="M85 165H285" stroke="#3f75a7" stroke-width="6"/>
+    <g fill="#fff" stroke="#687b8d" stroke-width="2"><circle cx="85" cy="165" r="25"/><circle cx="85" cy="305" r="25"/><circle cx="285" cy="165" r="25"/><circle cx="285" cy="305" r="25"/></g>
+    <g text-anchor="middle" font-size="24" fill="#263640"><text x="85" y="173">A</text><text x="85" y="313">B</text><text x="285" y="173">1</text><text x="285" y="313">2</text></g>
+  </g>
+  <g transform="translate(365 30)">
+    <g fill="none" stroke="#338565" stroke-width="4" marker-end="url(#arrow)"><path d="M107 290L262 181"/><path d="M107 181L262 290"/></g>
+    <path d="M258 165H113" fill="none" stroke="#b35b47" stroke-width="4" stroke-dasharray="8 5" marker-end="url(#undo)"/>
+    <g fill="#fff" stroke="#687b8d" stroke-width="2"><circle cx="85" cy="165" r="25"/><circle cx="85" cy="305" r="25"/><circle cx="285" cy="165" r="25"/><circle cx="285" cy="305" r="25"/></g>
+    <g text-anchor="middle" font-size="24" fill="#263640"><text x="85" y="173">A</text><text x="85" y="313">B</text><text x="285" y="173">1</text><text x="285" y="313">2</text></g>
+  </g>
+  <g transform="translate(730 30)">
+    <path d="M85 165H285" stroke="#bac4ce" stroke-width="2" stroke-dasharray="6 5"/>
+    <path d="M85 165L285 305M85 305L285 165" stroke="#338565" stroke-width="6"/>
+    <g fill="#fff" stroke="#687b8d" stroke-width="2"><circle cx="85" cy="165" r="25"/><circle cx="85" cy="305" r="25"/><circle cx="285" cy="165" r="25"/><circle cx="285" cy="305" r="25"/></g>
+    <g text-anchor="middle" font-size="24" fill="#263640"><text x="85" y="173">A</text><text x="85" y="313">B</text><text x="285" y="173">1</text><text x="285" y="313">2</text></g>
+  </g>
+  <g text-anchor="middle" font-size="21" fill="#526171"><text x="180" y="387">A-1 已选，B暂时无岗位</text><text x="545" y="387">B → 1 → A → 2</text><text x="910" y="387">新增2条，撤销1条，净增1条</text></g>
+  <text x="30" y="447" font-size="21" fill="#607080">中图绿箭头表示加入，红色虚线表示撤销。翻转后，每个端点仍最多被使用一次。</text>
+</svg>

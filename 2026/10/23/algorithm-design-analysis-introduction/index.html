@@ -1,0 +1,1066 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>算法设计与分析入门：从问题建模到贪心、动态规划与复杂性 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f8f7fc"><meta name="description" content="根据算法设计与分析Introduction课件，用区间调度、带权调度、二分图匹配、独立集和竞争选址理解问题建模、算法正确性、P与NP，通过图例、逐步手算、Python核对和巩固题建立学习框架。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法设计与分析入门：从问题建模到贪心、动态规划与复杂性">
+<meta property="og:url" content="https://lsworl.top/2026/10/23/algorithm-design-analysis-introduction/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="根据算法设计与分析Introduction课件，用区间调度、带权调度、二分图匹配、独立集和竞争选址理解问题建模、算法正确性、P与NP，通过图例、逐步手算、Python核对和巩固题建立学习框架。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp">
+<meta property="article:published_time" content="2026-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-23T06:10:46.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="贪心算法">
+<meta property="article:tag" content="动态规划">
+<meta property="article:tag" content="二分图匹配">
+<meta property="article:tag" content="计算复杂性">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "算法设计与分析入门：从问题建模到贪心、动态规划与复杂性",
+  "url": "https://lsworl.top/2026/10/23/algorithm-design-analysis-introduction/",
+  "image": "https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp",
+  "datePublished": "2026-10-22T16:00:00.000Z",
+  "dateModified": "2026-10-23T06:10:46.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.top"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/starlab/mark.svg"><link rel="canonical" href="https://lsworl.top/2026/10/23/algorithm-design-analysis-introduction/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#151523')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f8f7fc')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '算法设计与分析入门：从问题建模到贪心、动态规划与复杂性',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/assets/starlab.e2ed3441c4bc.css" data-starlab-assets><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+<script type="application/ld+json" class="lab-artwork-metadata">{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2021.webp","name":"可莉 2021 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© miHoYo","isBasedOn":"https://twitter.com/GenshinImpact/status/1419870158143721476","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2022.webp","name":"可莉 2022 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1552141732321628160","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp","name":"可莉 2023 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1684413674231037952","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp","name":"可莉 2024 年生日插画","creditText":"tokki","creator":{"@type":"Person","name":"tokki","url":"https://twitter.com/tokki_517"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1817047433395994971","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"}]}</script><meta name="companion-content-hash" content="e2013fa03e753ae554059dc8"><meta name="companion-knowledge-version" content="dbf69c8c662a1c02180bb2c9"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">130</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">160</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/starlab/mark.svg" alt="Logo"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">算法设计与分析入门：从问题建模到贪心、动态规划与复杂性</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">算法设计与分析入门：从问题建模到贪心、动态规划与复杂性</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-22T16:00:00.000Z" title="发表于 2026-10-23 00:00:00">2026-10-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-23T06:10:46.000Z" title="更新于 2026-10-23 14:10:46">2026-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><div class="lab-article-cover"><img src="/images/starlab/covers/klee-birthday-2024.webp" alt="算法设计与分析入门：从问题建模到贪心、动态规划与复杂性 · 主题封面" width="1280" height="720" decoding="async" fetchpriority="high"></div><p class="lab-cover-credit">插画：tokki</p><article class="container post-content" id="article-container" data-companion-hash="e2013fa03e753ae554059dc8" data-companion-version="dbf69c8c662a1c02180bb2c9"><p>给出一组任务，要求“选出尽可能多的不冲突任务”，与要求“选出总收益最高的不冲突任务”，看起来只改了几个字，却可能需要完全不同的算法。</p>
+<p>前者可以使用贪心策略；后者通常需要动态规划。再把任务间的冲突关系从时间轴推广到任意图，问题又会变得更困难。</p>
+<p>本文根据《Design and Analysis of Algorithms》第一讲 Introduction 的知识部分整理。重点回答：</p>
+<ul>
+<li>怎样把一句需求变成能求解的问题？</li>
+<li>问题、算法、程序分别是什么？</li>
+<li>怎样判断一个算法正确且足够高效？</li>
+<li>为什么有的问题适合贪心，有的需要动态规划，有的暂时没有已知的通用高效精确算法？</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="0-已有知识与本文的位置"><a href="#0-已有知识与本文的位置" class="headerlink" title="0. 已有知识与本文的位置"></a>0. 已有知识与本文的位置</h2><table>
+<thead>
+<tr>
+<th>需要回顾的知识</th>
+<th>已有文章中的位置</th>
+<th>本文怎样使用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>集合、子集、基数</td>
+<td><a href="/2026/10/22/cryptography-math-01-sets-maps-operations/#3-%E9%9B%86%E5%90%88%EF%BC%9A%E5%85%83%E7%B4%A0%E3%80%81%E5%AD%90%E9%9B%86%E4%B8%8E%E9%9B%86%E5%90%88%E8%BF%90%E7%AE%97">集合与集合运算</a></td>
+<td>把一个解表示为任务、边或顶点的子集</td>
+</tr>
+<tr>
+<td>半开区间</td>
+<td><a href="/2026/10/22/cryptography-math-01-sets-maps-operations/#7-%E5%8C%BA%E9%97%B4%E4%B8%8E%E6%97%A0%E7%A9%B7%EF%BC%9A%E8%BE%B9%E7%95%8C%E5%B1%9E%E4%BA%8E%E4%B8%8D%E5%B1%9E%E4%BA%8E%E9%9B%86%E5%90%88">区间与无穷</a></td>
+<td>明确两个任务在端点相接时是否兼容</td>
+</tr>
+<tr>
+<td>顶点、边、邻接关系</td>
+<td><a href="/2023/10/17/shu-ju-jie-gou-tu/#%E5%9B%BE%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">图的基本概念</a></td>
+<td>表达匹配和独立集的约束</td>
+</tr>
+<tr>
+<td>排序方法</td>
+<td><a href="/2023/11/03/shu-ju-jie-gou-pai-xu/">排序文章</a></td>
+<td>将任务按结束时间排序，不重复展开排序实现</td>
+</tr>
+<tr>
+<td>折半查找</td>
+<td><a href="/2023/10/25/shu-ju-jie-gou-cha-zhao/#%E9%A1%BA%E5%BA%8F%E6%9F%A5%E6%89%BE%E5%92%8C%E6%8A%98%E5%8D%8A%E6%9F%A5%E6%89%BE">顺序查找和折半查找</a></td>
+<td>高效寻找动态规划中的前驱任务</td>
+</tr>
+<tr>
+<td>启发式调度</td>
+<td><a href="/2026/06/14/heft-algorithm/#2-HEFT-%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7">HEFT解决的问题</a></td>
+<td>对比不同调度模型，理解启发式不等于最优保证</td>
+</tr>
+</tbody></table>
+<p>本文的主线是：先写清模型，再研究正确性与资源消耗，最后根据问题结构选择方法。</p>
+<h2 id="1-先区分问题、算法和程序"><a href="#1-先区分问题、算法和程序" class="headerlink" title="1. 先区分问题、算法和程序"></a>1. 先区分问题、算法和程序</h2><h3 id="1-1-问题规定“什么结果算正确”"><a href="#1-1-问题规定“什么结果算正确”" class="headerlink" title="1.1 问题规定“什么结果算正确”"></a>1.1 问题规定“什么结果算正确”</h3><p>假设有一个会议室，若干活动都想使用它。一个完整的问题至少要说清四件事：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>本例中的含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入</td>
+<td>每个活动的开始时间和结束时间</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>被接受的活动编号集合</td>
+</tr>
+<tr>
+<td>可行性约束</td>
+<td>被接受的活动不能占用同一时刻的会议室</td>
+</tr>
+<tr>
+<td>优化目标</td>
+<td>被接受的活动数量最多</td>
+</tr>
+</tbody></table>
+<p>还要补充边界约定：本文把活动写为半开区间 $[s_j,f_j)$，要求 $s_j&lt;f_j$，且不允许中途拆分活动。</p>
+<p>这样，$[1,4)$ 和 $[4,7)$ 可以连续安排；若需要清场时间，就必须修改兼容条件，不能继续直接套用这个模型。</p>
+<p><strong>“同一个输入对应确定的答案含义”，不等于“同一个输入只能有一份合法方案”。</strong> 课件用输入到输出的函数帮助理解问题，但优化问题可能存在多份同样最优的解。不同程序输出不同的最优方案，也可能都正确；若接口要求结果唯一，需要额外规定平局时的选择规则。</p>
+<h3 id="1-2-算法规定“按照什么步骤求解”"><a href="#1-2-算法规定“按照什么步骤求解”" class="headerlink" title="1.2 算法规定“按照什么步骤求解”"></a>1.2 算法规定“按照什么步骤求解”</h3><p>对同一个调度问题，可以提出不同算法：</p>
+<ul>
+<li>枚举所有活动子集，逐一检查，再选数量最多的。</li>
+<li>每次选最早开始的活动。</li>
+<li>每次选最早结束的活动。</li>
+</ul>
+<p>这些都是明确的操作思路，但它们不一定都正确，也不一定同样高效。</p>
+<p>算法通常需要输入、输出、明确且可执行的步骤，并在规定的合法输入上有限终止。伪代码便于表达思路，暂时不必纠结某种语言的语法。</p>
+<h3 id="1-3-程序是算法的具体实现"><a href="#1-3-程序是算法的具体实现" class="headerlink" title="1.3 程序是算法的具体实现"></a>1.3 程序是算法的具体实现</h3><p>同一个贪心算法可以用 Python、C++ 或 Java 实现。但实现还会引入类型、排序稳定性、边界条件、溢出和数据结构等问题。</p>
+<p><img src="/images/algorithms/introduction-model-flow.svg" alt="从问题模型到算法再到程序的流程，以及正确性和复杂度的检查位置"></p>
+<p>可以分别检查两层正确性：算法在数学上是否能解决问题；程序是否忠实实现了这个算法。编译通过只能说明语法等检查通过，不能替代这两层判断。</p>
+<h2 id="2-判定、最优值、最优解与数值计算"><a href="#2-判定、最优值、最优解与数值计算" class="headerlink" title="2. 判定、最优值、最优解与数值计算"></a>2. 判定、最优值、最优解与数值计算</h2><p>课件把问题分为判定、优化和数值计算几种类型。优化问题中，又要区分“最优值”和“最优方案”。</p>
+<p>用后面的带权调度例子说明：</p>
+<table>
+<thead>
+<tr>
+<th>问题形式</th>
+<th>提问方式</th>
+<th>输出形式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>判定问题</td>
+<td>是否存在总收益至少42的兼容方案？</td>
+<td>是或否</td>
+</tr>
+<tr>
+<td>最优值问题</td>
+<td>最大总收益是多少？</td>
+<td>42</td>
+</tr>
+<tr>
+<td>最优解问题</td>
+<td>哪些任务能实现这个最大收益？</td>
+<td>任务 d、h</td>
+</tr>
+</tbody></table>
+<p>知道最优值是42，并不自动等于已经知道选哪些任务。动态规划如果只保存最优值，通常还需要回溯才能恢复方案。</p>
+<p>反过来，有了一个最优方案，通常可以直接计算它的目标值。对整数目标且已知上下界的问题，也常能把优化问题与多次判定联系起来，但需要分析调用次数与数值编码长度，不能无条件认为两种形式完全相同。</p>
+<p>数值计算则可能要求求出具体数值。例如：</p>
+
+$$
+2x+y=5,\qquad x-y=1
+$$
+
+
+<p>消去变量得到 $x=2,y=1$。更一般的数值问题还要说明允许误差、数值稳定性和精度要求；“输出一个数”不代表可以忽略这些要求。</p>
+<h2 id="3-分析算法时，至少问三个问题"><a href="#3-分析算法时，至少问三个问题" class="headerlink" title="3. 分析算法时，至少问三个问题"></a>3. 分析算法时，至少问三个问题</h2><h3 id="3-1-它会不会结束"><a href="#3-1-它会不会结束" class="headerlink" title="3.1 它会不会结束"></a>3.1 它会不会结束</h3><p>例如每轮从有限任务列表中处理一个未处理任务，最多处理完全部任务就停止。循环“直到找到最优解”则不够，必须说明怎样识别最优解、为什么最终能找到。</p>
+<h3 id="3-2-它是否对所有合法输入都正确"><a href="#3-2-它是否对所有合法输入都正确" class="headerlink" title="3.2 它是否对所有合法输入都正确"></a>3.2 它是否对所有合法输入都正确</h3><p>测试几个例子没有出错，不能证明对所有输入都正确。常见的证明方法包括循环不变式、归纳法和交换论证。</p>
+<p>反过来，要否定“每次选最早开始的活动一定最优”，只需要一个反例：</p>
+
+$$
+a=[0,10),\qquad b=[1,2),\qquad c=[2,3),\qquad d=[3,4)
+$$
+
+
+<p>最早开始策略会先选 a，只得到1个活动；选 b、c、d 可以得到3个。这个反例推翻的是该策略，不是推翻整个区间调度问题存在高效算法的可能性。</p>
+<h3 id="3-3-它消耗多少时间和空间"><a href="#3-3-它消耗多少时间和空间" class="headerlink" title="3.3 它消耗多少时间和空间"></a>3.3 它消耗多少时间和空间</h3><p>先定义输入规模，再讨论复杂度。活动数量可以记为 $n$；图问题常用顶点数 $n=|V|$ 和边数 $m=|E|$。</p>
+<p>对 $n$ 个任务，每个任务有“选”与“不选”两种状态，子集数量是 $2^n$：</p>
+<table>
+<thead>
+<tr>
+<th align="right">任务数量</th>
+<th align="right">子集数量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">10</td>
+<td align="right">1,024</td>
+</tr>
+<tr>
+<td align="right">20</td>
+<td align="right">1,048,576</td>
+</tr>
+<tr>
+<td align="right">40</td>
+<td align="right">1,099,511,627,776</td>
+</tr>
+</tbody></table>
+<p>而检查一个子集是否可行，还要额外花时间。因此不能把 $2^n$ 直接当成完整运行时间。</p>
+<p>还要区分“一个数的大小”和“表示这个数需要的位数”。若整数 $N$ 用二进制编码，输入长度约为 $\log_2 N$，循环 $N$ 次并不一定是关于输入长度的多项式时间。位数与取值数量的区别，可以回看<a href="/2026/10/22/cryptography-math-01-sets-maps-operations/#1-%E5%AF%B9%E6%95%B0%E4%B8%8E%E6%8C%87%E6%95%B0%EF%BC%9A%E5%85%88%E7%A1%AE%E8%AE%A4%E5%BA%95%E6%95%B0">上一篇的对数例子</a>。</p>
+<h2 id="4-区间调度：为什么选择最早结束的任务"><a href="#4-区间调度：为什么选择最早结束的任务" class="headerlink" title="4. 区间调度：为什么选择最早结束的任务"></a>4. 区间调度：为什么选择最早结束的任务</h2><h3 id="4-1-沿用课件中的8个任务"><a href="#4-1-沿用课件中的8个任务" class="headerlink" title="4.1 沿用课件中的8个任务"></a>4.1 沿用课件中的8个任务</h3><p>课件第27页与第28页使用相同的时间区间；后一页为每个任务增加权重。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th align="right">开始时间</th>
+<th align="right">结束时间</th>
+<th align="right">权重</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">23</td>
+</tr>
+<tr>
+<td>b</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">12</td>
+</tr>
+<tr>
+<td>c</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">20</td>
+</tr>
+<tr>
+<td>d</td>
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">26</td>
+</tr>
+<tr>
+<td>e</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">13</td>
+</tr>
+<tr>
+<td>f</td>
+<td align="right">5</td>
+<td align="right">9</td>
+<td align="right">20</td>
+</tr>
+<tr>
+<td>g</td>
+<td align="right">6</td>
+<td align="right">10</td>
+<td align="right">11</td>
+</tr>
+<tr>
+<td>h</td>
+<td align="right">8</td>
+<td align="right">11</td>
+<td align="right">16</td>
+</tr>
+</tbody></table>
+<p>本节先忽略权重。目标是找一个兼容任务子集 $S$，使 $|S|$ 最大，而不是让时间轴尽量被占满。</p>
+<h3 id="4-2-按结束时间排序，依次扫描"><a href="#4-2-按结束时间排序，依次扫描" class="headerlink" title="4.2 按结束时间排序，依次扫描"></a>4.2 按结束时间排序，依次扫描</h3><p>排序后的顺序为 b、c、a、e、d、f、g、h。</p>
+<table>
+<thead>
+<tr>
+<th>当前任务</th>
+<th>检查</th>
+<th>决定</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>b：$[1,4)$</td>
+<td>当前还没有任务</td>
+<td>选择，结束时间变为4</td>
+</tr>
+<tr>
+<td>c：$[3,5)$</td>
+<td>开始时间3早于4</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>a：$[0,6)$</td>
+<td>开始时间0早于4</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>e：$[4,7)$</td>
+<td>开始时间4等于4</td>
+<td>选择，结束时间变为7</td>
+</tr>
+<tr>
+<td>d：$[3,8)$</td>
+<td>开始时间3早于7</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>f：$[5,9)$</td>
+<td>开始时间5早于7</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>g：$[6,10)$</td>
+<td>开始时间6早于7</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>h：$[8,11)$</td>
+<td>开始时间8不早于7</td>
+<td>选择</td>
+</tr>
+</tbody></table>
+<p>得到 $S=\{b,e,h\}$，共3个任务。</p>
+<p><img src="/images/algorithms/introduction-intervals.svg" alt="课件8个区间任务，以及数量最优方案b、e、h和权重最优方案d、h的比较"></p>
+<h3 id="4-3-“最早结束”为什么能保证最优"><a href="#4-3-“最早结束”为什么能保证最优" class="headerlink" title="4.3 “最早结束”为什么能保证最优"></a>4.3 “最早结束”为什么能保证最优</h3><p>直觉是尽早释放会议室，但直觉本身不是证明。可以用一次交换说明第一步没有损失：</p>
+<ol>
+<li>取任意一个最优方案，把其中任务按时间排列，设第一个任务是 o。</li>
+<li>贪心选的任务 g 在所有任务中最早结束，因此 $f_g\le f_o$。</li>
+<li>用 g 替换 o 后，原方案中其余任务仍在 $f_o$ 之后开始，也就仍能接在 g 后面，任务数没有减少。</li>
+<li>因而至少存在一个以 g 开头的最优方案。再对 g 结束后的剩余任务重复同样的论证。</li>
+</ol>
+<p>关键不是“局部选了一个看起来不错的任务”，而是证明这一步能被某个全局最优解接纳。</p>
+<p>排序花费 $O(n\log n)$，扫描花费 $O(n)$，总时间为 $O(n\log n)$。若输入已经按结束时间排序，扫描部分只需线性时间。</p>
+<h2 id="5-带权区间调度：目标一变，贪心就不够了"><a href="#5-带权区间调度：目标一变，贪心就不够了" class="headerlink" title="5. 带权区间调度：目标一变，贪心就不够了"></a>5. 带权区间调度：目标一变，贪心就不够了</h2><h3 id="5-1-最大数量不一定对应最大收益"><a href="#5-1-最大数量不一定对应最大收益" class="headerlink" title="5.1 最大数量不一定对应最大收益"></a>5.1 最大数量不一定对应最大收益</h3><p>仍使用上面的8个任务。最早结束策略得到 b、e、h，总权重为：</p>
+
+$$
+12+13+16=41
+$$
+
+
+<p>而 d、h 只有两个任务，却有：</p>
+
+$$
+26+16=42
+$$
+
+
+<p>所以不能把无权问题的最优性证明直接搬过来。之前用 g 替换 o 保持了任务数量，却不一定保持收益。</p>
+<h3 id="5-2-状态与前驱分别表示什么"><a href="#5-2-状态与前驱分别表示什么" class="headerlink" title="5.2 状态与前驱分别表示什么"></a>5.2 状态与前驱分别表示什么</h3><p>仍按结束时间排序，并用 $j=1,\ldots,n$ 给任务重新编号。</p>
+<ul>
+<li>$OPT(j)$：只允许从前 j 个任务中选择时，能得到的最大总权重。</li>
+<li>$p(j)$：排在 j 前面、结束时间不晚于 j 的开始时间的最大编号；不存在时取0。</li>
+<li>$OPT(0)=0$：没有任务可以选时，收益为0。</li>
+</ul>
+<p>为什么只要记住一个前驱编号？因为结束时间有序，与 j 兼容的前面任务恰好形成一个前缀，编号不超过 $p(j)$。</p>
+<h3 id="5-3-最优方案只有“选j”和“不选j”两类"><a href="#5-3-最优方案只有“选j”和“不选j”两类" class="headerlink" title="5.3 最优方案只有“选j”和“不选j”两类"></a>5.3 最优方案只有“选j”和“不选j”两类</h3><p>不选 j，只能从前 j-1 个任务中选择，最优值为 $OPT(j-1)$。</p>
+<p>选 j，则所有同时选的更早任务都必须在 j 开始前结束，最优收益为 $v_j+OPT(p(j))$。</p>
+<p>两种情况覆盖全部可行方案，因此：</p>
+
+$$
+OPT(j)=\max\bigl(OPT(j-1),\ v_j+OPT(p(j))\bigr)
+$$
+
+
+<p>这不是试出来的公式，而是对所有最优方案作了不遗漏的分类。</p>
+<h3 id="5-4-把整张表算出来"><a href="#5-4-把整张表算出来" class="headerlink" title="5.4 把整张表算出来"></a>5.4 把整张表算出来</h3><table>
+<thead>
+<tr>
+<th align="right">j</th>
+<th>任务</th>
+<th>区间</th>
+<th align="right">权重</th>
+<th align="right">p(j)</th>
+<th align="right">选当前任务</th>
+<th align="right">不选当前任务</th>
+<th align="right">OPT(j)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">0</td>
+<td>无</td>
+<td>无</td>
+<td align="right">0</td>
+<td align="right">无</td>
+<td align="right">无</td>
+<td align="right">无</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td>b</td>
+<td>$[1,4)$</td>
+<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">12+0&#x3D;12</td>
+<td align="right">0</td>
+<td align="right">12</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td>c</td>
+<td>$[3,5)$</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">20+0&#x3D;20</td>
+<td align="right">12</td>
+<td align="right">20</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td>a</td>
+<td>$[0,6)$</td>
+<td align="right">23</td>
+<td align="right">0</td>
+<td align="right">23+0&#x3D;23</td>
+<td align="right">20</td>
+<td align="right">23</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td>e</td>
+<td>$[4,7)$</td>
+<td align="right">13</td>
+<td align="right">1</td>
+<td align="right">13+12&#x3D;25</td>
+<td align="right">23</td>
+<td align="right">25</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td>d</td>
+<td>$[3,8)$</td>
+<td align="right">26</td>
+<td align="right">0</td>
+<td align="right">26+0&#x3D;26</td>
+<td align="right">25</td>
+<td align="right">26</td>
+</tr>
+<tr>
+<td align="right">6</td>
+<td>f</td>
+<td>$[5,9)$</td>
+<td align="right">20</td>
+<td align="right">2</td>
+<td align="right">20+20&#x3D;40</td>
+<td align="right">26</td>
+<td align="right">40</td>
+</tr>
+<tr>
+<td align="right">7</td>
+<td>g</td>
+<td>$[6,10)$</td>
+<td align="right">11</td>
+<td align="right">3</td>
+<td align="right">11+23&#x3D;34</td>
+<td align="right">40</td>
+<td align="right">40</td>
+</tr>
+<tr>
+<td align="right">8</td>
+<td>h</td>
+<td>$[8,11)$</td>
+<td align="right">16</td>
+<td align="right">5</td>
+<td align="right">16+26&#x3D;42</td>
+<td align="right">40</td>
+<td align="right">42</td>
+</tr>
+</tbody></table>
+<p>例如计算 h 时，$p(8)=5$ 表示 d 恰好在时间8结束。选择 h 可以接上前5个任务的最优方案，而不是只能接“单个前驱任务 d”；只是本例中这个前缀的最优方案恰好只有 d。</p>
+<h3 id="5-5-从最优值回到最优解"><a href="#5-5-从最优值回到最优解" class="headerlink" title="5.5 从最优值回到最优解"></a>5.5 从最优值回到最优解</h3><p>从最后一行往回看：</p>
+<ol>
+<li>$16+OPT(5)=42&gt;OPT(7)=40$，选 h，跳到第5行。</li>
+<li>$26+OPT(0)=26&gt;OPT(4)=25$，选 d，跳到第0行。</li>
+<li>结束，按时间顺序返回 d、h。</li>
+</ol>
+<p>前驱可以用折半查找在每个任务上花 $O(\log n)$ 时间预处理，填表与回溯均为 $O(n)$，整体仍为 $O(n\log n)$ 时间、$O(n)$ 额外空间。</p>
+<h2 id="6-用Python核对两种调度结果"><a href="#6-用Python核对两种调度结果" class="headerlink" title="6. 用Python核对两种调度结果"></a>6. 用Python核对两种调度结果</h2><p>下面只使用标准库。每个任务用 <code>(名称, 开始, 结束, 权重)</code> 表示；半开区间满足开始时间严格小于结束时间。平局时动态规划选择“不选当前任务”，因此回溯与填表的规则一致。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> bisect <span class="token keyword">import</span> bisect_right
+
+
+<span class="token keyword">def</span> <span class="token function">order_jobs</span><span class="token punctuation">(</span>jobs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    ordered <span class="token operator">=</span> <span class="token builtin">sorted</span><span class="token punctuation">(</span>jobs<span class="token punctuation">,</span> key<span class="token operator">=</span><span class="token keyword">lambda</span> job<span class="token punctuation">:</span> <span class="token punctuation">(</span>job<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> job<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> job<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token builtin">any</span><span class="token punctuation">(</span>start <span class="token operator">>=</span> finish <span class="token keyword">for</span> _<span class="token punctuation">,</span> start<span class="token punctuation">,</span> finish<span class="token punctuation">,</span> _ <span class="token keyword">in</span> ordered<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string">"Each job must have start &lt; finish"</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> ordered
+
+
+<span class="token keyword">def</span> <span class="token function">interval_scheduling</span><span class="token punctuation">(</span>jobs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    selected <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    last_finish <span class="token operator">=</span> <span class="token builtin">float</span><span class="token punctuation">(</span><span class="token string">"-inf"</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> name<span class="token punctuation">,</span> start<span class="token punctuation">,</span> finish<span class="token punctuation">,</span> _ <span class="token keyword">in</span> order_jobs<span class="token punctuation">(</span>jobs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> start <span class="token operator">>=</span> last_finish<span class="token punctuation">:</span>
+            selected<span class="token punctuation">.</span>append<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+            last_finish <span class="token operator">=</span> finish
+    <span class="token keyword">return</span> selected
+
+
+<span class="token keyword">def</span> <span class="token function">weighted_interval_scheduling</span><span class="token punctuation">(</span>jobs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    ordered <span class="token operator">=</span> order_jobs<span class="token punctuation">(</span>jobs<span class="token punctuation">)</span>
+    finishes <span class="token operator">=</span> <span class="token punctuation">[</span>job<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token keyword">for</span> job <span class="token keyword">in</span> ordered<span class="token punctuation">]</span>
+    n <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>ordered<span class="token punctuation">)</span>
+    previous <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token punctuation">(</span>n <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+    best <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token punctuation">(</span>n <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> j<span class="token punctuation">,</span> <span class="token punctuation">(</span>_<span class="token punctuation">,</span> start<span class="token punctuation">,</span> _<span class="token punctuation">,</span> weight<span class="token punctuation">)</span> <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>ordered<span class="token punctuation">,</span> start<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># The eligible prefix ends strictly before the current array entry.</span>
+        previous<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> bisect_right<span class="token punctuation">(</span>finishes<span class="token punctuation">,</span> start<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> j <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        best<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>best<span class="token punctuation">[</span>j <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> weight <span class="token operator">+</span> best<span class="token punctuation">[</span>previous<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+    selected <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    j <span class="token operator">=</span> n
+    <span class="token keyword">while</span> j <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">:</span>
+        name<span class="token punctuation">,</span> _<span class="token punctuation">,</span> _<span class="token punctuation">,</span> weight <span class="token operator">=</span> ordered<span class="token punctuation">[</span>j <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span>
+        <span class="token keyword">if</span> weight <span class="token operator">+</span> best<span class="token punctuation">[</span>previous<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">></span> best<span class="token punctuation">[</span>j <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            selected<span class="token punctuation">.</span>append<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+            j <span class="token operator">=</span> previous<span class="token punctuation">[</span>j<span class="token punctuation">]</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            j <span class="token operator">-=</span> <span class="token number">1</span>
+    selected<span class="token punctuation">.</span>reverse<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> selected<span class="token punctuation">,</span> best<span class="token punctuation">[</span>n<span class="token punctuation">]</span>
+
+
+jobs <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">23</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"d"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">26</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"e"</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"f"</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"g"</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>interval_scheduling<span class="token punctuation">(</span>jobs<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>weighted_interval_scheduling<span class="token punctuation">(</span>jobs<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">assert</span> interval_scheduling<span class="token punctuation">(</span>jobs<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token punctuation">[</span><span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token string">"e"</span><span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">]</span>
+<span class="token keyword">assert</span> weighted_interval_scheduling<span class="token punctuation">(</span>jobs<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">"d"</span><span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">42</span><span class="token punctuation">)</span>
+<span class="token keyword">assert</span> weighted_interval_scheduling<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span></code></pre>
+
+<p>输出：</p>
+<pre class="language-text" data-language="text"><code class="language-text">['b', 'e', 'h']
+(['d', 'h'], 42)</code></pre>
+
+<p><code>bisect_right</code> 返回满足条件的前面任务数量，恰好对应这里1开始编号的前驱下标。使用右侧插入位置，意味着结束时间等于开始时间的任务也被视为兼容；<code>hi=j-1</code> 则把搜索限制在当前任务之前。</p>
+<p>这两种方法都是各自模型下的精确算法，并不是“贪心一定不精确、动态规划一定更高级”。先看模型，再讨论算法性质。</p>
+<h2 id="7-二分图匹配：选的是边，不是顶点"><a href="#7-二分图匹配：选的是边，不是顶点" class="headerlink" title="7. 二分图匹配：选的是边，不是顶点"></a>7. 二分图匹配：选的是边，不是顶点</h2><h3 id="7-1-把“能不能分配”表示成边"><a href="#7-1-把“能不能分配”表示成边" class="headerlink" title="7.1 把“能不能分配”表示成边"></a>7.1 把“能不能分配”表示成边</h3><p>二分图把顶点分成两侧 $L,R$，每条边连接不同侧的顶点。例如左边是求职者，右边是岗位，边表示具备对应资格。</p>
+<p>匹配 $M\subseteq E$ 是一个边集合，其中任意两条边都没有公共端点：一个人最多拿到一个岗位，一个岗位最多给一个人。</p>
+<p>课件第29页展示的一个匹配为：</p>
+
+$$
+M=\{(A,1),(B,2),(C,4),(D,3),(E,5)\}
+$$
+
+
+<p>所有边都存在，而且没有重复使用任何端点，大小为5。左右两侧各只有5个顶点，任何匹配都不可能超过5条边，所以这个匹配已经达到上界，是最大匹配。</p>
+<h3 id="7-2-被占用的岗位，不一定永远不能再考虑"><a href="#7-2-被占用的岗位，不一定永远不能再考虑" class="headerlink" title="7.2 被占用的岗位，不一定永远不能再考虑"></a>7.2 被占用的岗位，不一定永远不能再考虑</h3><p>考虑一个更小的二分图：A 可以匹配岗位1或2，B只能匹配岗位1。</p>
+<p>如果先选 A-1，B 就无岗位可选。直接停止只能得到1条边，但可以先把 A 调整到2，再把1分配给 B。</p>
+<p><img src="/images/algorithms/introduction-augmenting-path.svg" alt="二分图中的增广路：撤销A到1，再加入B到1和A到2，使匹配数从1增加到2"></p>
+<p>路径 B → 1 → A → 2 上，未选边、已选边、未选边交替出现。把这条路径上的选择状态全部翻转，会删掉1条已选边、增加2条未选边，匹配数净增1。</p>
+<p>这叫增广路。它说明“没有一条边能直接加进去”，不等于“不能通过重新安排得到更大的匹配”。</p>
+<p>对一般二分图，重复寻找增广路可以求最大匹配；此处先理解调整过程，不展开完整匹配算法。</p>
+<p>课件第29页的目标是无权最大匹配，第32页汇总又提到了带权匹配。两者目标不同：一个最大化边数，一个最大化边权总和。算法名称和复杂度也需要跟具体版本对应，不能把汇总中的简略复杂度直接当作所有匹配算法的统一界限。</p>
+<h2 id="8-独立集：把任意冲突关系表示成图"><a href="#8-独立集：把任意冲突关系表示成图" class="headerlink" title="8. 独立集：把任意冲突关系表示成图"></a>8. 独立集：把任意冲突关系表示成图</h2><h3 id="8-1-独立集要求选中的顶点之间没有边"><a href="#8-1-独立集要求选中的顶点之间没有边" class="headerlink" title="8.1 独立集要求选中的顶点之间没有边"></a>8.1 独立集要求选中的顶点之间没有边</h3><p>给定无向简单图 $G=(V,E)$，独立集是满足下式的顶点集合 $S\subseteq V$：</p>
+
+$$
+\forall u,v\in S,\ u\ne v\Longrightarrow\{u,v\}\notin E
+$$
+
+
+<p>如果顶点代表任务，边代表冲突，那么独立集就是一组两两不冲突的任务。</p>
+<p>沿用课件第30页的图，其边为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">1-2, 1-3, 2-3, 2-4, 2-5, 3-6, 4-7, 5-7, 6-7</code></pre>
+
+<p>其中 $S=\{1,4,5,6\}$ 是大小为4的独立集。</p>
+<p><img src="/images/algorithms/introduction-independent-sets.svg" alt="同一个图中的最大独立集与极大但非最大的独立集"></p>
+<p>为什么不可能选5个？顶点1、2、3构成三角形，最多选1个；剩下只有4、5、6、7，其中7与另外三个都有边，最多选3个。因此任何独立集大小最多是 $1+3=4$，上述方案达到上界。</p>
+<h3 id="8-2-最大与极大，差一个字但不是一回事"><a href="#8-2-最大与极大，差一个字但不是一回事" class="headerlink" title="8.2 最大与极大，差一个字但不是一回事"></a>8.2 最大与极大，差一个字但不是一回事</h3><ul>
+<li>最大独立集：在所有独立集中，顶点数量最多。</li>
+<li>极大独立集：在当前独立集基础上，不能再直接加入其他顶点。</li>
+</ul>
+<p>本图中的 $\{2,7\}$ 是极大独立集：其余每个顶点都与2或7相邻，所以不能直接添加。但是它只有2个顶点，不是最大独立集。</p>
+<p>与匹配中的重新安排类似，局部“加不进去”不代表全局最优。</p>
+<h3 id="8-3-区间调度为什么没有因此变难"><a href="#8-3-区间调度为什么没有因此变难" class="headerlink" title="8.3 区间调度为什么没有因此变难"></a>8.3 区间调度为什么没有因此变难</h3><p>可以把每个区间当作一个顶点，有重叠的区间之间连边。于是无权区间调度对应这个冲突图上的最大独立集，带权调度对应最大权独立集。</p>
+<p>关键区别在于：区间之间形成的是具有特殊结构的区间图，而不是任意图。时间轴的顺序结构支持前面的贪心和动态规划。</p>
+<p>一个问题在某种特殊图上容易，不代表推广到一般图后仍然容易；反过来，一般图上的困难性，也不妨碍特殊图上的高效算法。</p>
+<h2 id="9-P、NP与NP完全：到底在分类什么"><a href="#9-P、NP与NP完全：到底在分类什么" class="headerlink" title="9. P、NP与NP完全：到底在分类什么"></a>9. P、NP与NP完全：到底在分类什么</h2><h3 id="9-1-首先明确讨论的是判定问题"><a href="#9-1-首先明确讨论的是判定问题" class="headerlink" title="9.1 首先明确讨论的是判定问题"></a>9.1 首先明确讨论的是判定问题</h3><p>P：能在输入编码长度的多项式时间内求解的判定问题类。</p>
+<p>NP：对于答案为“是”的实例，存在长度为输入长度多项式界内的证书，可以在多项式时间内验证。这里不是要求对所有“否”实例也有同样形式的证书。</p>
+<p>例如独立集的判定版本是：“图中是否存在大小至少 k 的独立集？”别人交来一个顶点集合，可以检查大小是否达到 k，并检查图中每条边的两个端点是否都被选入。这个检查可在多项式时间内完成。</p>
+<p>但检查“这个集合可行且大小达到 k”，不等于检查“这是全局最大的独立集”。更不能因为能验证一个候选解，就断言能快速找到最优解。</p>
+
+$$
+\mathrm P\subseteq\mathrm{NP}
+$$
+
+
+<p>能快速直接解决的问题，当然也能快速验证；NP不是“非多项式”的缩写，更不是“所有困难问题”的统称。定义可参考 <a target="_blank" rel="noopener" href="https://www.claymath.org/wp-content/uploads/2022/06/pvsnp.pdf">Stephen Cook 的官方问题说明</a>。</p>
+<h3 id="9-2-NP完全不是“已经证明只能穷举”"><a href="#9-2-NP完全不是“已经证明只能穷举”" class="headerlink" title="9.2 NP完全不是“已经证明只能穷举”"></a>9.2 NP完全不是“已经证明只能穷举”</h3><p>一个判定问题 C 是 NP完全（NP-complete，简称NPC），需要同时满足：</p>
+<ol>
+<li>C 属于NP。</li>
+<li>所有NP问题都能在多项式时间内归约到 C。</li>
+</ol>
+<p>“把 A 归约到 B”可以理解为：高效地把 A 的实例变成 B 的实例，使对 B 的求解能够回答原来的 A。方向不能写反。</p>
+<p>因此，只要某一个NP完全问题存在多项式时间算法，就会推出 $\mathrm P=\mathrm{NP}$。目前这一等式是否成立仍是未解决问题，不能把常见的示意图理解为已经证明P与NPC完全分离。<a target="_blank" rel="noopener" href="https://www.claymath.org/millennium/p-vs-np/">Clay Mathematics Institute 的问题页面</a>仍将其列为未解决问题。</p>
+<p>课件中的“独立集是NP完全”，严格来说指它的判定版本。求最大独立集的优化版本通常称为NP困难（NP-hard），不要混用两种说法。</p>
+<h3 id="9-3-算法的上界，不是问题的下界"><a href="#9-3-算法的上界，不是问题的下界" class="headerlink" title="9.3 算法的上界，不是问题的下界"></a>9.3 算法的上界，不是问题的下界</h3><p>我们写出一个指数时间算法，只说明“这个算法可能很慢”，不等于证明“所有算法都必须这么慢”。</p>
+<p>同样，多项式时间也不等于实际一定快：很高的次数、大常数和大规模输入都可能让它不实用。理论复杂度、实现开销和实际数据分布要一起看。</p>
+<h2 id="10-遇到难问题，并不只有穷举或放弃"><a href="#10-遇到难问题，并不只有穷举或放弃" class="headerlink" title="10. 遇到难问题，并不只有穷举或放弃"></a>10. 遇到难问题，并不只有穷举或放弃</h2><p>课件列出几类思路。区别不在于名字听起来是否高级，而在于放弃什么、保留什么保证。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>保留或追求什么</th>
+<th>需要注意</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>启发式算法</td>
+<td>尽快找到质量较好的可行解</td>
+<td>通常没有统一的最优性或近似比保证</td>
+</tr>
+<tr>
+<td>近似算法</td>
+<td>多项式时间，并提供明确的解质量保证</td>
+<td>保证必须有证明，不是只看测试平均效果</td>
+</tr>
+<tr>
+<td>快速精确算法</td>
+<td>仍返回真正最优解</td>
+<td>最坏情况时间可能仍是指数级</td>
+</tr>
+<tr>
+<td>参数化算法</td>
+<td>利用某个参数较小的特点</td>
+<td>要说清参数是什么，以及时间怎样依赖它</td>
+</tr>
+</tbody></table>
+<p>启发式并不等于“输出是否可行都不知道”。例如可以始终保持方案可行，只是不保证它全局最优。已有的<a href="/2026/06/14/heft-algorithm/">HEFT文章</a>就是理解启发式调度的一个入口，但它处理的是带依赖与异构处理器的另一种模型，不是本文的单会议室区间选择。</p>
+<h3 id="10-1-用一个数理解近似保证"><a href="#10-1-用一个数理解近似保证" class="headerlink" title="10.1 用一个数理解近似保证"></a>10.1 用一个数理解近似保证</h3><p>对非负目标值，采用 $\rho\ge1$ 的比值约定：最大化问题的 $\rho$ 近似保证可写为 $ALG\ge OPT/\rho$；最小化问题则写为 $ALG\le\rho OPT$。</p>
+<p>例如，最大化问题的最优值是100，一个有2近似保证的算法至少要得到50。这个例子只解释保证的含义，不是在声称任意问题都存在2近似算法。</p>
+<p>课件还提到PTAS。它是多项式时间近似方案，不是与P、NP相同意义的判定复杂性类。对最小化问题，给定误差参数 $\varepsilon&gt;0$，要求得到至多 $(1+\varepsilon)OPT$ 的可行解；对每个固定的误差参数，时间关于输入规模是多项式。</p>
+<p>但时间可能形如 $n^{O(1/\varepsilon)}$，误差要求很小时仍可能不可用，不能理解成“误差随便调小且始终很快”。参见 <a target="_blank" rel="noopener" href="https://theory.stanford.edu/~trevisan/eptas.html">Cesati 与 Trevisan 对PTAS效率的说明</a>。</p>
+<h3 id="10-2-“参数较小”需要有明确的时间表达式"><a href="#10-2-“参数较小”需要有明确的时间表达式" class="headerlink" title="10.2 “参数较小”需要有明确的时间表达式"></a>10.2 “参数较小”需要有明确的时间表达式</h3><p>固定参数可解的一种典型形式是：</p>
+
+$$
+T(n,k)=f(k)n^c
+$$
+
+
+<p>其中 c 不随参数 k 改变。例如 $2^k n^2$ 的指数代价集中在 k 上；当 k 很小时可能有用，但不表示 k 任意大时仍高效。仅仅说“对每个固定 k，$n^k$ 是多项式”还不满足上述形式的要求。</p>
+<h2 id="11-竞争选址：一份好方案不等于一套必胜策略"><a href="#11-竞争选址：一份好方案不等于一套必胜策略" class="headerlink" title="11. 竞争选址：一份好方案不等于一套必胜策略"></a>11. 竞争选址：一份好方案不等于一套必胜策略</h2><h3 id="11-1-规则里增加了一个会回应的对手"><a href="#11-1-规则里增加了一个会回应的对手" class="headerlink" title="11.1 规则里增加了一个会回应的对手"></a>11.1 规则里增加了一个会回应的对手</h3><p>课件第31页给出一个带顶点权重的图。两名玩家轮流选择尚未被选、且不与任何已选顶点相邻的顶点，获得自己所选顶点的权重；没有合法位置时游戏结束。</p>
+<p>问题是：给定阈值 B，后手是否有一种策略，无论先手怎样行动，都能得到至少 B 的总收益？</p>
+<p>注意三个区别：</p>
+<ul>
+<li>选出的所有顶点合起来是独立集，但权重由实际选中它们的玩家分别获得。</li>
+<li>不再是一个人一次性挑选最佳集合，而是双方轮流行动。</li>
+<li>问的是“面对所有对手应对都能保证”，不是“存在某一局碰巧得到高分”。</li>
+</ul>
+<h3 id="11-2-先手不同，后手能拿到的收益也不同"><a href="#11-2-先手不同，后手能拿到的收益也不同" class="headerlink" title="11.2 先手不同，后手能拿到的收益也不同"></a>11.2 先手不同，后手能拿到的收益也不同</h3><p>先看一个补充的小例子：三个顶点连成路径 $u-v-w$，权重依次为2、9、2。</p>
+<p><img src="/images/algorithms/introduction-facility-game.svg" alt="三顶点竞争选址博弈树：先手选中间会使后手无路可走，因此后手最坏保证收益为0"></p>
+<table>
+<thead>
+<tr>
+<th>先手选择</th>
+<th>后手还有什么可选</th>
+<th align="right">后手最终收益</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>u</td>
+<td>w</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>v</td>
+<td>没有合法顶点</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>w</td>
+<td>u</td>
+<td align="right">2</td>
+</tr>
+</tbody></table>
+<p>因此，后手“某一局能得到2”是真的，但“保证至少得到2”是假的：先手可以直接选 v。</p>
+<p>计算保证收益时，后手在自己的回合取最大值，先手的回合则考虑最不利于后手的选择，取最小值：</p>
+
+$$
+\min(2,0,2)=0
+$$
+
+
+<h3 id="11-3-用递归核对课件中的10个顶点"><a href="#11-3-用递归核对课件中的10个顶点" class="headerlink" title="11.3 用递归核对课件中的10个顶点"></a>11.3 用递归核对课件中的10个顶点</h3><p>课件使用一条10个顶点的路径，权重为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">10, 1, 5, 15, 5, 1, 5, 1, 15, 10</code></pre>
+
+<p>下面计算后手的最坏保证收益，不假定先手会配合后手得高分。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> functools <span class="token keyword">import</span> lru_cache
+
+
+<span class="token keyword">def</span> <span class="token function">second_player_guarantee</span><span class="token punctuation">(</span>weights<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    n <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>weights<span class="token punctuation">)</span>
+    blocked <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token keyword">for</span> v <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        mask <span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> v
+        <span class="token keyword">if</span> v <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">:</span>
+            mask <span class="token operator">|</span><span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>v <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> v <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">&lt;</span> n<span class="token punctuation">:</span>
+            mask <span class="token operator">|</span><span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>v <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        blocked<span class="token punctuation">.</span>append<span class="token punctuation">(</span>mask<span class="token punctuation">)</span>
+
+    <span class="token decorator annotation punctuation">@lru_cache</span><span class="token punctuation">(</span><span class="token boolean">None</span><span class="token punctuation">)</span>
+    <span class="token keyword">def</span> <span class="token function">solve</span><span class="token punctuation">(</span>available<span class="token punctuation">,</span> second_turn<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> available <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token number">0</span>
+        outcomes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> v<span class="token punctuation">,</span> weight <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>weights<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> available <span class="token operator">&amp;</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> v<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                remaining <span class="token operator">=</span> available <span class="token operator">&amp;</span> <span class="token operator">~</span>blocked<span class="token punctuation">[</span>v<span class="token punctuation">]</span>
+                future <span class="token operator">=</span> solve<span class="token punctuation">(</span>remaining<span class="token punctuation">,</span> <span class="token keyword">not</span> second_turn<span class="token punctuation">)</span>
+                outcomes<span class="token punctuation">.</span>append<span class="token punctuation">(</span>future <span class="token operator">+</span> <span class="token punctuation">(</span>weight <span class="token keyword">if</span> second_turn <span class="token keyword">else</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token builtin">max</span><span class="token punctuation">(</span>outcomes<span class="token punctuation">)</span> <span class="token keyword">if</span> second_turn <span class="token keyword">else</span> <span class="token builtin">min</span><span class="token punctuation">(</span>outcomes<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> solve<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> n<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">assert</span> second_player_guarantee<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span>
+weights <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>second_player_guarantee<span class="token punctuation">(</span>weights<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 20</span></code></pre>
+
+<p><code>available</code> 用二进制位表示哪些顶点仍然合法。选择 v 后，清除 v 及相邻顶点的位；只有后手选择时才把权重计入后手收益。递归返回的是从当前状态开始的未来保证收益，因此缓存不需要记录已经获得的分数。</p>
+<p>结果为20，与课件中的“可以保证20，但不能保证25”一致。这个程序只核对路径图的小规模实例；它不是一般图竞争选址问题的高效求解器，状态数最坏仍可能随顶点数指数增长。</p>
+<h3 id="11-4-为什么课件会提到PSPACE"><a href="#11-4-为什么课件会提到PSPACE" class="headerlink" title="11.4 为什么课件会提到PSPACE"></a>11.4 为什么课件会提到PSPACE</h3><p>一般图上的竞争选址判定问题是PSPACE完全问题，课件在这里用它提示“策略问题”与“找一份候选方案”的不同；相关结论可参见 <a target="_blank" rel="noopener" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pearson/09PSPACE-2x2.pdf">Kevin Wayne 的PSPACE讲义</a>。</p>
+<p>PSPACE关注多项式空间。搜索树可能有很多分支，但深度最多是顶点数量，可以按深度优先方式逐个探索，不需要同时保存整棵树。时间很长与空间很多是两种不同的资源消耗。</p>
+<p>这不代表已经证明PSPACE严格大于NP；已知包含关系是 $\mathrm P\subseteq\mathrm{NP}\subseteq\mathrm{PSPACE}$，本篇不展开完整性归约与这些类之间的开放问题。</p>
+<h2 id="12-把几个代表性问题放在一起复习"><a href="#12-把几个代表性问题放在一起复习" class="headerlink" title="12. 把几个代表性问题放在一起复习"></a>12. 把几个代表性问题放在一起复习</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>选什么</th>
+<th>约束</th>
+<th>目标或提问</th>
+<th>本讲的关键思路</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>区间调度</td>
+<td>任务</td>
+<td>时间不重叠</td>
+<td>数量最多</td>
+<td>最早结束贪心</td>
+</tr>
+<tr>
+<td>带权区间调度</td>
+<td>带权任务</td>
+<td>时间不重叠</td>
+<td>总权重最大</td>
+<td>选与不选的动态规划</td>
+</tr>
+<tr>
+<td>二分图匹配</td>
+<td>边</td>
+<td>端点不能重复</td>
+<td>匹配边数最多</td>
+<td>通过增广路重新安排</td>
+</tr>
+<tr>
+<td>最大独立集</td>
+<td>顶点</td>
+<td>选中顶点之间无边</td>
+<td>顶点数最多</td>
+<td>一般图与特殊图要区分</td>
+</tr>
+<tr>
+<td>竞争选址</td>
+<td>轮流选顶点的策略</td>
+<td>已选顶点及其邻居不可再选</td>
+<td>后手能否保证阈值收益</td>
+<td>最坏应对与策略树</td>
+</tr>
+</tbody></table>
+<p>建议按以下顺序继续学习：</p>
+<ol>
+<li>补牢渐进符号、最坏情况、循环不变式与归纳证明。</li>
+<li>从区间调度学习贪心的交换论证，再比较不同目标下的反例。</li>
+<li>从带权区间调度学习状态、转移、前驱、表格和方案恢复。</li>
+<li>学习图遍历、增广路与网络流，把匹配问题串起来。</li>
+<li>在判定问题的框架下学习多项式归约、NP完全性。</li>
+<li>根据需求继续学习近似、精确搜索、参数化和博弈策略问题。</li>
+</ol>
+<p>遇到一个新题目，先写出“输入、可行解、目标、资源限制”，再问它是否有可以利用的结构，不要先按关键词硬套算法名字。</p>
+<h2 id="13-巩固练习"><a href="#13-巩固练习" class="headerlink" title="13. 巩固练习"></a>13. 巩固练习</h2><p>以下是围绕本文知识补充的练习，并非课件布置的作业。建议先写出理由，再看下一节答案。</p>
+<h3 id="练习1：问题形式"><a href="#练习1：问题形式" class="headerlink" title="练习1：问题形式"></a>练习1：问题形式</h3><p>“有没有总收益至少40的兼容方案？”“最大收益是多少？”“请返回实现最大收益的任务编号。”分别属于什么问题？只输出42，能否完整回答第三个问题？</p>
+<h3 id="练习2：端点约定"><a href="#练习2：端点约定" class="headerlink" title="练习2：端点约定"></a>练习2：端点约定</h3><p>按本文模型，$[1,4)$ 与 $[4,6)$ 是否兼容？如果两场活动之间必须留1个时间单位准备，应把兼容条件怎样修改？</p>
+<h3 id="练习3：手动运行贪心"><a href="#练习3：手动运行贪心" class="headerlink" title="练习3：手动运行贪心"></a>练习3：手动运行贪心</h3><p>有四个任务 A：$[0,3)$，B：$[1,2)$，C：$[2,4)$，D：$[4,5)$。最早结束策略会选哪些任务？用它说明“最早开始”和“最早结束”不是同一种策略。</p>
+<h3 id="练习4：手动填动态规划表"><a href="#练习4：手动填动态规划表" class="headerlink" title="练习4：手动填动态规划表"></a>练习4：手动填动态规划表</h3><p>给上题的 A、B、C、D 分别赋权10、4、4、3。按结束时间排序，写出各任务的前驱与最优值，再恢复一个最优方案。</p>
+<h3 id="练习5：恢复方案"><a href="#练习5：恢复方案" class="headerlink" title="练习5：恢复方案"></a>练习5：恢复方案</h3><p>如果带权区间调度只返回 $OPT(n)$，却没有输出所选任务，是否已经回答“最优解是什么”？回溯中选了任务 j 后，为什么要跳到 $p(j)$ 而不是继续到 $j-1$？</p>
+<h3 id="练习6：匹配中的重新安排"><a href="#练习6：匹配中的重新安排" class="headerlink" title="练习6：匹配中的重新安排"></a>练习6：匹配中的重新安排</h3><p>A可以去岗位1或2，B只能去岗位1。当前只有边 A-1。它是不是“极大但非最大”的匹配？写出增广后的匹配，并说明翻转后数量为什么增加1。</p>
+<h3 id="练习7：可行、极大与最大"><a href="#练习7：可行、极大与最大" class="headerlink" title="练习7：可行、极大与最大"></a>练习7：可行、极大与最大</h3><p>回到第8节的7顶点图。集合 $\{2,7\}$ 是否为独立集、极大独立集、最大独立集？分别给出理由。</p>
+<h3 id="练习8：复杂性判断"><a href="#练习8：复杂性判断" class="headerlink" title="练习8：复杂性判断"></a>练习8：复杂性判断</h3><p>判断并解释：NP表示“非多项式”；属于NP的问题都不属于P；一个指数时间算法证明了问题不存在多项式算法；检查一个大小为k的独立集，与检查它是不是最大独立集，是同一件事。</p>
+<h3 id="练习9：保证收益"><a href="#练习9：保证收益" class="headerlink" title="练习9：保证收益"></a>练习9：保证收益</h3><p>三顶点路径的权重改为4、1、7。如果先手选左端，后手能得到多少？如果先手选中间呢？后手能否保证至少4？</p>
+<h3 id="练习10：方法保证"><a href="#练习10：方法保证" class="headerlink" title="练习10：方法保证"></a>练习10：方法保证</h3><p>一个最大化问题的最优值为100。算法在一批测试上都得到90以上，能否据此声称它有2近似保证？若另一算法已经证明为2近似，它在任意合法实例上至少达到最优值的多少？</p>
+<h2 id="14-参考答案与解析"><a href="#14-参考答案与解析" class="headerlink" title="14. 参考答案与解析"></a>14. 参考答案与解析</h2><h3 id="练习1解析"><a href="#练习1解析" class="headerlink" title="练习1解析"></a>练习1解析</h3><p>依次是判定问题、最优值问题和最优解问题。第三个问题还需要返回可行且达到最优值的任务集合，仅返回42不够。</p>
+<h3 id="练习2解析"><a href="#练习2解析" class="headerlink" title="练习2解析"></a>练习2解析</h3><p>兼容，因为前一个任务在4结束，后一个从4开始。若准备时间为1，按时间顺序的两个任务 i、j 应满足 $f_i+1\le s_j$。原来的时间轴、前驱计算和实现都要相应修改。</p>
+<h3 id="练习3解析"><a href="#练习3解析" class="headerlink" title="练习3解析"></a>练习3解析</h3><p>按结束时间排序为 B、A、C、D。依次选 B、跳过与B冲突的A、选C、选D，得到3个任务。若先选最早开始的A，之后只能接D，得到2个任务。</p>
+<h3 id="练习4解析"><a href="#练习4解析" class="headerlink" title="练习4解析"></a>练习4解析</h3><table>
+<thead>
+<tr>
+<th align="right">j</th>
+<th>任务</th>
+<th align="right">权重</th>
+<th align="right">p(j)</th>
+<th align="right">选当前任务</th>
+<th align="right">不选当前任务</th>
+<th align="right">OPT(j)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">0</td>
+<td>无</td>
+<td align="right">0</td>
+<td align="right">无</td>
+<td align="right">无</td>
+<td align="right">无</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td>B</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td>A</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">4</td>
+<td align="right">10</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td>C</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">4+4&#x3D;8</td>
+<td align="right">10</td>
+<td align="right">10</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td>D</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3+10&#x3D;13</td>
+<td align="right">10</td>
+<td align="right">13</td>
+</tr>
+</tbody></table>
+<p>回溯：选择D，跳到第3行；跳过C，退到第2行；选择A，结束。因此最优方案是A、D，总权重13。D的前驱是C所在的前缀，但不要求最终方案一定包含C。</p>
+<h3 id="练习5解析"><a href="#练习5解析" class="headerlink" title="练习5解析"></a>练习5解析</h3><p>只返回最优值，还没有返回最优方案。选j后，编号大于 $p(j)$ 且小于j的任务都与j冲突，不能继续把它们当成候选前缀，因此要直接跳到 $p(j)$。</p>
+<h3 id="练习6解析"><a href="#练习6解析" class="headerlink" title="练习6解析"></a>练习6解析</h3><p>是。当前不能直接增加一条边：B-1与A-1共用岗位1，A-2与A-1共用A，因此它是极大的。但移除A-1，加入B-1、A-2，就得到2条匹配边，所以原匹配不是最大的。增广时增加2条、移除1条，净增1。</p>
+<h3 id="练习7解析"><a href="#练习7解析" class="headerlink" title="练习7解析"></a>练习7解析</h3><p>它是独立集，因为2与7之间没有边；是极大独立集，因为其余顶点都与2或7相邻，不能直接加入；不是最大独立集，因为 $\{1,4,5,6\}$ 是一个更大的独立集。</p>
+<h3 id="练习8解析"><a href="#练习8解析" class="headerlink" title="练习8解析"></a>练习8解析</h3><p>四句都不正确。NP是非确定性多项式时间的缩写，可用正实例证书验证来刻画；P包含在NP中。一个算法慢，不能排除存在别的快算法。检查候选集合是否达到k且无冲突，不要求排除所有更大的可行解，而验证最大性还涉及这个额外条件。</p>
+<h3 id="练习9解析"><a href="#练习9解析" class="headerlink" title="练习9解析"></a>练习9解析</h3><p>先手选左端，后手可以选右端，得到7；先手选中间，则后手没有合法顶点，得到0；先手选右端时，后手得到左端的4。最坏保证为 $\min(7,0,4)=0$，不能保证至少4。</p>
+<h3 id="练习10解析"><a href="#练习10解析" class="headerlink" title="练习10解析"></a>练习10解析</h3><p>不能。有限测试的表现不是对全部合法实例的近似保证。对已经证明为2近似的最大化算法，保证为 $ALG\ge OPT/2$；在最优值100的实例上至少得到50，但在最优值不同的实例上应按对应最优值计算，而不是统一保证50。</p>
+<h2 id="课件与补充资料"><a href="#课件与补充资料" class="headerlink" title="课件与补充资料"></a>课件与补充资料</h2><p>本文主要依据周毅（Yi Zhou）《Design and Analysis of Algorithms》第一讲 Introduction，原文件 <code>01Introduction.pdf</code>，共34页，署名按讲义首页记录。</p>
+<ul>
+<li>第15至20页：问题、问题形式、算法设计目标，以及算法与程序的关系。</li>
+<li>第21至25页：应用、问题复杂性与应对困难问题的方法。</li>
+<li>第27至32页：区间调度、带权调度、二分图匹配、独立集、竞争选址与方法汇总。</li>
+</ul>
+<p>本文保留上述知识主线，对P、NP、NP完全和PTAS的简略表述作了必要区分；未复述课程管理信息。动态规划完整表格、Python程序、补充图例和习题解析为本文整理与扩展，并非逐页转录。</p>
+<p>补充核对来源：<a target="_blank" rel="noopener" href="https://www.claymath.org/wp-content/uploads/2022/06/pvsnp.pdf">Stephen Cook：P与NP问题说明</a>、<a target="_blank" rel="noopener" href="https://www.claymath.org/millennium/p-vs-np/">Clay：P与NP问题状态</a>、<a target="_blank" rel="noopener" href="https://theory.stanford.edu/~trevisan/eptas.html">Cesati与Trevisan：PTAS的效率</a>、<a target="_blank" rel="noopener" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pearson/09PSPACE-2x2.pdf">Kevin Wayne：PSPACE与竞争选址</a>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.top">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.top/2026/10/23/algorithm-design-analysis-introduction/">https://lsworl.top/2026/10/23/algorithm-design-analysis-introduction/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.top" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a><a class="post-meta__tags" href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">贪心算法</a><a class="post-meta__tags" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a><a class="post-meta__tags" href="/tags/%E4%BA%8C%E5%88%86%E5%9B%BE%E5%8C%B9%E9%85%8D/">二分图匹配</a><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E5%A4%8D%E6%9D%82%E6%80%A7/">计算复杂性</a></div><div class="post-share"><div class="social-share" data-image="/images/starlab/covers/klee-birthday-2024.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/10/22/cryptography-math-01-sets-maps-operations/" title="密码学数学基础（一）：集合、映射与二元运算"><img class="cover" src="/images/starlab/covers/klee-birthday-2023.webp" onerror="onerror=null;src='/images/starlab/covers/klee-birthday-2021.webp'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">密码学数学基础（一）：集合、映射与二元运算</div></div><div class="info-2"><div class="info-item-1">根据数论与代数课件整理对数、数集、集合族与划分、单射满射双射、复合与逆映射、二元运算，通过图例、手算和巩固练习理解基础符号。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/14/heft-algorithm/" title="HEFT算法：异构计算中的任务调度方法"><img class="cover" src="/images/starlab/covers/klee-birthday-2021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-14</div><div class="info-item-2">HEFT算法：异构计算中的任务调度方法</div></div><div class="info-2"><div class="info-item-1">从任务DAG、异构处理器、向上排序值、最早完成时间和Python实现几个角度理解HEFT异构最早完成时间调度算法。</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">记录机器学习、自然语言处理和开发实践。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">130</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">160</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">文章按主题整理在学习路线中。<br><a href="/map/">查看学习路线 ↗</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E5%B7%B2%E6%9C%89%E7%9F%A5%E8%AF%86%E4%B8%8E%E6%9C%AC%E6%96%87%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">0. 已有知识与本文的位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E5%8C%BA%E5%88%86%E9%97%AE%E9%A2%98%E3%80%81%E7%AE%97%E6%B3%95%E5%92%8C%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">1. 先区分问题、算法和程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%97%AE%E9%A2%98%E8%A7%84%E5%AE%9A%E2%80%9C%E4%BB%80%E4%B9%88%E7%BB%93%E6%9E%9C%E7%AE%97%E6%AD%A3%E7%A1%AE%E2%80%9D"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 问题规定“什么结果算正确”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%AE%97%E6%B3%95%E8%A7%84%E5%AE%9A%E2%80%9C%E6%8C%89%E7%85%A7%E4%BB%80%E4%B9%88%E6%AD%A5%E9%AA%A4%E6%B1%82%E8%A7%A3%E2%80%9D"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 算法规定“按照什么步骤求解”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E7%A8%8B%E5%BA%8F%E6%98%AF%E7%AE%97%E6%B3%95%E7%9A%84%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 程序是算法的具体实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%A4%E5%AE%9A%E3%80%81%E6%9C%80%E4%BC%98%E5%80%BC%E3%80%81%E6%9C%80%E4%BC%98%E8%A7%A3%E4%B8%8E%E6%95%B0%E5%80%BC%E8%AE%A1%E7%AE%97"><span class="toc-number">3.</span> <span class="toc-text">2. 判定、最优值、最优解与数值计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95%E6%97%B6%EF%BC%8C%E8%87%B3%E5%B0%91%E9%97%AE%E4%B8%89%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">3. 分析算法时，至少问三个问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%AE%83%E4%BC%9A%E4%B8%8D%E4%BC%9A%E7%BB%93%E6%9D%9F"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 它会不会结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%AE%83%E6%98%AF%E5%90%A6%E5%AF%B9%E6%89%80%E6%9C%89%E5%90%88%E6%B3%95%E8%BE%93%E5%85%A5%E9%83%BD%E6%AD%A3%E7%A1%AE"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 它是否对所有合法输入都正确</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%AE%83%E6%B6%88%E8%80%97%E5%A4%9A%E5%B0%91%E6%97%B6%E9%97%B4%E5%92%8C%E7%A9%BA%E9%97%B4"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 它消耗多少时间和空间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%8C%BA%E9%97%B4%E8%B0%83%E5%BA%A6%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9%E6%9C%80%E6%97%A9%E7%BB%93%E6%9D%9F%E7%9A%84%E4%BB%BB%E5%8A%A1"><span class="toc-number">5.</span> <span class="toc-text">4. 区间调度：为什么选择最早结束的任务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%B2%BF%E7%94%A8%E8%AF%BE%E4%BB%B6%E4%B8%AD%E7%9A%848%E4%B8%AA%E4%BB%BB%E5%8A%A1"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 沿用课件中的8个任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%8C%89%E7%BB%93%E6%9D%9F%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BE%9D%E6%AC%A1%E6%89%AB%E6%8F%8F"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 按结束时间排序，依次扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E2%80%9C%E6%9C%80%E6%97%A9%E7%BB%93%E6%9D%9F%E2%80%9D%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E4%BF%9D%E8%AF%81%E6%9C%80%E4%BC%98"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 “最早结束”为什么能保证最优</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%B8%A6%E6%9D%83%E5%8C%BA%E9%97%B4%E8%B0%83%E5%BA%A6%EF%BC%9A%E7%9B%AE%E6%A0%87%E4%B8%80%E5%8F%98%EF%BC%8C%E8%B4%AA%E5%BF%83%E5%B0%B1%E4%B8%8D%E5%A4%9F%E4%BA%86"><span class="toc-number">6.</span> <span class="toc-text">5. 带权区间调度：目标一变，贪心就不够了</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%9C%80%E5%A4%A7%E6%95%B0%E9%87%8F%E4%B8%8D%E4%B8%80%E5%AE%9A%E5%AF%B9%E5%BA%94%E6%9C%80%E5%A4%A7%E6%94%B6%E7%9B%8A"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 最大数量不一定对应最大收益</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E7%8A%B6%E6%80%81%E4%B8%8E%E5%89%8D%E9%A9%B1%E5%88%86%E5%88%AB%E8%A1%A8%E7%A4%BA%E4%BB%80%E4%B9%88"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 状态与前驱分别表示什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9C%80%E4%BC%98%E6%96%B9%E6%A1%88%E5%8F%AA%E6%9C%89%E2%80%9C%E9%80%89j%E2%80%9D%E5%92%8C%E2%80%9C%E4%B8%8D%E9%80%89j%E2%80%9D%E4%B8%A4%E7%B1%BB"><span class="toc-number">6.3.</span> <span class="toc-text">5.3 最优方案只有“选j”和“不选j”两类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E6%8A%8A%E6%95%B4%E5%BC%A0%E8%A1%A8%E7%AE%97%E5%87%BA%E6%9D%A5"><span class="toc-number">6.4.</span> <span class="toc-text">5.4 把整张表算出来</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E4%BB%8E%E6%9C%80%E4%BC%98%E5%80%BC%E5%9B%9E%E5%88%B0%E6%9C%80%E4%BC%98%E8%A7%A3"><span class="toc-number">6.5.</span> <span class="toc-text">5.5 从最优值回到最优解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%94%A8Python%E6%A0%B8%E5%AF%B9%E4%B8%A4%E7%A7%8D%E8%B0%83%E5%BA%A6%E7%BB%93%E6%9E%9C"><span class="toc-number">7.</span> <span class="toc-text">6. 用Python核对两种调度结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%BA%8C%E5%88%86%E5%9B%BE%E5%8C%B9%E9%85%8D%EF%BC%9A%E9%80%89%E7%9A%84%E6%98%AF%E8%BE%B9%EF%BC%8C%E4%B8%8D%E6%98%AF%E9%A1%B6%E7%82%B9"><span class="toc-number">8.</span> <span class="toc-text">7. 二分图匹配：选的是边，不是顶点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E6%8A%8A%E2%80%9C%E8%83%BD%E4%B8%8D%E8%83%BD%E5%88%86%E9%85%8D%E2%80%9D%E8%A1%A8%E7%A4%BA%E6%88%90%E8%BE%B9"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 把“能不能分配”表示成边</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E8%A2%AB%E5%8D%A0%E7%94%A8%E7%9A%84%E5%B2%97%E4%BD%8D%EF%BC%8C%E4%B8%8D%E4%B8%80%E5%AE%9A%E6%B0%B8%E8%BF%9C%E4%B8%8D%E8%83%BD%E5%86%8D%E8%80%83%E8%99%91"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 被占用的岗位，不一定永远不能再考虑</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E7%8B%AC%E7%AB%8B%E9%9B%86%EF%BC%9A%E6%8A%8A%E4%BB%BB%E6%84%8F%E5%86%B2%E7%AA%81%E5%85%B3%E7%B3%BB%E8%A1%A8%E7%A4%BA%E6%88%90%E5%9B%BE"><span class="toc-number">9.</span> <span class="toc-text">8. 独立集：把任意冲突关系表示成图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E7%8B%AC%E7%AB%8B%E9%9B%86%E8%A6%81%E6%B1%82%E9%80%89%E4%B8%AD%E7%9A%84%E9%A1%B6%E7%82%B9%E4%B9%8B%E9%97%B4%E6%B2%A1%E6%9C%89%E8%BE%B9"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 独立集要求选中的顶点之间没有边</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E6%9C%80%E5%A4%A7%E4%B8%8E%E6%9E%81%E5%A4%A7%EF%BC%8C%E5%B7%AE%E4%B8%80%E4%B8%AA%E5%AD%97%E4%BD%86%E4%B8%8D%E6%98%AF%E4%B8%80%E5%9B%9E%E4%BA%8B"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 最大与极大，差一个字但不是一回事</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%8C%BA%E9%97%B4%E8%B0%83%E5%BA%A6%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B2%A1%E6%9C%89%E5%9B%A0%E6%AD%A4%E5%8F%98%E9%9A%BE"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 区间调度为什么没有因此变难</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-P%E3%80%81NP%E4%B8%8ENP%E5%AE%8C%E5%85%A8%EF%BC%9A%E5%88%B0%E5%BA%95%E5%9C%A8%E5%88%86%E7%B1%BB%E4%BB%80%E4%B9%88"><span class="toc-number">10.</span> <span class="toc-text">9. P、NP与NP完全：到底在分类什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E9%A6%96%E5%85%88%E6%98%8E%E7%A1%AE%E8%AE%A8%E8%AE%BA%E7%9A%84%E6%98%AF%E5%88%A4%E5%AE%9A%E9%97%AE%E9%A2%98"><span class="toc-number">10.1.</span> <span class="toc-text">9.1 首先明确讨论的是判定问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-NP%E5%AE%8C%E5%85%A8%E4%B8%8D%E6%98%AF%E2%80%9C%E5%B7%B2%E7%BB%8F%E8%AF%81%E6%98%8E%E5%8F%AA%E8%83%BD%E7%A9%B7%E4%B8%BE%E2%80%9D"><span class="toc-number">10.2.</span> <span class="toc-text">9.2 NP完全不是“已经证明只能穷举”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E7%AE%97%E6%B3%95%E7%9A%84%E4%B8%8A%E7%95%8C%EF%BC%8C%E4%B8%8D%E6%98%AF%E9%97%AE%E9%A2%98%E7%9A%84%E4%B8%8B%E7%95%8C"><span class="toc-number">10.3.</span> <span class="toc-text">9.3 算法的上界，不是问题的下界</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E9%81%87%E5%88%B0%E9%9A%BE%E9%97%AE%E9%A2%98%EF%BC%8C%E5%B9%B6%E4%B8%8D%E5%8F%AA%E6%9C%89%E7%A9%B7%E4%B8%BE%E6%88%96%E6%94%BE%E5%BC%83"><span class="toc-number">11.</span> <span class="toc-text">10. 遇到难问题，并不只有穷举或放弃</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E7%94%A8%E4%B8%80%E4%B8%AA%E6%95%B0%E7%90%86%E8%A7%A3%E8%BF%91%E4%BC%BC%E4%BF%9D%E8%AF%81"><span class="toc-number">11.1.</span> <span class="toc-text">10.1 用一个数理解近似保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E2%80%9C%E5%8F%82%E6%95%B0%E8%BE%83%E5%B0%8F%E2%80%9D%E9%9C%80%E8%A6%81%E6%9C%89%E6%98%8E%E7%A1%AE%E7%9A%84%E6%97%B6%E9%97%B4%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">11.2.</span> <span class="toc-text">10.2 “参数较小”需要有明确的时间表达式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%AB%9E%E4%BA%89%E9%80%89%E5%9D%80%EF%BC%9A%E4%B8%80%E4%BB%BD%E5%A5%BD%E6%96%B9%E6%A1%88%E4%B8%8D%E7%AD%89%E4%BA%8E%E4%B8%80%E5%A5%97%E5%BF%85%E8%83%9C%E7%AD%96%E7%95%A5"><span class="toc-number">12.</span> <span class="toc-text">11. 竞争选址：一份好方案不等于一套必胜策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E8%A7%84%E5%88%99%E9%87%8C%E5%A2%9E%E5%8A%A0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BC%9A%E5%9B%9E%E5%BA%94%E7%9A%84%E5%AF%B9%E6%89%8B"><span class="toc-number">12.1.</span> <span class="toc-text">11.1 规则里增加了一个会回应的对手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E5%85%88%E6%89%8B%E4%B8%8D%E5%90%8C%EF%BC%8C%E5%90%8E%E6%89%8B%E8%83%BD%E6%8B%BF%E5%88%B0%E7%9A%84%E6%94%B6%E7%9B%8A%E4%B9%9F%E4%B8%8D%E5%90%8C"><span class="toc-number">12.2.</span> <span class="toc-text">11.2 先手不同，后手能拿到的收益也不同</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E7%94%A8%E9%80%92%E5%BD%92%E6%A0%B8%E5%AF%B9%E8%AF%BE%E4%BB%B6%E4%B8%AD%E7%9A%8410%E4%B8%AA%E9%A1%B6%E7%82%B9"><span class="toc-number">12.3.</span> <span class="toc-text">11.3 用递归核对课件中的10个顶点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-4-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AF%BE%E4%BB%B6%E4%BC%9A%E6%8F%90%E5%88%B0PSPACE"><span class="toc-number">12.4.</span> <span class="toc-text">11.4 为什么课件会提到PSPACE</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E6%8A%8A%E5%87%A0%E4%B8%AA%E4%BB%A3%E8%A1%A8%E6%80%A7%E9%97%AE%E9%A2%98%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7%E5%A4%8D%E4%B9%A0"><span class="toc-number">13.</span> <span class="toc-text">12. 把几个代表性问题放在一起复习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E5%B7%A9%E5%9B%BA%E7%BB%83%E4%B9%A0"><span class="toc-number">14.</span> <span class="toc-text">13. 巩固练习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A01%EF%BC%9A%E9%97%AE%E9%A2%98%E5%BD%A2%E5%BC%8F"><span class="toc-number">14.1.</span> <span class="toc-text">练习1：问题形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A02%EF%BC%9A%E7%AB%AF%E7%82%B9%E7%BA%A6%E5%AE%9A"><span class="toc-number">14.2.</span> <span class="toc-text">练习2：端点约定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A03%EF%BC%9A%E6%89%8B%E5%8A%A8%E8%BF%90%E8%A1%8C%E8%B4%AA%E5%BF%83"><span class="toc-number">14.3.</span> <span class="toc-text">练习3：手动运行贪心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A04%EF%BC%9A%E6%89%8B%E5%8A%A8%E5%A1%AB%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A1%A8"><span class="toc-number">14.4.</span> <span class="toc-text">练习4：手动填动态规划表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A05%EF%BC%9A%E6%81%A2%E5%A4%8D%E6%96%B9%E6%A1%88"><span class="toc-number">14.5.</span> <span class="toc-text">练习5：恢复方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A06%EF%BC%9A%E5%8C%B9%E9%85%8D%E4%B8%AD%E7%9A%84%E9%87%8D%E6%96%B0%E5%AE%89%E6%8E%92"><span class="toc-number">14.6.</span> <span class="toc-text">练习6：匹配中的重新安排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A07%EF%BC%9A%E5%8F%AF%E8%A1%8C%E3%80%81%E6%9E%81%E5%A4%A7%E4%B8%8E%E6%9C%80%E5%A4%A7"><span class="toc-number">14.7.</span> <span class="toc-text">练习7：可行、极大与最大</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A08%EF%BC%9A%E5%A4%8D%E6%9D%82%E6%80%A7%E5%88%A4%E6%96%AD"><span class="toc-number">14.8.</span> <span class="toc-text">练习8：复杂性判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A09%EF%BC%9A%E4%BF%9D%E8%AF%81%E6%94%B6%E7%9B%8A"><span class="toc-number">14.9.</span> <span class="toc-text">练习9：保证收益</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A010%EF%BC%9A%E6%96%B9%E6%B3%95%E4%BF%9D%E8%AF%81"><span class="toc-number">14.10.</span> <span class="toc-text">练习10：方法保证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88%E4%B8%8E%E8%A7%A3%E6%9E%90"><span class="toc-number">15.</span> <span class="toc-text">14. 参考答案与解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A01%E8%A7%A3%E6%9E%90"><span class="toc-number">15.1.</span> <span class="toc-text">练习1解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A02%E8%A7%A3%E6%9E%90"><span class="toc-number">15.2.</span> <span class="toc-text">练习2解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A03%E8%A7%A3%E6%9E%90"><span class="toc-number">15.3.</span> <span class="toc-text">练习3解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A04%E8%A7%A3%E6%9E%90"><span class="toc-number">15.4.</span> <span class="toc-text">练习4解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A05%E8%A7%A3%E6%9E%90"><span class="toc-number">15.5.</span> <span class="toc-text">练习5解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A06%E8%A7%A3%E6%9E%90"><span class="toc-number">15.6.</span> <span class="toc-text">练习6解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A07%E8%A7%A3%E6%9E%90"><span class="toc-number">15.7.</span> <span class="toc-text">练习7解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A08%E8%A7%A3%E6%9E%90"><span class="toc-number">15.8.</span> <span class="toc-text">练习8解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A09%E8%A7%A3%E6%9E%90"><span class="toc-number">15.9.</span> <span class="toc-text">练习9解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A010%E8%A7%A3%E6%9E%90"><span class="toc-number">15.10.</span> <span class="toc-text">练习10解析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E4%BB%B6%E4%B8%8E%E8%A1%A5%E5%85%85%E8%B5%84%E6%96%99"><span class="toc-number">16.</span> <span class="toc-text">课件与补充资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析入门：从问题建模到贪心、动态规划与复杂性"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="算法设计与分析入门：从问题建模到贪心、动态规划与复杂性"/></a><div class="content"><a class="title" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析入门：从问题建模到贪心、动态规划与复杂性">算法设计与分析入门：从问题建模到贪心、动态规划与复杂性</a><time datetime="2026-10-22T16:00:00.000Z" title="发表于 2026-10-23 00:00:00">2026-10-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/22/cryptography-math-01-sets-maps-operations/" title="密码学数学基础（一）：集合、映射与二元运算"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="密码学数学基础（一）：集合、映射与二元运算"/></a><div class="content"><a class="title" href="/2026/10/22/cryptography-math-01-sets-maps-operations/" title="密码学数学基础（一）：集合、映射与二元运算">密码学数学基础（一）：集合、映射与二元运算</a><time datetime="2026-10-21T16:00:00.000Z" title="发表于 2026-10-22 00:00:00">2026-10-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/12/nlp-rag-retrieval-augmented-generation/" title="RAG检索增强生成：从向量检索到Hugging Face知识库问答"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="RAG检索增强生成：从向量检索到Hugging Face知识库问答"/></a><div class="content"><a class="title" href="/2026/10/12/nlp-rag-retrieval-augmented-generation/" title="RAG检索增强生成：从向量检索到Hugging Face知识库问答">RAG检索增强生成：从向量检索到Hugging Face知识库问答</a><time datetime="2026-10-11T16:00:00.000Z" title="发表于 2026-10-12 00:00:00">2026-10-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/09/15/machine-learning-linear-regression-advanced/" title="线性回归进阶：从设计矩阵到概率解释与基函数"><img src="/images/starlab/covers/klee-birthday-2022.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="线性回归进阶：从设计矩阵到概率解释与基函数"/></a><div class="content"><a class="title" href="/2026/09/15/machine-learning-linear-regression-advanced/" title="线性回归进阶：从设计矩阵到概率解释与基函数">线性回归进阶：从设计矩阵到概率解释与基函数</a><time datetime="2026-09-14T16:00:00.000Z" title="发表于 2026-09-15 00:00:00">2026-09-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/09/04/nlp-qlora-4bit-finetuning/" title="SFT（四）：QLoRA的4-bit量化与LoRA微调原理"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="SFT（四）：QLoRA的4-bit量化与LoRA微调原理"/></a><div class="content"><a class="title" href="/2026/09/04/nlp-qlora-4bit-finetuning/" title="SFT（四）：QLoRA的4-bit量化与LoRA微调原理">SFT（四）：QLoRA的4-bit量化与LoRA微调原理</a><time datetime="2026-09-03T16:00:00.000Z" title="发表于 2026-09-04 00:00:00">2026-09-04</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text">学习笔记与项目记录<br>封面插画：原神官方 · tokki</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script src="/assets/starlab.3a667b014b49.js" defer data-starlab-assets></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索概念、算法或项目…" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5-b1"></script></div></div></body></html>
