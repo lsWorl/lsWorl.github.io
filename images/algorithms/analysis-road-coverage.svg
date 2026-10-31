@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="630" viewBox="0 0 1100 630" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">半径为2的基站覆盖练习</title>
+  <desc id="desc">道路为0至12，房屋在1、2、4、5、9、10。候选策略将两站放在3和11，覆盖闭区间1至5和9至13，覆盖全部房屋。每次把站放在最左未覆盖房屋上，会在1、4、9放三站。两端房屋1和9距离8，一站覆盖直径为4，因此至少需要两站。</desc>
+  <rect width="1100" height="630" fill="#fff"/>
+  <text x="30" y="45" font-size="27" font-weight="bold" fill="#263640">覆盖半径 r = 2：站不必放在房屋位置</text>
+  <text x="30" y="86" font-size="21" fill="#667381">道路 [0,12]；房屋：1、2、4、5、9、10。距离恰好为 2 也被覆盖。</text>
+  <g font-size="22" font-weight="bold"><text x="30" y="137" fill="#267254">向右放到仍能覆盖当前房屋的位置：2 站</text><text x="30" y="335" fill="#9b5b1c">直接放在最左未覆盖房屋上：本例需要 3 站</text></g>
+  <g fill="#e0f2e8" stroke="#74a98c" stroke-width="1.5"><rect x="170" y="155" width="280" height="67" rx="4"/><rect x="730" y="155" width="280" height="67" rx="4"/></g>
+  <g fill="#fff0df" stroke="#c6a17a" stroke-width="1.5"><rect x="30" y="353" width="280" height="67" rx="4"/><rect x="240" y="353" width="280" height="67" rx="4"/><rect x="590" y="353" width="280" height="67" rx="4"/></g>
+  <g stroke="#556676" stroke-width="2.5"><path d="M100 224H940"/><path d="M100 422H940"/></g>
+  <g stroke="#b2bcc4" stroke-width="1.5" stroke-dasharray="5 4"><path d="M940 224H1010"/><path d="M30 422H100"/></g>
+  <g fill="#2b5986" stroke="#fff" stroke-width="2"><circle cx="170" cy="224" r="7"/><circle cx="240" cy="224" r="7"/><circle cx="380" cy="224" r="7"/><circle cx="450" cy="224" r="7"/><circle cx="730" cy="224" r="7"/><circle cx="800" cy="224" r="7"/><circle cx="170" cy="422" r="7"/><circle cx="240" cy="422" r="7"/><circle cx="380" cy="422" r="7"/><circle cx="450" cy="422" r="7"/><circle cx="730" cy="422" r="7"/><circle cx="800" cy="422" r="7"/></g>
+  <g fill="#267254"><path d="M310 169l-10 17h20z"/><path d="M870 169l-10 17h20z"/></g>
+  <g fill="#9b5b1c"><path d="M170 367l-10 17h20z"/><path d="M380 367l-10 17h20z"/><path d="M730 367l-10 17h20z"/></g>
+  <g text-anchor="middle" font-size="20" fill="#267254"><text x="310" y="208">站在 3</text><text x="870" y="208">站在 11</text></g>
+  <g text-anchor="middle" font-size="20" fill="#9b5b1c"><text x="170" y="406">站在 1</text><text x="380" y="406">站在 4</text><text x="730" y="406">站在 9</text></g>
+  <g text-anchor="middle" font-size="19" fill="#354351"><text x="100" y="254">0</text><text x="170" y="254">1</text><text x="240" y="254">2</text><text x="380" y="254">4</text><text x="450" y="254">5</text><text x="730" y="254">9</text><text x="800" y="254">10</text><text x="940" y="254">12</text><text x="1010" y="254">13</text><text x="100" y="452">0</text><text x="170" y="452">1</text><text x="240" y="452">2</text><text x="380" y="452">4</text><text x="450" y="452">5</text><text x="730" y="452">9</text><text x="800" y="452">10</text><text x="940" y="452">12</text></g>
+  <text x="170" y="287" font-size="20" fill="#667381">蓝点为房屋，三角为基站；绿色两端均包含，第二站自身仍在道路内。</text>
+  <path d="M30 494H1070" stroke="#dce3e8"/>
+  <g font-size="22" fill="#354351"><text x="30" y="536">本例的下界：房屋 1 与 9 相距 8，一站无法同时覆盖。</text><text x="30" y="578">这证明本例至少 2 站；任意输入上的最优性，还需要一般的交换论证。</text></g>
+</svg>

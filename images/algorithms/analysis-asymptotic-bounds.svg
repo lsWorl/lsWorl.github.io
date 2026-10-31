@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="490" viewBox="0 0 1080 490" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">用上下两条固定倍数的曲线夹住工作量</title>
+  <desc id="desc">横轴为n，纵轴为函数值。曲线5n平方加3n在n至少为1时，位于5n平方与8n平方之间，因此是Theta的n平方阶。常数5和8不随n改变。</desc>
+  <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="#64748b"/></marker></defs>
+  <rect width="1080" height="490" fill="#fff"/>
+  <text x="30" y="44" font-size="27" font-weight="bold" fill="#263640">Θ：从某个门槛开始，上下都被固定倍数夹住</text>
+  <g stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"><path d="M60 365V85"/><path d="M55 360H505"/></g>
+  <g font-size="19" fill="#667381"><text x="25" y="84">值</text><text x="508" y="386">n</text><text x="55" y="389">0</text><text x="135" y="389">1</text><text x="455" y="389">5</text></g>
+  <path d="M140 360V90" stroke="#a6b2bd" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="151" y="106" font-size="19" fill="#667381">n₀ = 1</text>
+  <g fill="none" stroke-width="3.5"><path d="M60 360Q260 360 460 120" stroke="#b7702e"/><path d="M60 360Q260 351 460 192" stroke="#2c6a9c"/><path d="M60 360Q260 360 460 210" stroke="#318266"/></g>
+  <g font-size="19"><text x="470" y="126" fill="#9b5b1c">8n²</text><text x="470" y="184" fill="#2b5986">f(n)</text><text x="470" y="225" fill="#267254">5n²</text></g>
+  <path d="M575 88V362" stroke="#dce3e8"/>
+  <g font-size="23" fill="#354351"><text x="610" y="120">f(n) = 5n² + 3n</text><text x="610" y="177" fill="#267254">下界：5n² ≤ f(n)</text><text x="610" y="225" fill="#9b5b1c">上界：f(n) ≤ 8n²</text><text x="610" y="286" font-weight="bold" fill="#2b5986">所以 f ∈ Θ(n²)</text><text x="610" y="337" font-size="21">5、8 都是固定常数。</text></g>
+  <path d="M30 413H1050" stroke="#dce3e8"/>
+  <text x="30" y="455" font-size="22" fill="#354351">上界 O 不要求最紧；上下同阶的 Θ，才刻画这里的二次增长阶。</text>
+</svg>

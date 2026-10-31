@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="470" viewBox="0 0 1040 470" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">先数每一行，再把次数加起来</title>
+  <desc id="desc">n为4时，外层四轮的内层次数分别为1、2、3、4，形成10个格子的三角形；一般情况下总次数为n乘n加1除以2，而不是恰好n平方。</desc>
+  <rect width="1040" height="470" fill="#fff"/>
+  <text x="30" y="46" font-size="27" font-weight="bold" fill="#263640">两层循环：内层次数跟着 i 变化</text>
+  <g font-size="21" fill="#354351"><text x="48" y="118">i = 1</text><text x="48" y="181">i = 2</text><text x="48" y="244">i = 3</text><text x="48" y="307">i = 4</text></g>
+  <g fill="#dcecfb" stroke="#779fc5" stroke-width="1.5">
+    <rect x="140" y="84" width="46" height="46" rx="4"/>
+    <rect x="140" y="147" width="46" height="46" rx="4"/><rect x="203" y="147" width="46" height="46" rx="4"/>
+    <rect x="140" y="210" width="46" height="46" rx="4"/><rect x="203" y="210" width="46" height="46" rx="4"/><rect x="266" y="210" width="46" height="46" rx="4"/>
+    <rect x="140" y="273" width="46" height="46" rx="4"/><rect x="203" y="273" width="46" height="46" rx="4"/><rect x="266" y="273" width="46" height="46" rx="4"/><rect x="329" y="273" width="46" height="46" rx="4"/>
+  </g>
+  <g font-size="22" fill="#267254"><text x="412" y="117">1 次</text><text x="412" y="180">2 次</text><text x="412" y="243">3 次</text><text x="412" y="306">4 次</text></g>
+  <path d="M535 83V334" stroke="#dce3e8" stroke-width="2"/>
+  <g fill="#354351" font-size="23"><text x="575" y="118">具体计数</text><text x="575" y="163" font-size="28" font-weight="bold" fill="#2b5986">1 + 2 + 3 + 4 = 10</text><text x="575" y="225">推广到 n 轮</text><text x="575" y="270" font-size="28" font-weight="bold" fill="#267254">1 + 2 + … + n = n(n+1)/2</text></g>
+  <path d="M30 364H1010" stroke="#dce3e8"/>
+  <text x="30" y="406" font-size="22" fill="#354351">精确次数与 n² 不同，但增长阶是 Θ(n²)。</text>
+  <text x="30" y="443" font-size="21" fill="#667381">顺序执行时相加；嵌套执行时，先写出每一轮的次数再求和。</text>
+</svg>

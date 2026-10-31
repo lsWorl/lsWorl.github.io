@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="430" viewBox="0 0 1080 430" role="img" aria-labelledby="title desc" font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+  <title id="title">指数的括号不同，函数就不同</title>
+  <desc id="desc">三列表达式分别为2的n平方次方、2的n次方再平方、2的2的n次方。n为3时分别等于2的9次方512、2的6次方64、2的8次方256。这些小数值只用来核对读法，不用来证明增长顺序。</desc>
+  <rect width="1080" height="430" fill="#fff"/>
+  <text x="30" y="45" font-size="27" font-weight="bold" fill="#263640">先找清“整个指数”，再比较增长率</text>
+  <g fill="none" stroke="#dce3e8" stroke-width="2"><path d="M360 87V325"/><path d="M720 87V325"/></g>
+  <g text-anchor="middle" font-size="23" font-weight="bold"><text x="180" y="111" fill="#2b5986">指数是 n²</text><text x="540" y="111" fill="#267254">指数是 2n</text><text x="900" y="111" fill="#9b5b1c">指数是 2ⁿ</text></g>
+  <g font-family="Georgia, Times New Roman, serif" font-size="48" text-anchor="middle" fill="#263640"><text x="180" y="190">2<tspan baseline-shift="super" font-size="29">n²</tspan></text><text x="540" y="190">(2<tspan baseline-shift="super" font-size="29">n</tspan><tspan baseline-shift="baseline">)²</tspan></text><text x="900" y="190">2<tspan baseline-shift="super" font-size="29">2ⁿ</tspan></text></g>
+  <g text-anchor="middle" fill="#354351" font-size="23"><text x="180" y="244">n = 3 → 指数是 9</text><text x="540" y="244">n = 3 → 指数是 6</text><text x="900" y="244">n = 3 → 指数是 8</text><text x="180" y="298" font-size="28">2⁹ = 512</text><text x="540" y="298" font-size="28">2⁶ = 64</text><text x="900" y="298" font-size="28">2⁸ = 256</text></g>
+  <path d="M30 350H1050" stroke="#dce3e8"/>
+  <text x="30" y="390" font-size="22" fill="#354351">单个 n 的数值只核对读法；渐进排序要研究 n 不断增大时的比值。</text>
+</svg>
