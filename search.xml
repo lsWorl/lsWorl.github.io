@@ -435,11 +435,11 @@
             
             <tag> 自然语言处理 </tag>
             
+            <tag> Transformer </tag>
+            
             <tag> GPT </tag>
             
             <tag> Mini-GPT </tag>
-            
-            <tag> Transformer </tag>
             
             <tag> Decoder-only </tag>
             
@@ -474,11 +474,11 @@
             
             <tag> 自然语言处理 </tag>
             
+            <tag> Seq2Seq </tag>
+            
             <tag> Transformer </tag>
             
             <tag> Self-Attention </tag>
-            
-            <tag> Seq2Seq </tag>
             
             <tag> Multi-Head Attention </tag>
             
@@ -979,9 +979,9 @@
             
             <tag> 集成学习 </tag>
             
-            <tag> 随机森林 </tag>
-            
             <tag> 梯度提升树 </tag>
+            
+            <tag> 随机森林 </tag>
             
         </tags>
       

@@ -91,104 +91,6 @@
     updateThemeLabel();
   }
 
-  function setupExperiment(root) {
-    if (window.setupGradientExperiment) return window.setupGradientExperiment(root);
-    const rate = root.querySelector('#lab-learning-rate');
-    const start = root.querySelector('#lab-start-weight');
-    const runButton = root.querySelector('[data-lab-run]');
-    let weight = Number(start.value);
-    let history = [weight];
-    let timer = null;
-    const NS = 'http://www.w3.org/2000/svg';
-    const create = (tag, attrs, text) => {
-      const element = document.createElementNS(NS, tag);
-      for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
-      if (text !== undefined) element.textContent = text;
-      return element;
-    };
-    const stop = () => {
-      if (timer !== null) window.clearInterval(timer);
-      timer = null;
-      runButton.textContent = '自动演示';
-    };
-    const number = value => Math.abs(value) >= 10000 ? value.toExponential(2) : value.toFixed(4);
-    function draw() {
-      const domain = Math.max(4.5, ...history.map(item => Math.abs(item))) * 1.04;
-      const x = value => 60 + (value + domain) / (2 * domain) * 540;
-      const y = value => 320 - value / (domain * domain) * 280;
-      const grid = root.querySelector('[data-plot-grid]');
-      grid.replaceChildren();
-      for (let i = -2; i <= 2; i++) {
-        const value = domain * i / 2;
-        grid.append(create('line', {x1: x(value), x2: x(value), y1: 40, y2: 320, class: i === 0 ? 'lab-plot-axis' : 'lab-plot-grid'}));
-        grid.append(create('text', {x: x(value), y: 342, 'text-anchor': 'middle', class: 'lab-tick'}, Math.abs(value) < .001 ? '0' : value.toFixed(1)));
-      }
-      for (let i = 0; i <= 4; i++) {
-        const value = domain * domain * i / 4;
-        grid.append(create('line', {x1: 60, x2: 600, y1: y(value), y2: y(value), class: i === 0 ? 'lab-plot-axis' : 'lab-plot-grid'}));
-        grid.append(create('text', {x: 49, y: y(value) + 4, 'text-anchor': 'end', class: 'lab-tick'}, value >= 10000 ? value.toExponential(0) : value.toFixed(0)));
-      }
-      let path = '';
-      for (let i = 0; i <= 120; i++) {
-        const w = -domain + i / 120 * 2 * domain;
-        path += `${i ? 'L' : 'M'}${x(w).toFixed(2)},${y(w * w).toFixed(2)} `;
-      }
-      root.querySelector('[data-plot-curve]').setAttribute('d', path);
-      const steps = root.querySelector('[data-plot-steps]');
-      steps.replaceChildren();
-      steps.append(create('polyline', {points: history.map(w => `${x(w)},${y(w * w)}`).join(' '), class: 'lab-plot-path', fill: 'none'}));
-      history.forEach((w, index) => steps.append(create('circle', {cx: x(w), cy: y(w * w), r: index === history.length - 1 ? 7 : 3.5, class: index === history.length - 1 ? 'lab-plot-point-current' : 'lab-plot-point'})));
-    }
-    function render() {
-      const eta = Number(rate.value);
-      root.querySelector('#lab-rate-value').textContent = eta.toFixed(2);
-      root.querySelector('#lab-weight-value').textContent = Number(start.value).toFixed(1);
-      root.querySelector('[data-lab-iteration]').textContent = history.length - 1;
-      root.querySelector('[data-lab-weight]').textContent = number(weight);
-      root.querySelector('[data-lab-loss]').textContent = number(weight * weight);
-      let status = '等待实验';
-      let explanation = '点击前进一步，观察参数沿着曲线向哪里移动。';
-      if (Math.abs(weight) < .0001) {
-        status = '已接近最小值'; explanation = '参数接近 0，损失也接近 0。可以换一个学习率再试一次。';
-      } else if (history.length > 1) {
-        if (eta < .5) { status = '平稳收敛'; explanation = '每次更新都向 0 靠近；学习率越小，需要的步数越多。'; }
-        else if (eta < 1) { status = '震荡收敛'; explanation = '参数交替越过 0，但摆动幅度逐步缩小。'; }
-        else if (eta === 1) { status = '等幅震荡'; explanation = '更新系数为 −1：参数在正负两侧来回切换，损失没有下降。'; }
-        else { status = '正在发散'; explanation = '更新系数的绝对值超过 1：每步都离 0 更远。图表自动缩放显示轨迹。'; }
-      }
-      if (history.length > 40 && Math.abs(weight) >= .0001) explanation += ' 本次演示已达到 40 步，重置后可以继续探索。';
-      root.querySelector('[data-lab-status]').textContent = status;
-      root.querySelector('[data-lab-explanation]').textContent = explanation;
-      draw();
-    }
-    const finished = () => history.length > 40 || Math.abs(weight) < .0001 || Math.abs(weight) > 1000;
-    const step = () => {
-      if (finished()) { stop(); return; }
-      weight *= 1 - 2 * Number(rate.value);
-      history.push(weight);
-      render();
-      if (finished()) stop();
-    };
-    const reset = () => { stop(); weight = Number(start.value); history = [weight]; render(); };
-    rate.addEventListener('input', reset);
-    start.addEventListener('input', reset);
-    root.querySelector('[data-lab-step]').addEventListener('click', () => { stop(); step(); });
-    root.querySelector('[data-lab-reset]').addEventListener('click', reset);
-    runButton.addEventListener('click', () => {
-      if (timer !== null) { stop(); return; }
-      if (finished()) reset();
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        while (!finished()) step();
-        return;
-      }
-      runButton.textContent = '暂停演示';
-      timer = window.setInterval(step, 550);
-      step();
-    });
-    render();
-    return stop;
-  }
-
   function init() {
     disposeExperiment();
     setupNavigation();
@@ -204,12 +106,10 @@
         updateProgress();
       });
     });
-    const experiment = document.querySelector('[data-gradient-lab]');
-    const stopGradient = experiment ? setupExperiment(experiment) : () => {};
-    const stopAI = window.initAILabs ? window.initAILabs() : () => {};
+    const stopAI = window.initLabGames ? window.initLabGames() : () => {};
     const stopHome = window.initHomeMotion ? window.initHomeMotion() : () => {};
     const stopHomeAI = window.initHomeAI ? window.initHomeAI() : () => {};
-    disposeExperiment = () => { stopGradient(); stopAI(); stopHome(); stopHomeAI(); };
+    disposeExperiment = () => { stopAI(); stopHome(); stopHomeAI(); };
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } });

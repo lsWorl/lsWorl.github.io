@@ -1,5 +1,176 @@
+/* js/klee-wardrobe.js */
+/* Klee's wardrobe: draws every cosmetic item and wears the equipped ones across the
+   site — a frame and a hair accessory on Klee's avatars, a chat-bubble style, a
+   title under her name and a bomb skin in the lab games. The equipped set is cached
+   in this browser so pages never wait for the server. */
+(function () {
+  'use strict';
+  if (window.KleeWardrobe) return;
+  const KEY = 'lsworld.klee.wardrobe.v1', SVG = 'http://www.w3.org/2000/svg';
+  let catalog = null, items = new Map(), equipped = {}, uid = 0;
+  try { equipped = JSON.parse(localStorage.getItem(KEY) || '{}').equipped || {}; } catch (_) { equipped = {}; }
+  const catalogReady = fetch((document.documentElement.dataset.root || '/') + 'klee-wardrobe.json', {cache: 'no-cache'})
+    .then(response => response.ok ? response.json() : null)
+    .then(data => { if (data) { catalog = data; items = new Map(data.items.map(item => [item.id, item])); apply(); } return data; })
+    .catch(() => null);
+  const esc = text => String(text).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const around = (count, radius, offset = 0) => Array.from({length: count}, (_, i) => {
+    const angle = offset + i / count * Math.PI * 2; return [50 + Math.cos(angle) * radius, 50 + Math.sin(angle) * radius, angle];
+  });
+  const star4 = (x, y, r, fill, cls = '') => { x = +x; y = +y; r = +r; return `<path class="${cls}" fill="${fill}" d="M${x} ${y - r}Q${x + r * .18} ${y - r * .18} ${x + r} ${y}Q${x + r * .18} ${y + r * .18} ${x} ${y + r}Q${x - r * .18} ${y + r * .18} ${x - r} ${y}Q${x - r * .18} ${y - r * .18} ${x} ${y - r}Z"/>`; };
+  const star5 = (x, y, r, fill, stroke) => {
+    const points = Array.from({length: 10}, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, d = i % 2 ? r * .45 : r; return `${(x + Math.cos(a) * d).toFixed(1)},${(y + Math.sin(a) * d).toFixed(1)}`; });
+    return `<polygon points="${points.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round"/>`;
+  };
+  const flower = (x, y, r, petal, center, stroke) => around(5, r * .55, -Math.PI / 2).map(([px, py, a]) => {
+    const cx = (x + px - 50).toFixed(1), cy = (y + py - 50).toFixed(1);
+    return `<ellipse cx="${cx}" cy="${cy}" rx="${(r * .42).toFixed(1)}" ry="${(r * .28).toFixed(1)}" transform="rotate(${(a * 180 / Math.PI).toFixed(0)} ${cx} ${cy})" fill="${petal}" stroke="${stroke}" stroke-width=".8"/>`;
+  }).join('') + `<circle cx="${x}" cy="${y}" r="${(r * .28).toFixed(1)}" fill="${center}"/>`;
+  const seed = (x, y, r, color) => `<g stroke="${color}" stroke-width="1" stroke-linecap="round">${around(8, r, 0).map(([px, py]) =>
+    `<line x1="${x}" y1="${y}" x2="${(x + px - 50).toFixed(1)}" y2="${(y + py - 50).toFixed(1)}"/>`).join('')}</g><circle cx="${x}" cy="${y}" r="${(r * .25).toFixed(1)}" fill="${color}"/>`;
+  const leaf = (x, y, s, rotate, fill, vein) => `<g transform="translate(${x} ${y}) rotate(${rotate}) scale(${s})"><path fill="${fill}" d="M0-10L2.5-4 7-6 5.5-1 10 1 4 3 5 8 0 5-5 8-4 3-10 1-5.5-1-7-6-2.5-4Z"/><path stroke="${vein}" stroke-width=".8" fill="none" d="M0-8V9"/></g>`;
+
+  // ----- Art for every item, drawn in a 100 × 100 box -----
+  function art(item) {
+    const look = item.look, id = 'kw' + (++uid);
+    if (item.slot === 'frame') {
+      const [c0, c1, c2] = look.ring;
+      let deco = '';
+      if (look.motif === 'sparkle') deco = around(5, 45, -Math.PI / 2).map(([x, y], i) => {
+          const color = i % 2 ? c2 : c1, rays = around(8, 9, i).map(([px, py]) => `<line x1="${(x + (px - 50) * .35).toFixed(1)}" y1="${(y + (py - 50) * .35).toFixed(1)}" x2="${(x + px - 50).toFixed(1)}" y2="${(y + py - 50).toFixed(1)}"/>`).join('');
+          return `<g class="kw-burst" stroke="${color}" stroke-width="2.2" stroke-linecap="round" style="animation-delay:${-i * .37}s">${rays}</g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="${c0}"/>`;
+        }).join('') + around(5, 46, -Math.PI / 2 + Math.PI / 5).map(([x, y], i) => star4(x, y, i % 2 ? 4 : 5.5, c0, 'kw-twinkle')).join('');
+      if (look.motif === 'dandelion') deco = around(5, 45, -Math.PI / 2).map(([x, y]) => seed(+x.toFixed(1), +y.toFixed(1), 6, c2)).join('') + seed(88, 14, 4, c1) + seed(12, 84, 3.5, c1);
+      if (look.motif === 'maple') deco = [[16, 22, 1, -30], [84, 24, .8, 25], [80, 82, 1.1, 160], [20, 80, .7, -140], [50, 6, .7, 0]].map(([x, y, s, r]) => leaf(x, y, s, r, r > 0 ? c2 : c1, c0)).join('');
+      if (look.motif === 'ribbon') deco = `<g fill="${c2}" stroke="${c0}" stroke-width="1"><path d="M50 88L36 80Q30 92 38 96Z"/><path d="M50 88L64 80Q70 92 62 96Z"/><path d="M47 90L40 100H45L50 93 55 100H60L53 90Z"/><circle cx="50" cy="88" r="4"/></g>`
+        + around(12, 44, 0).map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.4" fill="${c0}"/>`).join('');
+      return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c0}"/><stop offset=".5" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>`
+        + `<circle cx="50" cy="50" r="44" fill="none" stroke="url(#${id})" stroke-width="6"/><circle cx="50" cy="50" r="39.5" fill="none" stroke="${c0}" stroke-width="1.2" opacity=".85"/>${deco}`;
+    }
+    if (item.slot === 'hat') {
+      if (look.motif === 'clover') return `<g transform="translate(50 50)"><path d="M0 4Q6 22 2 34" stroke="${look.dark}" stroke-width="4" fill="none" stroke-linecap="round"/>`
+        + [0, 90, 180, 270].map(r => `<path transform="rotate(${r + 45})" fill="${look.color}" stroke="${look.dark}" stroke-width="1.5" d="M0 0C-4-8-18-10-16-22C-14-30-4-28 0-20C4-28 14-30 16-22C18-10 4-8 0 0Z"/>`).join('')
+        + `<circle r="4" fill="${look.dark}"/></g>`;
+      if (look.motif === 'flower') return flower(50, 50, 40, look.color, '#ffd24a', look.dark) + `<circle cx="50" cy="50" r="5" fill="#fff6c8"/>`;
+      return star5(50, 52, 42, look.color, look.dark) + `<circle cx="40" cy="38" r="5" fill="#fff" opacity=".8"/>`;
+    }
+    if (item.slot === 'bubble') {
+      const motif = look.motif === 'stars' ? [[20, 22, 3], [76, 18, 2], [86, 44, 2.5], [30, 52, 1.6], [62, 56, 2]].map(([x, y, r]) => star4(x, y, r * 1.6, look.border, 'kw-twinkle')).join('')
+        : look.motif === 'sweetflower' ? flower(84, 16, 13, '#fbd3dc', '#ffe08a', '#e88aa0')
+        : look.motif === 'letter' ? `<circle cx="82" cy="54" r="7" fill="#b3261e"/><path d="M78 54h8M82 50v8" stroke="#ffd7c8" stroke-width="1.4"/>` : '';
+      const fill = look.bg2 ? `url(#${id})` : look.bg;
+      return (look.bg2 ? `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${look.bg}"/><stop offset="1" stop-color="${look.bg2}"/></linearGradient></defs>` : '')
+        + `<path d="M10 12Q10 4 18 4H86Q94 4 94 12V58Q94 66 86 66H40L26 80 28 66H18Q10 66 10 58Z" fill="${fill}" stroke="${look.border}" stroke-width="3"/>`
+        + [22, 34, 46].map((y, i) => `<rect x="22" y="${y}" width="${[52, 40, 46][i]}" height="5" rx="2.5" fill="${look.fg}" opacity="${look.motif === 'letter' ? .55 : .8}"/>`).join('') + motif;
+    }
+    if (item.slot === 'title') {
+      const parts = look.text.includes(' · ') ? look.text.split(' · ') : [look.text], longest = Math.max(...parts.map(p => [...p].length));
+      const size = Math.min(14, 80 / longest), top = 50 - (parts.length - 1) * size * .6;
+      return `<rect x="4" y="${parts.length > 1 ? 26 : 34}" width="92" height="${parts.length > 1 ? 48 : 32}" rx="16" fill="${look.bg}" stroke="${look.color}" stroke-width="2.5"/>`
+        + parts.map((part, i) => `<text x="50" y="${(top + i * size * 1.25 + size * .36).toFixed(1)}" text-anchor="middle" font-size="${size.toFixed(1)}" font-weight="800" fill="${look.color}">${esc(part)}</text>`).join('');
+    }
+    if (item.slot === 'bomb') {
+      const [a, b, c] = look.stops;
+      const stripes = look.stripes ? `<g clip-path="url(#${id}c)" stroke="${look.stripes}" stroke-width="4" fill="none"><path d="M36 30Q30 60 38 86M50 26Q46 60 50 90M64 30Q70 60 62 86"/></g>` : '';
+      return `<defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></radialGradient><clipPath id="${id}c"><circle cx="50" cy="58" r="32"/></clipPath></defs>`
+        + `<path d="M64 32Q72 12 86 16" fill="none" stroke="#6b4426" stroke-width="4" stroke-linecap="round"/>${star4(88, 14, 7, '#ffd24a', 'kw-twinkle')}`
+        + `<circle cx="50" cy="58" r="32" fill="url(#${id})" stroke="${look.outline}" stroke-width="2.5"/>${stripes}<ellipse cx="38" cy="44" rx="8" ry="5" fill="#fff" opacity=".6" transform="rotate(-30 38 44)"/>`;
+    }
+    // Stickers: simple doodles.
+    const color = look.color;
+    if (look.motif === 'sun') return `<g stroke="${color}" stroke-width="5" stroke-linecap="round">${around(10, 38, 0).map(([x, y]) => `<line x1="${(50 + (x - 50) * .68).toFixed(1)}" y1="${(50 + (y - 50) * .68).toFixed(1)}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`).join('')}</g><circle cx="50" cy="50" r="20" fill="${color}"/><path d="M42 54Q50 62 58 54" stroke="#7a3a14" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="43" cy="46" r="2.5" fill="#7a3a14"/><circle cx="57" cy="46" r="2.5" fill="#7a3a14"/>`;
+    if (look.motif === 'apple') return `<path d="M50 30C36 20 16 30 20 54C24 76 40 88 50 82C60 88 76 76 80 54C84 30 64 20 50 30Z" fill="${color}" stroke="#8f1f1c" stroke-width="2.5"/><path d="M50 30Q50 18 56 12" stroke="#6b4426" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M54 22Q66 10 76 18Q66 28 54 22Z" fill="#4caf50"/><ellipse cx="36" cy="44" rx="6" ry="9" fill="#fff" opacity=".45"/>`;
+    if (look.motif === 'fish') return `<path d="M20 50Q42 22 70 46L86 32V68L70 54Q42 78 20 50Z" fill="${color}" stroke="#235f8f" stroke-width="2.5" stroke-linejoin="round"/><circle cx="34" cy="46" r="4" fill="#fff"/><circle cx="34" cy="46" r="2" fill="#102a3f"/><path d="M50 40Q54 50 50 60" stroke="#235f8f" stroke-width="2" fill="none"/>`;
+    if (look.motif === 'dandelion') return `<path d="M50 54Q52 74 46 92" stroke="#3e7a3a" stroke-width="3" fill="none"/>${seed(50, 40, 26, color)}${seed(78, 20, 6, color)}`;
+    if (look.motif === 'jail') return `<rect x="20" y="18" width="60" height="64" rx="6" fill="#d9d4cc" stroke="#5a5560" stroke-width="3"/><g stroke="${color}" stroke-width="5">${[32, 44, 56, 68].map(x => `<line x1="${x}" y1="22" x2="${x}" y2="78"/>`).join('')}</g><path d="M38 66Q50 58 62 66" stroke="#5a5560" stroke-width="3" fill="none"/><path d="M42 50l4 3M58 50l-4 3" stroke="#5a5560" stroke-width="3"/>`;
+    return `<path d="M60 26Q66 12 78 14" fill="none" stroke="#6b4426" stroke-width="4" stroke-linecap="round"/>${star4(80, 12, 6, '#ffd24a')}<circle cx="48" cy="56" r="28" fill="${color}" stroke="#8f1f1c" stroke-width="2.5"/>${star5(40, 50, 8, '#fff1bf', '#fff1bf')}`;
+  }
+  function draw(item, {size = 64, className = ''} = {}) {
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('width', size); svg.setAttribute('height', size);
+    svg.setAttribute('class', `kw-art kw-${item.slot} ${className}`.trim()); svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = art(item); return svg;
+  }
+
+  // ----- Wearing the equipped set -----
+  const AVATARS = '.cp-avatar-wrap, .fish-klee-face, [data-klee-avatar]';
+  function decorate(target) {
+    let host = target.parentElement?.classList.contains('kw-host') ? target.parentElement : null;
+    if (!host) {
+      host = document.createElement('span'); host.className = 'kw-host';
+      if (target.matches('.cp-avatar-wrap')) host.classList.add('kw-host-portrait');
+      target.replaceWith(host); host.append(target);
+    }
+    host.querySelectorAll(':scope > .kw-frame, :scope > .kw-hat-wrap').forEach(node => node.remove());
+    const frame = items.get(equipped.frame), hat = items.get(equipped.hat);
+    if (frame) host.prepend(draw(frame, {size: 100, className: 'kw-frame'}));
+    if (hat) { const wrap = document.createElement('span'); wrap.className = 'kw-hat-wrap'; wrap.append(draw(hat, {size: 40})); host.append(wrap); }
+    host.dataset.kwFrame = frame?.id || ''; host.dataset.kwHat = hat?.id || '';
+  }
+  function bubbleMotif(look) {
+    const body = look.motif === 'stars' ? [[30, 34, 16, look.border], [70, 26, 10, '#fff'], [62, 70, 12, look.border]].map(([x, y, r, c]) => star4(x, y, r, c)).join('')
+      : look.motif === 'sweetflower' ? flower(50, 50, 46, '#fbd3dc', '#ffe08a', '#e88aa0')
+      : look.motif === 'letter' ? `<circle cx="50" cy="50" r="34" fill="#b3261e" stroke="#7a1712" stroke-width="4"/><path d="M34 50h32M50 34v32" stroke="#ffd7c8" stroke-width="6" stroke-linecap="round"/>` : '';
+    return body ? `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="${SVG}" viewBox="0 0 100 100">${body}</svg>`)}")` : 'none';
+  }
+  function apply() {
+    const root = document.documentElement;
+    for (const slot of ['frame', 'hat', 'bubble', 'title', 'bomb']) {
+      const item = items.get(equipped[slot]);
+      if (item) root.dataset['klee' + slot[0].toUpperCase() + slot.slice(1)] = item.id; else delete root.dataset['klee' + slot[0].toUpperCase() + slot.slice(1)];
+    }
+    const bubble = items.get(equipped.bubble);
+    if (bubble) {
+      root.style.setProperty('--kw-bubble-bg', bubble.look.bg2 ? `linear-gradient(135deg, ${bubble.look.bg}, ${bubble.look.bg2})` : bubble.look.bg);
+      root.style.setProperty('--kw-bubble-fg', bubble.look.fg); root.style.setProperty('--kw-bubble-border', bubble.look.border); root.style.setProperty('--kw-bubble-solid', bubble.look.bg);
+      root.style.setProperty('--kw-bubble-motif', bubbleMotif(bubble.look));
+    } else for (const name of ['--kw-bubble-bg', '--kw-bubble-fg', '--kw-bubble-border', '--kw-bubble-motif', '--kw-bubble-solid']) root.style.removeProperty(name);
+    // Bomb skins replace the bomb gradient in the lab games through one shared paint server.
+    let defs = document.getElementById('kw-defs');
+    const bomb = items.get(equipped.bomb);
+    if (bomb) {
+      if (!defs) { defs = document.createElementNS(SVG, 'svg'); defs.id = 'kw-defs'; defs.setAttribute('aria-hidden', 'true'); defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.style.position = 'absolute'; document.body.append(defs); }
+      const [a, b, c] = bomb.look.stops;
+      defs.innerHTML = `<defs><radialGradient id="kw-bomb-fill" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></radialGradient>`
+        + `<pattern id="kw-bomb-skin" patternContentUnits="objectBoundingBox" width="1" height="1"><rect width="1" height="1" fill="url(#kw-bomb-fill)"/>`
+        + (bomb.look.stripes ? `<path d="M.3 .05Q.22 .5 .32 .95M.5 0Q.46 .5 .5 1M.7 .05Q.78 .5 .68 .95" stroke="${bomb.look.stripes}" stroke-width=".07" fill="none"/>` : '') + `</pattern></defs>`;
+      root.style.setProperty('--kw-bomb-outline', bomb.look.outline);
+    } else { defs?.remove(); root.style.removeProperty('--kw-bomb-outline'); }
+    const title = items.get(equipped.title);
+    document.querySelectorAll('.cp-title small').forEach(node => { if (!node.dataset.kwDefault) node.dataset.kwDefault = node.textContent; node.textContent = title ? title.look.text : node.dataset.kwDefault; });
+    if (document.body) document.querySelectorAll(AVATARS).forEach(decorate);
+  }
+  // The companion and game panels appear after this script runs.
+  const watch = new MutationObserver(mutations => {
+    if (!catalog) return;
+    for (const m of mutations) for (const node of m.addedNodes) {
+      if (!(node instanceof Element) || node.closest('.kw-host') && !node.matches(AVATARS)) continue;
+      if (node.matches?.(AVATARS) && !node.parentElement?.classList.contains('kw-host')) decorate(node);
+      node.querySelectorAll?.(AVATARS).forEach(target => { if (!target.parentElement?.classList.contains('kw-host')) decorate(target); });
+      if (node.querySelector?.('.cp-title small') || node.matches?.('.cp-title small')) apply();
+    }
+  });
+  const start = () => { watch.observe(document.body, {childList: true, subtree: true}); apply(); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start, {once: true});
+
+  window.KleeWardrobe = {
+    ready: catalogReady,
+    get catalog() { return catalog; },
+    item: id => items.get(id) || null,
+    get equipped() { return {...equipped}; },
+    draw,
+    // Called with the server's wardrobe after every change.
+    remember(wardrobe) {
+      equipped = {...(wardrobe?.equipped || {})};
+      try { localStorage.setItem(KEY, JSON.stringify({equipped})); } catch (_) { /* Optional. */ }
+      apply();
+    }
+  };
+})();
+
+;
 /* js/lab-math.js */
-/* Small, explicit numerical models used by the browser experiments. */
+/* Small, explicit numerical models used by the homepage visualizations. */
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -23,70 +194,10 @@
   function softmax(logits, temperature = 1, topK = logits.length) {
     return softmaxTrace(logits,temperature,topK).probabilities;
   }
-  function sampleTrace(logits, temperature, topK, draw) {
-    if (!(draw>=0 && draw<1)) throw new Error('Draw must be in [0, 1).');
-    const trace=softmaxTrace(logits,temperature,topK);
-    let cumulative=0,selected=-1;
-    const intervals=trace.probabilities.map((p,i)=>{
-      const start=cumulative;cumulative+=p;
-      if(selected<0 && p>0 && draw<cumulative) selected=i;
-      return {start,end:cumulative};
-    });
-    if(selected<0) selected=trace.probabilities.findLastIndex(p=>p>0);
-    return {...trace,draw,intervals,selected};
-  }
   const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
-  const cosine = (a,b) => {
-    const denominator = Math.sqrt(dot(a,a)*dot(b,b));
-    return denominator ? dot(a,b)/denominator : 0;
-  };
   function attention(queries, keys, causal = false, temperature = 1) {
     return queries.map((query,row)=>softmax(keys.map((key,column)=>
       causal && column>row ? -Infinity : dot(query,key)/Math.sqrt(query.length)), temperature));
-  }
-  function attentionTrace(query, keys, values, row, causal) {
-    const products=keys.map(key=>query.map((value,i)=>value*key[i]));
-    const scores=products.map(terms=>terms.reduce((a,b)=>a+b,0));
-    const scaled=scores.map(value=>value/Math.sqrt(query.length));
-    const masked=scaled.map((value,i)=>causal&&i>row?-Infinity:value);
-    const probabilities=softmax(masked);
-    const contributions=values.map((value,i)=>value.map(v=>v*probabilities[i]));
-    const output=values[0].map((_,j)=>contributions.reduce((sum,v)=>sum+v[j],0));
-    return {query:query.slice(),keys:keys.map(v=>v.slice()),values:values.map(v=>v.slice()),products,scores,scaled,masked,probabilities,contributions,output};
-  }
-  function gradientTrace(weight,rate) {
-    const gradient=2*weight,change=rate*gradient,next=weight-change;
-    return {weight,rate,loss:weight*weight,gradient,change,next,nextLoss:next*next};
-  }
-  const vocabulary = ['模型','微调','显存','量化','检索','文档','注意力','训练','参数','向量','知识','学习率','损失','lora','qlora','rag','transformer'];
-  function counts(text) {
-    const lower=text.toLowerCase();
-    return vocabulary.map(term=>/^[a-z]+$/.test(term)
-      ? (lower.match(new RegExp('\\b'+term+'\\b','g'))||[]).length
-      : lower.split(term).length-1);
-  }
-  function retrievalTrace(query, documents, topK = 3) {
-    const vectors=documents.map(doc=>counts(doc.title+' '+doc.text));
-    const idf=vocabulary.map((_,index)=>Math.log((1+documents.length)/(1+vectors.filter(v=>v[index]>0).length))+1);
-    const queryCounts=counts(query),q=queryCounts.map((value,index)=>value*idf[index]);
-    const weighted=vectors.map(v=>v.map((value,j)=>value*idf[j]));
-    const ranked=documents.map((doc,index)=>({...doc,score:cosine(q,weighted[index])}))
-      .sort((a,b)=>b.score-a.score || a.id-b.id);
-    return {vocabulary:vocabulary.slice(),counts:vectors,queryCounts,idf,queryVector:q,vectors:weighted,ranked,
-      found:ranked.filter(doc=>doc.score>0).slice(0,topK)};
-  }
-  function retrieve(query, documents, topK = 3) {
-    return retrievalTrace(query,documents,topK).found;
-  }
-  function contextFor(documents, budget) {
-    let remaining=budget;
-    return documents.flatMap(doc=>{
-      if (remaining<=0) return [];
-      const chars=Array.from(doc.text);
-      const take=Math.min(remaining,chars.length);
-      remaining-=take;
-      return [{...doc,excerpt:chars.slice(0,take).join(''),truncated:take<chars.length}];
-    });
   }
   function random(seed) {
     return () => { seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
@@ -136,324 +247,8 @@
     }
     return gradients(net,data);
   }
-  function networkTrace(net,data,rate,sample=0,neuron=0) {
-    const before=JSON.parse(JSON.stringify(net)),after=JSON.parse(JSON.stringify(net));
-    const {x,y}=data[sample],prediction=forward(before,x),batch=gradients(before,data);
-    const delta=prediction.output-y;
-    const hiddenDelta=prediction.hidden.map((h,j)=>delta*before.v[j]*(1-h*h));
-    const sampleGradient=gradients(before,[data[sample]]).gradient;
-    train(after,data,rate);
-    return {before,after,x:x.slice(),y,prediction,delta,hiddenDelta,sampleGradient,batch,
-      nextLoss:gradients(after,data).loss,neuron,sample,rate};
-  }
-  return {softmax,softmaxTrace,sampleTrace,dot,cosine,attention,attentionTrace,gradientTrace,retrieve,retrievalTrace,contextFor,random,network,forward,gradients,train,networkTrace,datasets};
+  return {softmax,dot,attention,random,network,forward,gradients,train,datasets};
 });
-
-;
-/* js/lab-curriculum.js */
-/* Fixed lesson speech and section assessments; shared by browser and asset tools. */
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.LabCurriculum=api;})(typeof globalThis!=='undefined'?globalThis:this,()=>{
-  const part=(text,prompt,options,answer,explanation)=>({text,quiz:{prompt,options,answer,explanation}});
-  return {
-    gradient:[
-      part('旅行者，可莉先带你看损失！这里把参数平方，得到当前损失。对照表里的数值，看看这个点离最低点有多远。','本实验的损失 L(w) 如何计算？',['把 w 平方','把 w 乘以学习率','直接取 w'],0,'本实验定义 L(w) = w²，最低点是 w = 0。'),
-      part('现在看切线的斜率，也就是梯度。这个函数的梯度是参数的两倍。梯度为正时，我们向左走，才能沿着负梯度下降。','梯度为正时，梯度下降会让参数往哪边移动？',['向右增大','向左减小','保持不变'],1,'更新公式是 w′ = w − ηg；学习率为正、梯度为正时，参数会减小。'),
-      part('接着，把学习率和梯度相乘，得到更新量。学习率就像步子的大小，可不是越大越好哦！先看看这一脚会迈多远。','参数更新量 Δ 等于什么？',['学习率加梯度','损失除以梯度','学习率乘梯度'],2,'Δ = ηg，它带有符号；更新参数时还要减去这个量。'),
-      part('最后，从旧参数里减去更新量，再计算新损失。对照前后两列，检查损失有没有变小。看懂以后，我们才真正执行更新。','判断这一步有没有降低损失，应当比较什么？',['只看动画走得快不快','比较更新前后的损失','只看参数的正负'],1,'参数可能跨过 0；比较 L′ 和 L 才能确认损失是否降低。')
-    ],
-    sampling:[
-      part('可莉先把每个候选分数除以温度。温度越低，分数之间的差距越明显。看看柱子的变化，概率会更集中还是更平均呢？','降低温度通常会让概率分布怎样变化？',['更集中在高分候选','所有候选概率都相同','自动增加新词'],0,'同一组 logit 除以更小的正温度后，差距扩大，Softmax 更偏向高分候选。'),
-      part('这一步只留下分数最高的几个候选。被移除的词，概率就变成零啦。即使继续抽很多次，也抽不到它们。','被 Top-K 移除的候选还能被采到吗？',['偶尔可以','本次分布中不能','温度高就一定可以'],1,'筛选之后才在保留候选中归一化，被移除的项概率为 0。'),
-      part('现在把分数变成指数权重，再除以权重总和。这样所有概率加起来就是一。减去最大分数，只是为了让计算更稳定。','为什么计算 Softmax 时可以先减去最大分数？',['会增加词汇量','能改变正确答案','提高数值稳定性且不改变概率'],2,'所有指数项同时乘以同一系数，归一化时会抵消，概率保持不变。'),
-      part('每个词占据一段概率区间。随机数落进哪一段，就选中哪个词。注意哦，现在只是预演，点击执行后才会记录这次采样。','随机数应当怎样决定采样结果？',['总是选择分数最高的词','选择随机数落入的累计概率区间','按候选字数选择'],1,'区间左闭右开，长度就是候选概率；边界属于右边的非空区间。')
-    ],
-    attention:[
-      part('旅行者，把查询向量和每个键向量的相同维度相乘，再把结果加起来。可莉把每一项都展开了，这就是一次点积匹配。','Q 与 K 的点积怎样计算？',['只比较第一维','所有维度先求平均','相同维相乘再求和'],2,'点积是对应维度乘积的总和，表格展示了每个乘数与最终分数。'),
-      part('点积分数还要除以维度数的平方根。这里有四个维度，所以除以二。先控制分数尺度，再继续计算权重。','本实验维度为 4，缩放分数时除以多少？',['2','4','16'],0,'缩放因子是 √d，因此 √4 = 2。'),
-      part('接下来戴上因果遮罩！当前位置后面的词都被挡住，不能提前偷看。它们的分数设为负无穷，稍后权重就会变成零。','因果遮罩会挡住哪些位置？',['当前位置之前的全部词','当前位置之后的词','当前位置自己'],1,'因果注意力允许读取自己和过去的位置，屏蔽未来位置。'),
-      part('现在用 Softmax 把分数变成权重。被挡住的位置权重是零，剩下的位置重新分配，总和为一。这些数表示混合比例。','一行注意力权重的总和是多少？',['等于维度数','不固定','1'],2,'Softmax 对未屏蔽的位置归一化；被屏蔽位置占 0，整行仍为 1。'),
-      part('有了权重，还要读取值向量。每个值向量乘以自己的权重，再逐维相加，才得到输出。可莉把每一份贡献都列出来啦！','注意力最终输出怎样得到？',['对 V 向量按注意力权重加权求和','直接把 Q 原样输出','只输出权重最大的数字'],0,'输出 O = AV；注意力权重负责分配比例，V 提供被混合的信息。')
-    ],
-    rag:[
-      part('可莉先找问题里命中的关键词，数一数各出现几次。这里使用固定词表，所以没收录的同义词，也可能一个都匹配不到。','查询没有命中任何示例关键词时，会怎样？',['自动找到语义最相近的文档','得到零向量，无法匹配示例资料','自动调用大模型补全'],1,'本实验使用固定词表而非语义 Embedding；零向量的余弦相似度按 0 处理。'),
-      part('接着给关键词分配权重。出现在越少文档里的词，区分能力通常越强，权重越高。问题和文档都必须使用同一套词表。','在这里，出现在更少文档中的词通常有什么特点？',['IDF 更高','IDF 永远为零','会被完全删除'],0,'IDF = ln((1 + N)/(1 + DF)) + 1，DF 越小，IDF 越高。'),
-      part('现在比较问题和文档向量的方向。余弦相似度越高，排序越靠前。这里只保留分数大于零的前几篇，不能凭空制造证据。','本实验按什么选择检索结果？',['正文越长越优先','只按标题字数','余弦相似度从高到低，且分数大于零'],2,'检索先按相似度降序排序，再保留正分数的 Top-K 篇。'),
-      part('最后把检索到的正文依次放进上下文。字符预算用完就停，后面的文档可能被截断。取回很多篇，也不代表能全部放进去。','Top-K 增大后，正文一定都能完整进入上下文吗？',['一定可以','还取决于字符预算','只取决于标题长度'],1,'Top-K 限制篇数，字符预算限制实际正文长度；它也不等于模型的 token 预算。')
-    ],
-    network:[
-      part('可莉选一个样本，先计算输入乘权重，再加偏置。经过双曲正切激活函数，就得到隐藏神经元的输出。描边标出了正在查看的神经元。','隐藏层在加权求和后，还进行了什么运算？',['除以样本编号','使用 tanh 激活','直接四舍五入'],1,'隐藏层使用 h = tanh(w·x + b)，为网络引入非线性。'),
-      part('隐藏层的结果继续送到输出层，再变成零到一之间的概率。交叉熵检查这个概率和目标标签差多少，注意区分单个样本与平均损失。','输出层的 sigmoid 将输出转换到哪个范围？',['零到一之间','负一到一之间','所有实数'],0,'sigmoid 的输出在 0 与 1 之间，本实验把它解释为类别 1 的预测概率。'),
-      part('接下来把输出误差往回传。先算预测概率减去标签，再沿连接传到隐藏层，乘以激活函数的导数，就能找到权重的梯度。','本实验输出层的误差梯度 δout 是什么？',['标签加预测概率','损失乘学习率','预测概率减标签'],2,'sigmoid 配合二元交叉熵时，对输出 logit 的导数简化为 p − y。'),
-      part('一个样本的梯度还不能代表全部训练数据。可莉把四个样本的梯度相加，再除以四。真正更新时，我们使用这个平均值。','训练按钮使用哪一份梯度更新参数？',['四个样本的平均梯度','只用当前查看样本的梯度','随机把梯度改成零'],0,'本实验使用全批梯度：四个样本的梯度求和后除以 4。'),
-      part('最后，用学习率乘以平均梯度，从旧参数中减掉它。执行时所有权重和偏置都会更新，然后重新计算损失，看看网络有没有进步！','一次真实训练更新会改变哪些参数？',['只改变描边神经元','全部可训练权重和偏置','只改变正在查看的输入'],1,'表格只展开一条权重，但执行时会同时更新网络全部权重和偏置。')
-    ]
-  };
-});
-
-;
-/* js/lab-learning.js */
-/* Teaching views consume the same numerical traces as the experiments. */
-(() => {
-  'use strict';
-  const M=window.LabMath;
-  const n=value=>value===-Infinity?'−∞':Number.isFinite(value)?(Math.abs(value)>1e5?value.toExponential(3):value.toFixed(4)):'—';
-  const vector=values=>'['+values.map(n).join(', ')+']';
-  const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
-  const step=(title,formula,explanation,rows,code,visual)=>({title,formula,explanation,rows,code,visual});
-  const words=['好','冷','热','糟','猫'],tokens=['我','在','学习','AI'];
-  const bar=(labels,values)=>({kind:'bars',labels,values});
-  const lessons={
-    gradient(d) {
-      const t=M.gradientTrace(d.weight,d.rate),rows=[['当前参数','w',n(t.weight)],['当前损失',n(t.weight)+'²',n(t.loss)]];
-      const visual={kind:'gradient',...t};
-      return {title:'跟完一次参数更新',intro:'从当前参数出发，逐项计算下一步。浏览步骤不会更新参数；最后可执行这次更新。',
-        steps:[
-          step('读取参数','L(w) = w²','损失衡量当前位置离最低点有多远。先预测下一步损失会怎样变化。',rows,'loss = w * w',{...visual,phase:0}),
-          step('求梯度','g = dL/dw = 2w','切线斜率是梯度。梯度为正时，沿负梯度方向向左；为负时向右。',[['梯度','2 × '+n(t.weight),n(t.gradient)]],'gradient = 2 * w',{...visual,phase:1}),
-          step('计算更新量','Δ = ηg','学习率控制沿负梯度方向走多远，更新时要减去这个带符号的量。',[['学习率','η',n(t.rate)],['更新量',n(t.rate)+' × '+n(t.gradient),n(t.change)]],'change = rate * gradient',{...visual,phase:2}),
-          step('更新并验证','w′ = w − Δ; L′ = (w′)²','观察连线的终点。跨过最低点后，损失仍可能降低；步子太大则可能升高。',[
-            ['新参数',n(t.weight)+' − ('+n(t.change)+')',n(t.next)],['新损失',n(t.next)+'²',n(t.nextLoss)],['损失变化','L′ − L',n(t.nextLoss-t.loss)]],
-          'next = w - rate * gradient\nnextLoss = next * next',{...visual,phase:3})],
-        question:{prompt:'按当前学习率执行一次更新，损失会怎样？',options:['降低','不变','升高'],answer:Math.abs(t.nextLoss-t.loss)<1e-12?1:t.nextLoss<t.loss?0:2,explanation:`本次损失从 ${n(t.loss)} 变为 ${n(t.nextLoss)}。判断依据是实际的新旧损失。`},
-        challenge:'调整初始参数为非零值，找到让参数一步到达 0 的学习率，并执行一次更新。',
-        check:{ok:d.iteration===1&&d.initial!==0&&Math.abs(d.weight)<1e-10,text:d.iteration===1&&d.initial!==0&&Math.abs(d.weight)<1e-10?'完成！η = 0.5 时，w′ = (1 − 2η)w = 0。':'先重置到非零初始参数，再调整学习率；目标是恰好更新一步后到达 0。'},commit:'执行这次更新'};
-    },
-    sampling(d) {
-      const t=M.sampleTrace(d.logits,d.temperature,d.topK,d.draw);
-      const intervals={kind:'intervals',...t};
-      return {title:'看清一个词如何被采到',intro:'这里预演下一次采样。固定种子和参数后，随机数序列可以复现；浏览步骤不会消耗随机数。',steps:[
-        step('缩放分数','sᵢ = logitᵢ / T','温度缩放候选分数。低温放大分数间的差距。',words.map((w,i)=>[w,n(d.logits[i])+' / '+n(d.temperature),n(t.scaled[i])]),'scaled = logits.map(value => value / temperature)',bar(words,t.scaled)),
-        step('筛选候选','保留分数最高的 K 项','被 Top-K 移除的词概率为 0。并列时按原候选顺序选择，保证可复现。',words.map((w,i)=>[w,'Top-'+d.topK,t.eligible.includes(i)?'保留':'移除']),'eligible = sortDescending(logits).slice(0, topK)',bar(words,t.probabilities)),
-        step('归一化概率','pᵢ = exp((logitᵢ − max) / T) / Σ exp','减去最大分数可以避免指数溢出，归一化后的概率不变。',words.map((w,i)=>[w,'指数权重 '+n(t.weights[i]),n(t.probabilities[i])]),'weight = exp((logit - max) / temperature)\np = weight / total',bar(words,t.probabilities)),
-        step('用随机数选词','取 r 所落入的累计概率区间','区间左闭右开。只有点击执行才会记录本次采样，并准备下一个随机数。',words.map((w,i)=>[w,`[${n(t.intervals[i].start)}, ${n(t.intervals[i].end)})`,t.selected===i?'← r = '+n(t.draw):'']),
-          'r = random()\nselected = firstIndex(cumulativeProbability > r)',intervals)],
-        question:{prompt:'Top-K = 1 时，多次采样能得到几个不同候选词？',options:['最多一个','仍可得到所有词'],answer:0,explanation:'只保留一个候选时，它的概率为 1；温度和随机数都不会让已移除的词重新出现。'},
-        challenge:'把 Top-K 调到 1，再采样一次，验证只有一个候选的概率非零。',check:{ok:d.topK===1&&d.total>0,text:d.topK===1&&d.total>0?'完成！保留的候选概率为 1，其他候选为 0。':'调整 Top-K 后统计会重置，接着点击“采样一次”或执行预演。'},commit:'执行这次采样'};
-    },
-    attention(d) {
-      const t=M.attentionTrace(d.queries[d.selected],d.keys,d.values,d.selected,d.causal);
-      return {title:'从 Q / K 一直算到输出',intro:'Q 决定寻找什么，K 用于匹配，V 提供被加权的信息。这里使用手工向量演示完整计算。',steps:[
-        step('逐项乘加','scoreⱼ = Q · Kⱼ','当前 Q = '+vector(t.query)+'。同一维先相乘，再把各维结果加起来。选择其他查询词会重新计算本行。',tokens.map((w,i)=>[w,t.query.map((q,j)=>n(q)+' × '+n(t.keys[i][j])).join(' + '),n(t.scores[i])]),'score = query.reduce((sum, q, i) => sum + q * key[i], 0)',bar(tokens,t.scores)),
-        step('缩放分数','sⱼ = scoreⱼ / √d; d = 4','这里除以 √4 = 2，以控制点积随维度增大带来的尺度变化。',tokens.map((w,i)=>[w,n(t.scores[i])+' / 2',n(t.scaled[i])]),'scaled = score / Math.sqrt(query.length)',bar(tokens,t.scaled)),
-        step('应用遮罩','未来位置 → −∞','因果遮罩禁止当前词读取未来位置；−∞ 在 Softmax 后对应概率 0。',tokens.map((w,i)=>[w,'位置 '+(i+1),n(t.masked[i])]),'masked = causal && column > row ? -Infinity : scaled',bar(tokens,t.masked.map(v=>Number.isFinite(v)?v:0))),
-        step('得到权重','A = softmax(maskedScores)','未屏蔽位置之间重新归一化。注意力权重表示这次运算的混合比例。',tokens.map((w,i)=>[w,n(t.masked[i]),n(t.probabilities[i])]),'attention = softmax(maskedScores)',bar(tokens,t.probabilities)),
-        step('加权读取 V','output = Σ Aⱼ Vⱼ','权重乘以每个 V，再逐维相加，得到输出向量。V 是独立的示例向量，权重本身还不是输出。',[
-          ...tokens.map((w,i)=>[w,n(t.probabilities[i])+' × '+vector(t.values[i]),vector(t.contributions[i])]),['输出','逐维求和',vector(t.output)]],
-          'output = values[0].map((_, j) =>\n  values.reduce((sum, v, i) => sum + attention[i] * v[j], 0))',bar(['输出维度 1','输出维度 2'],t.output))],
-        question:{prompt:'打开因果遮罩，第一个词能够读取哪些位置？',options:['只能读取自己','可以读取全部词'],answer:0,explanation:'第一行只保留第一个位置，Softmax 后权重为 [1, 0, 0, 0]，输出等于第一个 V。'},
-        challenge:'选择“我”并开启因果遮罩，验证它的输出等于自身 V。',check:{ok:d.selected===0&&d.causal,text:d.selected===0&&d.causal?'完成！第一个词权重为 1，输出等于 V₁ = '+vector(d.values[0])+'。':'用上方查询词按钮选择“我”，并勾选因果遮罩。'}};
-    },
-    rag(d) {
-      const t=M.retrievalTrace(d.query,d.documents,d.topK),context=M.contextFor(t.found,d.budget);
-      const active=t.vocabulary.map((term,i)=>({term,i})).filter(({i})=>t.queryCounts[i]>0);
-      const docRows=d.documents.map((doc,i)=>[doc.title,
-        `点积 ${n(M.dot(t.queryVector,t.vectors[i]))} / (${n(Math.sqrt(M.dot(t.queryVector,t.queryVector)))} × ${n(Math.sqrt(M.dot(t.vectors[i],t.vectors[i])))})\n文档向量 ${vector(t.vectors[i])}`,
-        n(M.cosine(t.queryVector,t.vectors[i]))]);
-      return {title:'追踪证据如何进入上下文',intro:'固定关键词 TF-IDF 演示。没有调用 Embedding 模型或生成模型；未收录的同义词可能无法匹配。',steps:[
-        step('识别关键词','TF = 关键词出现次数','查询和文档使用同一词表。中文按子串计数，英文按完整词匹配；空查询或无命中会得到零向量。',active.length?active.map(({term,i})=>[term,'查询词频',String(t.queryCounts[i])]):[['无命中','查询为零向量','相似度全部为 0']],
-          'queryCounts = counts(query)',bar(active.map(v=>v.term),active.map(v=>t.queryCounts[v.i]))),
-        step('构造 TF-IDF','IDF = ln((1 + N)/(1 + DF)) + 1','较少文档包含的关键词有更高 IDF。文档向量同时统计标题与正文，所有向量共用这套词表顺序。',active.length?active.map(({term,i})=>[term,'TF '+t.queryCounts[i]+' × IDF '+n(t.idf[i]),n(t.queryVector[i])]):[['无关键词','没有非零向量分量','0']],
-          'idf = log((1 + documentCount) / (1 + documentFrequency)) + 1\nvector = termCounts.map((tf, i) => tf * idf[i])',bar(active.map(v=>v.term),active.map(v=>t.queryVector[v.i]))),
-        step('相似度与排序','cos(q, d) = (q · d) / (‖q‖ ‖d‖)','下表向量维度依次为：'+t.vocabulary.join('、')+'。只保留相似度大于 0 的前 K 篇。',docRows,
-          'score = dot(query, doc) / (norm(query) * norm(doc))\nfound = ranked.filter(doc => doc.score > 0).slice(0, topK)',bar(t.ranked.map(v=>v.title),t.ranked.map(v=>v.score))),
-        step('按预算组装','依次取正文，直到字符预算耗尽','预算只统计正文的 Unicode 字符，不含标题、来源标记与提示词，也不等于模型 token 数。',t.ranked.map(doc=>{
-          const chosen=t.found.some(v=>v.id===doc.id),part=context.find(v=>v.id===doc.id);
-          return [doc.title,'相似度 '+n(doc.score),part?`${Array.from(part.excerpt).length} 字符${part.truncated?' · 已截断':''}`:chosen?'已检索 · 预算不足':doc.score>0?'未进入 Top-K':'关键词无交集'];
-        }),'context = contextFor(found, characterBudget)',bar(context.map(v=>v.title),context.map(v=>Array.from(v.excerpt).length)))],
-        question:{prompt:'把 Top-K 调大后，所有检索到的正文一定完整进入上下文吗？',options:['不一定，还受预算限制','一定会完整进入'],answer:0,explanation:'Top-K 控制检索篇数，字符预算控制实际放入的正文长度，后面的文档可能被截断或完全放不下。'},
-        challenge:'保留有匹配的查询，将预算调到 80 字符以内，让至少一篇文档发生截断。',check:{ok:d.budget<=80&&context.some(v=>v.truncated),text:d.budget<=80&&context.some(v=>v.truncated)?'完成！检索结果仍存在，但正文因预算不足被截断。':'使用“低显存微调”等示例问题，缩小正文预算，并查看最后一步的入选原因。'}};
-    },
-    network(d) {
-      const t=M.networkTrace(d.net,M.datasets[d.dataset],d.rate,d.sample,d.neuron),j=d.neuron;
-      const h=t.prediction.hidden[j],z=t.prediction.preactivation[j];
-      const visual={kind:'network',trace:t};
-      return {title:'拆开一次真实训练更新',intro:'选中样本用于展开计算；实际更新使用四个样本的平均梯度。切换样本或神经元不会训练网络。',steps:[
-        step('输入与隐藏层','zⱼ = wⱼ · x + bⱼ; hⱼ = tanh(zⱼ)','连线表示权重，节点显示激活值。当前展开第 '+(j+1)+' 个隐藏神经元。',[
-          ['样本',vector(t.x),'目标 '+t.y],['加权求和',`${n(t.before.w[j][0])} × ${t.x[0]} + ${n(t.before.w[j][1])} × ${t.x[1]} + ${n(t.before.b[j])}`,n(z)],['隐藏激活','tanh('+n(z)+')',n(h)]],
-          'z = dot(weights, x) + bias\nhidden = Math.tanh(z)',visual),
-        step('输出与损失','p = sigmoid(v · h + c)','sigmoid 把输出压到 0 到 1。损失衡量预测概率与标签的差异，下表同时给出样本损失和全批损失。',[
-          ['输出 logit','Σ vⱼhⱼ + c',n(t.prediction.z)],['预测概率','sigmoid(z)',n(t.prediction.output)],['样本损失','−y ln(p) − (1−y) ln(1−p)',n(M.gradients(t.before,[M.datasets[d.dataset][d.sample]]).loss)],['四样本平均损失','mean(loss)',n(t.batch.loss)]],
-          'p = 1 / (1 + Math.exp(-z))\nloss = -y * Math.log(p) - (1-y) * Math.log(1-p)',visual),
-        step('反向传播','δout = p − y; δⱼ = δout vⱼ (1 − hⱼ²)','先由输出误差回传到隐藏层，再乘以输入，得到选中样本对权重的梯度。',[
-          ['输出梯度','p − y',n(t.delta)],['隐藏梯度',`δout × v${j+1} × (1 − h${j+1}²)`,n(t.hiddenDelta[j])],['样本 ∂L/∂wⱼ₁','δⱼ × x₁',n(t.sampleGradient.w[j][0])]],
-          'delta = p - y\nhiddenDelta = delta * v[j] * (1 - hidden[j] ** 2)\nsampleGradient = hiddenDelta * x[0]',visual),
-        step('汇总批梯度','g = (g₁ + g₂ + g₃ + g₄) / 4','训练按钮使用全批梯度。选中样本的梯度与平均梯度可能方向不同，不能用一个样本替代整个批次。',[
-          ...M.datasets[d.dataset].map((sample,i)=>['样本 '+(i+1),vector(sample.x),n(M.gradients(t.before,[sample]).gradient.w[j][0])]),['平均梯度','四项求和 / 4',n(t.batch.gradient.w[j][0])]],
-          'gradient = mean(samples.map(sample => gradients(net, [sample])))',visual),
-        step('更新全部参数','θ′ = θ − ηg','这里只展开一条权重，执行时会同时更新全部权重和偏置。新损失由更新后的网络重新计算。',[
-          ['原权重',`w${j+1},1`,n(t.before.w[j][0])],['更新量',n(d.rate)+' × '+n(t.batch.gradient.w[j][0]),n(d.rate*t.batch.gradient.w[j][0])],['新权重','原权重 − 更新量',n(t.after.w[j][0])],['更新后平均损失','重新前向计算',n(t.nextLoss)]],
-          'weight -= rate * batchGradient\nnextLoss = gradients(updatedNet, data).loss',{...visual,after:true})],
-        question:{prompt:'仅切换“查看样本”，网络的参数会变化吗？',options:['不会，只改变展开对象','会，立刻用该样本训练'],answer:0,explanation:'查看样本和训练是独立操作。只有训练按钮或“执行一次更新”才修改参数。'},
-        challenge:'在 XOR 数据上训练，让四样本平均交叉熵低于 0.30，观察隐藏层与分类边界。',check:{ok:d.dataset==='xor'&&t.batch.loss<.3,text:d.dataset==='xor'&&t.batch.loss<.3?'完成！损失已低于 0.30。这里仅有四个训练点，还不能说明泛化能力。':'选择 XOR，连续训练或分批训练，观察平均损失是否降到 0.30 以下。'},commit:'执行一次更新'};
-    }
-  };
-
-  function drawVisual(host,visual) {
-    host.replaceChildren();
-    if(!visual)return;
-    const NS='http://www.w3.org/2000/svg';
-    const svg=(tag,attrs,text)=>{const el=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));if(text!==undefined)el.textContent=text;return el;};
-    if(visual.kind==='bars') {
-      const max=Math.max(1e-10,...visual.values.map(Math.abs));
-      visual.labels.forEach((label,i)=>{
-        const row=node('div','lesson-bar-row'),track=node('span','lesson-bar-track'),fill=node('span','lesson-bar-fill');
-        fill.style.width=Math.abs(visual.values[i])/max*100+'%';if(visual.values[i]<0)fill.classList.add('is-negative');track.append(fill);
-        row.append(node('span','',label),track,node('code','',n(visual.values[i])));host.append(row);
-      });
-      if(!visual.labels.length)host.append(node('p','','当前没有非零分量。'));
-      host.append(node('small','','条长表示数值的绝对大小，橙色表示负值；精确数值见右侧。'));return;
-    }
-    const stacked=visual.kind==='network'&&window.matchMedia('(max-width:600px)').matches;
-    const canvas=svg('svg',{viewBox:visual.kind==='network'?(stacked?'0 0 340 430':'0 0 560 280'):'0 0 560 240',role:'img','aria-label':visual.kind==='gradient'?'损失曲线、当前参数与更新方向':visual.kind==='network'?'2 到 4 到 1 网络，连线表示权重，节点表示激活值':'累计概率区间与随机数落点'});
-    if(visual.kind==='gradient') {
-      const domain=Math.max(4,Math.abs(visual.weight)*1.25,Math.abs(visual.next)*1.25),x=w=>35+(w+domain)/(2*domain)*490,y=l=>205-l/(domain*domain)*170;
-      canvas.append(svg('path',{d:'M35 205H525',class:'lesson-axis'}));
-      canvas.append(svg('path',{d:Array.from({length:101},(_,i)=>{const w=-domain+i/100*domain*2;return `${i?'L':'M'}${x(w)},${y(w*w)}`;}).join(' '),class:'lesson-curve'}));
-      canvas.append(svg('circle',{cx:x(visual.weight),cy:y(visual.loss),r:7,class:'lesson-dot'}));
-      canvas.append(svg('text',{x:35,y:20},'L(w) = w² · 紫点为当前参数'));
-      if(visual.phase===1){const dx=domain*.2,w=visual.weight;canvas.append(svg('line',{x1:x(w-dx),y1:y(visual.loss-visual.gradient*dx),x2:x(w+dx),y2:y(visual.loss+visual.gradient*dx),class:'lesson-tangent'}));}
-      if(visual.phase>=2){canvas.append(svg('line',{x1:x(visual.weight),y1:y(visual.loss),x2:x(visual.next),y2:y(visual.nextLoss),class:'lesson-tangent'}));canvas.append(svg('circle',{cx:x(visual.next),cy:y(visual.nextLoss),r:7,class:'lesson-next'}));}
-      canvas.append(svg('text',{x:35,y:232},'当前 w = '+n(visual.weight)+(visual.phase>=2?' → 下一步 w = '+n(visual.next):'')));
-    } else if(visual.kind==='intervals') {
-      const colors=['#7569af','#6a9bbd','#669d85','#c48c60','#ad769d'];
-      visual.probabilities.forEach((p,i)=>{if(p>0){canvas.append(svg('rect',{x:30+visual.intervals[i].start*500,y:60,width:p*500,height:55,fill:colors[i]}));canvas.append(svg('text',{x:30+(visual.intervals[i].start+p/2)*500,y:145,'text-anchor':'middle'},words[i]));}});
-      const x=30+visual.draw*500;canvas.append(svg('line',{x1:x,y1:35,x2:x,y2:122,class:'lesson-tangent'}));
-      canvas.append(svg('text',{x:30,y:190},`r = ${n(visual.draw)} → ${words[visual.selected]}`));canvas.append(svg('text',{x:30,y:220},'0                                       累计概率                                       1'));
-    } else {
-      const t=visual.trace,net=visual.after?t.after:t.before,p=M.forward(net,t.x);
-      const input=i=>stacked?[105+i*130,55]:[65,90+i*100],hidden=j=>stacked?[45+j*83,205]:[270,40+j*65],output=stacked?[170,355]:[495,140];
-      for(let i=0;i<2;i++)for(let j=0;j<4;j++){const [x1,y1]=input(i),[x2,y2]=hidden(j);canvas.append(svg('line',{x1,y1,x2,y2,class:'lesson-edge','stroke-width':1+Math.min(4,Math.abs(net.w[j][i])),stroke:net.w[j][i]<0?'#c48c60':'#817bba'}));}
-      for(let j=0;j<4;j++){const [x1,y1]=hidden(j),[x2,y2]=output;canvas.append(svg('line',{x1,y1,x2,y2,class:'lesson-edge','stroke-width':1+Math.min(4,Math.abs(net.v[j])),stroke:net.v[j]<0?'#c48c60':'#817bba'}));}
-      const point=(x,y,text,selected=false)=>{canvas.append(svg('circle',{cx:x,cy:y,r:27,class:selected?'lesson-node is-selected':'lesson-node'}));canvas.append(svg('text',{x,y:y+5,'text-anchor':'middle'},text));};
-      t.x.forEach((v,i)=>point(...input(i),String(v)));p.hidden.forEach((v,j)=>point(...hidden(j),v.toFixed(2),j===t.neuron));point(...output,p.output.toFixed(2));
-      if(stacked){canvas.append(svg('text',{x:15,y:110},'输入 x'));canvas.append(svg('text',{x:15,y:260},'隐藏层 tanh · 描边表示选中神经元'));canvas.append(svg('text',{x:15,y:410},visual.after?'下次更新后的预测预览':'当前预测 · sigmoid 输出'));}
-      else canvas.append(svg('text',{x:20,y:275},'输入                         隐藏层 tanh                          '+(visual.after?'下次更新预览':'当前输出')));
-    }
-    host.append(canvas);
-  }
-
-  const controllers=new WeakMap();
-  function mount(root,type,commit,pause) {
-    if(controllers.has(root))return controllers.get(root);
-    const heading=root.querySelector('.lab-experiment-heading');
-    const mode=node('div','lab-learning-mode'),explore=node('button','ai-preset','自由探索'),learn=node('button','ai-preset','分步学习');
-    mode.setAttribute('role','group');mode.setAttribute('aria-label','实验模式');
-    [explore,learn].forEach(b=>{b.type='button';mode.append(b);});explore.setAttribute('aria-pressed','true');learn.setAttribute('aria-pressed','false');
-    const box=node('section','lab-lesson');box.hidden=true;box.setAttribute('aria-label','算法分步学习');
-    const title=node('h3'),intro=node('p','lesson-intro'),steps=node('ol','lesson-steps'),content=node('div','lesson-content'),visual=node('div','lesson-visual');
-    const detail=node('div','lesson-detail'),stepTitle=node('h4'),formula=node('p','lesson-formula'),explanation=node('p'),tableWrap=node('div','lesson-table-wrap'),table=node('table','lesson-table'),codeDetails=node('details','lesson-code'),code=node('code');
-    const thead=node('thead'),tr=node('tr');['对象','计算 / 输入','结果'].forEach(text=>{const th=node('th','',text);th.scope='col';tr.append(th);});thead.append(tr);const tbody=node('tbody');table.append(thead,tbody);tableWrap.append(table);
-    const pre=node('pre');pre.append(code);codeDetails.append(node('summary','','对应计算代码'),pre);
-    detail.append(stepTitle,formula,explanation,tableWrap,codeDetails);content.append(visual,detail);
-    const nav=node('div','lesson-nav'),prev=node('button','ai-preset','上一步'),next=node('button','ai-preset','下一步'),play=node('button','ai-preset','可莉语音讲解'),restart=node('button','ai-preset','从头查看'),apply=node('button','lab-button lab-button-primary');
-    [prev,next,play,restart,apply].forEach(b=>{b.type='button';nav.append(b);});
-    const status=node('p','lesson-position');status.setAttribute('role','status');
-    const question=node('details','lesson-question'),questionTitle=node('summary','','先预测，再查看计算'),questionPrompt=node('p'),options=node('div','lesson-options'),answer=node('p','lesson-feedback');answer.setAttribute('role','status');question.append(questionTitle,questionPrompt,options,answer);
-    const speechBox=node('div','lesson-speech'),speechState=node('strong'),transcript=node('p','lesson-transcript'),readInstead=node('button','ai-preset','阅读后答题');
-    speechBox.hidden=true;readInstead.hidden=true;readInstead.type='button';speechState.setAttribute('role','status');transcript.setAttribute('aria-live','off');speechBox.append(node('span','lesson-speaker','✦ 可莉领学'),speechState,transcript,readInstead);
-    const quiz=node('dialog','lesson-quiz'),quizTitle=node('h3'),quizPrompt=node('p','lesson-quiz-prompt'),quizOptions=node('div','lesson-quiz-options'),quizFeedback=node('div','lesson-quiz-feedback'),quizNav=node('div','lesson-quiz-nav');
-    quizTitle.id='lesson-quiz-title-'+type;quiz.setAttribute('aria-labelledby',quizTitle.id);quizFeedback.setAttribute('role','status');
-    const quizPause=node('button','ai-preset','先暂停'),quizReplay=node('button','ai-preset','重听本节'),quizContinue=node('button','lab-button lab-button-primary','答对后继续');
-    [quizPause,quizReplay,quizContinue].forEach(b=>{b.type='button';quizNav.append(b);});quiz.append(node('span','lesson-speaker','可莉的小检查'),quizTitle,quizPrompt,quizOptions,quizFeedback,quizNav);
-    const challenge=node('div','lesson-challenge'),task=node('p'),check=node('button','ai-preset','检查目标'),feedback=node('div','lesson-feedback lesson-challenge-feedback');check.type='button';feedback.setAttribute('role','status');feedback.tabIndex=-1;challenge.append(node('strong','','动手挑战'),task,check,feedback);
-    box.append(title,intro,speechBox,question,steps,content,status,nav,challenge,quiz);heading.after(mode,box);
-    let model=null,index=0,signature='',revision=0,session=null,voiceSerial=0,quizPassed=false;
-    const curriculum=window.LabCurriculum?.[type]||[];
-    const closeQuiz=()=>{if(quiz.open)quiz.close();};
-    function playbackUI() {
-      if(!model)return;
-      const running=session&&['loading','speaking'].includes(session.phase);
-      play.textContent=running?'暂停可莉讲解':session&&session.phase!=='complete'?'继续可莉讲解':'可莉语音讲解';
-      speechBox.hidden=!session;readInstead.hidden=session?.phase!=='error';question.hidden=Boolean(session);
-      steps.querySelectorAll('button').forEach((b,i)=>{b.disabled=Boolean(session&&session.phase!=='complete'&&i>session.unlocked);});
-      prev.disabled=index===0;next.disabled=index===model.steps.length-1||Boolean(session&&session.phase!=='complete'&&index+1>session.unlocked);
-      apply.disabled=model.canCommit===false||Boolean(session&&session.phase!=='complete');
-      root.dataset.lessonPhase=session?.phase||'manual';
-    }
-    const stop=()=>{
-      voiceSerial++;window.KleeLabVoice?.stop(root);closeQuiz();
-      if(session&&session.phase!=='complete'){session.phase='paused';speechState.textContent='已暂停，继续后重听当前部分；答题通过才会前进。';}
-      playbackUI();
-    };
-    const freeze=()=>{if(pause)pause();stop();};
-    function render() {
-      if(!model)return;
-      const current=model.steps[index];
-      const focusedStep=Array.from(steps.querySelectorAll('button')).indexOf(document.activeElement);
-      steps.replaceChildren();model.steps.forEach((s,i)=>{const li=node('li'),b=node('button','',`${i+1}. ${s.title}`);b.type='button';if(i===index)b.setAttribute('aria-current','step');b.addEventListener('click',()=>{freeze();index=i;render();});li.append(b);steps.append(li);});
-      if(focusedStep>=0)steps.querySelectorAll('button')[focusedStep]?.focus({preventScroll:true});
-      stepTitle.textContent=current.title;formula.textContent=current.formula;explanation.textContent=current.explanation;code.textContent=current.code;
-      tbody.replaceChildren();current.rows.forEach(row=>{const tr=node('tr');row.forEach((value,i)=>{const cell=node(i?'td':'th','',String(value));if(i===0)cell.scope='row';tr.append(cell);});tbody.append(tr);});drawVisual(visual,current.visual);
-      status.textContent=`第 ${index+1} / ${model.steps.length} 步 · 下方参数改变时，从第一步重新计算。`;
-      apply.hidden=!model.commit||index!==model.steps.length-1;apply.textContent=model.commit||'';
-      playbackUI();
-      root.dataset.lessonStep=String(index);root.dataset.lessonRevision=String(revision);
-    }
-    const setMode=learning=>{freeze();box.hidden=!learning;root.classList.toggle('is-learning',learning);explore.setAttribute('aria-pressed',String(!learning));learn.setAttribute('aria-pressed',String(learning));render();};
-    explore.addEventListener('click',()=>setMode(false));learn.addEventListener('click',()=>setMode(true));
-    prev.addEventListener('click',()=>{freeze();index=Math.max(0,index-1);render();});next.addEventListener('click',()=>{if(next.disabled)return;freeze();index=Math.min(model.steps.length-1,index+1);render();});restart.addEventListener('click',()=>{freeze();session=null;index=0;render();});
-    function showQuiz() {
-      if(!session||document.hidden||box.hidden||root.hidden){stop();return;}
-      const assessment=curriculum[index]?.quiz;if(!assessment)return;
-      session.phase='quiz';quizPassed=false;quizTitle.textContent=`第 ${index+1} 部分 · ${model.steps[index].title}`;
-      quizPrompt.textContent=assessment.prompt;quizOptions.replaceChildren();quizFeedback.replaceChildren();delete quizFeedback.dataset.correct;
-      quizContinue.disabled=true;quizContinue.textContent='答对后继续';
-      assessment.options.forEach((text,i)=>{
-        const b=node('button','lesson-quiz-option',text);b.type='button';b.setAttribute('aria-pressed','false');
-        b.addEventListener('click',()=>{
-          if(!session||session.phase!=='quiz'||quizPassed)return;
-          quizOptions.querySelectorAll('button').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));
-          const correct=i===assessment.answer;quizFeedback.dataset.correct=String(correct);
-          quizFeedback.replaceChildren(node('strong','',correct?'答对啦！':'还差一点，再试一次'),node('p','',assessment.explanation));
-          if(correct){quizPassed=true;session.passed.add(index);session.unlocked=Math.max(session.unlocked,Math.min(index+1,model.steps.length-1));quizContinue.disabled=false;quizContinue.textContent=index===model.steps.length-1?'完成本次讲解':'进入下一部分';quizContinue.focus();}
-          playbackUI();
-        });quizOptions.append(b);
-      });
-      speechState.textContent='这一部分讲完啦，完成小检查后再继续。';playbackUI();quiz.showModal();
-    }
-    function speakPart() {
-      if(!session)return;closeQuiz();session.phase='loading';quizPassed=false;
-      const ticket=++voiceSerial,part=curriculum[index];
-      speechState.textContent='可莉正在准备这一部分的语音…';transcript.textContent='';playbackUI();
-      const current=()=>ticket===voiceSerial&&session;
-      const onError=error=>{if(!current())return;session.phase='error';speechState.textContent=error.message||'语音暂时不可用，请重试或阅读后答题。';transcript.textContent=part?.text||model.steps[index].explanation;playbackUI();};
-      if(!window.KleeLabVoice||!part){onError(new Error('可莉的语音还没有准备好，可以重试或阅读本节后答题。'));return;}
-      try {
-        Promise.resolve(window.KleeLabVoice.play(`${type}-${index}`,{owner:root,
-          onStart:()=>{if(!current())return;session.phase='speaking';speechState.textContent='可莉正在讲解 · '+model.steps[index].title;playbackUI();},
-          onProgress:text=>{if(current())transcript.textContent=text;},
-          onEnded:()=>{if(!current())return;transcript.textContent=part.text;showQuiz();},
-          onCancel:()=>{if(current())stop();},onError
-        })).catch(onError);
-      } catch(error){onError(error);}
-    }
-    play.addEventListener('click',()=>{
-      if(session&&['loading','speaking'].includes(session.phase)){stop();return;}
-      freeze();if(!session||session.phase==='complete'){session={phase:'paused',unlocked:0,passed:new Set()};index=0;render();}speakPart();
-    });
-    quizPause.addEventListener('click',stop);quiz.addEventListener('cancel',event=>{event.preventDefault();stop();});
-    quizReplay.addEventListener('click',()=>{stop();speakPart();});
-    readInstead.addEventListener('click',()=>{if(session?.phase==='error'){transcript.textContent=curriculum[index]?.text||'';showQuiz();}});
-    quizContinue.addEventListener('click',()=>{
-      if(!session||session.phase!=='quiz'||!quizPassed)return;closeQuiz();
-      if(index===model.steps.length-1){session.phase='complete';speechState.textContent=`学完啦！${model.steps.length} 个部分的小检查全部通过。接着试试动手挑战吧！`;render();return;}
-      index++;render();speakPart();
-    });
-    apply.addEventListener('click',()=>{freeze();if(commit)commit();});
-    check.addEventListener('click',()=>{
-      feedback.replaceChildren(node('strong','',model.check.ok?'✓ 目标达成！':'再调整一下，马上就好'),node('p','',model.check.text));feedback.dataset.passed=String(model.check.ok);
-      feedback.focus({preventScroll:true});feedback.scrollIntoView({block:'nearest',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
-    });
-    const controller={stop,update(data){
-      const key=JSON.stringify(data);if(key===signature)return;signature=key;stop();session=null;index=0;revision++;
-      model=lessons[type](data);model.canCommit=data.canCommit;title.textContent=model.title;intro.textContent=model.intro;task.textContent=model.challenge;feedback.textContent='';delete feedback.dataset.passed;
-      questionPrompt.textContent=model.question.prompt;options.replaceChildren();answer.textContent='';
-      model.question.options.forEach((text,i)=>{const b=node('button','ai-preset',text);b.type='button';b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{options.querySelectorAll('button').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));answer.textContent=(i===model.question.answer?'判断正确。':'再对照计算看看。')+model.question.explanation;});options.append(b);});
-      render();
-    }};controllers.set(root,controller);return controller;
-  }
-  window.LabLearning={mount};
-})();
 
 ;
 /* js/lab-game-kit.js */
@@ -1955,356 +1750,249 @@
 });
 
 ;
-/* js/ai-experiments.js */
-/* Local interactive examples. No remote model or third-party runtime required. */
+/* js/lab-wish.js */
+/* 可莉祈愿: an event wish for Klee's wardrobe. Primogems come from the quizzes at
+   the end of articles; wishes run on the companion server (official rates and
+   pity), and this page plays the meteor, the reveals and the ten-card summary,
+   then lets you dress Klee up. */
+(function (factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api.model;
+  if (typeof window !== 'undefined') window.LabExperiments = Object.assign(window.LabExperiments || {}, {wish: api.init});
+})(function () {
+  'use strict';
+  const STARS = {3: '★★★', 4: '★★★★', 5: '★★★★★'};
+  const percent = value => `${(value * 100).toFixed(1)}%`;
+  // Shown in the wish details; the server is the authority.
+  const rate5 = n => n >= 90 ? 1 : Math.min(1, 0.006 + Math.max(0, n - 73) * 0.06);
+  const model = {rate5};
+
+  function init(panel) {
+    const $ = selector => panel.querySelector(selector);
+    const kit = window.LabGameKit, {svg, reduced, restart} = kit;
+    const view = $('[data-wish-view]'), stage = $('.fish-stage'), idle = $('[data-wish-idle]'), anim = $('[data-wish-anim]');
+    const single = $('[data-wish-single]'), summary = $('[data-wish-summary]'), meteor = $('[data-wish-meteor]'), featured = $('[data-wish-featured]');
+    const banner = $('[data-wish-banner]'), hudMain = $('[data-wish-hud-main]'), hudPity = $('[data-wish-hud-pity]');
+    const face = $('[data-wish-face]'), bubble = $('.fish-klee-line'), line = $('[data-wish-line]');
+    const oneButton = $('[data-wish-one]'), tenButton = $('[data-wish-ten]'), skipButton = $('[data-wish-skip]'), tradeButton = $('[data-wish-trade]');
+    const wallet = $('[data-wish-wallet]'), offline = $('[data-wish-offline]'), grid = $('[data-wish-grid]'), tabs = $('[data-wish-tabs]');
+    const preview = $('[data-wish-preview]'), historyList = $('[data-wish-history]'), earn = $('[data-wish-earn]'), randomLink = $('[data-wish-random]');
+    const {say, announce, voice, stopVoice} = kit.host(panel, {face, bubble, line, banner, toggle: $('[data-wish-voice-toggle]'), voiceAttr: 'wishVoice'});
+    const clock = kit.timers(), wait = clock.wait;
+    const wardrobeKit = () => window.KleeWardrobe;
+    const call = (path, method, data) => window.LsCompanion ? window.LsCompanion.call(path, method, data) : Promise.reject(new Error('可莉暂时不在线。'));
+    let state = null, phase = 'loading', reveal = null, slot = 'frame', quizzes = [];
+    const item = id => wardrobeKit()?.item(id);
+
+    const setPhase = value => {
+      phase = value; panel.dataset.wishPhase = value;
+      const ready = value === 'ready' && state;
+      oneButton.disabled = !ready || state.primogems < state.cost; tenButton.disabled = !ready || state.primogems < state.cost * 10;
+      tradeButton.disabled = !ready || state.starglitter < state.starglitterPerWish;
+      skipButton.hidden = value !== 'pulling';
+      hud();
+    };
+    // What the stage shows, independent of whether buttons are live.
+    const showView = name => { for (const [node, key] of [[idle, 'banner'], [anim, 'anim'], [summary, 'summary']]) node.toggleAttribute('hidden', key !== name); panel.dataset.wishView = name; };
+    function hud() {
+      if (!state) { hudMain.textContent = '可莉祈愿'; hudPity.textContent = ''; return; }
+      hudMain.textContent = `原石 ${state.primogems.toLocaleString('en-US')} · 可祈愿 ${Math.floor(state.primogems / state.cost)} 次`;
+      hudPity.textContent = `距保底 ${90 - state.pity.since5} · ${state.pity.g5 ? '大保底' : '小保底'}`;
+    }
+    function show(next) {
+      state = next; wardrobeKit()?.remember(next);
+      wallet.textContent = `原石 ${next.primogems.toLocaleString('en-US')} · 无主的星辉 ${next.starglitter} · 无主的星尘 ${next.stardust}`;
+      tradeButton.textContent = `星辉兑换（${next.starglitterPerWish} 星辉 → ${next.cost} 原石）`;
+      oneButton.querySelector('small').textContent = `${next.cost} 原石`; tenButton.querySelector('small').textContent = `${next.cost * 10} 原石`;
+      renderWardrobe(); renderHistory(); renderEarn(); hud();
+      $('[data-wish-pity-detail]').textContent = `距上次五星 ${next.pity.since5} 抽（下一抽 ${percent(rate5(next.pity.since5 + 1))}），${next.pity.g5 ? '大保底：下个五星必是「烟花大会」' : '小保底：五星有一半是「烟花大会」'}；距上次四星 ${next.pity.since4} 抽，${next.pity.g4 ? '下个四星必是 UP' : '四星有一半是 UP'}。共祈愿 ${next.wishes} 次。`;
+    }
+
+    // ----- The banner: the featured 5★ and 4★ items -----
+    function drawBanner() {
+      const catalog = wardrobeKit().catalog, five = item(catalog.banner.featured5);
+      featured.replaceChildren();
+      const big = wardrobeKit().draw(five, {size: 150}); big.setAttribute('x', 58); big.setAttribute('y', 96); featured.append(big);
+      const klee = svg('foreignObject', {x: 93, y: 131, width: 80, height: 80}, featured);
+      const span = document.createElementNS('http://www.w3.org/1999/xhtml', 'span'); span.className = 'wish-banner-klee'; span.style.backgroundImage = face.style.backgroundImage; klee.append(span);
+      svg('text', {class: 'wish-banner-kind', x: 236, y: 104}, featured).textContent = '活动祈愿 · ' + catalog.banner.subtitle;
+      svg('text', {class: 'wish-banner-name', x: 236, y: 146}, featured).textContent = catalog.banner.name;
+      svg('text', {class: 'wish-banner-up', x: 236, y: 172}, featured).textContent = `5 星 UP：头像框「${five.name}」`;
+      catalog.banner.featured4.forEach((id, i) => {
+        const thing = item(id), x = 244 + i * 64;
+        svg('rect', {class: 'wish-banner-four', x, y: 194, width: 54, height: 54, rx: 10}, featured);
+        const art = wardrobeKit().draw(thing, {size: 46}); art.setAttribute('x', x + 4); art.setAttribute('y', 198); featured.append(art);
+        svg('text', {class: 'wish-banner-four-name', x: x + 27, y: 264}, featured).textContent = thing.name;
+      });
+      svg('text', {class: 'wish-banner-four-note', x: 236, y: 290}, featured).textContent = '4 星 UP · 装扮重复会变成无主的星辉';
+    }
+
+    // ----- Wishing: meteor → one-by-one reveals → ten tall cards -----
+    async function wish(count) {
+      if (phase !== 'ready') return;
+      if (state.primogems < state.cost * count) { say('原石不够啦！去文章末尾答可莉小测验，每答对一题有 160 原石哦！', 'care'); voice('klee-wish-poor'); return; }
+      setPhase('sending'); oneButton.disabled = tenButton.disabled = true;
+      let data;
+      try { data = await call('/wardrobe/wish', 'POST', {count}); }
+      catch (error) { say(error.message, 'care'); setPhase('ready'); return; }
+      reveal = {results: data.results, index: -1, next: data.wardrobe};
+      const best = Math.max(...data.results.map(r => r.rarity)); anim.dataset.best = best; single.replaceChildren();
+      setPhase('pulling'); showView('anim');
+      if (reduced()) { finish(); return; }
+      restart(meteor, 'is-falling'); voice(best === 5 ? 'klee-wish-gold' : best === 4 ? 'klee-wish-purple' : 'klee-wish-blue', {minor: true});
+      say(best === 5 ? '金色的流星！是五星！' : best === 4 ? '紫色的光，有四星哦！' : '蓝色的流星……没关系，下次一定！', best === 5 ? 'laugh' : best === 4 ? 'happy' : 'curious');
+      wait(next, 1500);
+    }
+    function next() {
+      if (phase !== 'pulling') return;
+      clock.clear(); reveal.index++;
+      if (reveal.index >= reveal.results.length) { finish(); return; }
+      const result = reveal.results[reveal.index], thing = item(result.id); single.replaceChildren();
+      const card = svg('g', {class: `wish-single is-${result.rarity}`}, single);
+      svg('circle', {class: 'wish-single-glow', cx: 320, cy: 150, r: 120}, card);
+      const art = wardrobeKit().draw(thing, {size: 128, className: 'wish-single-art'}); art.setAttribute('x', 256); art.setAttribute('y', 82); card.append(art);
+      svg('text', {class: 'wish-single-name', x: 320, y: 250}, card).textContent = thing.name;
+      svg('text', {class: 'wish-single-slot', x: 320, y: 272}, card).textContent = wardrobeKit().catalog.slots[thing.slot] + (result.isNew ? ' · NEW' : '');
+      const stars = svg('text', {class: 'wish-single-stars', x: 320, y: 302}, card); stars.textContent = STARS[result.rarity];
+      if (result.starglitter || result.stardust) svg('text', {class: 'wish-single-extra', x: 320, y: 324}, card).textContent = result.starglitter ? `重复 → 无主的星辉 ×${result.starglitter}` : `无主的星尘 ×${result.stardust}`;
+      svg('text', {class: 'wish-single-count', x: 612, y: 330}, card).textContent = `${reveal.index + 1}/${reveal.results.length}`;
+      wait(next, result.rarity === 3 ? 600 : 1300);
+    }
+    view.addEventListener('click', () => {
+      if (phase === 'pulling' && reveal?.index >= 0) next();
+      else if (phase === 'ready' && panel.dataset.wishView === 'summary') showView('banner');
+    });
+    skipButton.addEventListener('click', () => { if (phase === 'pulling') finish(); });
+    function finish() {
+      clock.clear(); summary.replaceChildren();
+      const order = [...reveal.results].sort((a, b) => b.rarity - a.rarity);
+      const width = 54, gap = 6, start = 320 - (order.length * (width + gap) - gap) / 2;
+      order.forEach((result, i) => {
+        const thing = item(result.id), card = svg('g', {class: `wish-tall is-${result.rarity}`, transform: `translate(${start + i * (width + gap)} 56)`}, summary);
+        card.style.animationDelay = `${i * 50}ms`;
+        svg('rect', {class: 'wish-tall-back', width, height: 240, rx: 8}, card);
+        const art = wardrobeKit().draw(thing, {size: 46}); art.setAttribute('x', 4); art.setAttribute('y', 64); card.append(art);
+        svg('text', {class: 'wish-tall-name', x: width / 2, y: 124}, card).textContent = thing.name;
+        svg('text', {class: 'wish-tall-stars', x: width / 2, y: 230}, card).textContent = '★'.repeat(result.rarity);
+        if (result.isNew) svg('text', {class: 'wish-tall-new', x: width / 2, y: 18}, card).textContent = 'NEW';
+      });
+      showView('summary'); show(reveal.next); setPhase('ready');
+      const got = reveal.results.find(r => r.rarity === 5), first = reveal.results.filter(r => r.isNew && r.rarity >= 4).length;
+      if (got && got.featured) { announce('烟花大会！'); say(`抽到限定头像框「${item(got.id).name}」啦！第 ${got.pity} 抽出的金！快去衣橱给可莉戴上！`, 'laugh'); voice('klee-wish-got', {queue: true}); }
+      else if (got) { announce('歪了……'); say(`第 ${got.pity} 抽出金了，是「${item(got.id).name}」……下一个五星一定是烟花大会（大保底）！`, 'care'); voice('klee-wish-lost', {queue: true}); }
+      else say(first ? `有 ${first} 件新装扮！去下面的衣橱试试看吧～` : `这次都是见过的……重复的会变成星辉，攒 ${state.starglitterPerWish} 个能换一次祈愿！`, first ? 'happy' : 'wink');
+    }
+    oneButton.addEventListener('click', () => wish(1));
+    tenButton.addEventListener('click', () => wish(10));
+    tradeButton.addEventListener('click', async () => {
+      try { show((await call('/wardrobe/exchange', 'POST', {})).wardrobe); say('星辉换成原石啦！', 'happy'); setPhase('ready'); }
+      catch (error) { say(error.message, 'care'); }
+    });
+
+    // ----- The wardrobe -----
+    function renderWardrobe() {
+      const catalog = wardrobeKit().catalog;
+      tabs.replaceChildren();
+      for (const [key, name] of Object.entries(catalog.slots)) {
+        const total = catalog.items.filter(i => i.slot === key), have = total.filter(i => state.owned[i.id]).length;
+        const tab = document.createElement('button'); tab.type = 'button'; tab.className = 'wish-tab' + (key === slot ? ' is-active' : '');
+        tab.textContent = `${name} ${have}/${total.length}`; tab.setAttribute('aria-pressed', String(key === slot));
+        tab.addEventListener('click', () => { slot = key; renderWardrobe(); }); tabs.append(tab);
+      }
+      grid.replaceChildren();
+      for (const thing of catalog.items.filter(i => i.slot === slot).sort((a, b) => b.rarity - a.rarity)) {
+        const copies = state.owned[thing.id] || 0, on = state.equipped[thing.slot] === thing.id;
+        const cell = document.createElement('button'); cell.type = 'button';
+        cell.className = `wish-item is-${thing.rarity}` + (copies ? '' : ' is-locked') + (on ? ' is-on' : '');
+        cell.dataset.item = thing.id; cell.disabled = !copies || thing.slot === 'sticker';
+        cell.append(wardrobeKit().draw(thing, {size: 64}));
+        const label = document.createElement('span'); label.className = 'wish-item-name'; label.textContent = thing.name; cell.append(label);
+        const meta = document.createElement('small'); meta.textContent = copies ? `${'★'.repeat(thing.rarity)}${copies > 1 ? ' ×' + copies : ''}${on ? ' · 穿戴中' : ''}` : '未获得'; cell.append(meta);
+        cell.title = thing.desc;
+        cell.addEventListener('click', async () => {
+          try {
+            const result = await call('/wardrobe/equip', 'POST', {slot: thing.slot, item: on ? null : thing.id});
+            show(result.wardrobe);
+            if (!on) { say(`戴上「${thing.name}」啦！${thing.desc}`, 'proud'); voice('klee-wish-equip', {minor: true}); } else say(`先把「${thing.name}」收起来～`, 'neutral');
+          } catch (error) { say(error.message, 'care'); }
+        });
+        grid.append(cell);
+      }
+      const title = item(state.equipped.title), bomb = item(state.equipped.bomb);
+      $('[data-wish-preview-title]').textContent = title ? title.look.text : '火花骑士';
+      const bombSlot = $('[data-wish-preview-bomb]'); bombSlot.replaceChildren();
+      bombSlot.append(wardrobeKit().draw(bomb || {slot: 'bomb', look: {stops: ['#ff9a83', '#e2463b', '#8f1f1c'], outline: '#6e1715'}}, {size: 44}));
+    }
+    function renderHistory() {
+      historyList.replaceChildren();
+      for (const entry of state.history.slice(0, 20)) {
+        const thing = item(entry.id); if (!thing) continue;
+        const li = document.createElement('li'); li.className = `is-${thing.rarity}`;
+        li.textContent = `${'★'.repeat(thing.rarity)} ${thing.name}`; li.title = new Date(entry.at).toLocaleString('zh-CN'); historyList.append(li);
+      }
+      if (!historyList.children.length) historyList.append(Object.assign(document.createElement('li'), {className: 'is-empty', textContent: '还没有祈愿记录'}));
+    }
+    function renderEarn() {
+      const total = quizzes.reduce((sum, q) => sum + q.earned, 0), perfect = quizzes.filter(q => q.best === 3).length;
+      earn.replaceChildren();
+      const lead = document.createElement('p'); lead.className = 'wish-earn-lead';
+      lead.textContent = quizzes.length ? `已经答过 ${quizzes.length} 篇文章的小测验（满分 ${perfect} 篇），一共赚了 ${total.toLocaleString('en-US')} 原石。` : '每篇文章末尾都有「可莉小测验」：3 道题，每答对 1 题 160 原石。新朋友还送 1,600 原石！';
+      earn.append(lead);
+      const list = document.createElement('ul'); list.className = 'wish-earn-list';
+      for (const q of quizzes.filter(q => q.best < 3 && q.url).slice(0, 4)) {
+        const li = document.createElement('li'), a = document.createElement('a'); a.href = new URL(q.url).pathname + '#article-container';
+        a.textContent = q.title; li.append(a, document.createTextNode(` · 最好 ${q.best}/3，还能再得 ${(3 - q.best) * state.perCorrect} 原石`)); list.append(li);
+      }
+      if (list.children.length) earn.append(list);
+    }
+    // A random article to go and quiz on.
+    fetch('/companion-articles.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(data => {
+      const paths = Object.keys(data?.articles || {}); if (!paths.length) return;
+      const pickPath = () => paths[Math.floor(Math.random() * paths.length)];
+      randomLink.href = pickPath(); randomLink.addEventListener('click', () => { randomLink.href = pickPath(); });
+    }).catch(() => {});
+
+    async function load() {
+      setPhase('loading'); showView('banner'); offline.hidden = true;
+      // The wardrobe script may run after this game in the bundle; wait for it briefly.
+      for (let tries = 0; !wardrobeKit() && tries < 50; tries++) await new Promise(resolve => setTimeout(resolve, 20));
+      await wardrobeKit()?.ready;
+      if (!wardrobeKit()?.catalog) { offline.hidden = false; setPhase('offline'); return; }
+      drawBanner();
+      try {
+        const data = await call('/wardrobe', 'GET');
+        quizzes = data.quizzes || []; show(data.wardrobe); setPhase('ready');
+        say(state.wishes ? `欢迎回来！现在有 ${state.primogems.toLocaleString('en-US')} 原石，够祈愿 ${Math.floor(state.primogems / state.cost)} 次～` : '旅行者！这是可莉的装扮祈愿，新朋友送你 1,600 原石，先来个十连吧！之后在文章末尾答小测验还能赚原石哦～', 'happy');
+        voice('klee-wish-intro');
+      } catch (error) {
+        offline.hidden = false; offline.textContent = `连不上可莉的祈愿服务：${error.message}`; setPhase('offline');
+        say('可莉现在连不上祈愿台……稍后再来吧！', 'care');
+      }
+    }
+    load();
+    return () => { stopVoice(); if (phase === 'pulling') finish(); };
+  }
+  return {model, init};
+});
+
+;
+/* js/lab-games.js */
+/* Independent navigation and lifecycle for Klee's four games. */
 (() => {
   'use strict';
-  let M = window.LabMath;
-  const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const teaching=(root,type,commit,pause)=>window.LabLearning?window.LabLearning.mount(root,type,commit,pause):{update(){},stop(){}};
-  const seedValue=input=>Math.max(0,Math.min(999999,Math.trunc(Number(input.value)||0)));
-  const element = (tag, cls, text) => {
-    const node=document.createElement(tag);
-    if(cls) node.className=cls;
-    if(text!==undefined) node.textContent=text;
-    return node;
-  };
-  const svg = (tag,attrs) => {
-    const node=document.createElementNS('http://www.w3.org/2000/svg',tag);
-    Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));
-    return node;
-  };
-
-  function sampling(root) {
-    const words=['好','冷','热','糟','猫'];
-    const logits=[...root.querySelectorAll('[data-token-logit]')];
-    const temperature=root.querySelector('#sampling-temperature');
-    const topK=root.querySelector('#sampling-top-k');
-    const seed=root.querySelector('#sampling-seed');
-    const button=root.querySelector('[data-sample-run]');
-    let counts=words.map(()=>0), probabilities=[], frame=null, batch=0, last=0;
-    let rng=M.random(seedValue(seed)),draw=rng();
-    const lesson=teaching(root,'sampling',()=>{stop();sample();},()=>stop());
-    const stop=()=>{lesson.stop();if(frame!==null) cancelAnimationFrame(frame);frame=null;button.textContent='采样 100 次';};
-    function render() {
-      probabilities=M.softmax(logits.map(input=>Number(input.value)||0),Number(temperature.value),Number(topK.value));
-      const total=counts.reduce((a,b)=>a+b,0);
-      root.querySelector('#sampling-temperature-value').textContent=Number(temperature.value).toFixed(1);
-      root.querySelector('#sampling-top-k-value').textContent=topK.value;
-      words.forEach((word,index)=>{
-        root.querySelector(`[data-token-prob="${index}"]`).style.width=probabilities[index]*100+'%';
-        root.querySelector(`[data-token-observed="${index}"]`).style.width=(total ? counts[index]/total*100:0)+'%';
-        root.querySelector(`[data-token-label="${index}"]`).textContent=`${(probabilities[index]*100).toFixed(1)}% · ${counts[index]} 次`;
-        root.querySelector(`[data-token-row="${index}"]`).classList.toggle('is-muted',probabilities[index]===0);
-      });
-      root.querySelector('[data-sampling-status]').textContent=total ? `已采样 ${total} 次` : '尚未采样';
-      lesson.update({logits:logits.map(input=>Number(input.value)||0),temperature:Number(temperature.value),topK:Number(topK.value),draw,total});
-    }
-    function sample() {
-      const trace=M.sampleTrace(logits.map(input=>Number(input.value)||0),Number(temperature.value),Number(topK.value),draw),index=trace.selected;
-      draw=rng();
-      counts[index]++;
-      const output=root.querySelector('[data-sampled-token]');
-      output.textContent=words[index];
-      root.querySelectorAll('[data-token-row]').forEach((row,i)=>row.classList.toggle('is-sampled',i===index));
-      render();
-    }
-    const reset=()=>{stop();rng=M.random(seedValue(seed));draw=rng();counts=words.map(()=>0);root.querySelector('[data-sampled-token]').textContent='…';root.querySelectorAll('[data-token-row]').forEach(row=>row.classList.remove('is-sampled'));render();};
-    [...logits,temperature,topK,seed].forEach(input=>input.addEventListener('input',reset));
-    root.querySelector('[data-sample-once]').addEventListener('click',()=>{stop();sample();});
-    root.querySelector('[data-sample-reset]').addEventListener('click',reset);
-    button.addEventListener('click',()=>{
-      if(frame!==null){stop();return;}
-      batch=0;last=0;
-      if(reduced()){for(let i=0;i<100;i++)sample();return;}
-      button.textContent='暂停采样';
-      function tick(time) {
-        if(time-last>=32){sample();batch++;last=time;}
-        if(batch>=100){stop();return;}
-        frame=requestAnimationFrame(tick);
-      }
-      frame=requestAnimationFrame(tick);
-    });
-    render(); return stop;
-  }
-
-  function attention(root) {
-    const words=['我','在','学习','AI'];
-    const keys=[[1,0,0,0],[0,.8,.2,0],[0,.3,1,.4],[0,.1,.8,1]];
-    const queries=keys.map(vector=>vector.slice());
-    const values=[[1,0],[0,1],[1,1],[-1,.5]];
-    let selected=2;
-    const grid=root.querySelector('[data-attention-grid]');
-    const mask=root.querySelector('[data-causal-mask]');
-    const inputs=[...root.querySelectorAll('[data-query-dimension]')];
-    const cells=[];
-    const lesson=teaching(root,'attention');
-    grid.append(element('span','ai-matrix-corner','Q / K'));
-    words.forEach(word=>grid.append(element('span','ai-matrix-label',word)));
-    words.forEach((word,row)=>{
-      grid.append(element('span','ai-matrix-label',word));
-      words.forEach((target,column)=>{
-        const cell=element('button','ai-matrix-cell');cell.type='button';
-        cell.dataset.attentionCell=`${row}-${column}`;
-        cell.addEventListener('click',()=>select(row));
-        grid.append(cell);cells.push({cell,row,column});
-      });
-    });
-    function render() {
-      const weights=M.attention(queries,keys,mask.checked);
-      root.querySelectorAll('[data-query-token]').forEach((button,index)=>button.setAttribute('aria-pressed',String(index===selected)));
-      cells.forEach(({cell,row,column})=>{
-        const blocked=mask.checked&&column>row;
-        cell.textContent=blocked ? '—':(weights[row][column]*100).toFixed(0)+'%';
-        cell.setAttribute('aria-label',`${words[row]}关注${words[column]}：${blocked?'已屏蔽':(weights[row][column]*100).toFixed(1)+'%'}`);
-        cell.style.backgroundColor=blocked?'var(--lab-soft)':`rgba(109,99,177,${.06+weights[row][column]*.76})`;
-        cell.classList.toggle('is-query-row',row===selected);
-        cell.classList.toggle('is-masked',blocked);
-      });
-      inputs.forEach((input,index)=>{root.querySelector('#query-value-'+index).textContent=queries[selected][index].toFixed(1);});
-      root.querySelector('[data-query-label]').textContent='查询词：'+words[selected];
-      const details=root.querySelector('[data-attention-scores]');details.replaceChildren();
-      words.forEach((word,column)=>{
-        const row=element('div','ai-score-row');
-        row.append(element('span','',word),element('span','',`分数 ${(M.dot(queries[selected],keys[column])/2).toFixed(2)}`),
-          element('strong','',mask.checked&&column>selected?'已屏蔽':(weights[selected][column]*100).toFixed(1)+'%'));
-        details.append(row);
-      });
-      const trace=M.attentionTrace(queries[selected],keys,values,selected,mask.checked);
-      root.querySelector('[data-attention-output]').textContent='['+trace.output.map(v=>v.toFixed(4)).join(', ')+']';
-      lesson.update({queries,keys,values,selected,causal:mask.checked});
-    }
-    function select(index) {selected=index;inputs.forEach((input,i)=>{input.value=queries[index][i];});render();}
-    root.querySelectorAll('[data-query-token]').forEach((button,index)=>button.addEventListener('click',()=>select(index)));
-    inputs.forEach((input,index)=>input.addEventListener('input',()=>{queries[selected][index]=Number(input.value);render();}));
-    mask.addEventListener('change',render);
-    select(selected);return ()=>lesson.stop();
-  }
-
-  function rag(root) {
-    const documents=[
-      {id:1,title:'LoRA',text:'LoRA 冻结模型的原始参数，只训练低秩适配器中的少量参数，减少微调时需要保存的梯度与优化器状态。'},
-      {id:2,title:'QLoRA',text:'QLoRA 使用低比特量化保存模型权重，并训练 LoRA 适配器。量化可以降低模型权重占用的显存，适合显存有限时的微调。'},
-      {id:3,title:'RAG',text:'RAG 先从外部文档中检索相关知识，再把问题和检索内容放入模型上下文。文档可以单独更新，无需为了补充知识而重新训练模型。'},
-      {id:4,title:'Transformer',text:'Transformer 通过注意力计算查询向量和键向量的匹配分数，再对值向量加权。因果注意力会屏蔽当前位置后面的词。'},
-      {id:5,title:'梯度下降',text:'梯度下降根据损失对模型参数的梯度更新参数。学习率控制每次更新的大小，过大的学习率可能让训练震荡或发散。'}
-    ];
-    const query=root.querySelector('#rag-query'), topK=root.querySelector('#rag-top-k'), budget=root.querySelector('#rag-budget');
-    const button=root.querySelector('[data-rag-run]');let frame=null;
-    const lesson=teaching(root,'rag',null,()=>stop());
-    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;button.textContent='演示流程';};
-    function stage(index,done=false) {
-      root.querySelectorAll('[data-rag-stage]').forEach((node,i)=>{
-        node.classList.toggle('is-active',i===index&&!done);node.classList.toggle('is-complete',i<index||done);
-      });
-      root.querySelector('.ai-pipeline').style.setProperty('--pipeline-progress',String(done?1:index/2));
-    }
-    function render() {
-      const found=M.retrieve(query.value,documents,Number(topK.value));
-      const context=M.contextFor(found,Number(budget.value));
-      root.querySelector('#rag-top-k-value').textContent=topK.value;
-      root.querySelector('#rag-budget-value').textContent=budget.value;
-      const list=root.querySelector('[data-retrieval-list]');list.replaceChildren();
-      if(!found.length) list.append(element('p','ai-empty','没有匹配到示例关键词。可尝试“显存”“微调”“文档”“注意力”等词。'));
-      found.forEach((doc,index)=>{
-        const card=element('div','ai-retrieval-card');
-        const heading=element('div','ai-retrieval-heading');
-        heading.append(element('strong','',`${index+1}. ${doc.title}`),element('span','',`相似度 ${doc.score.toFixed(3)}`));
-        const track=element('div','ai-bar-track');const fill=element('div','ai-bar-fill');fill.style.width=doc.score*100+'%';track.append(fill);
-        card.append(heading,track,element('p','',doc.text));list.append(card);
-      });
-      const used=context.reduce((n,doc)=>n+Array.from(doc.excerpt).length,0);
-      root.querySelector('[data-context-size]').textContent=`${used} / ${budget.value} 字符`;
-      const source=context.map(doc=>`[${doc.id}] ${doc.title}\n${doc.excerpt}${doc.truncated?'…':''}`).join('\n\n');
-      root.querySelector('[data-rag-context]').textContent=`问题：${query.value||'（空）'}\n\n参考资料：\n${source||'（无匹配资料）'}\n\n请根据参考资料回答，并标明引用来源。`;
-      root.querySelector('[data-rag-status]').textContent=found.length?`检索到 ${found.length} 篇相关资料`:'没有匹配资料';
-      lesson.update({query:query.value,documents,topK:Number(topK.value),budget:Number(budget.value)});
-      stage(0);
-    }
-    [query,topK,budget].forEach(input=>input.addEventListener('input',()=>{stop();render();}));
-    root.querySelectorAll('[data-rag-question]').forEach(control=>control.addEventListener('click',()=>{stop();query.value=control.dataset.ragQuestion;render();}));
-    button.addEventListener('click',()=>{
-      if(frame!==null){stop();return;}
-      render();if(reduced()){stage(2,true);return;}
-      const start=performance.now();button.textContent='停止演示';
-      const captions=['1 / 3 · 计算问题的关键词向量','2 / 3 · 计算相似度并检索文档','3 / 3 · 按预算组装上下文'];
-      function tick(time) {
-        const index=Math.min(2,Math.floor((time-start)/500));stage(index);
-        root.querySelector('[data-rag-status]').textContent=captions[index];
-        if(time-start>=1600){stage(2,true);stop();root.querySelector('[data-rag-status]').textContent='上下文已组装，示例未调用生成模型';return;}
-        frame=requestAnimationFrame(tick);
-      }
-      frame=requestAnimationFrame(tick);
-    });
-    render();return stop;
-  }
-
-  function network(root) {
-    const rate=root.querySelector('#network-learning-rate');
-    const run=root.querySelector('[data-network-run]');
-    const cells=root.querySelector('[data-boundary-cells]'),points=root.querySelector('[data-network-points]');
-    const seed=root.querySelector('#network-seed'),sample=root.querySelector('#network-inspect-sample'),neuron=root.querySelector('#network-inspect-neuron');
-    let net=M.network(),dataset='xor',epoch=0,losses=[],frame=null,last=0;
-    const lesson=teaching(root,'network',()=>{stop();step(1);},()=>stop());
-    const grid=[];
-    for(let row=0;row<24;row++)for(let col=0;col<24;col++) {
-      const cell=svg('rect',{x:50+col*15,y:20+row*11.25,width:15.3,height:11.55});
-      cells.append(cell);grid.push({cell,x:[-1.5+(col+.5)/24*3,1.5-(row+.5)/24*3]});
-    }
-    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;run.textContent='开始训练';};
-    function render() {
-      const metric=M.gradients(net,M.datasets[dataset]);
-      root.querySelector('#network-rate-value').textContent=Number(rate.value).toFixed(2);
-      root.querySelector('[data-network-epoch]').textContent=epoch;
-      root.querySelector('[data-network-loss]').textContent=metric.loss.toFixed(4);
-      root.querySelector('[data-network-accuracy]').textContent=Math.round(metric.accuracy*100)+'%';
-      grid.forEach(({cell,x})=>{
-        const probability=M.forward(net,x).output;
-        cell.setAttribute('fill',`rgb(${Math.round(165-61*probability)},${Math.round(199-80*probability)},${Math.round(225-42*probability)})`);
-      });
-      const predictions=root.querySelector('[data-network-predictions]');predictions.replaceChildren();points.replaceChildren();
-      M.datasets[dataset].forEach(({x,y})=>{
-        const output=M.forward(net,x).output;
-        const row=element('div','ai-score-row');row.append(element('span','',`(${x.join(', ')}) → ${y}`),element('strong','',`p(1) = ${output.toFixed(3)}`));predictions.append(row);
-        points.append(svg('circle',{cx:50+(x[0]+1.5)/3*360,cy:20+(1.5-x[1])/3*270,r:10,fill:y?'#7961b6':'#a5c7e1',stroke:'white','stroke-width':3}));
-      });
-      const max=Math.max(1,...losses.map(entry=>entry.loss));
-      root.querySelector('[data-network-loss-line]').setAttribute('d',losses.map((entry,index)=>`${index?'L':'M'}${20+(epoch?entry.epoch/epoch:0)*400},${85-entry.loss/max*68}`).join(' '));
-      root.querySelector('[data-network-status]').textContent=epoch ? metric.loss<.018?'训练完成，四个样本均已正确分类':`已训练 ${epoch} 步`:'网络已初始化';
-      lesson.update({net,dataset,rate:Number(rate.value),sample:Number(sample.value),neuron:Number(neuron.value),epoch,canCommit:epoch<3000});
-      return metric;
-    }
-    function step(count=50) {
-      const amount=Math.min(count,3000-epoch);if(amount<=0)return true;
-      M.train(net,M.datasets[dataset],Number(rate.value),amount);epoch+=amount;
-      const metric=M.gradients(net,M.datasets[dataset]);losses.push({epoch,loss:metric.loss});render();
-      return epoch>=3000 || (metric.loss<.018&&metric.accuracy===1);
-    }
-    function reset() {stop();net=M.network(seedValue(seed));epoch=0;losses=[{epoch:0,loss:M.gradients(net,M.datasets[dataset]).loss}];render();}
-    root.querySelectorAll('[data-network-dataset]').forEach(button=>button.addEventListener('click',()=>{
-      dataset=button.dataset.networkDataset;root.querySelectorAll('[data-network-dataset]').forEach(node=>node.setAttribute('aria-pressed',String(node===button)));reset();
-    }));
-    rate.addEventListener('input',render);
-    seed.addEventListener('input',reset);
-    [sample,neuron].forEach(input=>input.addEventListener('change',()=>{stop();render();}));
-    root.querySelector('[data-network-reset]').addEventListener('click',reset);
-    root.querySelector('[data-network-step]').addEventListener('click',()=>{stop();step();});
-    root.querySelector('[data-network-step-once]').addEventListener('click',()=>{stop();step(1);});
-    run.addEventListener('click',()=>{
-      if(frame!==null){stop();return;}
-      if(epoch>=3000)reset();
-      if(reduced()){while(!step()){} return;}
-      run.textContent='暂停训练';last=0;
-      function tick(time) {
-        if(time-last>=85){last=time;if(step()){stop();return;}}
-        frame=requestAnimationFrame(tick);
-      }
-      frame=requestAnimationFrame(tick);
-    });
-    reset();return stop;
-  }
-
-  const gradientSessions=new WeakMap();
-  window.setupGradientExperiment=root=>{
-    if(gradientSessions.has(root)) {
-      const session=gradientSessions.get(root);session.resume();return session.pause;
-    }
-    const rate=root.querySelector('#lab-learning-rate'),initial=root.querySelector('#lab-start-weight'),speed=root.querySelector('#lab-playback-speed');
-    const button=root.querySelector('[data-lab-run]');
-    let weight=Number(initial.value),history=[weight],frame=null,animation=null,playing=false;
-    const lesson=teaching(root,'gradient',()=>{stop();step();},()=>stop());
-    const stop=()=>{lesson.stop();if(frame!==null)cancelAnimationFrame(frame);frame=null;animation=null;playing=false;button.textContent='连续播放';draw(weight);};
-    const finished=()=>history.length>40||Math.abs(weight)<.0001||Math.abs(weight)>1000;
-    const number=value=>Math.abs(value)>=10000?value.toExponential(2):value.toFixed(4);
-    function draw(displayWeight=weight) {
-      const domain=Math.max(4.5,...history.map(w=>Math.abs(w)))*1.04;
-      const x=w=>60+(w+domain)/(domain*2)*540,y=loss=>320-loss/(domain*domain)*280;
-      const grid=root.querySelector('[data-plot-grid]');grid.replaceChildren();
-      for(let i=-2;i<=2;i++){
-        const value=domain*i/2;
-        grid.append(svg('line',{x1:x(value),x2:x(value),y1:40,y2:320,class:i===0?'lab-plot-axis':'lab-plot-grid'}));
-        const label=svg('text',{x:x(value),y:342,'text-anchor':'middle',class:'lab-tick'});label.textContent=i?value.toFixed(1):'0';grid.append(label);
-      }
-      for(let i=0;i<=4;i++){
-        const value=domain*domain*i/4;
-        grid.append(svg('line',{x1:60,x2:600,y1:y(value),y2:y(value),class:i===0?'lab-plot-axis':'lab-plot-grid'}));
-        const label=svg('text',{x:49,y:y(value)+4,'text-anchor':'end',class:'lab-tick'});label.textContent=value>=10000?value.toExponential(0):value.toFixed(0);grid.append(label);
-      }
-      const curve=[];
-      for(let i=0;i<=100;i++){const w=-domain+i/100*domain*2;curve.push(`${i?'L':'M'}${x(w)},${y(w*w)}`);}
-      root.querySelector('[data-plot-curve]').setAttribute('d',curve.join(' '));
-      const steps=root.querySelector('[data-plot-steps]');steps.replaceChildren();
-      const settled=animation?history.slice(0,-1):history;
-      steps.append(svg('polyline',{points:[...settled,displayWeight].map(w=>`${x(w)},${y(w*w)}`).join(' '),fill:'none',class:'lab-plot-path'}));
-      settled.forEach(w=>steps.append(svg('circle',{cx:x(w),cy:y(w*w),r:3.5,class:'lab-plot-point'})));
-      steps.append(svg('circle',{cx:x(displayWeight),cy:y(displayWeight*displayWeight),r:8,class:'lab-plot-point-current'}));
-    }
-    function render() {
-      root.querySelector('#lab-rate-value').textContent=Number(rate.value).toFixed(2);
-      root.querySelector('#lab-weight-value').textContent=Number(initial.value).toFixed(1);
-      root.querySelector('#lab-speed-value').textContent=Number(speed.value).toFixed(1)+'×';
-      root.querySelector('[data-lab-iteration]').textContent=history.length-1;
-      root.querySelector('[data-lab-weight]').textContent=number(weight);
-      root.querySelector('[data-lab-loss]').textContent=number(weight*weight);
-      const eta=Number(rate.value);
-      let status='等待开始',description='点击前进一步或连续播放，观察参数与损失的变化。';
-      if(Math.abs(weight)<.0001){status='已接近最小值';description='参数和损失都接近 0，可换一组参数再试。';}
-      else if(history.length>1){
-        if(eta<.5){status='平稳收敛';description='参数向 0 靠近。较小的学习率需要更多步数。';}
-        else if(eta<1){status='震荡收敛';description='参数交替越过 0，但幅度逐步缩小。';}
-        else if(eta===1){status='等幅震荡';description='更新系数为 −1，参数换侧，损失保持不变。';}
-        else{status='正在发散';description='更新系数绝对值大于 1，参数离 0 越来越远。';}
-      }
-      if(history.length>40)description+=' 本轮已达到 40 步。';
-      root.querySelector('[data-lab-status]').textContent=status;root.querySelector('[data-lab-explanation]').textContent=description;
-      lesson.update({weight,rate:eta,initial:Number(initial.value),iteration:history.length-1,canCommit:!finished()});
-    }
-    function begin(time) {
-      if(finished()){stop();return;}
-      const from=weight;weight=M.gradientTrace(weight,Number(rate.value)).next;history.push(weight);
-      animation={from,to:weight,start:time,duration:620/Number(speed.value)};render();
-    }
-    function tick(time) {
-      if(!animation){frame=null;return;}
-      const t=Math.min(1,(time-animation.start)/animation.duration),eased=1-Math.pow(1-t,3);
-      draw(animation.from+(animation.to-animation.from)*eased);
-      if(t===1){animation=null;draw(weight);if(playing&&!finished())begin(time);else{stop();return;}}
-      frame=requestAnimationFrame(tick);
-    }
-    function step() {
-      if(finished())return;
-      if(reduced()){weight=M.gradientTrace(weight,Number(rate.value)).next;history.push(weight);render();draw();return;}
-      begin(performance.now());frame=requestAnimationFrame(tick);
-    }
-    const reset=()=>{stop();weight=Number(initial.value);history=[weight];render();draw();};
-    [rate,initial].forEach(input=>input.addEventListener('input',reset));
-    speed.addEventListener('input',()=>{root.querySelector('#lab-speed-value').textContent=Number(speed.value).toFixed(1)+'×';});
-    root.querySelector('[data-lab-step]').addEventListener('click',()=>{stop();step();});
-    root.querySelector('[data-lab-reset]').addEventListener('click',reset);
-    button.addEventListener('click',()=>{
-      if(playing||animation){stop();return;}
-      if(finished())reset();
-      if(reduced()){while(!finished())step();return;}
-      playing=true;button.textContent='暂停播放';step();
-    });
-    const resume=()=>document.addEventListener('lab:panel-change',stop);
-    const pause=()=>{stop();document.removeEventListener('lab:panel-change',stop);};
-    gradientSessions.set(root,{resume,pause});resume();reset();return pause;
-  };
-
+  const element=(tag,cls,text)=>{const el=document.createElement(tag);el.className=cls;el.textContent=text;return el;};
   const sessions = new WeakMap();
-  window.initAILabs=()=>{
+  window.initLabGames=()=>{
     const tablist=document.querySelector('.ai-tabs');
     if(!tablist)return ()=>{};
-    M=window.LabMath;
     if(sessions.has(tablist)) {
       const session=sessions.get(tablist); session.resume(); return session.pause;
     }
     const tabs=[...tablist.querySelectorAll('[data-experiment-tab]')];
     const panels=[...document.querySelectorAll('[data-experiment-panel]')];
     const initialized=new Map(),failed=new Set();
-    // Experiments in their own files register in window.LabExperiments.
-    const initializers={sampling,attention,rag,network,...(window.LabExperiments||{})};
+    // Games in their own files register in window.LabExperiments.
+    const initializers=window.LabExperiments||{};
     const stop=()=>{
       initialized.forEach(pause=>pause());
       document.dispatchEvent(new CustomEvent('lab:panel-change'));
@@ -2318,18 +2006,17 @@
         if(active&&focus)tab.focus();
       });
       panels.forEach(panel=>{panel.hidden=panel.dataset.experimentPanel!==id;});
-      // Tab navigation is independent of the numerical demos. Initialize each
+      // Tab navigation is independent of each game. Initialize each
       // panel only when opened, so one component cannot disable the other tabs.
       if(initializers[id]&&!initialized.has(id)&&!failed.has(id)) {
         const panel=panels.find(panel=>panel.dataset.experimentPanel===id);
         try {
-          if(!M)throw new Error('LabMath was not loaded');
           initialized.set(id,initializers[id](panel));
         } catch(error) {
           failed.add(id);
-          const notice=element('p','ai-empty','实验计算组件未能加载，请刷新页面后重试。');
+          const notice=element('p','ai-empty','游戏组件未能加载，请刷新页面后重试。');
           notice.setAttribute('role','alert');panel.querySelector('.lab-experiment-heading').append(notice);
-          console.error('AI experiment initialization failed:',id,error);
+          console.error('Lab game initialization failed:',id,error);
         }
       }
       if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);
@@ -2359,9 +2046,9 @@
   };
 
   // Also boot independently of the blog's navigation script. This supports a
-  // freshly deployed experiment page even if an older navigation script is cached.
+  // freshly deployed games page even if an older navigation script is cached.
   let pauseActive=()=>{};
-  const boot=()=>{pauseActive();pauseActive=window.initAILabs();};
+  const boot=()=>{pauseActive();pauseActive=window.initLabGames();};
   document.addEventListener('pjax:send',()=>pauseActive());
   document.addEventListener('pjax:complete',boot);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
@@ -2614,104 +2301,6 @@
     updateThemeLabel();
   }
 
-  function setupExperiment(root) {
-    if (window.setupGradientExperiment) return window.setupGradientExperiment(root);
-    const rate = root.querySelector('#lab-learning-rate');
-    const start = root.querySelector('#lab-start-weight');
-    const runButton = root.querySelector('[data-lab-run]');
-    let weight = Number(start.value);
-    let history = [weight];
-    let timer = null;
-    const NS = 'http://www.w3.org/2000/svg';
-    const create = (tag, attrs, text) => {
-      const element = document.createElementNS(NS, tag);
-      for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
-      if (text !== undefined) element.textContent = text;
-      return element;
-    };
-    const stop = () => {
-      if (timer !== null) window.clearInterval(timer);
-      timer = null;
-      runButton.textContent = '自动演示';
-    };
-    const number = value => Math.abs(value) >= 10000 ? value.toExponential(2) : value.toFixed(4);
-    function draw() {
-      const domain = Math.max(4.5, ...history.map(item => Math.abs(item))) * 1.04;
-      const x = value => 60 + (value + domain) / (2 * domain) * 540;
-      const y = value => 320 - value / (domain * domain) * 280;
-      const grid = root.querySelector('[data-plot-grid]');
-      grid.replaceChildren();
-      for (let i = -2; i <= 2; i++) {
-        const value = domain * i / 2;
-        grid.append(create('line', {x1: x(value), x2: x(value), y1: 40, y2: 320, class: i === 0 ? 'lab-plot-axis' : 'lab-plot-grid'}));
-        grid.append(create('text', {x: x(value), y: 342, 'text-anchor': 'middle', class: 'lab-tick'}, Math.abs(value) < .001 ? '0' : value.toFixed(1)));
-      }
-      for (let i = 0; i <= 4; i++) {
-        const value = domain * domain * i / 4;
-        grid.append(create('line', {x1: 60, x2: 600, y1: y(value), y2: y(value), class: i === 0 ? 'lab-plot-axis' : 'lab-plot-grid'}));
-        grid.append(create('text', {x: 49, y: y(value) + 4, 'text-anchor': 'end', class: 'lab-tick'}, value >= 10000 ? value.toExponential(0) : value.toFixed(0)));
-      }
-      let path = '';
-      for (let i = 0; i <= 120; i++) {
-        const w = -domain + i / 120 * 2 * domain;
-        path += `${i ? 'L' : 'M'}${x(w).toFixed(2)},${y(w * w).toFixed(2)} `;
-      }
-      root.querySelector('[data-plot-curve]').setAttribute('d', path);
-      const steps = root.querySelector('[data-plot-steps]');
-      steps.replaceChildren();
-      steps.append(create('polyline', {points: history.map(w => `${x(w)},${y(w * w)}`).join(' '), class: 'lab-plot-path', fill: 'none'}));
-      history.forEach((w, index) => steps.append(create('circle', {cx: x(w), cy: y(w * w), r: index === history.length - 1 ? 7 : 3.5, class: index === history.length - 1 ? 'lab-plot-point-current' : 'lab-plot-point'})));
-    }
-    function render() {
-      const eta = Number(rate.value);
-      root.querySelector('#lab-rate-value').textContent = eta.toFixed(2);
-      root.querySelector('#lab-weight-value').textContent = Number(start.value).toFixed(1);
-      root.querySelector('[data-lab-iteration]').textContent = history.length - 1;
-      root.querySelector('[data-lab-weight]').textContent = number(weight);
-      root.querySelector('[data-lab-loss]').textContent = number(weight * weight);
-      let status = '等待实验';
-      let explanation = '点击前进一步，观察参数沿着曲线向哪里移动。';
-      if (Math.abs(weight) < .0001) {
-        status = '已接近最小值'; explanation = '参数接近 0，损失也接近 0。可以换一个学习率再试一次。';
-      } else if (history.length > 1) {
-        if (eta < .5) { status = '平稳收敛'; explanation = '每次更新都向 0 靠近；学习率越小，需要的步数越多。'; }
-        else if (eta < 1) { status = '震荡收敛'; explanation = '参数交替越过 0，但摆动幅度逐步缩小。'; }
-        else if (eta === 1) { status = '等幅震荡'; explanation = '更新系数为 −1：参数在正负两侧来回切换，损失没有下降。'; }
-        else { status = '正在发散'; explanation = '更新系数的绝对值超过 1：每步都离 0 更远。图表自动缩放显示轨迹。'; }
-      }
-      if (history.length > 40 && Math.abs(weight) >= .0001) explanation += ' 本次演示已达到 40 步，重置后可以继续探索。';
-      root.querySelector('[data-lab-status]').textContent = status;
-      root.querySelector('[data-lab-explanation]').textContent = explanation;
-      draw();
-    }
-    const finished = () => history.length > 40 || Math.abs(weight) < .0001 || Math.abs(weight) > 1000;
-    const step = () => {
-      if (finished()) { stop(); return; }
-      weight *= 1 - 2 * Number(rate.value);
-      history.push(weight);
-      render();
-      if (finished()) stop();
-    };
-    const reset = () => { stop(); weight = Number(start.value); history = [weight]; render(); };
-    rate.addEventListener('input', reset);
-    start.addEventListener('input', reset);
-    root.querySelector('[data-lab-step]').addEventListener('click', () => { stop(); step(); });
-    root.querySelector('[data-lab-reset]').addEventListener('click', reset);
-    runButton.addEventListener('click', () => {
-      if (timer !== null) { stop(); return; }
-      if (finished()) reset();
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        while (!finished()) step();
-        return;
-      }
-      runButton.textContent = '暂停演示';
-      timer = window.setInterval(step, 550);
-      step();
-    });
-    render();
-    return stop;
-  }
-
   function init() {
     disposeExperiment();
     setupNavigation();
@@ -2727,12 +2316,10 @@
         updateProgress();
       });
     });
-    const experiment = document.querySelector('[data-gradient-lab]');
-    const stopGradient = experiment ? setupExperiment(experiment) : () => {};
-    const stopAI = window.initAILabs ? window.initAILabs() : () => {};
+    const stopAI = window.initLabGames ? window.initLabGames() : () => {};
     const stopHome = window.initHomeMotion ? window.initHomeMotion() : () => {};
     const stopHomeAI = window.initHomeAI ? window.initHomeAI() : () => {};
-    disposeExperiment = () => { stopGradient(); stopAI(); stopHome(); stopHomeAI(); };
+    disposeExperiment = () => { stopAI(); stopHome(); stopHomeAI(); };
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } });
@@ -2790,7 +2377,6 @@
   let articleManifestPromise = null, articleHistory = {}, welcomedThisPage = false;
   let selectionBox, readingList, readingSelection = '', readingSelectionPath = '',readingSelectionAnchor='',readingSelectionTotal=0;
   let studyBox, currentStudy = null;
-  let labVoiceRun = null, labManifestPromise = null, labBubble = null;
   const completedActions = new Set();
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify({token})); } catch (_) {} };
@@ -2934,6 +2520,14 @@
     } catch (error) { if (error.name === 'AbortError') throw new Error('这次等待有点久，稍后查看一下回复吧。'); throw error; }
     finally { clearTimeout(timer); }
   }
+  let markReady; const companionReady = new Promise(resolve => { markReady = resolve; });
+  window.LsCompanion = {
+    ready: companionReady,
+    async call(path, method = 'GET', data) {
+      if (!await companionReady || !apiBase) throw new Error('可莉暂时不在线，稍后再来吧。');
+      await ensureSession(); return request(path, method, data);
+    }
+  };
   async function ensureSession() {
     if (token) return;
     if (!sessionPromise) sessionPromise = request('/session', 'POST', {}, false).then(result => {
@@ -2942,7 +2536,6 @@
     await sessionPromise;
   }
   function setOpen(value) {
-    if (value && labVoiceRun) stopAudio();
     if (value) cancelArticle();
     opened = value; root.querySelector('.cp-panel').hidden = !value;
     if (value && welcomeBubble) welcomeBubble.hidden = true;
@@ -3020,11 +2613,6 @@
     location.assign(href);
   }
   function completePlayback() {
-    if (labVoiceRun && narration?.lab) {
-      if (!audio?.ended) return;
-      const completed = labVoiceRun; labVoiceRun = null;
-      stopAudio(); state('这一部分讲完啦，试试习题吧！'); completed.callbacks.onEnded?.(); return;
-    }
     const failure = pcmPlayback?.failure;
     const view = pcmPlayback?.view || narration?.view;
     stopAudio(); state('嘟嘟可也在听。'); applyReadingActions(view);
@@ -3205,8 +2793,6 @@
     finally { busy = false; updateSend(); textarea.disabled = false; textarea.focus(); }
   }
   function stopAudio() {
-    const interruptedLab = labVoiceRun; labVoiceRun = null;
-    if (labBubble) labBubble.hidden = true;
     playbackTicket++;
     if (pcmPlayback) { for (const source of pcmPlayback.sources) { try { source.stop(); } catch (_) {} } pcmPlayback = null; }
     if (narration?.welcome && welcomeBubble) { clearTimeout(welcomeTimer); welcomeTimer = setTimeout(() => { welcomeBubble.hidden = true; }, 1200); }
@@ -3223,34 +2809,6 @@
       setPresence(busy ? 'thinking' : 'idle');
       if (busy) setExpression('thinking'); else { if (expression === 'laugh' || expression === 'wink') setExpression('happy'); settleCharacter(); }
     }
-    interruptedLab?.callbacks.onCancel?.();
-  }
-  function failLabVoice(error) {
-    const failed = labVoiceRun; labVoiceRun = null; stopAudio(); failed?.callbacks.onError?.(error);
-  }
-  async function playLabVoice(id, callbacks) {
-    if (busy) { callbacks.onError?.(new Error('可莉正在回答聊天，请等回答结束后再开始讲解。')); return; }
-    if (opened) setOpen(false);
-    cancelWelcome(); cancelArticle(); stopAudio(); primeAudio();
-    const run = {id, callbacks, owner: callbacks.owner}; labVoiceRun = run;
-    try {
-      if (!/^\w+-\d+$/.test(id)) throw new Error('无法找到这一节的讲解。');
-      if (!labManifestPromise) labManifestPromise = fetch('/lab-narration.json', {cache: 'no-cache'})
-        .then(response => { if (!response.ok) throw new Error('讲解音频暂时无法加载，请重试。'); return response.json(); })
-        .catch(error => { labManifestPromise = null; throw error; });
-      const manifest = await labManifestPromise;
-      if (labVoiceRun !== run) return;
-      const line = manifest.lines[id], [type, position] = id.split('-');
-      if (!line || line.text !== window.LabCurriculum?.[type]?.[Number(position)]?.text || !/^\/audio\/lab\/[a-z0-9-]+\.wav$/.test(line.audio)) throw new Error('这一节的可莉语音尚未准备好，请重试或阅读后答题。');
-      if (document.hidden || !/^\/lab\//.test(location.pathname)) { stopAudio(); return; }
-      audio.src = new URL(line.audio, location.origin).href; applyAudioSettings();
-      narration = {lab: line}; root.classList.add('cp-playing'); root.querySelector('.cp-stop').hidden = false;
-      labBubble.querySelector('p').textContent = [...line.text][0]; labBubble.setAttribute('aria-label', line.text); labBubble.hidden = false;
-      clearTimeout(reactionTimer); setPresence('speaking'); setExpression('happy'); gesture('nod');
-      await audio.play();
-      if (labVoiceRun !== run) return;
-      callbacks.onStart?.(line); if (!animationFrame) animatePlayback();
-    } catch (error) { if (labVoiceRun === run) failLabVoice(error); }
   }
   function animatePlayback(time = 0) {
     if (document.hidden || (!pcmPlayback && (!audio || audio.paused))) return;
@@ -3272,10 +2830,6 @@
       // Use the media clock, so buffering and slower devices cannot race ahead.
       const progress = Math.min(1, audio.currentTime / audio.duration);
       revealReply(narration.view, Math.max(1, Math.ceil(narration.view.characters.length * progress)));
-    } else if (narration?.lab && Number.isFinite(audio.duration) && audio.duration > 0) {
-      const characters = [...narration.lab.text];
-      const subtitle = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
-      labBubble.querySelector('p').textContent = subtitle; labVoiceRun?.callbacks.onProgress?.(subtitle);
     } else if (narration?.article && Number.isFinite(audio.duration) && audio.duration > 0) {
       const characters = [...narration.article.text];
       articleBubble.querySelector('p').textContent = characters.slice(0, Math.max(1, Math.ceil(characters.length * audio.currentTime / audio.duration))).join('');
@@ -3287,7 +2841,7 @@
       let energy = 0; for (const value of samples) energy += value * value;
       rms = Math.sqrt(energy / samples.length);
     } else {
-      const cached = narration?.welcome ? config.welcome : narration?.article || narration?.lab;
+      const cached = narration?.welcome ? config.welcome : narration?.article;
       if (cached) rms = cached.envelope?.[Math.floor(audio.currentTime / (cached.step || .05))] || 0;
     }
     smoothedEnergy = smoothedEnergy * .65 + rms * .35;
@@ -3309,12 +2863,12 @@
       if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; mouth = 0; smoothedEnergy = 0; lastTick = 0; lastMouthChange = 0; setFrame();
     });
     audio.addEventListener('playing', () => {
-      if (narration && (opened || narration.welcome || narration.article || narration.lab) && !document.hidden) {
+      if (narration && (opened || narration.welcome || narration.article) && !document.hidden) {
         if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null; lastTick = 0; animatePlayback();
       }
     });
     audio.addEventListener('ended', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) completePlayback(); });
-    audio.addEventListener('error', () => { if (labVoiceRun && narration?.lab) { failLabVoice(new Error('这段音频没有加载成功，请重试或阅读后答题。')); return; } if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
+    audio.addEventListener('error', () => { if (!pcmPlayback && root.classList.contains('cp-playing')) { const ambient = narration?.welcome || narration?.article; stopAudio(); if (!ambient) report('咦，声音没出来，旅行者先看看这句话吧。'); } });
     }
     const Context = window.AudioContext || window.webkitAudioContext;
     if (withAnalyser && Context && !audioContext) {
@@ -3658,11 +3212,7 @@
     articleBubble = node('div', 'cp-article'); articleBubble.hidden = true; articleBubble.setAttribute('role', 'status'); articleBubble.setAttribute('aria-live', 'polite');
     const dismissArticle = button('×', 'cp-article-close', cancelArticle); dismissArticle.setAttribute('aria-label', '停止搭话');
     const articleText = node('p'); articleText.setAttribute('aria-hidden', 'true'); articleBubble.append(articleText, dismissArticle);
-    labBubble = node('div', 'cp-lab'); labBubble.hidden = true; labBubble.setAttribute('role', 'status');
-    const labText = node('p'); labText.setAttribute('aria-hidden', 'true');
-    const dismissLab = button('×', 'cp-article-close', stopAudio); dismissLab.setAttribute('aria-label', '暂停算法讲解'); labBubble.append(labText, dismissLab);
-    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, labBubble, launcher, panel); document.body.append(root);
-    window.KleeLabVoice = {play: playLabVoice, stop: owner => { if (labVoiceRun?.owner === owner) stopAudio(); }};
+    panel.append(header, intro, studyBox, messageList, readingList, selectionBox, notice, form); root.append(welcomeBubble, articleBubble, launcher, panel); document.body.append(root);
     document.addEventListener('selectionchange', captureSelection);
     welcome(); updateLimits(); setExpression('neutral'); scheduleBlink();
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (opened) setOpen(false); else cancelArticle(); } });
@@ -3677,7 +3227,7 @@
     document.addEventListener('pjax:complete', () => { if (!root.isConnected) document.body.append(root); welcomedThisPage = false; scheduleBlink(); startArticle(); });
     window.addEventListener('pagehide', () => { cancelArticle(); stopAudio(); pauseCharacter(); audioCache.forEach(url => URL.revokeObjectURL(url)); audioCache.clear(); });
     window.addEventListener('pageshow', event => { setPresence(root.classList.contains('cp-playing') ? 'speaking' : busy ? 'thinking' : 'idle'); scheduleBlink(); if (event.persisted) startArticle(); });
-    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); if (event.target !== audio && labVoiceRun) stopAudio(); } }, true);
+    document.addEventListener('play', event => { if (event.target instanceof HTMLMediaElement && !event.target.muted && event.target.volume > 0) { cancelArticle(); } }, true);
     window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
       clearTimeout(blinkTimer); blinkStep = 0; clearTimeout(gestureTimer); mouth = 0; lastMouthChange = 0; root.dataset.gesture = ''; setFrame();
       root.querySelectorAll('.cp-expression-layer').forEach(layer => layer.getAnimations().forEach(animation => animation.cancel()));
@@ -3689,13 +3239,101 @@
   }
   async function boot() {
     try {
-      const response = await fetch('/companion-config.json', {cache: 'no-cache'}); if (!response.ok) return;
-      config = await response.json(); if (!config.enabled) return;
+      const response = await fetch('/companion-config.json', {cache: 'no-cache'}); if (!response.ok) { markReady(false); return; }
+      config = await response.json(); if (!config.enabled) { markReady(false); return; }
       apiBase = String(config.apiBase || '').replace(/\/$/, '');
       if (['localhost','127.0.0.1'].includes(location.hostname)) apiBase = 'http://127.0.0.1:8787';
       if (apiBase && !/^https?:\/\//.test(apiBase)) apiBase = '';
-      build();
-    } catch (_) { /* An unavailable assistant cannot break article navigation. */ }
+      build(); markReady(Boolean(apiBase));
+    } catch (_) { markReady(false); /* An unavailable assistant cannot break article navigation. */ }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once: true}); else boot();
+})();
+
+;
+/* js/article-quiz.js */
+/* 可莉小测验: a three-question quiz at the end of every article. Klee writes the
+   questions from the article on the server and keeps the answers there; each
+   correct answer above your best on that article earns 160 primogems for
+   Klee's wardrobe wish. */
+(function () {
+  'use strict';
+  const avatar = '/images/companion/klee-expressions-64.webp', avatar2x = '/images/companion/klee-expressions-128.webp';
+  const FACES = {neutral: 0, happy: 1, laugh: 2, curious: 3, thinking: 4, care: 5, proud: 6, wink: 7};
+  const el = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
+  const face = mood => { const i = FACES[mood] ?? 0; return `${i % 4 / 3 * 100}% ${Math.floor(i / 4) / 3 * 100}%`; };
+  const api = (path, method, data) => window.LsCompanion ? window.LsCompanion.call(path, method, data) : Promise.reject(new Error('可莉暂时不在线，稍后再来吧。'));
+
+  function mount() {
+    const container = document.querySelector('#article-container');
+    if (!container || !document.getElementById('post') || document.querySelector('.kq')) return;
+    const box = el('section', 'kq'); box.setAttribute('aria-label', '可莉小测验');
+    const head = el('div', 'kq-head'), portrait = el('span', 'kq-face'); portrait.dataset.kleeAvatar = '';
+    portrait.style.backgroundImage = `url(${avatar})`; portrait.style.backgroundImage = `image-set(url(${avatar}) 1x, url(${avatar2x}) 2x)`; portrait.style.backgroundPosition = face('happy');
+    const intro = el('div', 'kq-intro'); intro.append(el('h2', 'kq-title', '可莉小测验'),
+      el('p', 'kq-lead', '读完这篇，来答 3 道题吧！每答对 1 题得 160 原石（每篇只按你的最好成绩算），攒够了去可莉祈愿抽装扮～'));
+    head.append(portrait, intro);
+    const body = el('div', 'kq-body'), status = el('p', 'kq-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+    box.append(head, body, status); container.after(box);
+    let quiz = null;
+    const setMood = mood => { portrait.style.backgroundPosition = face(mood); };
+    function idle() {
+      body.replaceChildren(); const row = el('div', 'kq-actions');
+      const start = el('button', 'kq-button kq-primary', '开始答题'); start.type = 'button'; start.addEventListener('click', load);
+      const wish = el('a', 'kq-button', '去可莉祈愿'); wish.href = '/lab/#wish';
+      row.append(start, wish); body.append(row);
+    }
+    async function load() {
+      body.replaceChildren(el('p', 'kq-loading', '可莉正在翻文章出题……')); status.textContent = ''; setMood('thinking');
+      try { quiz = await api('/quiz', 'POST', {reading: {path: location.pathname}}); render(); }
+      catch (error) { setMood('care'); status.textContent = error.message; idle(); }
+    }
+    function render() {
+      setMood('curious'); body.replaceChildren();
+      if (quiz.best) body.append(el('p', 'kq-best', quiz.best === 3 ? '这篇你已经满分啦！再答一次可以复习，不过不会再得原石了。' : `这篇你最好答对过 ${quiz.best} 题，这次答得更好才会多得原石。`));
+      const form = el('form', 'kq-form');
+      quiz.questions.forEach((q, i) => {
+        const set = el('fieldset', 'kq-question'); set.append(el('legend', '', `${i + 1}. ${q.question}`));
+        q.options.forEach((option, j) => {
+          const label = el('label', 'kq-option'), input = el('input'); input.type = 'radio'; input.name = `kq-${i}`; input.value = j; input.required = true;
+          label.append(input, el('span', '', option)); set.append(label);
+        });
+        form.append(set);
+      });
+      const submit = el('button', 'kq-button kq-primary', '交卷'); submit.type = 'submit'; form.append(submit);
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const answers = quiz.questions.map((_, i) => Number(form.querySelector(`input[name="kq-${i}"]:checked`)?.value));
+        if (answers.some(Number.isNaN)) { status.textContent = '还有题没答哦！'; return; }
+        submit.disabled = true; status.textContent = '可莉在批改……';
+        try { result(await api('/quiz/answer', 'POST', {quizId: quiz.quizId, answers}), form); }
+        catch (error) { submit.disabled = false; status.textContent = error.message; }
+      });
+      body.append(form); status.textContent = '';
+    }
+    function result(data, form) {
+      window.KleeWardrobe?.remember(data.wardrobe);
+      form.querySelectorAll('fieldset').forEach((set, i) => {
+        const r = data.results[i];
+        set.classList.add(r.chosen === r.answer ? 'is-right' : 'is-wrong');
+        set.querySelectorAll('.kq-option').forEach((label, j) => { label.classList.toggle('is-answer', j === r.answer); label.querySelector('input').disabled = true; });
+        if (r.explain) set.append(el('p', 'kq-explain', (r.chosen === r.answer ? '答对啦！' : '正确答案是“' + quiz.questions[i].options[r.answer] + '”。') + r.explain));
+      });
+      form.querySelector('button[type=submit]').remove();
+      setMood(data.correct === 3 ? 'laugh' : data.correct ? 'happy' : 'care');
+      const summary = el('div', 'kq-result');
+      summary.append(el('strong', 'kq-score', `答对 ${data.correct} / ${data.total}`),
+        el('span', 'kq-reward' + (data.reward ? ' is-earned' : ''), data.reward ? `+${data.reward} 原石` : '这次没有新增原石'),
+        el('span', 'kq-wallet', `现在有 ${data.wardrobe.primogems} 原石`));
+      const row = el('div', 'kq-actions');
+      const again = el('button', 'kq-button', '再出一份'); again.type = 'button'; again.addEventListener('click', load);
+      const wish = el('a', 'kq-button kq-primary', `去祈愿（${Math.floor(data.wardrobe.primogems / data.wardrobe.cost)} 次）`); wish.href = '/lab/#wish';
+      row.append(again, wish); body.append(summary, row);
+      status.textContent = data.correct === 3 ? '全对！可莉给你放烟花！' : data.correct ? '不错哦，看看解析再试一次吧！' : '没关系，回到文章里再看看～';
+    }
+    idle();
+  }
+  const boot = () => mount();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once: true}); else boot();
+  document.addEventListener('pjax:complete', boot);
 })();

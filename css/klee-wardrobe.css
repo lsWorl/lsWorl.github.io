@@ -1,0 +1,61 @@
+/* Klee's wardrobe: equipped cosmetics worn across the site */
+.kw-host { position:relative; display:inline-flex; flex:none; isolation:isolate; }
+.kw-host > .kw-frame { position:absolute; left:-14%; top:-14%; width:128%; height:128%; pointer-events:none; z-index:2; overflow:visible; }
+.kw-host-portrait > .kw-frame { left:2%; top:2%; width:96%; height:96%; z-index:-1; }
+.kw-host-portrait > .kw-frame circle:first-of-type { fill:rgba(255,248,236,.55); }
+.kw-hat-wrap { position:absolute; top:-12%; right:-10%; width:42%; z-index:3; pointer-events:none; animation:kw-bob 3.2s ease-in-out infinite; }
+.kw-hat-wrap svg { display:block; width:100%; height:auto; filter:drop-shadow(0 2px 2px rgba(60,30,10,.25)); }
+.kw-host-portrait .kw-hat-wrap { top:6%; right:14%; width:24%; }
+.kw-host[data-kw-frame]:not([data-kw-frame='']) > .fish-klee-face { box-shadow:0 6px 14px rgba(160,80,40,.22); }
+.kw-twinkle { transform-box:fill-box; transform-origin:center; animation:kw-twinkle 1.8s ease-in-out infinite; }
+.kw-twinkle:nth-of-type(2n) { animation-delay:-.9s; } .kw-twinkle:nth-of-type(3n) { animation-delay:-.45s; }
+@keyframes kw-twinkle { 50% { opacity:.45; transform:scale(.7); } }
+.kw-burst { transform-box:fill-box; transform-origin:center; animation:kw-burst 2.2s ease-out infinite; }
+@keyframes kw-burst { 0% { transform:scale(.3); opacity:0; } 25% { opacity:1; } 70% { transform:scale(1.1); opacity:.9; } 100% { transform:scale(1.2); opacity:0; } }
+@keyframes kw-bob { 50% { transform:translateY(-2px) rotate(-4deg); } }
+/* Chat bubbles: the companion's replies and the lab games' speech bubble */
+:root[data-klee-bubble] .cp-message:not([data-role=user]), :root[data-klee-bubble] .fish-klee-line, :root[data-klee-bubble] .cp-welcome, :root[data-klee-bubble] .cp-article {
+  position:relative; background:var(--kw-bubble-bg) !important; color:var(--kw-bubble-fg) !important; border:2px solid var(--kw-bubble-border) !important; }
+:root[data-klee-bubble] .fish-klee-line:before { background:var(--kw-bubble-solid) !important; border-color:var(--kw-bubble-border) !important; }
+:root[data-klee-bubble] .cp-message:not([data-role=user]) p, :root[data-klee-bubble] .fish-klee-line p, :root[data-klee-bubble] .cp-welcome p, :root[data-klee-bubble] .cp-article p { color:inherit; }
+:root[data-klee-bubble] .cp-message:not([data-role=user]):after, :root[data-klee-bubble] .fish-klee-line:after {
+  content:''; position:absolute; right:8px; top:-12px; width:30px; height:30px; background:var(--kw-bubble-motif) no-repeat center/contain; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
+/* Bomb skins in the lab games */
+:root[data-klee-bomb] .fish-bomb-body, :root[data-klee-bomb] .camp-bomb-body { fill:url(#kw-bomb-skin); stroke:var(--kw-bomb-outline); }
+@media(prefers-reduced-motion:reduce) { .kw-twinkle, .kw-burst, .kw-hat-wrap { animation:none !important; } }
+
+/* 可莉小测验 at the end of articles */
+.kq { margin:36px 0 12px; padding:18px 20px; border:2px solid #f0c9a3; border-radius:18px; background:linear-gradient(160deg,#fffaf4,#fff2e4); color:#4a3426; }
+.kq-head { display:flex; gap:14px; align-items:center; }
+.kq-face { flex:none; width:64px; height:64px; border-radius:50%; background-color:#f8e6d6; background-size:400% 400%; border:3px solid #fff; box-shadow:0 0 0 2px #e2a46c; }
+.kq-title { margin:0 !important; padding:0 !important; border:0 !important; font-size:18px !important; color:#b3461e; }
+.kq-title:before { display:none !important; }
+.kq-lead { margin:4px 0 0 !important; font-size:14px; line-height:1.6; color:#6a4a36; }
+.kq-body { margin-top:14px; }
+.kq-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+.kq-button { display:inline-flex; align-items:center; padding:8px 16px; border:1.5px solid #e2a46c; border-radius:999px; background:#fff; color:#9a4a1e !important; font-size:14px; font-weight:700; text-decoration:none !important; cursor:pointer; }
+.kq-button.kq-primary { background:#e2573c; border-color:#e2573c; color:#fff !important; }
+.kq-button:disabled { opacity:.5; cursor:default; }
+.kq-loading, .kq-best { margin:0 0 10px !important; color:#8a6a50; font-size:14px; }
+.kq-question { margin:0 0 14px; padding:12px 14px; border:1px solid #f0d8bf; border-radius:12px; background:#fff; }
+.kq-question legend { padding:0 4px; font-weight:700; font-size:15px; line-height:1.6; }
+.kq-option { display:flex; gap:8px; align-items:flex-start; margin:6px 0; padding:6px 8px; border-radius:8px; cursor:pointer; font-size:14px; line-height:1.55; }
+.kq-option:hover { background:#fff6ec; }
+.kq-option input { margin-top:4px; accent-color:#e2573c; }
+.kq-question.is-right { border-color:#7cc47f; background:#f4fbf3; }
+.kq-question.is-wrong { border-color:#f0a08a; background:#fff6f3; }
+.kq-option.is-answer { background:#e3f5e1; font-weight:700; }
+.kq-explain { margin:8px 4px 0 !important; color:#5a4a3a; font-size:13.5px; line-height:1.6; }
+.kq-result { display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; margin-top:6px; }
+.kq-score { font-size:20px; color:#4a3426; }
+.kq-reward { font-weight:800; color:#8a6a50; }
+.kq-reward.is-earned { color:#d4881a; font-size:18px; animation:kq-pop .6s cubic-bezier(.3,1.5,.5,1); }
+.kq-wallet { color:#8a6a50; font-size:13px; }
+.kq-status { min-height:1.2em; margin:10px 0 0 !important; color:#9a4a1e; font-size:13.5px; }
+@keyframes kq-pop { from { transform:scale(.5); opacity:0; } }
+[data-theme=dark] .kq { background:linear-gradient(160deg,#2b2a33,#33292a); border-color:#7a5a45; color:#f3e3d6; }
+[data-theme=dark] .kq-question { background:#25242b; border-color:#5a4a3f; }
+[data-theme=dark] .kq-question.is-right { background:#22302a; } [data-theme=dark] .kq-question.is-wrong { background:#33262a; }
+[data-theme=dark] .kq-option.is-answer { background:#2c4632; }
+[data-theme=dark] .kq-lead, [data-theme=dark] .kq-explain, [data-theme=dark] .kq-score { color:#e8d8ca; }
+@media(max-width:600px) { .kq { padding:14px; } .kq-face { width:52px; height:52px; } }
