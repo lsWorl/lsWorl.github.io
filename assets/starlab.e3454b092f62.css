@@ -644,6 +644,229 @@ h1,h2,h3,.site-name { font-family:inherit; letter-spacing:0; text-shadow:none; }
   .lesson-challenge-feedback { padding:16px; }
 }
 
+/* Klee's fishing game (K-means) */
+.fish-panel { --fish-wood:#e9d3a8; --fish-wood-dark:#b98f57; }
+.fish-visual { background:linear-gradient(180deg,var(--lab-soft),color-mix(in srgb,var(--lab-soft) 70%,#f3e2c2)); }
+.fish-klee { display:flex; align-items:center; gap:14px; margin:0 0 16px; }
+.fish-klee-face { flex:none; width:64px; height:64px; image-rendering:auto; transform:scale(calc(1 + var(--talk,0) * .07)); transition:transform .08s linear; border-radius:50%; background-color:#f8e6d6; background-size:400% 400%; background-position:33.33% 0; border:3px solid #fff; box-shadow:0 0 0 2px #e2a46c,0 6px 14px rgba(160,80,40,.22); transition:background-position 0s; }
+.fish-klee-line { position:relative; flex:1; min-height:52px; display:flex; align-items:center; padding:10px 16px; border:2px solid #f0c9a3; border-radius:16px; background:#fffaf4; color:#5a3a26; box-shadow:0 4px 12px rgba(180,110,60,.12); }
+.fish-klee-line:before { content:''; position:absolute; left:-9px; top:50%; width:14px; height:14px; margin-top:-7px; background:#fffaf4; border-left:2px solid #f0c9a3; border-bottom:2px solid #f0c9a3; transform:rotate(45deg); border-radius:0 0 0 3px; }
+.fish-klee-line p { margin:0; font-size:14px; line-height:1.65; }
+.fish-klee-line.is-new { animation:fish-bubble .35s ease; }
+@keyframes fish-bubble { 0% { transform:scale(.96); } 60% { transform:scale(1.015); } 100% { transform:none; } }
+[data-theme='dark'] .fish-klee-line,[data-theme='dark'] .fish-klee-line:before { background:#2b2a33; color:#f3e3d6; border-color:#7a5a45; }
+.fish-stage { position:relative; padding:8px; border-radius:30px; background:linear-gradient(145deg,#f3e0b8,var(--fish-wood) 40%,var(--fish-wood-dark)); box-shadow:0 10px 26px rgba(90,60,30,.22),inset 0 1px 0 rgba(255,255,255,.6); }
+.fish-stage.is-shaking .fish-lake { animation:fish-shake .45s ease; }
+@keyframes fish-shake { 0%,100% { transform:none; } 20% { transform:translate(-4px,2px); } 40% { transform:translate(4px,-2px); } 60% { transform:translate(-3px,-1px); } 80% { transform:translate(2px,1px); } }
+.fish-lake { display:block; width:100%; height:auto; border-radius:24px; cursor:crosshair; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+.fish-panel:not([data-fish-phase='place']) .fish-lake { cursor:default; }
+.fish-rim { fill:none; stroke:rgba(255,255,255,.7); stroke-width:3; pointer-events:none; }
+.fish-caustics ellipse { fill:#fff; opacity:.22; }
+.fish-caustics { animation:fish-drift 14s ease-in-out infinite alternate; }
+@keyframes fish-drift { to { transform:translate(22px,10px); } }
+.fish-twinkle { fill:#fff8d6; opacity:.2; animation:fish-twinkle 3.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+.fish-twinkle:nth-child(2n) { animation-delay:-1.4s; } .fish-twinkle:nth-child(3n) { animation-delay:-2.3s; }
+@keyframes fish-twinkle { 50% { opacity:.95; transform:scale(1.25); } }
+.fish-ripples circle { fill:none; stroke:rgba(255,255,255,.7); stroke-width:1.6; transform-box:fill-box; transform-origin:center; animation:fish-ripple 4.5s ease-out infinite; opacity:0; }
+.fish-ripples circle:nth-child(2) { animation-delay:-1.5s; } .fish-ripples circle:nth-child(3) { animation-delay:-3s; }
+@keyframes fish-ripple { 0% { transform:scale(.2); opacity:.8; } 100% { transform:scale(3.2); opacity:0; } }
+/* Fish */
+.fish { --fish-main:#9cc7dc; --fish-belly:#f1f8fb; --fish-fin:#6aa3c1; --fish-line:#3e6c86; }
+.fish.cluster-0 { --fish-main:#ff8f6b; --fish-belly:#ffe6da; --fish-fin:#e2573c; --fish-line:#a5381f; }
+.fish.cluster-1 { --fish-main:#62aef0; --fish-belly:#e2f1ff; --fish-fin:#2f7cc8; --fish-line:#1f5a96; }
+.fish.cluster-2 { --fish-main:#55cfae; --fish-belly:#dff8f0; --fish-fin:#22977c; --fish-line:#17705b; }
+.fish.cluster-3 { --fish-main:#b18bea; --fish-belly:#f2e9ff; --fish-fin:#7c55c9; --fish-line:#593a9a; }
+.fish.cluster-4 { --fish-main:#f2c14f; --fish-belly:#fff4d4; --fish-fin:#c8911d; --fish-line:#8f6512; }
+.fish-skin { fill:var(--fish-main); stroke:var(--fish-line); stroke-width:.7; transition:fill .45s ease,stroke .45s ease; }
+.fish-belly { fill:var(--fish-belly); transition:fill .45s ease; }
+.fish-tail,.fish-fin { fill:var(--fish-fin); stroke:var(--fish-line); stroke-width:.5; transition:fill .45s ease; }
+.fish-pectoral { opacity:.85; }
+.fish-detail { fill:none; stroke:var(--fish-line); stroke-width:.6; opacity:.45; stroke-linecap:round; }
+.fish-eye-white { fill:#fff; } .fish-eye { fill:#1b2733; } .fish-eye-shine { fill:#fff; }
+.fish-shadow { fill:#0d3550; opacity:.16; }
+.fish-swim { transform-box:fill-box; transform-origin:center; animation:fish-swim var(--swim,3s) ease-in-out infinite; animation-delay:var(--delay,0s); }
+@keyframes fish-swim { 0%,100% { transform:translate(0,0) rotate(0deg); } 30% { transform:translate(1.6px,-1.2px) rotate(-4deg); } 70% { transform:translate(-1.4px,1px) rotate(3deg); } }
+.fish-tail { transform-box:fill-box; transform-origin:right center; animation:fish-tail .55s ease-in-out infinite alternate; }
+@keyframes fish-tail { to { transform:scaleY(.62) skewY(6deg); } }
+.fish-body { transform-box:fill-box; transform-origin:center; transition:transform .6s cubic-bezier(.3,1.4,.5,1),opacity .6s ease,filter .6s ease; }
+.fish.is-caught .fish-body { transform:rotate(180deg) translateY(2px); opacity:.6; filter:saturate(.25) brightness(1.08); }
+.fish.is-caught .fish-swim { animation:fish-float 2.6s ease-in-out infinite; }
+.fish.is-caught .fish-tail { animation:none; }
+@keyframes fish-float { 50% { transform:translateY(-3px); } }
+.fish-pop { fill:#fff; stroke:#e2573c; stroke-width:2.5px; paint-order:stroke; font-size:11px; font-weight:800; text-anchor:middle; opacity:0; pointer-events:none; }
+.fish.is-caught .fish-pop { animation:fish-pop 1s ease-out forwards; }
+@keyframes fish-pop { 0% { opacity:0; transform:translateY(4px); } 25% { opacity:1; } 100% { opacity:0; transform:translateY(-14px); } }
+/* Assignment lines and moves */
+.fish-line { stroke-width:1.3; stroke-linecap:round; opacity:.5; animation:fish-fade .35s ease; }
+.fish-line.cluster-0 { stroke:#e2573c; } .fish-line.cluster-1 { stroke:#2f7cc8; } .fish-line.cluster-2 { stroke:#22977c; }
+.fish-line.cluster-3 { stroke:#7c55c9; } .fish-line.cluster-4 { stroke:#c8911d; }
+@keyframes fish-fade { from { opacity:0; } }
+.fish-arrow { stroke:#243042; stroke-width:2; stroke-dasharray:5 4; opacity:.8; animation:fish-march .8s linear infinite; }
+@keyframes fish-march { to { stroke-dashoffset:-18; } }
+.fish-ghost { fill:rgba(255,255,255,.35); stroke:#243042; stroke-width:1.4; stroke-dasharray:3 3; opacity:.65; }
+/* Bombs */
+.fish-bomb { transition:transform .8s cubic-bezier(.3,1.25,.5,1); }
+.fish-range { fill:rgba(255,236,214,.16); stroke:rgba(226,87,60,.65); stroke-width:1.8; }
+.fish-range-spin { fill:none; stroke:rgba(255,255,255,.75); stroke-width:1.4; stroke-dasharray:7 9; transform-box:fill-box; transform-origin:center; animation:fish-spin 16s linear infinite; }
+@keyframes fish-spin { to { transform:rotate(360deg); } }
+.fish-bomb-klee.cluster-1 .fish-range { stroke:rgba(47,124,200,.7); fill:rgba(226,241,255,.18); }
+.fish-bomb-klee.cluster-2 .fish-range { stroke:rgba(34,151,124,.7); fill:rgba(223,248,240,.18); }
+.fish-bomb-klee.cluster-3 .fish-range { stroke:rgba(124,85,201,.7); fill:rgba(242,233,255,.18); }
+.fish-bomb-klee.cluster-4 .fish-range { stroke:rgba(200,145,29,.75); fill:rgba(255,244,212,.2); }
+.fish-bomb-shadow { fill:#0d3550; opacity:.22; }
+.fish-bomb-body { fill:url(#fish-bomb-gradient); stroke:#6e1715; stroke-width:1.2; }
+.fish-bomb-star { fill:#fff1bf; opacity:.95; }
+.fish-bomb-shine { fill:#fff; opacity:.55; }
+.fish-fuse { fill:none; stroke:#6b4426; stroke-width:2.2; stroke-linecap:round; }
+.fish-fuse-spark { fill:#ffd24a; transform-box:fill-box; transform-origin:center; animation:fish-spark .4s ease-in-out infinite alternate; }
+@keyframes fish-spark { from { transform:scale(.6); fill:#ff8f3a; } to { transform:scale(1.25); fill:#fff1a8; } }
+.fish-bomb-badge { fill:#fff; stroke:#e2573c; stroke-width:1.6; }
+.fish-bomb-klee.cluster-1 .fish-bomb-badge { stroke:#2f7cc8; } .fish-bomb-klee.cluster-2 .fish-bomb-badge { stroke:#22977c; }
+.fish-bomb-klee.cluster-3 .fish-bomb-badge { stroke:#7c55c9; } .fish-bomb-klee.cluster-4 .fish-bomb-badge { stroke:#c8911d; }
+.fish-bomb-label { fill:#5a2a1a; font-size:8.5px; font-weight:800; text-anchor:middle; }
+.fish-bomb-piece { transform-box:fill-box; transform-origin:center; }
+.fish-bomb.is-dropping .fish-bomb-piece { animation:fish-drop .55s cubic-bezier(.3,1.5,.5,1); }
+.fish-bomb.is-dropping .fish-range { animation:fish-fade .5s ease; }
+@keyframes fish-drop { 0% { transform:translateY(-26px) scale(.6); opacity:0; } 60% { opacity:1; } }
+/* After the blast only the numbered badge marks where the bomb was. */
+.fish-bomb.is-spent .fish-bomb-piece > :not(.fish-bomb-badge):not(.fish-bomb-label),.fish-bomb.is-spent .fish-bomb-shadow,.fish-bomb.is-spent .fish-range-spin { opacity:0; transition:opacity .15s; }
+.fish-bomb.is-spent .fish-range { fill:none; stroke-dasharray:2 5; opacity:.6; }
+.fish-preview[hidden] { display:none; }
+.fish-preview circle { fill:rgba(255,255,255,.18); stroke:rgba(255,255,255,.95); stroke-width:1.6; stroke-dasharray:5 5; pointer-events:none; }
+.fish-preview .fish-preview-dot { fill:rgba(226,70,59,.55); stroke:#fff; stroke-dasharray:none; }
+.fish-splash { fill:none; stroke:#fff; stroke-width:2; transform-box:fill-box; transform-origin:center; animation:fish-splash .8s ease-out forwards; }
+@keyframes fish-splash { from { transform:scale(.3); opacity:.9; } to { transform:scale(2.4); opacity:0; } }
+/* Explosion */
+.fish-flash { fill:url(#fish-flash-gradient); transform:scale(.1); opacity:1; transform-box:fill-box; transform-origin:center; transition:transform .35s cubic-bezier(.2,.9,.3,1),opacity .7s ease .3s; }
+.fish-flash.is-on { transform:scale(1.08); opacity:0; }
+.fish-shock { fill:none; stroke:#fff; stroke-width:5; transform:scale(.2); opacity:.95; transform-box:fill-box; transform-origin:center; transition:transform .55s ease-out,opacity .55s ease-out,stroke-width .55s; }
+.fish-shock.is-on { transform:scale(1.18); opacity:0; stroke-width:1; }
+.fish-scorch { fill:rgba(90,60,40,.08); stroke:none; animation:fish-fade .6s ease .2s backwards; }
+.fish-ember,.fish-droplet { transform-box:fill-box; transform-origin:center; }
+.fish-ember { fill:#ffd24a; stroke:#ff8f3a; stroke-width:.6; animation:fish-burst .75s cubic-bezier(.2,.8,.3,1) forwards; }
+.fish-droplet { fill:#e8f8ff; stroke:#7fc4e6; stroke-width:.6; animation:fish-burst .85s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes fish-burst { from { transform:translate(0,0); opacity:1; } to { transform:translate(var(--dx),var(--dy)) scale(.4); opacity:0; } }
+.fish-mine circle { fill:rgba(255,255,255,.55); stroke:#243042; stroke-width:1.4; stroke-dasharray:3 3; }
+.fish-mine text { fill:#243042; font-size:10px; font-weight:800; text-anchor:middle; }
+/* HUD and banner over the lake */
+.fish-hud { position:absolute; top:18px; left:20px; right:20px; display:flex; justify-content:space-between; gap:8px; pointer-events:none; }
+.fish-hud-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:999px; background:rgba(255,255,255,.82); color:#2c4a5e; font-size:12px; font-weight:600; box-shadow:0 2px 8px rgba(20,60,90,.15); backdrop-filter:blur(4px); }
+.fish-hud-bomb { width:12px; height:12px; border-radius:50%; border:1.5px dashed #c9584a; }
+.fish-hud-bomb.is-placed { border:0; background:radial-gradient(circle at 35% 30%,#ff9a83,#e2463b 50%,#8f1f1c); }
+.fish-banner { position:absolute; left:50%; top:42%; padding:8px 22px; border-radius:999px; background:rgba(255,250,240,.94); color:#c4452f; font-size:22px; font-weight:800; letter-spacing:.06em; white-space:nowrap; box-shadow:0 8px 24px rgba(120,60,20,.25); opacity:0; transform:translate(-50%,-50%) scale(.6); pointer-events:none; }
+.fish-banner.is-shown { animation:fish-banner 1.3s cubic-bezier(.2,1.2,.4,1) forwards; }
+@keyframes fish-banner { 0% { opacity:0; transform:translate(-50%,-50%) scale(.6); } 18% { opacity:1; transform:translate(-50%,-50%) scale(1.06); } 30% { transform:translate(-50%,-50%) scale(1); } 75% { opacity:1; } 100% { opacity:0; transform:translate(-50%,-62%) scale(1); } }
+.fish-jean { position:absolute; left:22px; right:22px; bottom:22px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-radius:16px; background:rgba(32,40,66,.94); color:#fff; box-shadow:0 12px 30px rgba(20,24,40,.4); animation:fish-jean .4s cubic-bezier(.3,1.4,.5,1); }
+.fish-jean[hidden] { display:none; }
+@keyframes fish-jean { from { opacity:0; transform:translateY(16px); } }
+.fish-jean p { margin:0; font-size:14px; line-height:1.6; }
+.fish-jean strong { color:#ffd97a; }
+.fish-jean .lab-button { flex:none; }
+/* Scores and insight */
+.fish-scoreboard { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+.fish-score { position:relative; padding:12px 14px; border:1px solid var(--lab-border); border-radius:14px; background:var(--lab-surface); transition:border-color .3s,box-shadow .3s,transform .3s; }
+.fish-score span { display:block; color:var(--lab-muted); font-size:13px; }
+.fish-score strong { display:block; margin:2px 0 6px; color:var(--lab-ink); font-size:26px; font-variant-numeric:tabular-nums; }
+.fish-score small { color:var(--lab-muted); font-size:12px; }
+.fish-score-bar { height:6px; margin-bottom:6px; border-radius:3px; background:color-mix(in srgb,var(--lab-muted) 15%,transparent); overflow:hidden; }
+.fish-score-bar i { display:block; height:100%; width:0; border-radius:3px; background:linear-gradient(90deg,#ffb36b,#e2573c); transition:width .7s cubic-bezier(.2,.8,.3,1); }
+.fish-score-klee .fish-score-bar i { background:linear-gradient(90deg,#8fd0ff,#2f7cc8); }
+.fish-score.is-winner { border-color:#e2a046; box-shadow:0 0 0 2px rgba(226,160,70,.3),0 8px 18px rgba(200,120,40,.15); transform:translateY(-2px); }
+.fish-score.is-winner span:after { content:' ★ 胜'; color:#d9822b; font-weight:700; }
+.fish-verdict { margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--lab-surface); color:var(--lab-ink); font-size:14px; line-height:1.7; border-left:4px solid #e2a046; }
+.fish-insight { margin-top:14px; padding:14px; border:1px dashed var(--lab-accent); border-radius:12px; background:var(--lab-surface); }
+.fish-insight h3 { margin:0 0 6px; font-size:15px; color:var(--lab-ink); }
+.fish-insight-step { margin:0; color:var(--lab-ink); font-size:14px; line-height:1.7; min-height:48px; }
+.fish-insight .ai-formula { margin-top:12px; font-size:13px; }
+.fish-sse-heading { display:flex; justify-content:space-between; gap:12px; margin-top:12px; color:var(--lab-muted); font-size:13px; }
+.fish-sse-heading strong { color:var(--lab-accent); font-weight:600; font-variant-numeric:tabular-nums; }
+.fish-sse { display:block; width:100%; height:66px; }
+.fish-sse polyline { fill:none; stroke:var(--lab-accent); stroke-width:2; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+.fish-sse polygon { fill:color-mix(in srgb,var(--lab-accent) 14%,transparent); stroke:none; }
+.fish-panel .lab-controls .ai-check { justify-content:flex-start; }
+.fish-panel .lab-button:disabled { opacity:.42; cursor:not-allowed; transform:none; box-shadow:none; }
+@media(max-width:600px) {
+  .fish-stage { padding:5px; border-radius:22px; }
+  .fish-lake { border-radius:18px; }
+  .fish-klee-face { width:50px; height:50px; }
+  .fish-klee-line p { font-size:13px; }
+  .fish-hud { top:12px; left:12px; right:12px; }
+  .fish-hud-chip { font-size:11px; padding:3px 8px; }
+  .fish-banner { font-size:17px; padding:6px 16px; }
+  .fish-score strong { font-size:21px; }
+  .fish-jean { left:12px; right:12px; bottom:12px; flex-direction:column; align-items:stretch; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .fish-panel *,.fish-panel *:before { animation:none !important; transition:none !important; }
+  .fish-banner { display:none; }
+}
+/* Fishing voice: speaking animation, Jean's badge, a crisp avatar. */
+.fish-klee-face.is-talking { box-shadow:0 0 0 2px #e2a46c,0 0 0 calc(4px + var(--talk,0) * 6px) rgba(255,190,120,.45),0 6px 14px rgba(160,80,40,.22); }
+.fish-jean { justify-content:flex-start; }
+.fish-jean p { flex:1; }
+.fish-jean-badge { position:relative; flex:none; margin-right:12px; display:grid; place-items:center; width:40px; height:40px; border-radius:50%; background:linear-gradient(145deg,#f3d58a,#c99a3c); color:#27304a; font-weight:800; font-size:17px; box-shadow:0 0 0 2px rgba(255,255,255,.7); }
+.fish-jean-wave { position:absolute; right:-14px; bottom:4px; display:flex; align-items:flex-end; gap:2px; height:14px; opacity:0; transition:opacity .2s; }
+.fish-jean-wave i { width:3px; height:4px; border-radius:2px; background:#ffd97a; }
+.fish-jean.is-talking .fish-jean-wave { opacity:1; }
+.fish-jean.is-talking .fish-jean-wave i { height:calc(4px + var(--talk,0) * 10px); transition:height .08s linear; }
+.fish-jean.is-talking .fish-jean-wave i:nth-child(2) { height:calc(4px + var(--talk,0) * 14px); }
+@media(max-width:600px) { .fish-jean-badge { align-self:flex-start; } }
+
+/* Klee hikes down to the chest (gradient descent) */
+.hike-map { display:block; width:100%; height:auto; border-radius:24px; cursor:crosshair; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+.hike-panel:not([data-hike-phase='lead']) .hike-map { cursor:default; }
+.fish-stage.is-shaking .hike-map { animation:fish-shake .45s ease; }
+.hike-contour { fill:none; stroke:rgba(70,55,30,.22); stroke-width:.8; }
+.hike-contour.is-major { stroke:rgba(70,55,30,.38); stroke-width:1.2; }
+.hike-tree-shadow { fill:#1f3a20; opacity:.18; }
+.hike-trunk { fill:#7a5534; }
+.hike-leaves { fill:#3f8a4a; stroke:#2d6a37; stroke-width:.6; }
+.hike-leaves.is-light { fill:#6cb867; stroke:none; }
+.hike-chest-glow { fill:url(#hike-glow-gradient); opacity:.55; }
+.hike-chest-box { fill:#a2622e; stroke:#5a3215; stroke-width:1.2; }
+.hike-chest-lid { fill:#c07a3a; stroke:#5a3215; stroke-width:1.2; }
+.hike-chest-trim { fill:none; stroke:#f2c14f; stroke-width:1.8; }
+.hike-chest-lock { fill:#f2c14f; stroke:#8f6512; stroke-width:.8; }
+.hike-panel.is-revealed .hike-chest-glow { animation:hike-glow 1.6s ease-in-out infinite; }
+@keyframes hike-glow { 50% { opacity:.95; } }
+.hike-pit { fill:rgba(60,90,60,.35); }
+.hike-slime-body { fill:#7fd16f; stroke:#3e8a3a; stroke-width:1.2; }
+.hike-slime-eye { fill:#1f3a20; }
+.hike-tent { fill:#e9d3a8; stroke:#8a6436; stroke-width:1.2; }
+.hike-tent-door { fill:#8a6436; }
+.hike-flag { fill:#e2463b; stroke:#6e1715; stroke-width:1; }
+/* Fog of the unknown: only places already visited show through. */
+.hike-fog { transition:opacity 1.3s ease; }
+.hike-clouds ellipse { fill:#fff; opacity:.7; }
+.hike-clouds { animation:fish-drift 18s ease-in-out infinite alternate; }
+.hike-panel.is-revealed .hike-fog { opacity:0; }
+.hike-reach circle { fill:rgba(255,255,255,.12); stroke:rgba(255,255,255,.95); stroke-width:1.6; stroke-dasharray:6 5; }
+.hike-reach[hidden],.hike-aim[hidden] { display:none; }
+.hike-aim line { stroke:#e2573c; stroke-width:2; stroke-dasharray:4 4; }
+.hike-aim circle { fill:rgba(226,87,60,.35); stroke:#fff; stroke-width:1.5; }
+/* Routes */
+.hike-trail { fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.hike-trail-player { stroke:#e2573c; stroke-dasharray:2 6; }
+.hike-trail-klee { stroke:#2f7cc8; opacity:.9; }
+.hike-step { stroke:#fff; stroke-width:1.4; }
+.hike-step-player { fill:#e2573c; }
+.hike-step-klee { fill:#2f7cc8; animation:fish-fade .3s ease; }
+.hike-arrow { stroke:#5b3fa6; stroke-width:3; stroke-linecap:round; }
+.hike-arrow-label { fill:#3d2a75; font-size:11px; font-weight:700; text-anchor:middle; paint-order:stroke; stroke:#fff; stroke-width:3px; }
+/* Klee on the map */
+.hike-klee { transition:transform .5s cubic-bezier(.3,1.25,.5,1); pointer-events:none; }
+.hike-klee-shadow { fill:#0d2a1a; opacity:.25; }
+.hike-klee-pin { fill:#fff; stroke:#e2a46c; stroke-width:1.5; }
+.hike-klee-face { display:block; width:38px; height:38px; box-sizing:border-box; border-radius:50%; border:2.5px solid #fff; background-color:#f8e6d6; background-size:400% 400%; background-position:33.33% 0; box-shadow:0 0 0 2px #e2a46c,0 4px 8px rgba(40,30,20,.35); }
+.hike-klee.is-hopping foreignObject,.hike-klee.is-hopping .hike-klee-pin { animation:hike-hop .5s ease; }
+@keyframes hike-hop { 40% { transform:translateY(-10px); } }
+.hike-klee.is-flying foreignObject,.hike-klee.is-flying .hike-klee-pin { transform-box:fill-box; transform-origin:center; animation:hike-fly 1s ease-in forwards; }
+@keyframes hike-fly { to { transform:translate(0,-60px) rotate(540deg) scale(.3); opacity:0; } }
+.fish-sse .hike-chart-player { fill:none; stroke:#e2573c; stroke-width:2; stroke-dasharray:3 3; vector-effect:non-scaling-stroke; }
+.fish-sse .hike-chart-klee { fill:none; stroke:#2f7cc8; stroke-width:2; vector-effect:non-scaling-stroke; }
+@media(max-width:600px) { .hike-map { border-radius:18px; } }
+@media(prefers-reduced-motion:reduce) { .hike-panel *,.hike-panel *:before { animation:none !important; transition:none !important; } }
+
 /* css/home-motion.css */
 /* Fluid knowledge homepage and local AI diagrams. */
 body.lab-homepage { --home-gutter:clamp(16px,2vw,40px); }

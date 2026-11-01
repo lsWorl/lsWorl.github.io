@@ -345,13 +345,14 @@
     const tabs=[...tablist.querySelectorAll('[data-experiment-tab]')];
     const panels=[...document.querySelectorAll('[data-experiment-panel]')];
     const initialized=new Map(),failed=new Set();
-    const initializers={sampling,attention,rag,network};
+    // Experiments in their own files register in window.LabExperiments.
+    const initializers={sampling,attention,rag,network,...(window.LabExperiments||{})};
     const stop=()=>{
       initialized.forEach(pause=>pause());
       document.dispatchEvent(new CustomEvent('lab:panel-change'));
     };
     function activate(id,focus=false) {
-      if(!tabs.some(tab=>tab.dataset.experimentTab===id))id='gradient';
+      if(!tabs.some(tab=>tab.dataset.experimentTab===id))id=tabs[0].dataset.experimentTab;
       stop();
       tabs.forEach(tab=>{
         const active=tab.dataset.experimentTab===id;
@@ -385,11 +386,13 @@
       });
     });
     const visibility=()=>{if(document.hidden)stop();};
-    const hash=()=>activate(location.hash.slice(1));
+    // `#hike?map=1001`: the tab is the part before `?`; games read their own parameters.
+    const tabFromHash=()=>location.hash.slice(1).split('?')[0];
+    const hash=()=>activate(tabFromHash());
     let listening=false;
     const resume=()=>{
       if(!listening){document.addEventListener('visibilitychange',visibility);window.addEventListener('hashchange',hash);listening=true;}
-      activate(location.hash.slice(1));
+      activate(tabFromHash());
     };
     const pause=()=>{
       stop();document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',hash);listening=false;

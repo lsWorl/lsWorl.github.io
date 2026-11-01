@@ -456,6 +456,982 @@
 })();
 
 ;
+/* js/lab-fishing.js */
+/* Klee's fishing game: K-means clustering on Starfell Lake.
+   The player places bombs first; Klee's "secret method" is K-means. */
+(function (factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api.model;
+  if (typeof window !== 'undefined') {
+    window.LabFishing = api.model;
+    window.LabExperiments = Object.assign(window.LabExperiments || {}, {fishing: api.init});
+  }
+})(function () {
+  'use strict';
+  const WIDTH = 640, HEIGHT = 400, MARGIN = 26, RADIUS = 72;
+
+  // ---------- Model: pure and deterministic, so it can be tested in Node. ----------
+  function random(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const gaussian = rng => { let u = 0; while (!u) u = rng(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rng()); };
+  const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
+  const distance2 = (a, b) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+
+  // A lake holds 3–5 schools of fish plus a few strays.
+  function makeLake(seed, count = 54) {
+    const rng = random(seed), wanted = 3 + Math.floor(rng() * 3), centers = [];
+    for (let attempt = 0; centers.length < wanted && attempt < 500; attempt++) {
+      const center = {x: 90 + rng() * (WIDTH - 180), y: 80 + rng() * (HEIGHT - 160)};
+      if (centers.every(other => distance2(other, center) > 125 ** 2)) centers.push({...center, spread: 20 + rng() * 22});
+    }
+    const fish = [], strays = Math.round(count * 0.1);
+    for (let i = 0; i < count; i++) {
+      let x, y;
+      if (i < count - strays) {
+        const center = centers[i % centers.length];
+        x = center.x + gaussian(rng) * center.spread; y = center.y + gaussian(rng) * center.spread * 0.8;
+      } else { x = MARGIN + rng() * (WIDTH - 2 * MARGIN); y = MARGIN + rng() * (HEIGHT - 2 * MARGIN); }
+      fish.push({x: Math.round(clamp(x, MARGIN, WIDTH - MARGIN)), y: Math.round(clamp(y, MARGIN, HEIGHT - MARGIN)), flip: rng() < 0.5});
+    }
+    return {seed, schools: centers.length, fish};
+  }
+
+  function nearest(point, centers) {
+    let index = 0, best = Infinity;
+    centers.forEach((center, k) => { const d = distance2(point, center); if (d < best) { best = d; index = k; } });
+    return {index, distance2: best};
+  }
+  const assign = (fish, centers) => fish.map(point => nearest(point, centers).index);
+  // Each bomb moves to the mean of the fish that chose it; an empty bomb stays.
+  function update(fish, labels, centers) {
+    return centers.map((center, k) => {
+      let x = 0, y = 0, n = 0;
+      labels.forEach((label, i) => { if (label === k) { x += fish[i].x; y += fish[i].y; n++; } });
+      return n ? {x: x / n, y: y / n} : {...center};
+    });
+  }
+  const sse = (fish, centers) => fish.reduce((sum, point) => sum + nearest(point, centers).distance2, 0);
+  const labeledSse = (fish, labels, centers) => fish.reduce((sum, point, i) => sum + distance2(point, centers[labels[i]]), 0);
+  const caught = (fish, bombs, radius = RADIUS) => fish.map(point => bombs.some(bomb => distance2(point, bomb) <= radius * radius));
+  const averageDistance = (fish, centers) => Math.sqrt(sse(fish, centers) / Math.max(1, fish.length));
+
+  // k-means++: the first start is a random fish; later starts favour fish far
+  // from every start chosen so far (probability ∝ squared distance).
+  function initCenters(fish, k, rng) {
+    const first = fish[Math.floor(rng() * fish.length)], centers = [{x: first.x, y: first.y}];
+    while (centers.length < k) {
+      const weights = fish.map(point => nearest(point, centers).distance2), total = weights.reduce((a, b) => a + b, 0);
+      let pick = rng() * total, index = 0;
+      while (index < fish.length - 1 && (pick -= weights[index]) > 0) index++;
+      centers.push({x: fish[index].x, y: fish[index].y});
+    }
+    return centers;
+  }
+
+  // Every animation frame is one real step of the algorithm.
+  function kmeans(fish, k, seed, maxRounds = 30) {
+    const rng = random((seed * 31 + k) ^ 0x9e3779b9), frames = [];
+    let centers = initCenters(fish, k, rng), labels = null;
+    frames.push({type: 'init', centers, sse: sse(fish, centers)});
+    for (let round = 1; round <= maxRounds; round++) {
+      const next = assign(fish, centers), changed = labels ? next.filter((label, i) => label !== labels[i]).length : fish.length;
+      frames.push({type: 'assign', round, labels: next, changed, centers, sse: labeledSse(fish, next, centers)});
+      if (labels && changed === 0) break;
+      labels = next;
+      const moved = update(fish, labels, centers);
+      frames.push({type: 'update', round, labels, from: centers, centers: moved, sse: labeledSse(fish, labels, moved)});
+      centers = moved;
+    }
+    frames.push({type: 'done', labels, centers, sse: sse(fish, centers)});
+    return frames;
+  }
+
+  const model = {WIDTH, HEIGHT, RADIUS, random, makeLake, nearest, assign, update, sse, labeledSse, caught, averageDistance, initCenters, kmeans};
+
+  // ---------- Game ----------
+  const SVG = 'http://www.w3.org/2000/svg', STORE = 'lsworld.klee.fishing.v1', COLORS = 5;
+  // Frames in the companion's expression sheet (4 × 4).
+  const FACES = {neutral: 0, happy: 1, laugh: 2, curious: 3, thinking: 4, care: 5, proud: 6, wink: 7};
+  const ELEMENTS = ['火', '水', '风', '雷', '岩'];
+  function init(panel) {
+    const $ = selector => panel.querySelector(selector);
+    const svg = (tag, attributes = {}, parent) => {
+      const node = document.createElementNS(SVG, tag);
+      for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
+      parent?.append(node); return node;
+    };
+    const lake = $('[data-fish-lake]'), stage = $('.fish-stage'), school = $('[data-fish-school]'), bombs = $('[data-fish-bombs]');
+    const lines = $('[data-fish-lines]'), arrows = $('[data-fish-arrows]'), blasts = $('[data-fish-blasts]'), effects = $('[data-fish-fx]');
+    const preview = $('[data-fish-preview]'), banner = $('[data-fish-banner]'), hudLake = $('[data-fish-hud-lake]'), hudState = $('[data-fish-hud-state]');
+    const face = $('[data-fish-face]'), bubble = $('.fish-klee-line'), line = $('[data-fish-line]'), kInput = $('#fish-k'), kValue = $('[data-fish-k-value]');
+    const insightToggle = $('[data-fish-insight-toggle]'), insight = $('[data-fish-insight]'), insightStep = $('[data-fish-insight-step]');
+    const sseLine = $('[data-fish-sse-line]'), sseArea = $('[data-fish-sse-area]'), sseValue = $('[data-fish-sse-value]');
+    const throwButton = $('[data-fish-throw]'), randomButton = $('[data-fish-random]'), algorithmButton = $('[data-fish-algorithm]');
+    const stepButton = $('[data-fish-step]'), skipButton = $('[data-fish-skip]'), againButton = $('[data-fish-again]'), newButton = $('[data-fish-new]');
+    const seedLabel = $('[data-fish-seed]'), scorePlayer = $('[data-fish-score="player"]'), scoreKlee = $('[data-fish-score="klee"]');
+    const jean = $('[data-fish-jean]'), jeanButton = $('[data-fish-jean-close]'), verdict = $('[data-fish-verdict]');
+    const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ----- Voice: pre-recorded lines, text-only when a recording is missing -----
+    const VOICE_KEY = 'lsworld.klee.fishing.voice', voiceToggle = $('[data-fish-voice-toggle]'), sound = new Audio();
+    let voiceLines = {}, voiceOn = true, speaking = null, queued = null, talkFrame = 0;
+    try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (_) { /* Default on. */ }
+    voiceToggle.checked = voiceOn; sound.preload = 'auto';
+    fetch(panel.dataset.voiceManifest, {cache: 'no-cache'}).then(response => response.ok ? response.json() : null)
+      .then(data => { voiceLines = data?.lines || {}; }).catch(() => {});
+    function quiet() {
+      cancelAnimationFrame(talkFrame);
+      for (const node of [face, jean]) { node.classList.remove('is-talking'); node.style.removeProperty('--talk'); }
+    }
+    function stopVoice() { queued = null; speaking = null; quiet(); if (!sound.paused) sound.pause(); }
+    // minor: skip while someone is talking. queue: wait for the current line to end.
+    function voice(id, {minor = false, queue = false} = {}) {
+      const line = voiceLines[id];
+      if (!voiceOn || !line || document.hidden) return;
+      const busy = speaking && !sound.paused && !sound.ended;
+      if (busy && minor) return;
+      if (busy && queue) { queued = id; return; }
+      queued = null; quiet(); speaking = {id, line}; sound.src = line.audio;
+      sound.play().then(() => { panel.dataset.fishVoice = id; talk(); }).catch(() => { if (speaking?.id === id) speaking = null; });
+    }
+    function talk() {
+      const target = speaking?.line.speaker === 'jean' ? jean : face;
+      const step = () => {
+        if (!speaking || sound.paused || sound.ended) { quiet(); return; }
+        const level = speaking.line.envelope?.[Math.floor(sound.currentTime / (speaking.line.step || .05))] || 0;
+        target.style.setProperty('--talk', Math.min(1, level / .18).toFixed(2)); target.classList.add('is-talking');
+        talkFrame = requestAnimationFrame(step);
+      };
+      step();
+    }
+    sound.addEventListener('ended', () => { quiet(); speaking = null; if (queued) { const next = queued; queued = null; voice(next); } });
+    voiceToggle.addEventListener('change', () => {
+      voiceOn = voiceToggle.checked; if (!voiceOn) stopVoice();
+      try { localStorage.setItem(VOICE_KEY, voiceOn ? 'on' : 'off'); } catch (_) {}
+    });
+
+    let stats = {rounds: 0, wins: 0, best: 0, jail: 0};
+    try { Object.assign(stats, JSON.parse(localStorage.getItem(STORE) || '{}')); } catch (_) { /* Optional. */ }
+    const save = () => { try { localStorage.setItem(STORE, JSON.stringify(stats)); } catch (_) {} };
+    const showStats = () => {
+      $('[data-fish-stat="rounds"]').textContent = stats.rounds; $('[data-fish-stat="wins"]').textContent = stats.wins; $('[data-fish-stat="jail"]').textContent = stats.jail;
+    };
+
+    let water = null, fishNodes = [], player = [], frames = [], frameIndex = 0, timer = null, phase = 'place', playerCaught = 0, sseHistory = [], later = [];
+    const k = () => Number(kInput.value);
+    const wait = (callback, ms) => { const id = setTimeout(() => { later = later.filter(x => x !== id); callback(); }, ms); later.push(id); };
+    const restart = (node, name) => { node.classList.remove(name); void node.getBoundingClientRect(); node.classList.add(name); };
+    function say(text, mood) {
+      if (line.textContent !== text) { line.textContent = text; restart(bubble, 'is-new'); }
+      if (mood) setFace(mood);
+    }
+    function setFace(mood) {
+      const index = FACES[mood] ?? 0;
+      face.style.backgroundPosition = `${index % 4 / 3 * 100}% ${Math.floor(index / 4) / 3 * 100}%`; face.dataset.mood = mood;
+    }
+    function announce(text) { banner.textContent = text; restart(banner, 'is-shown'); }
+    const setPhase = value => {
+      phase = value; panel.dataset.fishPhase = value;
+      throwButton.disabled = value !== 'place' || player.length !== k();
+      randomButton.disabled = value !== 'place';
+      algorithmButton.disabled = !['thrown', 'algorithm'].includes(value);
+      stepButton.disabled = skipButton.disabled = value !== 'algorithm';
+      algorithmButton.textContent = value === 'algorithm' ? (timer ? '暂停' : '继续播放') : '看可莉的算法';
+      hud();
+    };
+    function hud() {
+      if (!water) return;
+      hudLake.textContent = `湖面 #${water.seed} · ${water.fish.length} 条鱼`;
+      hudState.replaceChildren();
+      if (phase === 'place') {
+        for (let i = 0; i < k(); i++) { const icon = document.createElement('i'); icon.className = 'fish-hud-bomb' + (i < player.length ? ' is-placed' : ''); hudState.append(icon); }
+        const label = document.createElement('span'); label.textContent = `${player.length}/${k()}`; hudState.append(label);
+      } else {
+        const label = document.createElement('span');
+        const frame = frames[frameIndex - 1];
+        label.textContent = phase === 'done' ? '本局结算' : phase === 'algorithm' || phase === 'finishing' ? (frame?.round ? `可莉 · 第 ${frame.round} 轮` : '可莉的回合') : '旅行者扔出啦';
+        hudState.append(label);
+      }
+    }
+    const describe = () => lake.setAttribute('aria-label', `星落湖，${water.fish.length} 条鱼，` +
+      (phase === 'place' ? `已放 ${player.length}/${k()} 颗炸弹` : phase === 'done' ? '本局已结束' : '炸弹已扔出'));
+
+    // ----- Drawing -----
+    function drawFish(point, i) {
+      const size = 0.82 + ((point.x * 7 + point.y * 13 + i) % 29) / 100;
+      const group = svg('g', {class: 'fish', transform: `translate(${point.x} ${point.y})`}, school);
+      svg('ellipse', {class: 'fish-shadow', cx: 2, cy: 8, rx: 11 * size, ry: 2.6 * size}, group);
+      const swim = svg('g', {class: 'fish-swim'}, group);
+      swim.style.setProperty('--delay', `${-((i * 0.37) % 3).toFixed(2)}s`); swim.style.setProperty('--swim', `${(2.6 + (i % 5) * 0.35).toFixed(2)}s`);
+      const body = svg('g', {class: 'fish-body'}, swim), shape = svg('g', {transform: `scale(${point.flip ? -size : size} ${size})`}, body);
+      svg('path', {class: 'fish-tail', d: 'M-10 0L-16.5-6.5Q-14 0-16.5 6.5Z'}, shape);
+      svg('path', {class: 'fish-fin', d: 'M-4-5Q1-11 6-5Z'}, shape);
+      svg('path', {class: 'fish-skin', d: 'M12.5 0C9.5-6.5 0-7.8-6-5.2C-9-3.6-11-1.2-11 0C-11 1.2-9 3.6-6 5.2C0 7.8 9.5 6.5 12.5 0Z'}, shape);
+      svg('path', {class: 'fish-belly', d: 'M11.6 1C8.4 5.4 0 6.8-6 4.6C-8.4 3.5-10 1.8-10.6.7Z'}, shape);
+      svg('path', {class: 'fish-fin fish-pectoral', d: 'M1.5 2.2Q-1.5 6.6-4.2 3.6Z'}, shape);
+      svg('path', {class: 'fish-detail', d: 'M5.6-3.8Q3.8 0 5.6 3.8M-.5-2.4q1.6 1.7 0 3.4M-4.2-2.2q1.5 1.6 0 3.2'}, shape);
+      svg('circle', {class: 'fish-eye-white', cx: 8, cy: -1.6, r: 2}, shape);
+      svg('circle', {class: 'fish-eye', cx: 8.5, cy: -1.5, r: 1.15}, shape);
+      svg('circle', {class: 'fish-eye-shine', cx: 8.9, cy: -2.1, r: .45}, shape);
+      svg('text', {class: 'fish-pop', y: -12}, group).textContent = '+1';
+      return group;
+    }
+    function drawWater() {
+      for (const layer of [school, lines, arrows, blasts, bombs, effects]) layer.replaceChildren();
+      bombs.dataset.owner = '';
+      fishNodes = water.fish.map(drawFish);
+    }
+    function colorFish(labels = null, caughtList = null) {
+      fishNodes.forEach((node, i) => {
+        node.setAttribute('class', 'fish' + (labels ? ' cluster-' + (labels[i] % COLORS) : '') + (caughtList?.[i] ? ' is-caught' : ''));
+        if (caughtList?.[i]) node.querySelector('.fish-pop').style.animationDelay = `${(i % 9) * 40}ms`;
+      });
+    }
+    function makeBomb(index, owner, drop) {
+      const group = svg('g', {class: `fish-bomb fish-bomb-${owner} cluster-${index % COLORS}` + (drop ? ' is-dropping' : '')});
+      svg('circle', {class: 'fish-range', r: RADIUS}, group);
+      svg('circle', {class: 'fish-range-spin', r: RADIUS - 3}, group);
+      svg('ellipse', {class: 'fish-bomb-shadow', cy: 13, rx: 10, ry: 3}, group);
+      const piece = svg('g', {class: 'fish-bomb-piece'}, group);
+      svg('path', {class: 'fish-fuse', d: 'M5-9Q8-16 14-14'}, piece);
+      svg('circle', {class: 'fish-fuse-spark', cx: 14.5, cy: -14.5, r: 2.6}, piece);
+      svg('circle', {class: 'fish-bomb-body', r: 11}, piece);
+      svg('path', {class: 'fish-bomb-star', d: 'M-3-6.5L-1.8-3.3 1.4-2.1-1.8-.9-3 2.3-4.2-.9-7.4-2.1-4.2-3.3Z'}, piece);
+      svg('ellipse', {class: 'fish-bomb-shine', cx: 4, cy: -5, rx: 3, ry: 1.8, transform: 'rotate(30 4 -5)'}, piece);
+      svg('circle', {class: 'fish-bomb-badge', cx: 8.5, cy: 8.5, r: 6}, piece);
+      svg('text', {class: 'fish-bomb-label', x: 8.5, y: 11.4}, piece).textContent = index + 1;
+      return group;
+    }
+    // Reuse bomb nodes so Klee's bombs glide between rounds.
+    function drawBombs(list, owner, {drop = false} = {}) {
+      const rebuild = bombs.dataset.owner !== owner || bombs.children.length > list.length;
+      if (rebuild) { bombs.replaceChildren(); bombs.dataset.owner = owner; }
+      list.forEach((bomb, i) => {
+        let group = bombs.children[i];
+        if (!group) { group = makeBomb(i, owner, drop); bombs.append(group); if (drop) splash(bomb); }
+        group.classList.remove('is-spent');
+        group.style.transform = `translate(${bomb.x}px, ${bomb.y}px)`;
+      });
+    }
+    function drawLines(labels, centers) {
+      lines.replaceChildren();
+      if (!insightToggle.checked || !labels || !centers.length) return;
+      water.fish.forEach((point, i) => {
+        const center = centers[labels[i]];
+        svg('line', {class: 'fish-line cluster-' + (labels[i] % COLORS), x1: center.x, y1: center.y, x2: point.x, y2: point.y}, lines);
+      });
+    }
+    function drawArrows(from = [], to = []) {
+      arrows.replaceChildren();
+      if (!insightToggle.checked) return;
+      from.forEach((start, i) => {
+        if (distance2(start, to[i]) < 1) return;
+        svg('circle', {class: 'fish-ghost', cx: start.x, cy: start.y, r: 11}, arrows);
+        svg('line', {class: 'fish-arrow', x1: start.x, y1: start.y, x2: to[i].x, y2: to[i].y, 'marker-end': 'url(#fish-arrowhead)'}, arrows);
+      });
+    }
+    function splash(at) {
+      if (reduced()) return;
+      const ring = svg('circle', {class: 'fish-splash', cx: at.x, cy: at.y, r: 16}, effects);
+      wait(() => ring.remove(), 900);
+    }
+    function blast(list, done) {
+      blasts.replaceChildren(); effects.replaceChildren();
+      [...bombs.children].forEach(group => group.classList.add('is-spent'));
+      const quiet = reduced(), parts = [];
+      for (const bomb of list) {
+        parts.push(svg('circle', {class: 'fish-flash', cx: bomb.x, cy: bomb.y, r: RADIUS}, blasts));
+        parts.push(svg('circle', {class: 'fish-shock', cx: bomb.x, cy: bomb.y, r: RADIUS}, blasts));
+        svg('circle', {class: 'fish-scorch', cx: bomb.x, cy: bomb.y, r: RADIUS * 0.92}, blasts);
+        if (quiet) continue;
+        for (let i = 0; i < 12; i++) {
+          const angle = i / 12 * Math.PI * 2 + (bomb.x % 7) / 10, reach = RADIUS * (0.55 + (i % 3) * 0.2), drop = i % 2;
+          const bit = svg(drop ? 'circle' : 'path', drop ? {class: 'fish-droplet', cx: bomb.x, cy: bomb.y, r: 2.6}
+            : {class: 'fish-ember', d: `M${bomb.x} ${bomb.y - 4}l1.2 2.8 2.8 1.2-2.8 1.2-1.2 2.8-1.2-2.8-2.8-1.2 2.8-1.2z`}, effects);
+          bit.style.setProperty('--dx', `${(Math.cos(angle) * reach).toFixed(1)}px`); bit.style.setProperty('--dy', `${(Math.sin(angle) * reach).toFixed(1)}px`);
+          bit.style.animationDelay = `${(i % 4) * 25}ms`;
+        }
+      }
+      if (!quiet) restart(stage, 'is-shaking');
+      requestAnimationFrame(() => requestAnimationFrame(() => parts.forEach(part => part.classList.add('is-on'))));
+      wait(() => { stage.classList.remove('is-shaking'); done(); }, quiet ? 60 : 520);
+      wait(() => effects.replaceChildren(), quiet ? 60 : 1400);
+    }
+    function showSse() {
+      const values = sseHistory, max = Math.max(...values, 1), min = Math.min(...values, max);
+      const points = values.map((value, i) => [values.length > 1 ? 6 + i / (values.length - 1) * 288 : 6, 60 - (value - min) / Math.max(1, max - min) * 50]);
+      sseLine.setAttribute('points', points.map(p => p.join(',')).join(' '));
+      sseArea.setAttribute('points', points.length ? `6,64 ${points.map(p => p.join(',')).join(' ')} ${points.at(-1)[0]},64` : '');
+      sseValue.textContent = values.length ? Math.round(values[0]).toLocaleString() + ' → ' + Math.round(values.at(-1)).toLocaleString() : '—';
+    }
+    function score(node, caughtCount, distance) {
+      const strong = node.querySelector('strong'), bar = node.querySelector('.fish-score-bar i'), total = water.fish.length;
+      node.querySelector('small').textContent = distance === null ? '平均距离 —' : `平均距离 ${Math.round(distance)}`;
+      bar.style.width = caughtCount === null ? '0%' : `${caughtCount / total * 100}%`;
+      if (caughtCount === null) { strong.textContent = '—'; return; }
+      if (reduced()) { strong.textContent = `${caughtCount} / ${total}`; return; }
+      const begin = performance.now();
+      // A frame timestamp can precede `begin`; clamp so the count never goes negative.
+      const tick = now => { const t = Math.max(0, Math.min(1, (now - begin) / 650)); strong.textContent = `${Math.round(caughtCount * (1 - (1 - t) ** 3))} / ${total}`; if (t < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }
+    const point = (value, digits = 0) => `(${value.x.toFixed(digits)}, ${value.y.toFixed(digits)})`;
+
+    // ----- Player's turn -----
+    function renderPlace(drop = false) {
+      drawBombs(player, 'player', {drop});
+      const labels = player.length ? model.assign(water.fish, player) : null;
+      colorFish(insightToggle.checked ? labels : null); drawLines(labels, player);
+      setPhase('place'); describe();
+      if (player.length === k()) { say(`${k()} 颗都放好啦！点“扔炸弹！”试试看～`, 'laugh'); if (drop) voice('klee-ready', {minor: true}); }
+      else if (player.length) say(`还可以再放 ${k() - player.length} 颗。点一下已经放的炸弹，可以把它拿起来哦。`, 'curious');
+    }
+    function lakePoint(event) {
+      const matrix = lake.getScreenCTM(); if (!matrix) return null;
+      const p = lake.createSVGPoint(); p.x = event.clientX; p.y = event.clientY;
+      const q = p.matrixTransform(matrix.inverse());
+      return {x: Math.round(clamp(q.x, 0, WIDTH)), y: Math.round(clamp(q.y, 0, HEIGHT))};
+    }
+    lake.addEventListener('click', event => {
+      if (phase !== 'place') return;
+      const at = lakePoint(event); if (!at) return;
+      const hit = player.findIndex(bomb => distance2(bomb, at) <= 18 * 18);
+      if (hit >= 0) { player.splice(hit, 1); bombs.dataset.owner = ''; renderPlace(); }
+      else if (player.length < k()) { player.push(at); renderPlace(true); }
+      else { say('炸弹已经放满啦！点一下已经放的炸弹，可以把它拿起来哦。', 'wink'); return; }
+      preview.setAttribute('hidden', '');
+    });
+    lake.addEventListener('pointermove', event => {
+      if (phase !== 'place' || player.length >= k() || event.pointerType === 'touch') { preview.setAttribute('hidden', ''); return; }
+      const at = lakePoint(event); if (!at) return;
+      preview.setAttribute('transform', `translate(${at.x} ${at.y})`); preview.removeAttribute('hidden');
+    });
+    lake.addEventListener('pointerleave', () => preview.setAttribute('hidden', ''));
+    randomButton.addEventListener('click', () => {
+      const rng = random(Date.now());
+      while (player.length < k()) player.push({x: Math.round(MARGIN + rng() * (WIDTH - 2 * MARGIN)), y: Math.round(MARGIN + rng() * (HEIGHT - 2 * MARGIN))});
+      renderPlace(true);
+    });
+    throwButton.addEventListener('click', () => {
+      if (phase !== 'place' || player.length !== k()) return;
+      setPhase('throwing'); lines.replaceChildren(); preview.setAttribute('hidden', '');
+      say('嘿——咻！蹦蹦炸弹出发！', 'laugh'); voice('klee-throw');
+      blast(player, () => {
+        const result = model.caught(water.fish, player); playerCaught = result.filter(Boolean).length;
+        colorFish(insightToggle.checked ? model.assign(water.fish, player) : null, result);
+        score(scorePlayer, playerCaught, model.averageDistance(water.fish, player));
+        const share = playerCaught / water.fish.length;
+        say(share >= 0.7 ? `哇！炸到了 ${playerCaught} 条！旅行者好厉害！可莉要用秘密方法挑战你！` : share >= 0.4
+          ? `炸到 ${playerCaught} 条！嘿嘿，看可莉的秘密方法能不能炸得更多～` : `只炸到 ${playerCaught} 条……鱼都跑啦！看可莉的秘密方法！`,
+          share >= 0.7 ? 'laugh' : share >= 0.4 ? 'happy' : 'wink');
+        voice(share >= 0.7 ? 'klee-big' : share >= 0.4 ? 'klee-mid' : 'klee-small', {queue: true});
+        setPhase('thrown'); describe();
+      });
+    });
+
+    // ----- Klee's turn: K-means, one real step per frame -----
+    function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
+    function showFrame(frame) {
+      if (frame.sse !== undefined) { sseHistory.push(frame.sse); showSse(); }
+      if (frame.type === 'init') {
+        colorFish(); lines.replaceChildren(); arrows.replaceChildren(); blasts.replaceChildren(); drawBombs(frame.centers, 'klee', {drop: true});
+        announce('可莉的回合！'); voice('klee-start');
+        say('可莉的秘密方法开始！先挑几个起点：离已有炸弹越远的鱼，越可能被选中。', 'thinking');
+        insightStep.textContent = `初始化（K-means++）：随机选一条鱼作为第 1 颗炸弹，后面每颗按“离最近炸弹的距离平方”加权抽选。起点：${frame.centers.map(c => point(c)).join('、')}。`;
+      } else if (frame.type === 'assign') {
+        colorFish(frame.labels); drawLines(frame.labels, frame.centers); arrows.replaceChildren();
+        if (frame.changed) announce(`第 ${frame.round} 轮 · 认领`);
+        if (frame.round === 1) voice('klee-assign', {queue: true}); else if (!frame.changed) voice('klee-settled', {minor: true});
+        say(frame.round === 1 ? '第 1 轮·认领：每条鱼找离自己最近的炸弹，颜色一样的就是同一队！'
+          : frame.changed ? `第 ${frame.round} 轮·认领：有 ${frame.changed} 条鱼换了炸弹～` : `第 ${frame.round} 轮·认领：没有鱼换炸弹啦，位置定下来了！`, frame.changed ? 'thinking' : 'proud');
+        const sizes = Array.from({length: frame.centers.length}, (_, c) => `${ELEMENTS[c % COLORS]}队 ${frame.labels.filter(label => label === c).length}`);
+        insightStep.textContent = `第 ${frame.round} 轮 · 分配：c(i) = argmin‖xᵢ − μₖ‖²。${sizes.join('，')} 条；` +
+          `${frame.round === 1 ? '首次分配' : frame.changed + ' 条鱼改变了归属'}。`;
+      } else if (frame.type === 'update') {
+        drawArrows(frame.from, frame.centers); drawBombs(frame.centers, 'klee'); drawLines(frame.labels, frame.centers);
+        const moves = frame.from.map((start, c) => Math.sqrt(distance2(start, frame.centers[c]))), far = moves.indexOf(Math.max(...moves));
+        say(`第 ${frame.round} 轮·挪动：每颗炸弹挪到自己那队鱼的正中间！`, 'curious');
+        if (frame.round === 1) voice('klee-update', {minor: true});
+        insightStep.textContent = `第 ${frame.round} 轮 · 更新：μₖ = 分到第 k 颗炸弹的鱼的平均位置。移动最多的是第 ${far + 1} 颗：` +
+          `${point(frame.from[far])} → ${point(frame.centers[far])}，挪了 ${moves[far].toFixed(1)}。`;
+      } else if (frame.type === 'done') finish(frame);
+      hud();
+    }
+    function advance() {
+      if (frameIndex >= frames.length) { stopTimer(); return; }
+      showFrame(frames[frameIndex++]);
+      if (frameIndex >= frames.length) stopTimer();
+      setPhase(frameIndex >= frames.length ? phase : 'algorithm');
+    }
+    function play() { stopTimer(); timer = setInterval(advance, reduced() ? 700 : 1100); setPhase('algorithm'); }
+    function finish(frame) {
+      stopTimer(); setPhase('finishing'); lines.replaceChildren(); arrows.replaceChildren(); drawBombs(frame.centers, 'klee');
+      announce('嘿——咻！'); voice('klee-blast');
+      say('找到啦，就是这里！嘿——咻！', 'laugh');
+      blast(frame.centers, () => {
+        const result = model.caught(water.fish, frame.centers), kleeCaught = result.filter(Boolean).length;
+        colorFish(frame.labels, result);
+        const playerDistance = model.averageDistance(water.fish, player), kleeDistance = model.averageDistance(water.fish, frame.centers);
+        score(scoreKlee, kleeCaught, kleeDistance);
+        // Where the player threw, for a side-by-side comparison.
+        player.forEach(bomb => { const mine = svg('g', {class: 'fish-mine', transform: `translate(${bomb.x} ${bomb.y})`}, arrows);
+          svg('circle', {r: 12}, mine); svg('text', {y: 4}, mine).textContent = '你'; });
+        scorePlayer.classList.toggle('is-winner', playerCaught > kleeCaught); scoreKlee.classList.toggle('is-winner', kleeCaught > playerCaught);
+        stats.rounds++; if (playerCaught > kleeCaught) stats.wins++; stats.best = Math.max(stats.best, playerCaught);
+        const closer = kleeDistance < playerDistance;
+        announce(playerCaught > kleeCaught ? '旅行者胜！' : playerCaught === kleeCaught ? '平手！' : '可莉胜！');
+        say(playerCaught > kleeCaught ? `哎呀，旅行者炸到 ${playerCaught} 条，可莉只有 ${kleeCaught} 条，你赢啦！` : playerCaught === kleeCaught
+          ? `平手！都是 ${kleeCaught} 条，嘿嘿～` : `可莉炸到 ${kleeCaught} 条，旅行者 ${playerCaught} 条，可莉赢啦！好耶！`,
+          playerCaught > kleeCaught ? 'care' : playerCaught === kleeCaught ? 'happy' : 'proud');
+        voice(playerCaught > kleeCaught ? 'klee-lose' : playerCaught === kleeCaught ? 'klee-tie' : 'klee-win', {queue: true});
+        verdict.textContent = (playerCaught > kleeCaught && closer
+          ? `你炸到的更多，但可莉的炸弹离鱼的平均距离更小（${Math.round(kleeDistance)} 对 ${Math.round(playerDistance)}）。K-means 追求的是“离得近”，不是“炸得多”，所以它不一定赢。`
+          : `可莉的炸弹离鱼的平均距离是 ${Math.round(kleeDistance)}，你的是 ${Math.round(playerDistance)}。K-means 每一轮都让这个距离变得更小。`)
+          + ` 这片湖其实有 ${water.schools} 群鱼${water.schools === k() ? '，K 正好选对了！' : `，试试把 K 设成 ${water.schools}？`}`;
+        verdict.hidden = false;
+        insightStep.textContent = `收敛：第 ${frames.at(-2).round} 轮没有鱼改变归属，算法停止。距离平方和（SSE）从 ${Math.round(sseHistory[0])} 降到 ${Math.round(frame.sse)}。`;
+        save(); showStats(); setPhase('done'); describe();
+        if (stats.rounds % 3 === 0) wait(() => { stats.jail++; save(); showStats(); setFace('care'); jean.hidden = false; jeanButton.focus();
+          const lineId = stats.jail % 2 ? 'jean-caught' : 'jean-lecture';
+          const subtitle = $('[data-fish-jean-line]');
+          if (subtitle && voiceLines[lineId]?.text) subtitle.textContent = voiceLines[lineId].text;
+          voice(lineId, {queue: true}); }, reduced() ? 100 : 1400);
+      });
+    }
+    algorithmButton.addEventListener('click', () => {
+      if (phase === 'thrown') {
+        frames = model.kmeans(water.fish, k(), water.seed); frameIndex = 0; sseHistory = []; verdict.hidden = true;
+        colorFish(); advance(); play(); return;
+      }
+      if (phase === 'algorithm') { if (timer) { stopTimer(); setPhase('algorithm'); } else play(); }
+    });
+    stepButton.addEventListener('click', () => { stopTimer(); advance(); });
+    skipButton.addEventListener('click', () => { stopTimer(); while (frameIndex < frames.length - 1) { const frame = frames[frameIndex++]; if (frame.sse !== undefined) sseHistory.push(frame.sse); } advance(); });
+
+    // ----- Rounds -----
+    function again() {
+      stopTimer(); stopVoice(); later.forEach(clearTimeout); later = [];
+      player = []; frames = []; frameIndex = 0; sseHistory = []; playerCaught = 0;
+      stage.classList.remove('is-shaking'); drawWater(); score(scorePlayer, null, null); score(scoreKlee, null, null);
+      scorePlayer.classList.remove('is-winner'); scoreKlee.classList.remove('is-winner'); verdict.hidden = true; jean.hidden = true;
+      insightStep.textContent = '放下炸弹后，这里会显示每条鱼离哪颗炸弹最近。'; showSse();
+      setPhase('place'); describe();
+      say(`湖里有 ${water.fish.length} 条鱼！点湖面放下 ${k()} 颗蹦蹦炸弹，虚线圈就是爆炸范围。旅行者先来！`, 'happy');
+      voice('klee-intro');
+    }
+    function newLake(seed = 1000 + Math.floor(Math.random() * 9000)) { water = model.makeLake(seed); seedLabel.textContent = '#' + seed; again(); }
+    againButton.addEventListener('click', again);
+    newButton.addEventListener('click', () => newLake());
+    kInput.addEventListener('input', () => {
+      kValue.textContent = k();
+      if (phase === 'place') { player = player.slice(0, k()); bombs.dataset.owner = ''; renderPlace(); if (!player.length) again(); } else again();
+    });
+    insightToggle.addEventListener('change', () => {
+      insight.hidden = !insightToggle.checked;
+      if (phase === 'place') renderPlace();
+      else if (phase === 'algorithm' || phase === 'done') {
+        const last = frames[Math.max(0, frameIndex - 1)];
+        drawLines(phase === 'done' ? null : last?.labels, last?.centers || []);
+        if (last?.type === 'update') drawArrows(last.from, last.centers); else if (phase !== 'done') arrows.replaceChildren();
+      }
+    });
+    jeanButton.addEventListener('click', () => { jean.hidden = true; say('对不起嘛……可莉知道错了，下次……下次换个湖炸！', 'care'); voice('klee-sorry'); });
+
+    const seedFromHash = Number(new URLSearchParams(location.hash.split('?')[1] || '').get('lake'));
+    kValue.textContent = k(); insight.hidden = !insightToggle.checked; showStats();
+    newLake(Number.isSafeInteger(seedFromHash) && seedFromHash > 0 ? seedFromHash : undefined);
+    // Switching tabs, hiding the page or leaving pauses the animation.
+    return () => { stopVoice(); if (timer) { stopTimer(); setPhase('algorithm'); } };
+  }
+
+  return {model, init};
+});
+
+;
+/* js/lab-hike.js */
+/* Klee hikes down to the treasure chest: gradient descent on a foggy mountain.
+   The player leads first through the fog; Klee's "secret" is gradient descent. */
+(function (factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api.model;
+  if (typeof window !== 'undefined') {
+    window.LabHike = api.model;
+    window.LabExperiments = Object.assign(window.LabExperiments || {}, {hike: api.init});
+  }
+})(function () {
+  'use strict';
+  // The map shows u ∈ [-3, 3] by v ∈ [-1.875, 1.875] on a 640 × 400 view.
+  const WIDTH = 640, HEIGHT = 400, SCALE = WIDTH / 6, U = 3, V = HEIGHT / SCALE / 2;
+  const CHEST_RADIUS = 0.2, STRIDE = 0.5, PLAYER_STEPS = 10, MAX_STEPS = 40, METRES = 1200;
+
+  // ---------- Model: pure and deterministic, so it can be tested in Node. ----------
+  function random(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const distance = (a, b) => Math.hypot(a.u - b.u, a.v - b.v);
+  const inBounds = p => Math.abs(p.u) <= U && Math.abs(p.v) <= V;
+  const toView = p => ({x: (p.u + U) * SCALE, y: (V - p.v) * SCALE});
+  const toMap = q => ({u: q.x / SCALE - U, v: V - q.y / SCALE});
+
+  // The mountain tilts toward the chest (an elongated bowl) with Gaussian wells
+  // for the chest valley and the slime pit, plus hills for scenery.
+  const BOWL = 0.22, STRETCH = 1.6;
+  function height(map, p) {
+    let f = BOWL * ((p.u - map.bowl.u) ** 2 + STRETCH * (p.v - map.bowl.v) ** 2);
+    for (const t of map.terms) f += t.a * Math.exp(-((p.u - t.u) ** 2 + (p.v - t.v) ** 2) / (2 * t.s * t.s));
+    return f;
+  }
+  function gradient(map, p) {
+    let gu = 2 * BOWL * (p.u - map.bowl.u), gv = 2 * BOWL * STRETCH * (p.v - map.bowl.v);
+    for (const t of map.terms) {
+      const e = t.a * Math.exp(-((p.u - t.u) ** 2 + (p.v - t.v) ** 2) / (2 * t.s * t.s)) / (t.s * t.s);
+      gu -= e * (p.u - t.u); gv -= e * (p.v - t.v);
+    }
+    return {u: gu, v: gv};
+  }
+  // Settle onto the exact minimum near a well with tiny, safe steps.
+  function settle(map, p) {
+    let q = {...p};
+    for (let i = 0; i < 4000; i++) { const g = gradient(map, q); q = {u: q.u - 0.02 * g.u, v: q.v - 0.02 * g.v}; }
+    return q;
+  }
+  // Distance from p to the segment a → b.
+  function offPath(p, a, b) {
+    const du = b.u - a.u, dv = b.v - a.v, t = Math.max(0, Math.min(1, ((p.u - a.u) * du + (p.v - a.v) * dv) / (du * du + dv * dv)));
+    return Math.hypot(p.u - a.u - du * t, p.v - a.v - dv * t);
+  }
+  // Camp high on one side, chest in the lowest valley, a slime pit near the way down.
+  function makeMap(seed) {
+    const rng = random(seed), pick = (low, high) => low + rng() * (high - low);
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const chest = {u: pick(-1.8, 1.8), v: pick(-1, 1)};
+      let start = null;
+      for (let i = 0; i < 40 && !start; i++) {
+        const angle = rng() * Math.PI * 2, reach = pick(2.8, 4.2), p = {u: chest.u + Math.cos(angle) * reach, v: chest.v + Math.sin(angle) * reach};
+        if (Math.abs(p.u) <= 2.6 && Math.abs(p.v) <= 1.5) start = p;
+      }
+      if (!start) continue;
+      const along = pick(.42, .6), side = (rng() < .5 ? -1 : 1) * pick(.15, .35), du = chest.u - start.u, dv = chest.v - start.v, length = Math.hypot(du, dv);
+      const pit = {u: start.u + du * along - dv / length * side, v: start.v + dv * along + du / length * side};
+      const hills = [];
+      for (let i = 0; i < 60 && hills.length < 2; i++) {
+        const hill = {u: pick(-2.7, 2.7), v: pick(-1.6, 1.6)};
+        if (offPath(hill, start, chest) > 1 && distance(hill, chest) > 1.2 && hills.every(other => distance(other, hill) > 1)) hills.push(hill);
+      }
+      const map = {seed, bowl: chest, start, terms: [{a: -1.2, ...chest, s: .8}, {a: -.7, ...pit, s: .32}, ...hills.map(hill => ({a: pick(.35, .5), ...hill, s: pick(.4, .55)}))]};
+      map.chest = settle(map, chest); map.pit = settle(map, pit);
+      // The pit must stay a separate, shallower basin.
+      if (distance(map.chest, map.pit) < .8 || height(map, map.pit) <= height(map, map.chest) + .12) continue;
+      let low = Infinity, high = -Infinity;
+      for (let i = 0; i <= 120; i++) for (let j = 0; j <= 75; j++) {
+        const h = height(map, {u: -U + i / 120 * 2 * U, v: -V + j / 75 * 2 * V}); low = Math.min(low, h); high = Math.max(high, h);
+      }
+      // The grid can miss the exact bottom; the chest defines sea level.
+      map.low = Math.min(low, height(map, map.chest)); map.high = high;
+      if (altitude(map, start) < 450) continue;   // the camp stays high on the mountain
+      return map;
+    }
+    throw new Error('No playable mountain for this number.');
+  }
+  const altitude = (map, p) => Math.max(0, Math.round((height(map, p) - map.low) / (map.high - map.low) * METRES));
+
+  // One real gradient-descent run. momentum = 0 is plain descent.
+  function descend(map, {rate, momentum = 0, maxSteps = MAX_STEPS}) {
+    let p = {...map.start}, velocity = {u: 0, v: 0}, outcome = 'tired', zigzags = 0, previous = null;
+    const frames = [{step: 0, p, g: gradient(map, p), move: 0, alt: altitude(map, p)}];
+    for (let step = 1; step <= maxSteps; step++) {
+      const g = gradient(map, p);
+      velocity = {u: momentum * velocity.u - rate * g.u, v: momentum * velocity.v - rate * g.v};
+      const next = {u: p.u + velocity.u, v: p.v + velocity.v}, move = Math.hypot(velocity.u, velocity.v);
+      if (previous && previous.u * velocity.u + previous.v * velocity.v < 0) zigzags++;
+      previous = velocity;
+      if (!inBounds(next)) { frames.push({step, from: p, p: next, g, move, alt: null}); outcome = 'flew'; break; }
+      frames.push({step, from: p, p: next, g, move, alt: altitude(map, next)});
+      p = next;
+      if (distance(p, map.chest) <= CHEST_RADIUS) { outcome = 'found'; break; }
+      if (move < 0.004 && Math.hypot(g.u, g.v) < 0.05) { outcome = distance(p, map.pit) < 0.45 ? 'pit' : 'stuck'; break; }
+    }
+    if (outcome === 'tired' && zigzags >= 6) outcome = 'bounce';
+    return {frames, outcome, zigzags, end: p};
+  }
+  // The player walks toward a tapped point, at most one stride per step.
+  function stepToward(from, target, stride = STRIDE) {
+    const d = distance(from, target);
+    if (d <= stride) return {u: target.u, v: target.v};
+    return {u: from.u + (target.u - from.u) / d * stride, v: from.v + (target.v - from.v) / d * stride};
+  }
+
+  const model = {WIDTH, HEIGHT, SCALE, CHEST_RADIUS, STRIDE, PLAYER_STEPS, MAX_STEPS, random, height, gradient, makeMap, altitude, descend, stepToward, toView, toMap, inBounds, distance};
+
+  // ---------- Game ----------
+  const SVG = 'http://www.w3.org/2000/svg', STORE = 'lsworld.klee.hike.v1', VOICE_KEY = 'lsworld.klee.fishing.voice';
+  const FACES = {neutral: 0, happy: 1, laugh: 2, curious: 3, thinking: 4, care: 5, proud: 6, wink: 7};
+  const OUTCOMES = {found: '找到宝箱', flew: '飞出地图', pit: '掉进史莱姆坑', stuck: '停在平地', tired: '走不动了', bounce: '来回弹跳'};
+  function init(panel) {
+    const $ = selector => panel.querySelector(selector);
+    const svg = (tag, attributes = {}, parent) => {
+      const node = document.createElementNS(SVG, tag);
+      for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
+      parent?.append(node); return node;
+    };
+    const view = $('[data-hike-map]'), stage = $('.fish-stage'), terrain = $('[data-hike-terrain]'), contours = $('[data-hike-contours]');
+    const decor = $('[data-hike-decor]'), trails = $('[data-hike-trails]'), marks = $('[data-hike-marks]'), reveal = $('[data-hike-reveal]');
+    const fog = $('[data-hike-fog]'), arrow = $('[data-hike-arrow]'), reach = $('[data-hike-reach]'), aim = $('[data-hike-aim]');
+    const klee = $('[data-hike-klee]'), banner = $('[data-hike-banner]'), hudMap = $('[data-hike-hud-map]'), hudState = $('[data-hike-hud-state]');
+    const face = $('[data-hike-face]'), bubble = $('.fish-klee-line'), line = $('[data-hike-line]');
+    const rateInput = $('#hike-rate'), rateValue = $('[data-hike-rate-value]'), momentumToggle = $('[data-hike-momentum]');
+    const insightToggle = $('[data-hike-insight-toggle]'), insight = $('[data-hike-insight]'), insightStep = $('[data-hike-insight-step]');
+    const chartPlayer = $('[data-hike-chart="player"]'), chartKlee = $('[data-hike-chart="klee"]'), chartValue = $('[data-hike-chart-value]');
+    const doneButton = $('[data-hike-done]'), algorithmButton = $('[data-hike-algorithm]'), stepButton = $('[data-hike-step]'), skipButton = $('[data-hike-skip]');
+    const retryButton = $('[data-hike-retry]'), againButton = $('[data-hike-again]'), newButton = $('[data-hike-new]');
+    const seedLabel = $('[data-hike-seed]'), scorePlayer = $('[data-hike-score="player"]'), scoreKlee = $('[data-hike-score="klee"]'), verdict = $('[data-hike-verdict]');
+    const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ----- Voice: shares the fishing game's recordings manifest and switch -----
+    const voiceToggle = $('[data-hike-voice-toggle]'), sound = new Audio();
+    let voiceLines = {}, voiceOn = true, speaking = null, queued = null, talkFrame = 0;
+    try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (_) { /* Default on. */ }
+    voiceToggle.checked = voiceOn; sound.preload = 'auto';
+    fetch(panel.dataset.voiceManifest, {cache: 'no-cache'}).then(response => response.ok ? response.json() : null)
+      .then(data => { voiceLines = data?.lines || {}; }).catch(() => {});
+    function quiet() { cancelAnimationFrame(talkFrame); face.classList.remove('is-talking'); face.style.removeProperty('--talk'); }
+    function stopVoice() { queued = null; speaking = null; quiet(); if (!sound.paused) sound.pause(); }
+    function voice(id, {minor = false, queue = false} = {}) {
+      const record = voiceLines[id];
+      if (!voiceOn || !record || document.hidden) return;
+      const busy = speaking && !sound.paused && !sound.ended;
+      if (busy && minor) return;
+      if (busy && queue) { queued = id; return; }
+      queued = null; quiet(); speaking = {id, record}; sound.src = record.audio;
+      sound.play().then(() => {
+        panel.dataset.hikeVoice = id;
+        const step = () => {
+          if (!speaking || sound.paused || sound.ended) { quiet(); return; }
+          const level = speaking.record.envelope?.[Math.floor(sound.currentTime / (speaking.record.step || .05))] || 0;
+          face.style.setProperty('--talk', Math.min(1, level / .18).toFixed(2)); face.classList.add('is-talking');
+          talkFrame = requestAnimationFrame(step);
+        };
+        step();
+      }).catch(() => { if (speaking?.id === id) speaking = null; });
+    }
+    sound.addEventListener('ended', () => { quiet(); speaking = null; if (queued) { const next = queued; queued = null; voice(next); } });
+    voiceToggle.addEventListener('change', () => {
+      voiceOn = voiceToggle.checked; if (!voiceOn) stopVoice();
+      try { localStorage.setItem(VOICE_KEY, voiceOn ? 'on' : 'off'); } catch (_) {}
+    });
+
+    let stats = {rounds: 0, wins: 0, flew: 0};
+    try { Object.assign(stats, JSON.parse(localStorage.getItem(STORE) || '{}')); } catch (_) { /* Optional. */ }
+    const save = () => { try { localStorage.setItem(STORE, JSON.stringify(stats)); } catch (_) {} };
+    const showStats = () => { for (const key of ['rounds', 'wins', 'flew']) $(`[data-hike-stat="${key}"]`).textContent = stats[key]; };
+
+    let map = null, phase = 'lead', walker = null, playerPath = [], playerResult = null, run = null, frameIndex = 0, timer = null, later = [], kleeAt = null;
+    const wait = (callback, ms) => { const id = setTimeout(() => { later = later.filter(x => x !== id); callback(); }, ms); later.push(id); };
+    const restart = (node, name) => { node.classList.remove(name); void node.getBoundingClientRect(); node.classList.add(name); };
+    const say = (text, mood) => {
+      if (line.textContent !== text) { line.textContent = text; restart(bubble, 'is-new'); }
+      if (mood) { const index = FACES[mood] ?? 0; const position = `${index % 4 / 3 * 100}% ${Math.floor(index / 4) / 3 * 100}%`;
+        face.style.backgroundPosition = position; klee.querySelector('.hike-klee-face').style.backgroundPosition = position; }
+    };
+    const announce = text => { banner.textContent = text; restart(banner, 'is-shown'); };
+    const rate = () => Number(rateInput.value), momentum = () => momentumToggle.checked ? 0.8 : 0;
+    const metres = value => value === null ? '—' : `${value} 米`;
+
+    // ----- Terrain picture: hypsometric tint with hill shading, drawn once per map. -----
+    const STOPS = [[0, [196, 230, 132]], [.18, [139, 203, 112]], [.4, [86, 160, 92]], [.6, [128, 140, 92]], [.75, [160, 136, 104]], [.88, [196, 184, 170]], [1, [247, 246, 242]]];
+    function tint(t) {
+      for (let i = 1; i < STOPS.length; i++) if (t <= STOPS[i][0]) {
+        const [t0, c0] = STOPS[i - 1], [t1, c1] = STOPS[i], k = (t - t0) / (t1 - t0);
+        return c0.map((c, j) => c + (c1[j] - c) * k);
+      }
+      return STOPS.at(-1)[1];
+    }
+    function paintTerrain() {
+      const canvas = document.createElement('canvas'), w = 320, h = 200; canvas.width = w; canvas.height = h;
+      const context = canvas.getContext('2d'), image = context.createImageData(w, h);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const p = toMap({x: (x + .5) * WIDTH / w, y: (y + .5) * HEIGHT / h}), t = (height(map, p) - map.low) / (map.high - map.low), g = gradient(map, p);
+        // Light from the upper left.
+        const shade = Math.max(.55, Math.min(1.25, 1 + (g.u * -0.7 + g.v * 0.7) * -0.55 / Math.sqrt(1 + g.u * g.u + g.v * g.v)));
+        const color = tint(Math.max(0, Math.min(1, t))), index = (y * w + x) * 4;
+        image.data[index] = color[0] * shade; image.data[index + 1] = color[1] * shade; image.data[index + 2] = color[2] * shade; image.data[index + 3] = 255;
+      }
+      context.putImageData(image, 0, 0);
+      terrain.setAttribute('href', canvas.toDataURL('image/png'));
+    }
+    // Contour lines with marching squares on a 4 px grid.
+    function drawContours() {
+      contours.replaceChildren();
+      const step = 4, cols = WIDTH / step, rows = HEIGHT / step, grid = [];
+      for (let j = 0; j <= rows; j++) { grid.push([]); for (let i = 0; i <= cols; i++) grid[j].push(height(map, toMap({x: i * step, y: j * step}))); }
+      const levels = 14;
+      for (let level = 1; level < levels; level++) {
+        const value = map.low + (map.high - map.low) * level / levels, parts = [];
+        for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+          const a = grid[j][i], b = grid[j][i + 1], c = grid[j + 1][i + 1], d = grid[j + 1][i];
+          const edge = (p, q, x0, y0, x1, y1) => { const k = (value - p) / (q - p); return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k]; };
+          const x = i * step, y = j * step, points = [];
+          if ((a < value) !== (b < value)) points.push(edge(a, b, x, y, x + step, y));
+          if ((b < value) !== (c < value)) points.push(edge(b, c, x + step, y, x + step, y + step));
+          if ((c < value) !== (d < value)) points.push(edge(c, d, x + step, y + step, x, y + step));
+          if ((d < value) !== (a < value)) points.push(edge(d, a, x, y + step, x, y));
+          for (let k = 0; k + 1 < points.length; k += 2) parts.push(`M${points[k][0].toFixed(1)} ${points[k][1].toFixed(1)}L${points[k + 1][0].toFixed(1)} ${points[k + 1][1].toFixed(1)}`);
+        }
+        svg('path', {class: 'hike-contour' + (level % 4 === 0 ? ' is-major' : ''), d: parts.join('')}, contours);
+      }
+    }
+    function drawDecor() {
+      decor.replaceChildren();
+      const rng = random(map.seed * 7 + 3), places = [];
+      for (let i = 0; i < 400 && places.length < 22; i++) {
+        const p = {u: -2.8 + rng() * 5.6, v: -1.7 + rng() * 3.4}, t = (height(map, p) - map.low) / (map.high - map.low);
+        if (t > .25 && t < .58 && [map.chest, map.pit, map.start].every(spot => distance(spot, p) > .45) && places.every(other => distance(other, p) > .32)) places.push(p);
+      }
+      for (const p of places) {
+        const q = toView(p), tree = svg('g', {class: 'hike-tree', transform: `translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})`}, decor);
+        svg('ellipse', {class: 'hike-tree-shadow', cx: 3, cy: 6, rx: 7, ry: 2.5}, tree);
+        svg('rect', {class: 'hike-trunk', x: -1.2, y: 1, width: 2.4, height: 5}, tree);
+        svg('path', {class: 'hike-leaves', d: 'M0-13L7 2H-7Z'}, tree);
+        svg('path', {class: 'hike-leaves is-light', d: 'M0-13L4-4H-4Z'}, tree);
+      }
+      // Treasure chest at the lowest valley, a slime in the shallow pit, the camp on the hill.
+      const chest = toView(map.chest), chestNode = svg('g', {class: 'hike-chest', 'data-hike-chest': '', transform: `translate(${chest.x.toFixed(1)} ${chest.y.toFixed(1)})`}, decor);
+      svg('circle', {class: 'hike-chest-glow', r: 22}, chestNode);
+      svg('ellipse', {class: 'hike-tree-shadow', cx: 1, cy: 9, rx: 13, ry: 3}, chestNode);
+      svg('rect', {class: 'hike-chest-box', x: -11, y: -2, width: 22, height: 11, rx: 2}, chestNode);
+      svg('path', {class: 'hike-chest-lid', d: 'M-11-2V-6Q-11-12 0-12Q11-12 11-6V-2Z'}, chestNode);
+      svg('path', {class: 'hike-chest-trim', d: 'M-11-2H11M-6-11V9M6-11V9'}, chestNode);
+      svg('rect', {class: 'hike-chest-lock', x: -2.5, y: -4, width: 5, height: 6, rx: 1}, chestNode);
+      const pit = toView(map.pit), slime = svg('g', {class: 'hike-slime', transform: `translate(${pit.x.toFixed(1)} ${pit.y.toFixed(1)})`}, decor);
+      svg('ellipse', {class: 'hike-pit', rx: 20, ry: 8, cy: 5}, slime);
+      svg('path', {class: 'hike-slime-body', d: 'M-10 6Q-11-8 0-9Q11-8 10 6Z'}, slime);
+      svg('circle', {class: 'hike-slime-eye', cx: -3.5, cy: -1, r: 1.6}, slime); svg('circle', {class: 'hike-slime-eye', cx: 3.5, cy: -1, r: 1.6}, slime);
+      const camp = toView(map.start), tent = svg('g', {class: 'hike-camp', transform: `translate(${camp.x.toFixed(1)} ${camp.y.toFixed(1)})`}, decor);
+      svg('path', {class: 'hike-tent', d: 'M-14 8L0-12 14 8Z'}, tent); svg('path', {class: 'hike-tent-door', d: 'M-4 8L0 0 4 8Z'}, tent);
+      svg('path', {class: 'hike-flag', d: 'M0-12V-22L8-19 0-16'}, tent);
+    }
+    function placeKlee(p, {jump = true} = {}) {
+      kleeAt = p; const q = toView(p);
+      klee.style.transform = `translate(${q.x}px, ${q.y}px)`;
+      if (jump && !reduced()) restart(klee, 'is-hopping');
+      if (phase === 'lead') { reach.setAttribute('transform', `translate(${q.x} ${q.y})`); }
+      drawArrow(); hud();
+    }
+    function look(p, radius = 74) {
+      const q = toView(p);
+      svg('circle', {cx: q.x.toFixed(1), cy: q.y.toFixed(1), r: radius}, reveal);
+    }
+    function drawArrow() {
+      arrow.replaceChildren();
+      if (!insightToggle.checked || !kleeAt || !inBounds(kleeAt) || ['done', 'finishing'].includes(phase)) return;
+      const g = gradient(map, kleeAt), length = Math.hypot(g.u, g.v); if (length < .05) return;
+      const q = toView(kleeAt), scale = Math.min(70, 30 + length * 25) / length;
+      const end = {x: q.x - g.u * scale, y: q.y + g.v * scale};
+      svg('line', {class: 'hike-arrow', x1: q.x, y1: q.y, x2: end.x.toFixed(1), y2: end.y.toFixed(1), 'marker-end': 'url(#hike-arrowhead)'}, arrow);
+      svg('text', {class: 'hike-arrow-label', x: end.x.toFixed(1), y: (end.y - 6).toFixed(1)}, arrow).textContent = '最陡下坡';
+    }
+    function trail(points, owner) {
+      const path = points.map((p, i) => { const q = toView(p); return `${i ? 'L' : 'M'}${q.x.toFixed(1)} ${q.y.toFixed(1)}`; }).join('');
+      let node = trails.querySelector(`.hike-trail-${owner}`);
+      if (!node) node = svg('path', {class: `hike-trail hike-trail-${owner}`}, trails);
+      node.setAttribute('d', path);
+      marks.querySelectorAll(`.hike-step-${owner}`).forEach(dot => dot.remove());
+      points.slice(1).forEach((p, i) => { const q = toView(p); if (!inBounds(p)) return;
+        svg('circle', {class: `hike-step hike-step-${owner}`, cx: q.x.toFixed(1), cy: q.y.toFixed(1), r: 3.4, 'data-step': i + 1}, marks); });
+    }
+    function chart() {
+      const series = [[chartPlayer, playerPath.map(p => altitude(map, p))], [chartKlee, run ? run.frames.slice(0, frameIndex).map(f => f.alt).filter(v => v !== null) : []]];
+      const span = Math.max(2, ...series.map(([, values]) => values.length)) - 1;
+      for (const [node, values] of series) node.setAttribute('points', values.map((value, i) => `${(6 + i * 288 / span).toFixed(1)},${(60 - value / METRES * 54).toFixed(1)}`).join(' '));
+      const last = series.map(([, values]) => values.at(-1));
+      chartValue.textContent = `旅行者 ${metres(last[0] ?? null)} · 可莉 ${metres(last[1] ?? null)}`;
+    }
+    function score(node, result) {
+      node.querySelector('strong').textContent = result ? (result.found ? `${result.steps} 步找到` : OUTCOMES[result.outcome] || '没找到') : '—';
+      node.querySelector('small').textContent = result ? `终点海拔 ${metres(result.alt)}` : '终点海拔 —';
+      node.querySelector('.fish-score-bar i').style.width = result ? `${Math.max(0, 100 - (result.alt ?? METRES) / METRES * 100)}%` : '0%';
+    }
+    const setPhase = value => {
+      phase = value; panel.dataset.hikePhase = value;
+      doneButton.disabled = value !== 'lead';
+      algorithmButton.disabled = !['led', 'algorithm'].includes(value);
+      stepButton.disabled = skipButton.disabled = value !== 'algorithm';
+      retryButton.disabled = value !== 'done';
+      algorithmButton.textContent = value === 'algorithm' ? (timer ? '暂停' : '继续下山') : '看可莉的下山秘诀';
+      reach.toggleAttribute('hidden', value !== 'lead');
+      hud();
+    };
+    function hud() {
+      if (!map) return;
+      hudMap.textContent = `山 #${map.seed} · 海拔 ${metres(kleeAt ? (inBounds(kleeAt) ? altitude(map, kleeAt) : null) : null)}`;
+      hudState.textContent = phase === 'lead' ? `旅行者带路 ${playerPath.length - 1}/${PLAYER_STEPS}` : phase === 'done' ? '本局结算'
+        : phase === 'algorithm' || phase === 'finishing' ? `可莉 · 第 ${Math.max(0, frameIndex - 1)} 步` : '准备交给可莉';
+    }
+
+    // ----- Player leads through the fog -----
+    function viewPoint(event) {
+      const matrix = view.getScreenCTM(); if (!matrix) return null;
+      const p = view.createSVGPoint(); p.x = event.clientX; p.y = event.clientY;
+      const q = p.matrixTransform(matrix.inverse());
+      return toMap({x: Math.max(0, Math.min(WIDTH, q.x)), y: Math.max(0, Math.min(HEIGHT, q.y))});
+    }
+    view.addEventListener('click', event => {
+      if (phase !== 'lead') return;
+      const target = viewPoint(event); if (!target) return;
+      const next = stepToward(kleeAt, target);
+      if (distance(next, kleeAt) < .02) return;
+      playerPath.push(next); look(next); placeKlee(next); trail(playerPath, 'player'); chart();
+      const found = distance(next, map.chest) <= CHEST_RADIUS, left = PLAYER_STEPS - (playerPath.length - 1), alt = altitude(map, next);
+      aim.setAttribute('hidden', '');
+      if (found) { finishLead(true); return; }
+      if (!left) { finishLead(false); return; }
+      const before = altitude(map, playerPath.at(-2));
+      say(alt < before - 30 ? `往下走了 ${before - alt} 米！还剩 ${left} 步，宝箱应该在更低的地方～` : alt > before + 30
+        ? `咦，往上爬了 ${alt - before} 米……还剩 ${left} 步。` : `差不多一样高呢，还剩 ${left} 步。`, alt < before ? 'happy' : 'curious');
+      hud();
+    });
+    view.addEventListener('pointermove', event => {
+      if (phase !== 'lead' || event.pointerType === 'touch') { aim.setAttribute('hidden', ''); return; }
+      const target = viewPoint(event); if (!target) return;
+      const a = toView(kleeAt), b = toView(stepToward(kleeAt, target));
+      aim.querySelector('line').setAttribute('x1', a.x); aim.querySelector('line').setAttribute('y1', a.y);
+      aim.querySelector('line').setAttribute('x2', b.x); aim.querySelector('line').setAttribute('y2', b.y);
+      aim.querySelector('circle').setAttribute('cx', b.x); aim.querySelector('circle').setAttribute('cy', b.y);
+      aim.removeAttribute('hidden');
+    });
+    view.addEventListener('pointerleave', () => aim.setAttribute('hidden', ''));
+    function finishLead(found) {
+      const end = playerPath.at(-1);
+      playerResult = {found, steps: playerPath.length - 1, alt: altitude(map, end), outcome: found ? 'found' : 'tired'};
+      score(scorePlayer, playerResult); setPhase('led');
+      if (found) { announce('找到宝箱！'); say(`找到宝箱啦！旅行者只用了 ${playerResult.steps} 步！看可莉能不能更快～`, 'laugh'); voice('klee-hike-found'); look(map.chest, 40); }
+      else { say(`${PLAYER_STEPS} 步走完啦，现在海拔 ${playerResult.alt} 米……宝箱还没找到。看可莉的下山秘诀！`, 'care'); voice('klee-hike-tired'); }
+    }
+    doneButton.addEventListener('click', () => { if (phase === 'lead' && playerPath.length > 1) finishLead(distance(playerPath.at(-1), map.chest) <= CHEST_RADIUS); else if (phase === 'lead') say('先点地图带可莉走一步嘛！', 'wink'); });
+
+    // ----- Klee: gradient descent, one real step per frame -----
+    function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
+    function showFrame(frame) {
+      if (frame.step === 0) {
+        placeKlee(frame.p, {jump: false}); say('轮到可莉！不看远处，只看脚下哪边最陡，就往那边迈一步！', 'thinking');
+        insightStep.textContent = `出发：位置 (${frame.p.u.toFixed(2)}, ${frame.p.v.toFixed(2)})，海拔 ${frame.alt} 米。规则：新位置 = 旧位置 − η × 坡度（梯度）${momentum() ? '，再加上 0.8 倍的上一步（风之翼的惯性）' : ''}。`;
+        return;
+      }
+      const shown = run.frames.slice(0, frameIndex);
+      trail(shown.map(f => f.p), 'klee'); placeKlee(frame.p);
+      if (inBounds(frame.p)) look(frame.p, 60);
+      const g = Math.hypot(frame.g.u, frame.g.v);
+      insightStep.textContent = `第 ${frame.step} 步：坡度 (${frame.g.u.toFixed(2)}, ${frame.g.v.toFixed(2)})，陡度 ${g.toFixed(2)}；` +
+        `迈出 ${frame.move.toFixed(2)}（≈ ${Math.round(frame.move * SCALE)} 像素）${frame.alt === null ? '，冲出了地图！' : `，海拔 ${frame.alt} 米。`}`;
+      const zig = shown.length > 2 && (() => { const a = shown.at(-1), b = shown.at(-2); return (a.p.u - a.from.u) * (b.p.u - b.from.u) + (a.p.v - a.from.v) * (b.p.v - b.from.v) < 0; })();
+      if (zig) { say('哇，步子太大，跳到山谷对面去啦！', 'wink'); voice('klee-hike-bounce', {minor: true}); }
+      else say(frame.step === 1 ? '第 1 步！这边最陡，冲呀～' : `第 ${frame.step} 步，海拔 ${frame.alt ?? '？'} 米。`, 'curious');
+      chart(); hud();
+    }
+    function advance() {
+      if (!run || frameIndex >= run.frames.length) return;
+      showFrame(run.frames[frameIndex++]);
+      if (frameIndex >= run.frames.length) finish(); else setPhase('algorithm');
+    }
+    function play() { stopTimer(); timer = setInterval(advance, reduced() ? 450 : 650); setPhase('algorithm'); }
+    function startKlee() {
+      run = descend(map, {rate: rate(), momentum: momentum()}); frameIndex = 0;
+      trails.querySelector('.hike-trail-klee')?.remove(); marks.querySelectorAll('.hike-step-klee').forEach(dot => dot.remove());
+      verdict.hidden = true; scoreKlee.classList.remove('is-winner'); scorePlayer.classList.remove('is-winner'); score(scoreKlee, null);
+      announce('可莉的回合！'); voice('klee-hike-start', {queue: true}); advance(); play();
+    }
+    function finish() {
+      stopTimer(); setPhase('finishing'); arrow.replaceChildren();
+      const outcome = run.outcome, last = run.frames.at(-1), found = outcome === 'found';
+      const result = {found, steps: last.step, alt: outcome === 'flew' ? null : last.alt, outcome};
+      score(scoreKlee, result);
+      if (outcome === 'flew') {
+        if (!reduced()) restart(stage, 'is-shaking');
+        klee.classList.add('is-flying'); stats.flew++;
+        announce('飞出地图啦！'); say(`哇啊——步子 η = ${rate()} 太大了，越跳越远，飞出地图啦！`, 'care'); voice('klee-hike-flew', {queue: true});
+      } else if (found) { announce('找到宝箱！'); say(`找到宝箱啦！可莉走了 ${last.step} 步！好耶！`, 'proud'); voice('klee-hike-win', {queue: true}); look(map.chest, 40); }
+      else if (outcome === 'pit') { announce('史莱姆坑！'); say('咦？四周都是上坡……被史莱姆坑黏住了！', 'care'); voice('klee-hike-pit', {queue: true}); }
+      else if (outcome === 'bounce') { announce('停不下来！'); say(`步子 η = ${rate()} 有点大，在山谷两边弹来弹去，停不下来！`, 'wink'); voice('klee-hike-bounce', {queue: true}); }
+      else if (outcome === 'tired') { announce('走不动啦'); say(`${MAX_STEPS} 步都走完了……步子太小，走得好慢！`, 'care'); voice('klee-hike-slow', {queue: true}); }
+      else { announce('停下来了'); say('这里平平的，可莉不知道该往哪走了……', 'thinking'); }
+      // Reveal the whole mountain and compare both routes.
+      wait(() => {
+        panel.classList.add('is-revealed');
+        const playerWins = playerResult.found && (!found || playerResult.steps < result.steps) || !playerResult.found && !found && playerResult.alt < (result.alt ?? Infinity);
+        const kleeWins = found && (!playerResult.found || result.steps < playerResult.steps) || !playerResult.found && !found && (result.alt ?? Infinity) < playerResult.alt;
+        scorePlayer.classList.toggle('is-winner', playerWins); scoreKlee.classList.toggle('is-winner', kleeWins);
+        stats.rounds++; if (playerWins) stats.wins++; save(); showStats();
+        const notes = {
+          found: `可莉每一步只看脚下的坡度，往最陡的下坡方向迈一步，${result.steps} 步走到了宝箱。` + (run.zigzags >= 3 ? `中间在山谷两侧来回跳了 ${run.zigzags} 次——步子再小一点会更稳。` : ''),
+          flew: `步子 η = ${rate()} 太大：一步跨过山谷冲上对面更高的坡，下一步坡更陡、迈得更远，越弹越远——学习率太大，梯度下降就会发散。试试把步子调小。`,
+          pit: `史莱姆坑四周都是上坡，坡度变成 0，梯度下降以为已经到底了——这就是“局部最小值”。试试打开风之翼（动量），或者换个步子。`,
+          stuck: '这里坡度几乎为 0，梯度下降每一步都迈不动了。试试换个步子或打开风之翼。',
+          bounce: `步子 η = ${rate()} 偏大：每一步都跨过谷底，落到对面的坡上，又被坡度推回来，${MAX_STEPS} 步里来回折返了 ${run.zigzags} 次——学习率偏大会震荡。试试把步子调小一点。`,
+          tired: `步子 η = ${rate()} 太小，${MAX_STEPS} 步还没走到底——学习率太小，收敛就很慢。试试把步子调大一点。`
+        };
+        verdict.textContent = notes[outcome] + (playerResult.found ? ` 旅行者在雾里 ${playerResult.steps} 步就找到了宝箱！` : ` 旅行者停在海拔 ${playerResult.alt} 米。`);
+        verdict.hidden = false; setPhase('done');
+        insightStep.textContent = `结果：${OUTCOMES[outcome]}。可莉共走 ${result.steps} 步，步子 η = ${rate()}${momentum() ? '，开着风之翼（动量 0.8）' : ''}。`;
+      }, outcome === 'flew' && !reduced() ? 900 : 300);
+    }
+    algorithmButton.addEventListener('click', () => {
+      if (phase === 'led') { startKlee(); return; }
+      if (phase === 'algorithm') { if (timer) { stopTimer(); setPhase('algorithm'); } else play(); }
+    });
+    stepButton.addEventListener('click', () => { stopTimer(); advance(); });
+    skipButton.addEventListener('click', () => { stopTimer(); while (run && frameIndex < run.frames.length - 1) frameIndex++; advance(); });
+    retryButton.addEventListener('click', () => {
+      if (phase !== 'done') return;
+      klee.classList.remove('is-flying'); panel.classList.remove('is-revealed'); setPhase('led'); startKlee();
+    });
+
+    // ----- Rounds -----
+    function again() {
+      stopTimer(); stopVoice(); later.forEach(clearTimeout); later = [];
+      panel.classList.remove('is-revealed'); klee.classList.remove('is-flying', 'is-hopping'); stage.classList.remove('is-shaking');
+      trails.replaceChildren(); marks.replaceChildren(); reveal.replaceChildren(); arrow.replaceChildren();
+      run = null; frameIndex = 0; playerPath = [{...map.start}]; playerResult = null;
+      verdict.hidden = true; scorePlayer.classList.remove('is-winner'); scoreKlee.classList.remove('is-winner'); score(scorePlayer, null); score(scoreKlee, null);
+      setPhase('lead'); look(map.start); placeKlee(map.start, {jump: false}); chart();
+      insightStep.textContent = '出发后，这里会显示每一步的坡度、迈出的距离和海拔。';
+      announce('旅行者带路！');
+      say(`山上起雾了！宝箱藏在最低的山谷里。点地图带可莉走，每步最远 ${Math.round(STRIDE * SCALE)} 像素，一共 ${PLAYER_STEPS} 步！`, 'happy');
+      voice('klee-hike-intro');
+    }
+    function newMap(seed = 1000 + Math.floor(Math.random() * 9000)) {
+      map = makeMap(seed); seedLabel.textContent = '#' + seed;
+      paintTerrain(); drawContours(); drawDecor(); again();
+    }
+    againButton.addEventListener('click', again);
+    newButton.addEventListener('click', () => newMap());
+    rateInput.addEventListener('input', () => { rateValue.textContent = rate().toFixed(2); });
+    insightToggle.addEventListener('change', () => { insight.hidden = !insightToggle.checked; drawArrow(); });
+
+    const seedFromHash = Number(new URLSearchParams(location.hash.split('?')[1] || '').get('map'));
+    rateValue.textContent = rate().toFixed(2); insight.hidden = !insightToggle.checked; showStats();
+    newMap(Number.isSafeInteger(seedFromHash) && seedFromHash > 0 ? seedFromHash : undefined);
+    return () => { stopVoice(); if (timer) { stopTimer(); setPhase('algorithm'); } };
+  }
+
+  return {model, init};
+});
+
+;
 /* js/ai-experiments.js */
 /* Local interactive examples. No remote model or third-party runtime required. */
 (() => {
@@ -804,13 +1780,14 @@
     const tabs=[...tablist.querySelectorAll('[data-experiment-tab]')];
     const panels=[...document.querySelectorAll('[data-experiment-panel]')];
     const initialized=new Map(),failed=new Set();
-    const initializers={sampling,attention,rag,network};
+    // Experiments in their own files register in window.LabExperiments.
+    const initializers={sampling,attention,rag,network,...(window.LabExperiments||{})};
     const stop=()=>{
       initialized.forEach(pause=>pause());
       document.dispatchEvent(new CustomEvent('lab:panel-change'));
     };
     function activate(id,focus=false) {
-      if(!tabs.some(tab=>tab.dataset.experimentTab===id))id='gradient';
+      if(!tabs.some(tab=>tab.dataset.experimentTab===id))id=tabs[0].dataset.experimentTab;
       stop();
       tabs.forEach(tab=>{
         const active=tab.dataset.experimentTab===id;
@@ -844,11 +1821,13 @@
       });
     });
     const visibility=()=>{if(document.hidden)stop();};
-    const hash=()=>activate(location.hash.slice(1));
+    // `#hike?map=1001`: the tab is the part before `?`; games read their own parameters.
+    const tabFromHash=()=>location.hash.slice(1).split('?')[0];
+    const hash=()=>activate(tabFromHash());
     let listening=false;
     const resume=()=>{
       if(!listening){document.addEventListener('visibilitychange',visibility);window.addEventListener('hashchange',hash);listening=true;}
-      activate(location.hash.slice(1));
+      activate(tabFromHash());
     };
     const pause=()=>{
       stop();document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',hash);listening=false;
