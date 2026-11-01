@@ -98,17 +98,11 @@
   const model = {WIDTH, HEIGHT, RADIUS, random, makeLake, nearest, assign, update, sse, labeledSse, caught, averageDistance, initCenters, kmeans};
 
   // ---------- Game ----------
-  const SVG = 'http://www.w3.org/2000/svg', STORE = 'lsworld.klee.fishing.v1', COLORS = 5;
-  // Frames in the companion's expression sheet (4 × 4).
-  const FACES = {neutral: 0, happy: 1, laugh: 2, curious: 3, thinking: 4, care: 5, proud: 6, wink: 7};
+  const STORE = 'lsworld.klee.fishing.v1', COLORS = 5;
   const ELEMENTS = ['火', '水', '风', '雷', '岩'];
   function init(panel) {
     const $ = selector => panel.querySelector(selector);
-    const svg = (tag, attributes = {}, parent) => {
-      const node = document.createElementNS(SVG, tag);
-      for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
-      parent?.append(node); return node;
-    };
+    const kit = window.LabGameKit, {svg, reduced, restart} = kit;
     const lake = $('[data-fish-lake]'), stage = $('.fish-stage'), school = $('[data-fish-school]'), bombs = $('[data-fish-bombs]');
     const lines = $('[data-fish-lines]'), arrows = $('[data-fish-arrows]'), blasts = $('[data-fish-blasts]'), effects = $('[data-fish-fx]');
     const preview = $('[data-fish-preview]'), banner = $('[data-fish-banner]'), hudLake = $('[data-fish-hud-lake]'), hudState = $('[data-fish-hud-state]');
@@ -119,66 +113,19 @@
     const stepButton = $('[data-fish-step]'), skipButton = $('[data-fish-skip]'), againButton = $('[data-fish-again]'), newButton = $('[data-fish-new]');
     const seedLabel = $('[data-fish-seed]'), scorePlayer = $('[data-fish-score="player"]'), scoreKlee = $('[data-fish-score="klee"]');
     const jean = $('[data-fish-jean]'), jeanButton = $('[data-fish-jean-close]'), verdict = $('[data-fish-verdict]');
-    const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // ----- Voice: pre-recorded lines, text-only when a recording is missing -----
-    const VOICE_KEY = 'lsworld.klee.fishing.voice', voiceToggle = $('[data-fish-voice-toggle]'), sound = new Audio();
-    let voiceLines = {}, voiceOn = true, speaking = null, queued = null, talkFrame = 0;
-    try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (_) { /* Default on. */ }
-    voiceToggle.checked = voiceOn; sound.preload = 'auto';
-    fetch(panel.dataset.voiceManifest, {cache: 'no-cache'}).then(response => response.ok ? response.json() : null)
-      .then(data => { voiceLines = data?.lines || {}; }).catch(() => {});
-    function quiet() {
-      cancelAnimationFrame(talkFrame);
-      for (const node of [face, jean]) { node.classList.remove('is-talking'); node.style.removeProperty('--talk'); }
-    }
-    function stopVoice() { queued = null; speaking = null; quiet(); if (!sound.paused) sound.pause(); }
-    // minor: skip while someone is talking. queue: wait for the current line to end.
-    function voice(id, {minor = false, queue = false} = {}) {
-      const line = voiceLines[id];
-      if (!voiceOn || !line || document.hidden) return;
-      const busy = speaking && !sound.paused && !sound.ended;
-      if (busy && minor) return;
-      if (busy && queue) { queued = id; return; }
-      queued = null; quiet(); speaking = {id, line}; sound.src = line.audio;
-      sound.play().then(() => { panel.dataset.fishVoice = id; talk(); }).catch(() => { if (speaking?.id === id) speaking = null; });
-    }
-    function talk() {
-      const target = speaking?.line.speaker === 'jean' ? jean : face;
-      const step = () => {
-        if (!speaking || sound.paused || sound.ended) { quiet(); return; }
-        const level = speaking.line.envelope?.[Math.floor(sound.currentTime / (speaking.line.step || .05))] || 0;
-        target.style.setProperty('--talk', Math.min(1, level / .18).toFixed(2)); target.classList.add('is-talking');
-        talkFrame = requestAnimationFrame(step);
-      };
-      step();
-    }
-    sound.addEventListener('ended', () => { quiet(); speaking = null; if (queued) { const next = queued; queued = null; voice(next); } });
-    voiceToggle.addEventListener('change', () => {
-      voiceOn = voiceToggle.checked; if (!voiceOn) stopVoice();
-      try { localStorage.setItem(VOICE_KEY, voiceOn ? 'on' : 'off'); } catch (_) {}
-    });
+    // ----- Klee hosts the game: bubble, expressions, banner and voice (Jean speaks too) -----
+    const {say, setFace, announce, voice, stopVoice, recording} = kit.host(panel, {face, bubble, line, banner, toggle: $('[data-fish-voice-toggle]'),
+      talker: record => record.speaker === 'jean' ? jean : face, voiceAttr: 'fishVoice'});
 
-    let stats = {rounds: 0, wins: 0, best: 0, jail: 0};
-    try { Object.assign(stats, JSON.parse(localStorage.getItem(STORE) || '{}')); } catch (_) { /* Optional. */ }
-    const save = () => { try { localStorage.setItem(STORE, JSON.stringify(stats)); } catch (_) {} };
+    const stats = kit.stats(STORE, {rounds: 0, wins: 0, best: 0, jail: 0}).data, save = () => kit.store.set(STORE, JSON.stringify(stats));
     const showStats = () => {
       $('[data-fish-stat="rounds"]').textContent = stats.rounds; $('[data-fish-stat="wins"]').textContent = stats.wins; $('[data-fish-stat="jail"]').textContent = stats.jail;
     };
 
-    let water = null, fishNodes = [], player = [], frames = [], frameIndex = 0, timer = null, phase = 'place', playerCaught = 0, sseHistory = [], later = [];
+    let water = null, fishNodes = [], player = [], frames = [], frameIndex = 0, timer = null, phase = 'place', playerCaught = 0, sseHistory = [];
     const k = () => Number(kInput.value);
-    const wait = (callback, ms) => { const id = setTimeout(() => { later = later.filter(x => x !== id); callback(); }, ms); later.push(id); };
-    const restart = (node, name) => { node.classList.remove(name); void node.getBoundingClientRect(); node.classList.add(name); };
-    function say(text, mood) {
-      if (line.textContent !== text) { line.textContent = text; restart(bubble, 'is-new'); }
-      if (mood) setFace(mood);
-    }
-    function setFace(mood) {
-      const index = FACES[mood] ?? 0;
-      face.style.backgroundPosition = `${index % 4 / 3 * 100}% ${Math.floor(index / 4) / 3 * 100}%`; face.dataset.mood = mood;
-    }
-    function announce(text) { banner.textContent = text; restart(banner, 'is-shown'); }
+    const clock = kit.timers(), wait = clock.wait;
     const setPhase = value => {
       phase = value; panel.dataset.fishPhase = value;
       throwButton.disabled = value !== 'place' || player.length !== k();
@@ -443,7 +390,7 @@
         if (stats.rounds % 3 === 0) wait(() => { stats.jail++; save(); showStats(); setFace('care'); jean.hidden = false; jeanButton.focus();
           const lineId = stats.jail % 2 ? 'jean-caught' : 'jean-lecture';
           const subtitle = $('[data-fish-jean-line]');
-          if (subtitle && voiceLines[lineId]?.text) subtitle.textContent = voiceLines[lineId].text;
+          if (subtitle && recording(lineId)?.text) subtitle.textContent = recording(lineId).text;
           voice(lineId, {queue: true}); }, reduced() ? 100 : 1400);
       });
     }
@@ -459,7 +406,7 @@
 
     // ----- Rounds -----
     function again() {
-      stopTimer(); stopVoice(); later.forEach(clearTimeout); later = [];
+      stopTimer(); stopVoice(); clock.clear();
       player = []; frames = []; frameIndex = 0; sseHistory = []; playerCaught = 0;
       stage.classList.remove('is-shaking'); drawWater(); score(scorePlayer, null, null); score(scoreKlee, null, null);
       scorePlayer.classList.remove('is-winner'); scoreKlee.classList.remove('is-winner'); verdict.hidden = true; jean.hidden = true;

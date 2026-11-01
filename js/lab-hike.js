@@ -120,16 +120,11 @@
   const model = {WIDTH, HEIGHT, SCALE, CHEST_RADIUS, STRIDE, PLAYER_STEPS, MAX_STEPS, random, height, gradient, makeMap, altitude, descend, stepToward, toView, toMap, inBounds, distance};
 
   // ---------- Game ----------
-  const SVG = 'http://www.w3.org/2000/svg', STORE = 'lsworld.klee.hike.v1', VOICE_KEY = 'lsworld.klee.fishing.voice';
-  const FACES = {neutral: 0, happy: 1, laugh: 2, curious: 3, thinking: 4, care: 5, proud: 6, wink: 7};
+  const STORE = 'lsworld.klee.hike.v1';
   const OUTCOMES = {found: '找到宝箱', flew: '飞出地图', pit: '掉进史莱姆坑', stuck: '停在平地', tired: '走不动了', bounce: '来回弹跳'};
   function init(panel) {
     const $ = selector => panel.querySelector(selector);
-    const svg = (tag, attributes = {}, parent) => {
-      const node = document.createElementNS(SVG, tag);
-      for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
-      parent?.append(node); return node;
-    };
+    const kit = window.LabGameKit, {svg, reduced, restart} = kit;
     const view = $('[data-hike-map]'), stage = $('.fish-stage'), terrain = $('[data-hike-terrain]'), contours = $('[data-hike-contours]');
     const decor = $('[data-hike-decor]'), trails = $('[data-hike-trails]'), marks = $('[data-hike-marks]'), reveal = $('[data-hike-reveal]');
     const fog = $('[data-hike-fog]'), arrow = $('[data-hike-arrow]'), reach = $('[data-hike-reach]'), aim = $('[data-hike-aim]');
@@ -141,55 +136,16 @@
     const doneButton = $('[data-hike-done]'), algorithmButton = $('[data-hike-algorithm]'), stepButton = $('[data-hike-step]'), skipButton = $('[data-hike-skip]');
     const retryButton = $('[data-hike-retry]'), againButton = $('[data-hike-again]'), newButton = $('[data-hike-new]');
     const seedLabel = $('[data-hike-seed]'), scorePlayer = $('[data-hike-score="player"]'), scoreKlee = $('[data-hike-score="klee"]'), verdict = $('[data-hike-verdict]');
-    const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // ----- Voice: shares the fishing game's recordings manifest and switch -----
-    const voiceToggle = $('[data-hike-voice-toggle]'), sound = new Audio();
-    let voiceLines = {}, voiceOn = true, speaking = null, queued = null, talkFrame = 0;
-    try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (_) { /* Default on. */ }
-    voiceToggle.checked = voiceOn; sound.preload = 'auto';
-    fetch(panel.dataset.voiceManifest, {cache: 'no-cache'}).then(response => response.ok ? response.json() : null)
-      .then(data => { voiceLines = data?.lines || {}; }).catch(() => {});
-    function quiet() { cancelAnimationFrame(talkFrame); face.classList.remove('is-talking'); face.style.removeProperty('--talk'); }
-    function stopVoice() { queued = null; speaking = null; quiet(); if (!sound.paused) sound.pause(); }
-    function voice(id, {minor = false, queue = false} = {}) {
-      const record = voiceLines[id];
-      if (!voiceOn || !record || document.hidden) return;
-      const busy = speaking && !sound.paused && !sound.ended;
-      if (busy && minor) return;
-      if (busy && queue) { queued = id; return; }
-      queued = null; quiet(); speaking = {id, record}; sound.src = record.audio;
-      sound.play().then(() => {
-        panel.dataset.hikeVoice = id;
-        const step = () => {
-          if (!speaking || sound.paused || sound.ended) { quiet(); return; }
-          const level = speaking.record.envelope?.[Math.floor(sound.currentTime / (speaking.record.step || .05))] || 0;
-          face.style.setProperty('--talk', Math.min(1, level / .18).toFixed(2)); face.classList.add('is-talking');
-          talkFrame = requestAnimationFrame(step);
-        };
-        step();
-      }).catch(() => { if (speaking?.id === id) speaking = null; });
-    }
-    sound.addEventListener('ended', () => { quiet(); speaking = null; if (queued) { const next = queued; queued = null; voice(next); } });
-    voiceToggle.addEventListener('change', () => {
-      voiceOn = voiceToggle.checked; if (!voiceOn) stopVoice();
-      try { localStorage.setItem(VOICE_KEY, voiceOn ? 'on' : 'off'); } catch (_) {}
-    });
+    // ----- Klee hosts the game: bubble, expressions, banner and voice -----
+    const {say, announce, voice, stopVoice} = kit.host(panel, {face, bubble, line, banner, mirrors: [klee.querySelector('.hike-klee-face')],
+      toggle: $('[data-hike-voice-toggle]'), voiceAttr: 'hikeVoice'});
 
-    let stats = {rounds: 0, wins: 0, flew: 0};
-    try { Object.assign(stats, JSON.parse(localStorage.getItem(STORE) || '{}')); } catch (_) { /* Optional. */ }
-    const save = () => { try { localStorage.setItem(STORE, JSON.stringify(stats)); } catch (_) {} };
+    const stats = kit.stats(STORE, {rounds: 0, wins: 0, flew: 0}).data, save = () => kit.store.set(STORE, JSON.stringify(stats));
     const showStats = () => { for (const key of ['rounds', 'wins', 'flew']) $(`[data-hike-stat="${key}"]`).textContent = stats[key]; };
 
-    let map = null, phase = 'lead', walker = null, playerPath = [], playerResult = null, run = null, frameIndex = 0, timer = null, later = [], kleeAt = null;
-    const wait = (callback, ms) => { const id = setTimeout(() => { later = later.filter(x => x !== id); callback(); }, ms); later.push(id); };
-    const restart = (node, name) => { node.classList.remove(name); void node.getBoundingClientRect(); node.classList.add(name); };
-    const say = (text, mood) => {
-      if (line.textContent !== text) { line.textContent = text; restart(bubble, 'is-new'); }
-      if (mood) { const index = FACES[mood] ?? 0; const position = `${index % 4 / 3 * 100}% ${Math.floor(index / 4) / 3 * 100}%`;
-        face.style.backgroundPosition = position; klee.querySelector('.hike-klee-face').style.backgroundPosition = position; }
-    };
-    const announce = text => { banner.textContent = text; restart(banner, 'is-shown'); };
+    let map = null, phase = 'lead', walker = null, playerPath = [], playerResult = null, run = null, frameIndex = 0, timer = null, kleeAt = null;
+    const clock = kit.timers(), wait = clock.wait;
     const rate = () => Number(rateInput.value), momentum = () => momentumToggle.checked ? 0.8 : 0;
     const metres = value => value === null ? '—' : `${value} 米`;
 
@@ -443,7 +399,7 @@
 
     // ----- Rounds -----
     function again() {
-      stopTimer(); stopVoice(); later.forEach(clearTimeout); later = [];
+      stopTimer(); stopVoice(); clock.clear();
       panel.classList.remove('is-revealed'); klee.classList.remove('is-flying', 'is-hopping'); stage.classList.remove('is-shaking');
       trails.replaceChildren(); marks.replaceChildren(); reveal.replaceChildren(); arrow.replaceChildren();
       run = null; frameIndex = 0; playerPath = [{...map.start}]; playerResult = null;

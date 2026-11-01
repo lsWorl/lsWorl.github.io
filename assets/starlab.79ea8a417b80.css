@@ -867,6 +867,80 @@ h1,h2,h3,.site-name { font-family:inherit; letter-spacing:0; text-shadow:none; }
 @media(max-width:600px) { .hike-map { border-radius:18px; } }
 @media(prefers-reduced-motion:reduce) { .hike-panel *,.hike-panel *:before { animation:none !important; transition:none !important; } }
 
+/* Klee clears the hilichurl camps (greedy covering) */
+.camp-map { display:block; width:100%; height:auto; border-radius:24px; cursor:crosshair; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+.camp-panel:not([data-camp-phase='place']) .camp-map { cursor:default; }
+.fish-stage.is-shaking .camp-map { animation:fish-shake .45s ease; }
+.camp-far { fill:#9cc3d8; opacity:.75; }
+.camp-near { fill:#86bf73; }
+.camp-road { fill:url(#camp-road); }
+.camp-road-edge { fill:none; stroke:#b98e57; stroke-width:1.5; stroke-dasharray:10 6; opacity:.6; }
+.camp-rock { fill:#9a917f; stroke:#6f6758; stroke-width:.8; }
+.camp-ruler-line { stroke:#5a4a2c; stroke-width:1.4; opacity:.7; }
+.camp-tick { stroke:#5a4a2c; stroke-width:1; opacity:.55; }
+.camp-tick.is-major { stroke-width:1.4; opacity:.8; }
+.camp-tick-label { fill:#3f3420; font-size:10px; font-weight:700; text-anchor:middle; paint-order:stroke; stroke:rgba(255,255,255,.75); stroke-width:3px; }
+/* Camps */
+.camp { transition:opacity .3s; }
+.camp-shadow { fill:#3b2a14; opacity:.22; }
+.camp-wall { fill:#9b6a3c; stroke:#5a3a1d; stroke-width:1.1; }
+.camp-roof { fill:#d8b25c; stroke:#7a5520; stroke-width:1.2; stroke-linejoin:round; }
+.camp-straw { fill:none; stroke:#8f6a24; stroke-width:1; stroke-linecap:round; }
+.camp-door { fill:#3a2412; }
+.camp-pole { stroke:#6b4426; stroke-width:1.6; }
+.camp-mask-face { fill:#f3eee2; stroke:#5a4a3a; stroke-width:1; }
+.camp-mask-mark { fill:none; stroke:#c0392b; stroke-width:1.4; stroke-linecap:round; }
+.camp-label { fill:#4a3a20; font-size:9.5px; font-weight:700; text-anchor:middle; paint-order:stroke; stroke:rgba(255,248,232,.9); stroke-width:3px; }
+.camp-rubble { opacity:0; }
+.camp-rubble-pile { fill:#8d8170; stroke:#5d5446; stroke-width:1; }
+.camp-rubble-stick { stroke:#5a3a1d; stroke-width:1.8; stroke-linecap:round; }
+.camp-smoke { fill:#d8d4cc; opacity:.7; }
+.camp.is-cleared .camp-hut { opacity:0; transform:translateY(6px) scale(.7); }
+.camp.is-cleared .camp-rubble { opacity:1; }
+.camp.is-cleared .camp-label { opacity:.45; }
+.camp-hut { transform-box:fill-box; transform-origin:center bottom; transition:opacity .25s,transform .35s cubic-bezier(.3,1.4,.5,1); }
+.camp-rubble { transition:opacity .25s .1s; }
+.camp.is-hit .camp-smoke { animation:camp-smoke 1.4s ease-out; }
+@keyframes camp-smoke { from { transform:translateY(4px) scale(.4); opacity:.9; } to { transform:translateY(-8px) scale(1.3); opacity:0; } }
+.camp-smoke { transform-box:fill-box; transform-origin:center; }
+.camp.is-witness .camp-shadow { fill:#ffd24a; opacity:.9; animation:hike-glow 1.6s ease-in-out infinite; }
+.camp-pop { fill:#c4452f; font-size:13px; font-weight:800; text-anchor:middle; paint-order:stroke; stroke:#fff; stroke-width:3px; animation:fish-pop .9s ease-out forwards; }
+/* Bombs and reach */
+.camp-range { stroke-width:1.6; stroke-dasharray:6 5; transition:x .9s cubic-bezier(.3,1.1,.5,1),width .9s,opacity .3s; }
+.camp-range-player { fill:rgba(255,179,107,.18); stroke:rgba(226,87,60,.7); }
+.camp-range-klee { fill:rgba(143,208,255,.2); stroke:rgba(47,124,200,.75); }
+.camp-range.is-moved { fill:rgba(255,226,120,.22); stroke:rgba(200,145,29,.85); }
+.camp-range.is-spare { opacity:.15; }
+.camp-cursor[hidden] { display:none; }
+.camp-cursor rect { fill:rgba(255,255,255,.18); stroke:rgba(255,255,255,.95); stroke-width:1.6; stroke-dasharray:6 5; }
+.camp-cursor line { stroke:#e2573c; stroke-width:1.5; stroke-dasharray:3 4; }
+.camp-bomb { transition:transform .9s cubic-bezier(.3,1.1,.5,1),opacity .3s; }
+.camp-bomb-piece { transform-box:fill-box; transform-origin:center; }
+.camp-bomb.is-dropping .camp-bomb-piece { animation:fish-drop .55s cubic-bezier(.3,1.5,.5,1); }
+.camp-bomb-shadow { fill:#3b2a14; opacity:.25; }
+.camp-bomb-body { fill:url(#camp-bomb-gradient); stroke:#6e1715; stroke-width:1.2; }
+.camp-bomb-badge { fill:#fff; stroke:#e2573c; stroke-width:1.6; }
+.camp-bomb-klee .camp-bomb-badge { stroke:#2f7cc8; }
+.camp-bomb.is-moved .camp-bomb-badge { stroke:#c8911d; }
+.camp-bomb.is-spent .camp-bomb-piece > :not(.camp-bomb-badge):not(.fish-bomb-label) { opacity:0; transition:opacity .15s; }
+.camp-bomb.is-waiting { opacity:.55; }
+.camp-bomb.is-spare { opacity:.25; }
+.camp-flash { fill:url(#camp-flash-gradient); transform-box:fill-box; transform-origin:center; animation:camp-flash .8s ease-out forwards; }
+@keyframes camp-flash { 0% { transform:scale(.2,.4); opacity:1; } 45% { transform:none; opacity:1; } 100% { transform:scale(1.05); opacity:0; } }
+.camp-panel .fish-ember { fill:#ffb347; transform-box:fill-box; transform-origin:center; animation:fish-burst .8s ease-out forwards; }
+/* The leftmost camp and where a bomb would still reach it */
+.camp-pointer { fill:#e2573c; animation:fish-float 1s ease-in-out infinite; }
+.camp-pointer-label,.camp-window-label { fill:#7a2a18; font-size:11px; font-weight:800; text-anchor:middle; paint-order:stroke; stroke:#fff; stroke-width:3px; }
+.camp-window-label { fill:#3d2a75; }
+.camp-window { fill:rgba(91,63,166,.16); stroke:rgba(91,63,166,.55); stroke-width:1.2; }
+.camp-window-edge { stroke:#5b3fa6; stroke-width:2; }
+.camp-window-pick { fill:#5b3fa6; }
+.camp-klee { transition:transform .45s cubic-bezier(.3,1.25,.5,1); }
+.camp-strategy { display:grid; gap:6px; margin:0; padding:10px 12px; border:1px solid var(--lab-border); border-radius:12px; }
+.camp-strategy legend { padding:0 4px; color:var(--lab-muted); font-size:13px; }
+@media(max-width:600px) { .camp-map { border-radius:18px; } }
+@media(prefers-reduced-motion:reduce) { .camp-panel *,.camp-panel *:before { animation:none !important; transition:none !important; } }
+
 /* css/home-motion.css */
 /* Fluid knowledge homepage and local AI diagrams. */
 body.lab-homepage { --home-gutter:clamp(16px,2vw,40px); }
