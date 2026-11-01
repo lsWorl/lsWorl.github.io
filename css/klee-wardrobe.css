@@ -23,6 +23,11 @@
 /* Bomb skins in the lab games */
 :root[data-klee-bomb] .fish-bomb-body, :root[data-klee-bomb] .camp-bomb-body { fill:url(#kw-bomb-skin); stroke:var(--kw-bomb-outline); }
 @media(prefers-reduced-motion:reduce) { .kw-twinkle, .kw-burst, .kw-hat-wrap { animation:none !important; } }
+/* Outfits: illustrations with the same 4 × 4 layout as Klee's portrait and expression sheets */
+:root[data-klee-outfit] .cp-avatar { background-image:var(--kw-outfit-atlas) !important; }
+:root[data-klee-outfit] .cp-expression-layer { --cp-expression-image:var(--kw-outfit-faces) !important; }
+:root[data-klee-outfit] .fish-klee-face, :root[data-klee-outfit] .hike-klee-face, :root[data-klee-outfit] .kwp-klee-face, :root[data-klee-outfit] .kq-face { background-image:var(--kw-outfit-face) !important; }
+:root[data-klee-outfit] .kwp-stage-klee { background-image:var(--kw-outfit-atlas) !important; }
 
 /* 可莉小测验 at the end of articles */
 .kq { margin:36px 0 12px; padding:18px 20px; border:2px solid #f0c9a3; border-radius:18px; background:linear-gradient(160deg,#fffaf4,#fff2e4); color:#4a3426; }

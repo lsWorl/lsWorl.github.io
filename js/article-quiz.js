@@ -26,7 +26,7 @@
     function idle() {
       body.replaceChildren(); const row = el('div', 'kq-actions');
       const start = el('button', 'kq-button kq-primary', '开始答题'); start.type = 'button'; start.addEventListener('click', load);
-      const wish = el('a', 'kq-button', '去可莉祈愿'); wish.href = '/lab/#wish';
+      const wish = el('a', 'kq-button', '去可莉祈愿'); wish.href = '/wish/';
       row.append(start, wish); body.append(row);
     }
     async function load() {
@@ -73,7 +73,7 @@
         el('span', 'kq-wallet', `现在有 ${data.wardrobe.primogems} 原石`));
       const row = el('div', 'kq-actions');
       const again = el('button', 'kq-button', '再出一份'); again.type = 'button'; again.addEventListener('click', load);
-      const wish = el('a', 'kq-button kq-primary', `去祈愿（${Math.floor(data.wardrobe.primogems / data.wardrobe.cost)} 次）`); wish.href = '/lab/#wish';
+      const wish = el('a', 'kq-button kq-primary', `去祈愿（${Math.floor(data.wardrobe.primogems / data.wardrobe.cost)} 次）`); wish.href = '/wish/';
       row.append(again, wish); body.append(summary, row);
       status.textContent = data.correct === 3 ? '全对！可莉给你放烟花！' : data.correct ? '不错哦，看看解析再试一次吧！' : '没关系，回到文章里再看看～';
     }

@@ -347,6 +347,9 @@ body { background: var(--lab-bg); color: var(--lab-ink); }
   .lab-map-note { padding: 14px; }
   .lab-route-title { gap: 10px; }
 }
+.lab-node-metadata { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 6px 10px; margin: 12px 0 0; font-size: 12px; line-height: 1.7; letter-spacing: 0; }
+.lab-node-metadata dt { color: var(--lab-muted); }
+.lab-node-metadata dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *,*:before,*:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

@@ -1,0 +1,638 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f8f7fc"><meta name="description" content="通过不等式与算例理解五种渐进记号，明确固定常数和量词，用比值、统一底数、变量替换比较对数、多项式、指数与阶乘增长。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较">
+<meta property="og:url" content="https://lsworl.top/2026/11/01/asymptotic-notation-growth-rate-analysis/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="通过不等式与算例理解五种渐进记号，明确固定常数和量词，用比值、统一底数、变量替换比较对数、多项式、指数与阶乘增长。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp">
+<meta property="article:published_time" content="2026-10-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-01T15:54:50.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="渐进分析">
+<meta property="article:tag" content="Big-O">
+<meta property="article:tag" content="函数增长率">
+<meta property="article:tag" content="数学证明">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较",
+  "url": "https://lsworl.top/2026/11/01/asymptotic-notation-growth-rate-analysis/",
+  "image": "https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp",
+  "datePublished": "2026-10-31T16:00:00.000Z",
+  "dateModified": "2026-11-01T15:54:50.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.top"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/starlab/mark.svg"><link rel="canonical" href="https://lsworl.top/2026/11/01/asymptotic-notation-growth-rate-analysis/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#151523')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f8f7fc')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/assets/starlab.5d955382326e.css" data-starlab-assets><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+<script type="application/ld+json" class="lab-artwork-metadata">{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2021.webp","name":"可莉 2021 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© miHoYo","isBasedOn":"https://twitter.com/GenshinImpact/status/1419870158143721476","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp","name":"可莉 2023 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1684413674231037952","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp","name":"可莉 2024 年生日插画","creditText":"tokki","creator":{"@type":"Person","name":"tokki","url":"https://twitter.com/tokki_517"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1817047433395994971","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"}]}</script><meta name="companion-content-hash" content="327b1e9d9866be1dc69cad19"><meta name="companion-knowledge-version" content="429882de0994767e19f6960d"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">182</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/wish/"><i class="fa-fw fas fa-star"></i><span> 可莉祈愿</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/starlab/mark.svg" alt="Logo"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/wish/"><i class="fa-fw fas fa-star"></i><span> 可莉祈愿</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-01T15:54:50.000Z" title="更新于 2026-11-01 23:54:50">2026-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><div class="lab-article-cover"><img src="/images/starlab/covers/klee-birthday-2023.webp" alt="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较 · 主题封面" width="1280" height="720" decoding="async" fetchpriority="high"></div><p class="lab-cover-credit">插画：原神官方</p><article class="container post-content" id="article-container" data-companion-hash="327b1e9d9866be1dc69cad19" data-companion-version="429882de0994767e19f6960d"><p>如果一次运行需要 $5n^2+3n+10$ 次基本操作，怎样用一个简洁表达式描述它的增长？为什么O(n²)、O(n³)都可以作为上界，而Θ(n²)更准确地表达它的阶？</p>
+<p>本文从不等式理解渐进符号，再用比值、同底指数和变量替换比较函数。需要了解<a href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/">代码计数</a>，并能读懂幂、对数和基本不等式。</p>
+<p>上一篇：<a href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/">复杂度分析基础</a>。下一篇：<a href="/2026/11/01/greedy-algorithm-design-exchange-proof/">贪心算法</a>。</p>
+<span id="more"></span>
+
+<h2 id="1-从具体次数到增长阶"><a href="#1-从具体次数到增长阶" class="headerlink" title="1. 从具体次数到增长阶"></a>1. 从具体次数到增长阶</h2><p>令 $T(n)=5n^2+3n+10$。当n≥1时，有：</p>
+
+$$
+5n^2\le T(n)\le5n^2+3n^2+10n^2=18n^2
+$$
+
+
+<p>T被二次函数的两个固定倍数夹住，所以是Θ(n²)。高次项决定这里的增长阶，固定倍数与低次项仍影响实际工作量。</p>
+<p>下面用 $f(n)=5n^2+3n$ 继续说明三种界；它相当于把上例的固定初始化成本单独拿出来观察。</p>
+<h2 id="2-O、Ω、Θ：上界、下界与紧确界"><a href="#2-O、Ω、Θ：上界、下界与紧确界" class="headerlink" title="2. O、Ω、Θ：上界、下界与紧确界"></a>2. O、Ω、Θ：上界、下界与紧确界</h2><p>下面讨论最终非负的函数；涉及比值时，还要求分母最终为正。“最终”表示从某个门槛开始，对后面所有整数 $n$ 都成立。</p>
+<h3 id="2-1-O：能否用常数倍从上面压住"><a href="#2-1-O：能否用常数倍从上面压住" class="headerlink" title="2.1 O：能否用常数倍从上面压住"></a>2.1 O：能否用常数倍从上面压住</h3>
+$$
+f\in O(g)
+\quad\Longleftrightarrow\quad
+\exists c&gt;0,\ \exists n_0,\ \forall n\ge n_0:\quad 0\le f(n)\le c g(n)
+$$
+
+
+<p>逐字翻译：能找到一个固定倍数 $c$ 和一个起点 $n_0$，使得后面的 $f(n)$ 始终不超过 $c g(n)$。</p>
+<p>例如 $f(n)=5n^2+3n$。当 $n\ge1$ 时，$3n\le3n^2$，因此：</p>
+
+$$
+5n^2+3n\le8n^2
+$$
+
+
+<p>取 $c=8,n_0=1$，就证明了 $f\in O(n^2)$。常数不必选得最小，但不能随 $n$ 改变。</p>
+<p>固定常数与起始门槛的量词次序，在第4节进一步展开。</p>
+<h3 id="2-2-Ω：能否用常数倍从下面托住"><a href="#2-2-Ω：能否用常数倍从下面托住" class="headerlink" title="2.2 Ω：能否用常数倍从下面托住"></a>2.2 Ω：能否用常数倍从下面托住</h3>
+$$
+f\in\Omega(g)
+\quad\Longleftrightarrow\quad
+\exists c&gt;0,\ \exists n_0,\ \forall n\ge n_0:\quad 0\le c g(n)\le f(n)
+$$
+
+
+<p>同一个例子里，$5n^2\le5n^2+3n$，所以取 $c=5,n_0=1$ 即可证明 $f\in\Omega(n^2)$。</p>
+<h3 id="2-3-Θ：上下同时夹住"><a href="#2-3-Θ：上下同时夹住" class="headerlink" title="2.3 Θ：上下同时夹住"></a>2.3 Θ：上下同时夹住</h3>
+$$
+f\in\Theta(g)
+\quad\Longleftrightarrow\quad
+\exists c_1,c_2&gt;0,\ \exists n_0,\ \forall n\ge n_0:\quad
+0\le c_1g(n)\le f(n)\le c_2g(n)
+$$
+
+
+<p>合并刚才两条不等式：</p>
+
+$$
+5n^2\le5n^2+3n\le8n^2\qquad(n\ge1)
+$$
+
+
+<p>所以 $5n^2+3n\in\Theta(n^2)$。这就是“同阶”的严格含义。</p>
+<p><img src="/images/algorithms/analysis-asymptotic-bounds.svg" alt="函数5n平方加3n在n至少为1时被5n平方与8n平方夹住，说明其属于Theta的n平方阶"></p>
+$O$ 只要求一个上界，不要求最紧。上述函数也属于 $O(n^3)$，但不属于 $\Theta(n^3)$。谈“增长阶正好是二次”时，用 $\Theta(n^2)$ 更明确。
+
+
+<h2 id="3-小o与小ω：严格增长比较"><a href="#3-小o与小ω：严格增长比较" class="headerlink" title="3. 小o与小ω：严格增长比较"></a>3. 小o与小ω：严格增长比较</h2><p>分母最终为正时，可以用比值记忆：</p>
+
+$$
+f\in o(g)\iff\lim_{n\to\infty}\frac{f(n)}{g(n)}=0,
+\qquad
+f\in\omega(g)\iff\lim_{n\to\infty}\frac{f(n)}{g(n)}=+\infty
+$$
+
+
+<p>例如 $n\in o(n^2)$，因为比值为 $1/n\to0$；但 $3n$ 不属于 $o(n)$，因为比值恒为3。</p>
+$O$ 给出增长上界，小 o 则把“严格增长得更慢”表达得更精确。
+
+
+<p>它们也可以直接用量词定义。对最终非负的f、最终为正的g：</p>
+
+$$
+f\in o(g)\iff
+\forall c&gt;0,\ \exists n_0,\ \forall n\ge n_0:\ 0\le f(n)&lt;c g(n)
+$$
+
+
+
+$$
+f\in\omega(g)\iff
+\forall c&gt;0,\ \exists n_0,\ \forall n\ge n_0:\ 0\le c g(n)&lt;f(n)
+$$
+
+
+<p>O只需找到一个够大的上界倍数；小o要求<strong>任何固定正倍数</strong>最终都压得住f。Ω与小ω也有对应区别。</p>
+<table>
+<thead>
+<tr>
+<th>比值的极限</th>
+<th>可推出的结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>f∈o(g)，因而也属于O(g)</td>
+</tr>
+<tr>
+<td>有限正数</td>
+<td>f∈Θ(g)</td>
+</tr>
+<tr>
+<td>正无穷</td>
+<td>f∈ω(g)，因而也属于Ω(g)</td>
+</tr>
+</tbody></table>
+<p>比值未收敛时，还可以直接使用不等式。例如 $f(n)=n(2+\sin n)$ 的比值在1与3之间波动，仍有 $n\le f(n)\le3n$，所以f属于Θ(n)。</p>
+<h2 id="4-固定常数与量词次序"><a href="#4-固定常数与量词次序" class="headerlink" title="4. 固定常数与量词次序"></a>4. 固定常数与量词次序</h2>$O$ 的定义顺序是：先找到固定的 $c,n_0$，再保证<strong>所有</strong> $n\ge n_0$ 都满足不等式。
+
+<p>不能对每个 n 临时选一个 c，也不能只检查100、1000、10000这几个数。可以把定义想成一份承诺：“从这个门槛以后，同一把尺子始终适用。”</p>
+<p>若两个条件分别从 $N_1$ 和 $N_2$ 开始成立，合并时取 $\max(N_1,N_2)$，就能保证两个条件同时可用。</p>
+<p>证明 $n^2\in O(n)$ 时若令c&#x3D;n，相当于每个输入都换一把尺子。固定c后，只要取 $n&gt;c$，就有 $n^2&gt;cn$，所以这样的固定上界不存在。</p>
+<h2 id="5-函数成员与函数集合"><a href="#5-函数成员与函数集合" class="headerlink" title="5. 函数成员与函数集合"></a>5. 函数成员与函数集合</h2>$O(g)$ 是一组函数组成的集合。$f\in O(g)$ 表示 f 是其中一个成员；$O(f)=O(g)$ 表示两个函数集合完全相同。
+
+<p>这和“3属于整数集合”与“两个集合相等”的区别一样。课件也提醒，常见写法 $f(n)=O(g(n))$ 中的等号是习惯记法，不是普通数值等式。</p>
+<p>例如：</p>
+
+$$
+n\in O(n^2),\qquad\text{但}\quad O(n)\ne O(n^2)
+$$
+
+
+<p>因为二次函数属于右边的集合，却不属于左边的集合。</p>
+<p>集合相等需要两个包含方向。可以先理解“常数倍夹住就有相同的上界函数集合”，再展开完整证明。</p>
+<details>
+<summary>进阶阅读：具体多项式的双向包含证明</summary>
+
+<p>先用一个具体例子说明：</p>
+
+$$
+O(5n^2+3n)=O(n^2)
+$$
+
+
+<p>第一步，证明左边包含于右边。任取 $h\in O(5n^2+3n)$。按定义，存在固定常数 $a&gt;0$ 和门槛 $N$，在 $n\ge N$ 时有 $0\le h(n)\le a(5n^2+3n)$。于是当 $n\ge\max(N,1)$：</p>
+
+$$
+0\le h(n)\le a(5n^2+3n)\le8a n^2
+$$
+
+
+<p>新常数取 $8a$，说明 $h\in O(n^2)$。</p>
+<p>第二步，证明右边包含于左边。任取 $h\in O(n^2)$，存在 $b&gt;0$ 和门槛 $M$，使得 $0\le h(n)\le bn^2$。当 $n\ge\max(M,1)$ 时：</p>
+
+$$
+0\le h(n)\le bn^2\le b(5n^2+3n)
+$$
+
+
+<p>所以 $h\in O(5n^2+3n)$。两个方向都成立，集合才相等。</p>
+</details>
+
+<details>
+<summary>进阶阅读：O(f+g)=O(max{f,g})及非负性条件</summary>
+
+<p>把具体的多项式推广为最终非负的函数 f、g，令 $m(n)=\max\{f(n),g(n)\}$。对非负数，较大的一项不超过两项之和，而两项之和不超过较大项的两倍：</p>
+
+$$
+m(n)\le f(n)+g(n)\le2m(n)
+$$
+
+
+<p>任取 $h\in O(f+g)$。从某个门槛开始，有 $0\le h(n)\le c(f(n)+g(n))\le2c m(n)$，所以 $h\in O(m)$。</p>
+<p>反过来，任取 $h\in O(m)$。从某个门槛开始，有 $0\le h(n)\le d m(n)\le d(f(n)+g(n))$，所以 $h\in O(f+g)$。两个方向使用的门槛均再与非负性成立的门槛取最大值，就得到：</p>
+
+$$
+O(f+g)=O(\max\{f,g\})
+$$
+
+
+<p>这也解释了分析顺序执行代码时，为什么可以用增长较快的部分概括总工作量。</p>
+<p>这里非负性不能省略。若随意允许一正一负，例如 $f(n)=n,g(n)=-n$，两者相加会抵消，上面的夹逼关系就不成立。</p>
+<p>也不需要先猜 f 和 g 谁最终更大；它们可能交替更大。$\max$ 是对每一个 n 取较大值，不是提前固定选一个函数。</p>
+</details>
+
+<h2 id="6-函数增长率速查与比较"><a href="#6-函数增长率速查与比较" class="headerlink" title="6. 函数增长率速查与比较"></a>6. 函数增长率速查与比较</h2><p>本文log统一为log₂，固定指数和底数在函数比较中保持不变。对数的换底公式给出 $\log_a n=(\log_b n)/(\log_b a)$（a、b均大于1），因此单独的log因子只差常数倍。若log出现在指数里，仍应代回整个函数比较。</p>
+<table>
+<thead>
+<tr>
+<th>函数类型</th>
+<th>例子</th>
+<th>典型算法联系</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>常数</td>
+<td>1、20</td>
+<td>固定数量索引</td>
+</tr>
+<tr>
+<td>对数</td>
+<td>log n、(log n)²</td>
+<td>折半过程与其组合</td>
+</tr>
+<tr>
+<td>固定次幂</td>
+<td>nᵃ，a&gt;0固定</td>
+<td>扫描、成对比较</td>
+</tr>
+<tr>
+<td>线性对数</td>
+<td>n log n</td>
+<td>比较排序的典型时间</td>
+</tr>
+<tr>
+<td>准多项式示例</td>
+<td>n^(log₂ n)</td>
+<td>指数本身不固定</td>
+</tr>
+<tr>
+<td>固定底数指数</td>
+<td>cⁿ，c&gt;1固定</td>
+<td>固定分支数的穷举</td>
+</tr>
+<tr>
+<td>阶乘</td>
+<td>n!</td>
+<td>排列搜索</td>
+</tr>
+<tr>
+<td>更快的指数</td>
+<td>2^(n²)、2^(2ⁿ)</td>
+<td>巨大候选状态空间</td>
+</tr>
+</tbody></table>
+<p>对固定a&gt;0、c&gt;1，有严格增长关系：</p>
+
+$$
+1\prec\log n\prec n^a\prec c^n\prec n!,
+\qquad f\prec g\ \text{表示}\ f\in o(g)
+$$
+
+
+<h3 id="6-1-根号、常数和多项式"><a href="#6-1-根号、常数和多项式" class="headerlink" title="6.1 根号、常数和多项式"></a>6.1 根号、常数和多项式</h3><p>先看一个训练用函数：</p>
+
+$$
+\sqrt{5n}=\sqrt5\,n^{1/2}\in\Theta(n^{1/2})
+$$
+
+
+<p>根号里面的5变成了固定系数，不会把它变成一次函数。类似地，$n+30\in\Theta(n)$。比较固定次幂时，次数较小的一方增长得更慢：</p>
+
+$$
+\frac{n^a}{n^b}=\frac1{n^{b-a}}\to0\qquad(a&lt;b)
+$$
+
+
+<h3 id="6-2-对数的固定次幂，慢于任何固定正幂"><a href="#6-2-对数的固定次幂，慢于任何固定正幂" class="headerlink" title="6.2 对数的固定次幂，慢于任何固定正幂"></a>6.2 对数的固定次幂，慢于任何固定正幂</h3><p>一个常用结论是，对固定常数 $k&gt;0,\varepsilon&gt;0$：</p>
+
+$$
+\frac{(\log n)^k}{n^\varepsilon}\to0
+$$
+
+
+<p>为什么？令 $t=\log_2 n$，则分子变成 $t^k$，分母变成 $2^{\varepsilon t}$。这就变成“固定次数的多项式慢于固定底数大于1的指数函数”。</p>
+<details>
+<summary>进阶阅读：用二项式展开证明多项式慢于指数</summary>
+
+<p>对整数t，取固定整数 $q&gt;k$。当t≥q时，二项式展开中 $(1+d)^t$ 至少包含 $\binom tq d^q$ 这一项，其中 $d=2^\varepsilon-1&gt;0$。固定q时该项为Θ(t^q)，所以t^k除以指数函数趋于0；非整数t用相邻整数夹住即可。</p>
+</details>
+
+<p>例如，比较 $n(\log n)^2$ 与 $n^{3/2}$，先约去共同的 n，只需比较 $(\log n)^2$ 和 $n^{1/2}$。前者更慢。</p>
+<p>比较时先约去共同因子，再使用上述增长关系，就能把混合表达式拆成简单的幂与对数。</p>
+<h3 id="6-3-多项式与固定底数的指数"><a href="#6-3-多项式与固定底数的指数" class="headerlink" title="6.3 多项式与固定底数的指数"></a>6.3 多项式与固定底数的指数</h3><p>对固定 $a&gt;0,b&gt;1$，有 $n^a\in o(b^n)$。这里强调“固定”：$n^{\log n}$ 的指数随 n 变化，不能直接当成某个固定次数的多项式。</p>
+<p>比较两个指数，例如 $3^n$ 和 $7^n$，可看比值 $(3/7)^n\to0$。它们虽然都叫指数函数，增长率仍不同。</p>
+<h3 id="6-4-把比较规则串成一个完整例子"><a href="#6-4-把比较规则串成一个完整例子" class="headerlink" title="6.4 把比较规则串成一个完整例子"></a>6.4 把比较规则串成一个完整例子</h3><p>把下面六个函数按严格增长率排列，可得到：</p>
+
+$$
+\sqrt{5n}\ \prec\ n+30\ \prec\ n(\log n)^2\ \prec\ n^{3/2}\ \prec\ 3^n\ \prec\ 7^n
+$$
+
+
+<p>这里 $u\prec v$ 表示 $u\in o(v)$。逐对解释，而不是只写一条顺序：</p>
+<ol>
+<li>第一对化简为半次幂与一次幂。</li>
+<li>第二对约去 n 后，比较常数量级与趋于无穷的对数平方。</li>
+<li>第三对用“对数固定次幂慢于固定正幂”。</li>
+<li>第四对用“固定次数多项式慢于固定底数指数”。</li>
+<li>第五对看底数比值的 n 次幂。</li>
+</ol>
+<p>如果只要求按相邻的 $O$ 关系排序，则允许出现同阶函数；同阶函数之间可以互相构成上界。</p>
+<h3 id="6-5-为什么阶乘快于任意固定底数指数"><a href="#6-5-为什么阶乘快于任意固定底数指数" class="headerlink" title="6.5 为什么阶乘快于任意固定底数指数"></a>6.5 为什么阶乘快于任意固定底数指数</h3><p>n!的后半段至少有n&#x2F;2个因子，每个不小于n&#x2F;2。对n≥2：</p>
+
+$$
+n!\ge(n/2)^{n/2},
+\qquad
+\frac{c^n}{n!}\le\left(\frac{c}{\sqrt{n/2}}\right)^n\longrightarrow0
+$$
+
+
+<p>因此cⁿ∈o(n!)。这里c固定；把c也当成n的函数时，应重新比较。</p>
+<p>排序、查找、子集枚举与排列的可运行计数，统一见<a href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/#4-%E6%8C%87%E6%95%B0%E4%B8%8E%E9%98%B6%E4%B9%98%EF%BC%9A%E5%80%99%E9%80%89%E6%95%B0%E9%87%8F%E5%A6%82%E4%BD%95%E5%A2%9E%E9%95%BF">复杂度篇的代码与对照表</a>。比较增长阶有助于选择算法，同时还需要考虑可达到的输入规模和实现常数。</p>
+<h2 id="7-复杂指数的比较"><a href="#7-复杂指数的比较" class="headerlink" title="7. 复杂指数的比较"></a>7. 复杂指数的比较</h2><p>函数排序的困难往往来自括号读错，而不是比较方法不足。</p>
+<p><img src="/images/algorithms/analysis-exponent-reading.svg" alt="区分2的n平方次方、2的n次方再平方，以及2的2的n次方；n为3时分别等于512、64、256"></p>
+<h3 id="7-1-同底指数，可以先比较指数"><a href="#7-1-同底指数，可以先比较指数" class="headerlink" title="7.1 同底指数，可以先比较指数"></a>7.1 同底指数，可以先比较指数</h3><p>对最终为正的函数，若 $A(n)-B(n)\to-\infty$，那么：</p>
+
+$$
+\frac{2^{A(n)}}{2^{B(n)}}=2^{A(n)-B(n)}\to0
+$$
+
+
+<p>因此比较很大的指数函数时，可以把问题转移到指数上。不要真的把天文数字算出来。</p>
+<h3 id="7-2-取对数是比较工具，不是替换-O-记号的规则"><a href="#7-2-取对数是比较工具，不是替换-O-记号的规则" class="headerlink" title="7.2 取对数是比较工具，不是替换 O 记号的规则"></a>7.2 取对数是比较工具，不是替换 O 记号的规则</h3><p>对正数，底数大于1的对数保持大小顺序，但不能随意声称“两个函数的对数同阶，所以原函数同阶”。</p>
+<p>例如 $\log_2(2^n)=n$、$\log_2(4^n)=2n$，对数同阶；原函数的比值却是 $2^{-n}\to0$。取对数之后还应回到原比值，或比较指数差。</p>
+<h3 id="7-3-把复杂函数改写成统一的形式"><a href="#7-3-把复杂函数改写成统一的形式" class="headerlink" title="7.3 把复杂函数改写成统一的形式"></a>7.3 把复杂函数改写成统一的形式</h3><p>以 $t=\log_2 n$ 为辅助变量，可以把几类常见表达式改写为更容易比较的形式：</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>正确读法或等价形式</th>
+<th>接下来可以问自己</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$2^{\sqrt{\log_2 n}}$</td>
+<td>$2^{\sqrt t}$，不是 $2\sqrt{\log_2 n}$</td>
+<td>与 $n^a=2^{at}$ 比，指数差如何变化？</td>
+</tr>
+<tr>
+<td>$n(\log n)^3$</td>
+<td>n 乘对数的三次幂</td>
+<td>与另一个 n 的幂比较时，能否先约去 n？</td>
+</tr>
+<tr>
+<td>$n^{\log_2 n}$</td>
+<td>$(2^t)^t=2^{t^2}$</td>
+<td>不同候选函数也写成同底指数后，比较哪两项？</td>
+</tr>
+<tr>
+<td>$2^{n^2}$</td>
+<td>指数是 $n^2$</td>
+<td>不要误读成 $(2^n)^2=2^{2n}$</td>
+</tr>
+<tr>
+<td>$2^{2^n}$</td>
+<td>指数本身是 $2^n$</td>
+<td>与上一行比较时，可否先比较两个指数？</td>
+</tr>
+</tbody></table>
+<p>图中 $n=3$ 的数值只用于区分表达式，不是渐进排序依据。</p>
+<h3 id="7-4-一份可重复使用的排序流程"><a href="#7-4-一份可重复使用的排序流程" class="headerlink" title="7.4 一份可重复使用的排序流程"></a>7.4 一份可重复使用的排序流程</h3><ol>
+<li>写清对数底数与指数括号，先把根号变成分数幂。</li>
+<li>去掉固定系数，找出明显的同阶项。</li>
+<li>相邻两项能约去公共因子时，先约去。</li>
+<li>指数复杂时，统一底数，或令 $t=\log_2 n$。</li>
+<li>对最终顺序逐对给出比值、指数差或已证明的比较规则。</li>
+</ol>
+<p>数值表和程序可以排查抄写错误，但有限范围内的大小关系不证明渐进关系；过大的指数还容易让浮点数溢出。</p>
+<details>
+<summary>进阶阅读：把几类复杂指数排成严格增长链</summary>
+
+<p>令 $t=\log_2 n$，则</p>
+$2^{\sqrt{\log_2 n}}=2^{\sqrt t}$，
+$n^{4/3}=2^{4t/3}$，
+$n^{\log_2 n}=2^{t^2}$。
+<p>逐对比较指数差，可得到：</p>
+
+$$
+2^{\sqrt{\log_2n}}\prec n(\log_2n)^3
+\prec n^{4/3}\prec n^{\log_2n}
+\prec2^n\prec2^{n^2}\prec2^{2^n}
+$$
+
+
+<p>第一对的指数差为 $\sqrt t-t-3\log_2t\to-\infty$。<br>第二对约去n，比较 $t^3/2^{t/3}\to0$。<br>中间两对用 $4t/3-t^2\to-\infty$ 与 $t^2-2^t\to-\infty$。<br>最后两对比较n−n²及n²−2ⁿ，均趋于负无穷。</p>
+</details>
+
+<h2 id="8-易错点"><a href="#8-易错点" class="headerlink" title="8. 易错点"></a>8. 易错点</h2><p>O不要求最紧，Ω也不表示“最好情况”；它们是函数关系。固定倍数不能随n变化；证明集合相等要有两个方向。取对数保持正数之间的大小顺序，但对数同阶不意味着原函数同阶。</p>
+<p>有限数值表可以发现抄写错误，却只检查了有限多个输入；渐进结论要求越过某门槛以后所有输入都满足条件。复杂指数还可能超出浮点表示范围。</p>
+<h2 id="9-练习"><a href="#9-练习" class="headerlink" title="9. 练习"></a>9. 练习</h2><h3 id="练习1：哪些界成立"><a href="#练习1：哪些界成立" class="headerlink" title="练习1：哪些界成立"></a>练习1：哪些界成立</h3><p>令 $f(n)=5n^2+3n+10$。判断它是否属于O(n²)、O(n³)、Ω(n)、Θ(n²)、Θ(n³)。</p>
+<h3 id="练习2：选常数"><a href="#练习2：选常数" class="headerlink" title="练习2：选常数"></a>练习2：选常数</h3><p>证明 $7n+20\in O(n)$ 与Ω(n)，给出常数和门槛。</p>
+<h3 id="练习3：成员与相等"><a href="#练习3：成员与相等" class="headerlink" title="练习3：成员与相等"></a>练习3：成员与相等</h3>$n\in O(n^2)$ 是否推出O(n)=O(n²)？给出否定或证明。
+
+<h3 id="练习4：量词错误"><a href="#练习4：量词错误" class="headerlink" title="练习4：量词错误"></a>练习4：量词错误</h3><p>“对每个n，取c&#x3D;n，就得到n²≤cn，因此n²∈O(n)”错在哪里？</p>
+<h3 id="练习5：带对数的次幂"><a href="#练习5：带对数的次幂" class="headerlink" title="练习5：带对数的次幂"></a>练习5：带对数的次幂</h3><p>比较 $n(\log_2n)^4$ 与 $n^{6/5}$，再比较 $2^{3n}$ 与 $2^{n^2}$。</p>
+<h3 id="练习6：对数同阶"><a href="#练习6：对数同阶" class="headerlink" title="练习6：对数同阶"></a>练习6：对数同阶</h3>$\log_2(2^n)$ 和 $\log_2(4^n)$ 同阶，能否推出原函数同阶？
+
+<h3 id="练习7：复杂指数与阶乘"><a href="#练习7：复杂指数与阶乘" class="headerlink" title="练习7：复杂指数与阶乘"></a>练习7：复杂指数与阶乘</h3><p>比较 $n^{\log_2n}$ 与2ⁿ；比较3ⁿ与n!。写出比较方法。</p>
+<h3 id="练习8：数值实验"><a href="#练习8：数值实验" class="headerlink" title="练习8：数值实验"></a>练习8：数值实验</h3><p>一个程序在n≤1,000,000时始终得到f(n)&lt;g(n)。还缺少什么，才能证明f∈O(g)？若比值没有极限，是否就不能属于Θ？</p>
+<h2 id="10-参考答案"><a href="#10-参考答案" class="headerlink" title="10. 参考答案"></a>10. 参考答案</h2><ol>
+<li>前四个成立，最后一个不成立。n≥1时 $5n^2\le f(n)\le18n^2$；又有n≤n²≤n³。f&#x2F;n³趋于0，无法建立正的三次下界。</li>
+<li>n≥1时 $7n\le7n+20\le27n$，上下常数可取7和27，门槛1。</li>
+<li>不能，n²属于O(n²)，却不属于O(n)，因此两个集合不同。</li>
+<li>c必须先固定，再对所有足够大的n有效。任何固定c都会在n&gt;c时被n²超过。</li>
+<li>比值分别为 $(\log_2n)^4/n^{1/5}\to0$ 和 $2^{3n-n^2}\to0$，两对均是前者严格慢于后者。</li>
+<li>不能，原比值为 $2^{-n}\to0$；对数上的常数倍差异被指数放大。</li>
+<li>令t&#x3D;log₂n，第一对比值为 $2^{t^2-2^t}\to0$。第二对用n!后半段下界证明3ⁿ&#x2F;n!趋于0。</li>
+<li>还需给出固定c与门槛之后对所有n的界。比值不收敛也可用不等式夹逼，如n(2+sin n)∈Θ(n)。</li>
+</ol>
+<h2 id="11-后续学习与参考资料"><a href="#11-后续学习与参考资料" class="headerlink" title="11. 后续学习与参考资料"></a>11. 后续学习与参考资料</h2><p>下一篇：<a href="/2026/11/01/greedy-algorithm-design-exchange-proof/">贪心算法入门</a>使用这些分析语言说明排序与扫描的成本，并进一步证明输出最优。</p>
+<p>参考：《Design and Analysis of Algorithms》第二讲02Analysis第15至26页的渐进定义、函数集合与比较关系；《第一次作业》的函数比较与集合等式主题。本文保留原笔记的常数证明、双向包含、统一底数和指数图例。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.top">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.top/2026/11/01/asymptotic-notation-growth-rate-analysis/">https://lsworl.top/2026/11/01/asymptotic-notation-growth-rate-analysis/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.top" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a><a class="post-meta__tags" href="/tags/%E6%B8%90%E8%BF%9B%E5%88%86%E6%9E%90/">渐进分析</a><a class="post-meta__tags" href="/tags/Big-O/">Big-O</a><a class="post-meta__tags" href="/tags/%E5%87%BD%E6%95%B0%E5%A2%9E%E9%95%BF%E7%8E%87/">函数增长率</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8E/">数学证明</a></div><div class="post-share"><div class="social-share" data-image="/images/starlab/covers/klee-birthday-2023.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" onerror="onerror=null;src='/images/starlab/covers/klee-birthday-2021.webp'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">计算复杂性入门：P、NP、NP完全与困难问题求解</div></div><div class="info-2"><div class="info-item-1">从独立集证书区分P、NP、NP-hard与NP-complete，通过补图转换理解归约方向，比较困难问题求解方法，并在高级选读中分析竞争选址与PSPACE。</div></div></div></a><a class="pagination-related" href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/" title="算法复杂度分析基础：从代码计数到时间与空间复杂度"><img class="cover" src="/images/starlab/covers/klee-birthday-2021.webp" onerror="onerror=null;src='/images/starlab/covers/klee-birthday-2021.webp'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">算法复杂度分析基础：从代码计数到时间与空间复杂度</div></div><div class="info-2"><div class="info-item-1">从Python循环计数理解七种常见复杂度，并区分输入、辅助、输出空间以及最好、最坏和平均情况，配有八道代码分析练习。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/14/heft-algorithm/" title="HEFT算法：异构计算中的任务调度方法"><img class="cover" src="/images/starlab/covers/klee-birthday-2021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-14</div><div class="info-item-2">HEFT算法：异构计算中的任务调度方法</div></div><div class="info-2"><div class="info-item-1">从任务DAG、异构处理器、向上排序值、最早完成时间和Python实现几个角度理解HEFT异构最早完成时间调度算法。</div></div></div></a><a class="pagination-related" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">贪心算法入门：从局部选择到全局最优证明</div></div><div class="info-2"><div class="info-item-1">从失败的最早开始策略出发，手算八项活动的贪心选择，再以一维基站覆盖说明交换论证、端点处理、剩余问题与全局最优性。</div></div></div></a><a class="pagination-related" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析导论：问题建模、正确性与算法选择"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-23</div><div class="info-item-2">算法设计与分析导论：问题建模、正确性与算法选择</div></div><div class="info-2"><div class="info-item-1">从输入、输出、约束和目标理解算法问题，区分问题、算法与程序，建立终止性、正确性和资源分析的基本流程，并连接后续六篇学习专题。</div></div></div></a><a class="pagination-related" href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/" title="算法复杂度分析基础：从代码计数到时间与空间复杂度"><img class="cover" src="/images/starlab/covers/klee-birthday-2021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">算法复杂度分析基础：从代码计数到时间与空间复杂度</div></div><div class="info-2"><div class="info-item-1">从Python循环计数理解七种常见复杂度，并区分输入、辅助、输出空间以及最好、最坏和平均情况，配有八道代码分析练习。</div></div></div></a><a class="pagination-related" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">计算复杂性入门：P、NP、NP完全与困难问题求解</div></div><div class="info-2"><div class="info-item-1">从独立集证书区分P、NP、NP-hard与NP-complete，通过补图转换理解归约方向，比较困难问题求解方法，并在高级选读中分析竞争选址与PSPACE。</div></div></div></a><a class="pagination-related" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">动态规划入门：从状态定义到最优方案恢复</div></div><div class="info-2"><div class="info-item-1">使用八个带权活动逐步建立OPT状态、前驱、转移、初始化和重叠子问题，手动填表并用Python恢复最优任务d与h。</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">记录机器学习、自然语言处理和开发实践。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">182</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">文章按主题整理在学习路线中。<br><a href="/map/">查看学习路线 ↗</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%8E%E5%85%B7%E4%BD%93%E6%AC%A1%E6%95%B0%E5%88%B0%E5%A2%9E%E9%95%BF%E9%98%B6"><span class="toc-number">1.</span> <span class="toc-text">1. 从具体次数到增长阶</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-O%E3%80%81%CE%A9%E3%80%81%CE%98%EF%BC%9A%E4%B8%8A%E7%95%8C%E3%80%81%E4%B8%8B%E7%95%8C%E4%B8%8E%E7%B4%A7%E7%A1%AE%E7%95%8C"><span class="toc-number">2.</span> <span class="toc-text">2. O、Ω、Θ：上界、下界与紧确界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-O%EF%BC%9A%E8%83%BD%E5%90%A6%E7%94%A8%E5%B8%B8%E6%95%B0%E5%80%8D%E4%BB%8E%E4%B8%8A%E9%9D%A2%E5%8E%8B%E4%BD%8F"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 O：能否用常数倍从上面压住</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%CE%A9%EF%BC%9A%E8%83%BD%E5%90%A6%E7%94%A8%E5%B8%B8%E6%95%B0%E5%80%8D%E4%BB%8E%E4%B8%8B%E9%9D%A2%E6%89%98%E4%BD%8F"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Ω：能否用常数倍从下面托住</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%CE%98%EF%BC%9A%E4%B8%8A%E4%B8%8B%E5%90%8C%E6%97%B6%E5%A4%B9%E4%BD%8F"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 Θ：上下同时夹住</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%B0%8Fo%E4%B8%8E%E5%B0%8F%CF%89%EF%BC%9A%E4%B8%A5%E6%A0%BC%E5%A2%9E%E9%95%BF%E6%AF%94%E8%BE%83"><span class="toc-number">3.</span> <span class="toc-text">3. 小o与小ω：严格增长比较</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%9B%BA%E5%AE%9A%E5%B8%B8%E6%95%B0%E4%B8%8E%E9%87%8F%E8%AF%8D%E6%AC%A1%E5%BA%8F"><span class="toc-number">4.</span> <span class="toc-text">4. 固定常数与量词次序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98%E4%B8%8E%E5%87%BD%E6%95%B0%E9%9B%86%E5%90%88"><span class="toc-number">5.</span> <span class="toc-text">5. 函数成员与函数集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%87%BD%E6%95%B0%E5%A2%9E%E9%95%BF%E7%8E%87%E9%80%9F%E6%9F%A5%E4%B8%8E%E6%AF%94%E8%BE%83"><span class="toc-number">6.</span> <span class="toc-text">6. 函数增长率速查与比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%A0%B9%E5%8F%B7%E3%80%81%E5%B8%B8%E6%95%B0%E5%92%8C%E5%A4%9A%E9%A1%B9%E5%BC%8F"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 根号、常数和多项式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%AF%B9%E6%95%B0%E7%9A%84%E5%9B%BA%E5%AE%9A%E6%AC%A1%E5%B9%82%EF%BC%8C%E6%85%A2%E4%BA%8E%E4%BB%BB%E4%BD%95%E5%9B%BA%E5%AE%9A%E6%AD%A3%E5%B9%82"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 对数的固定次幂，慢于任何固定正幂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%A4%9A%E9%A1%B9%E5%BC%8F%E4%B8%8E%E5%9B%BA%E5%AE%9A%E5%BA%95%E6%95%B0%E7%9A%84%E6%8C%87%E6%95%B0"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 多项式与固定底数的指数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E6%8A%8A%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99%E4%B8%B2%E6%88%90%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E4%BE%8B%E5%AD%90"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 把比较规则串成一个完整例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%98%B6%E4%B9%98%E5%BF%AB%E4%BA%8E%E4%BB%BB%E6%84%8F%E5%9B%BA%E5%AE%9A%E5%BA%95%E6%95%B0%E6%8C%87%E6%95%B0"><span class="toc-number">6.5.</span> <span class="toc-text">6.5 为什么阶乘快于任意固定底数指数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%A4%8D%E6%9D%82%E6%8C%87%E6%95%B0%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">7.</span> <span class="toc-text">7. 复杂指数的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%90%8C%E5%BA%95%E6%8C%87%E6%95%B0%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%85%88%E6%AF%94%E8%BE%83%E6%8C%87%E6%95%B0"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 同底指数，可以先比较指数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%8F%96%E5%AF%B9%E6%95%B0%E6%98%AF%E6%AF%94%E8%BE%83%E5%B7%A5%E5%85%B7%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%9B%BF%E6%8D%A2-O-%E8%AE%B0%E5%8F%B7%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 取对数是比较工具，不是替换 O 记号的规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%8A%8A%E5%A4%8D%E6%9D%82%E5%87%BD%E6%95%B0%E6%94%B9%E5%86%99%E6%88%90%E7%BB%9F%E4%B8%80%E7%9A%84%E5%BD%A2%E5%BC%8F"><span class="toc-number">7.3.</span> <span class="toc-text">7.3 把复杂函数改写成统一的形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E4%B8%80%E4%BB%BD%E5%8F%AF%E9%87%8D%E5%A4%8D%E4%BD%BF%E7%94%A8%E7%9A%84%E6%8E%92%E5%BA%8F%E6%B5%81%E7%A8%8B"><span class="toc-number">7.4.</span> <span class="toc-text">7.4 一份可重复使用的排序流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%98%93%E9%94%99%E7%82%B9"><span class="toc-number">8.</span> <span class="toc-text">8. 易错点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%BB%83%E4%B9%A0"><span class="toc-number">9.</span> <span class="toc-text">9. 练习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A01%EF%BC%9A%E5%93%AA%E4%BA%9B%E7%95%8C%E6%88%90%E7%AB%8B"><span class="toc-number">9.1.</span> <span class="toc-text">练习1：哪些界成立</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A02%EF%BC%9A%E9%80%89%E5%B8%B8%E6%95%B0"><span class="toc-number">9.2.</span> <span class="toc-text">练习2：选常数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A03%EF%BC%9A%E6%88%90%E5%91%98%E4%B8%8E%E7%9B%B8%E7%AD%89"><span class="toc-number">9.3.</span> <span class="toc-text">练习3：成员与相等</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A04%EF%BC%9A%E9%87%8F%E8%AF%8D%E9%94%99%E8%AF%AF"><span class="toc-number">9.4.</span> <span class="toc-text">练习4：量词错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A05%EF%BC%9A%E5%B8%A6%E5%AF%B9%E6%95%B0%E7%9A%84%E6%AC%A1%E5%B9%82"><span class="toc-number">9.5.</span> <span class="toc-text">练习5：带对数的次幂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A06%EF%BC%9A%E5%AF%B9%E6%95%B0%E5%90%8C%E9%98%B6"><span class="toc-number">9.6.</span> <span class="toc-text">练习6：对数同阶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A07%EF%BC%9A%E5%A4%8D%E6%9D%82%E6%8C%87%E6%95%B0%E4%B8%8E%E9%98%B6%E4%B9%98"><span class="toc-number">9.7.</span> <span class="toc-text">练习7：复杂指数与阶乘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A08%EF%BC%9A%E6%95%B0%E5%80%BC%E5%AE%9E%E9%AA%8C"><span class="toc-number">9.8.</span> <span class="toc-text">练习8：数值实验</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88"><span class="toc-number">10.</span> <span class="toc-text">10. 参考答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%90%8E%E7%BB%AD%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">11.</span> <span class="toc-text">11. 后续学习与参考资料</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>系列文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"></a><div class="content"><a class="title" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="计算复杂性入门：P、NP、NP完全与困难问题求解"></a><div class="content"><a class="title" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解">计算复杂性入门：P、NP、NP完全与困难问题求解</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="图上的组合优化：二分图匹配与独立集"></a><div class="content"><a class="title" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集">图上的组合优化：二分图匹配与独立集</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="动态规划入门：从状态定义到最优方案恢复"></a><div class="content"><a class="title" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复">动态规划入门：从状态定义到最优方案恢复</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="贪心算法入门：从局部选择到全局最优证明"></a><div class="content"><a class="title" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明">贪心算法入门：从局部选择到全局最优证明</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/" title="算法复杂度分析基础：从代码计数到时间与空间复杂度"><img src="/images/starlab/covers/klee-birthday-2021.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="算法复杂度分析基础：从代码计数到时间与空间复杂度"></a><div class="content"><a class="title" href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/" title="算法复杂度分析基础：从代码计数到时间与空间复杂度">算法复杂度分析基础：从代码计数到时间与空间复杂度</a><time datetime="2026-10-29T16:00:00.000Z" title="发表于 2026-10-30 00:00:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析导论：问题建模、正确性与算法选择"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="算法设计与分析导论：问题建模、正确性与算法选择"></a><div class="content"><a class="title" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析导论：问题建模、正确性与算法选择">算法设计与分析导论：问题建模、正确性与算法选择</a><time datetime="2026-10-22T16:00:00.000Z" title="发表于 2026-10-23 00:00:00">2026-10-23</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"/></a><div class="content"><a class="title" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="计算复杂性入门：P、NP、NP完全与困难问题求解"/></a><div class="content"><a class="title" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解">计算复杂性入门：P、NP、NP完全与困难问题求解</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="图上的组合优化：二分图匹配与独立集"/></a><div class="content"><a class="title" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集">图上的组合优化：二分图匹配与独立集</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="动态规划入门：从状态定义到最优方案恢复"/></a><div class="content"><a class="title" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复">动态规划入门：从状态定义到最优方案恢复</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="贪心算法入门：从局部选择到全局最优证明"/></a><div class="content"><a class="title" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明">贪心算法入门：从局部选择到全局最优证明</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text">学习笔记与项目记录<br>封面插画：原神官方 · tokki</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script src="/assets/starlab.aaca91c4e4ec.js" defer data-starlab-assets></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索概念、算法或项目…" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5-b1"></script></div></div></body></html>

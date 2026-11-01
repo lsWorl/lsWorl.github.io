@@ -479,97 +479,11 @@ h1,h2,h3,.site-name { font-family:inherit; letter-spacing:0; text-shadow:none; }
 @media(max-width:600px) { .camp-map { border-radius:18px; } }
 @media(prefers-reduced-motion:reduce) { .camp-panel *,.camp-panel *:before { animation:none !important; transition:none !important; } }
 
-/* Klee's wardrobe wish */
-.wish-view { display:block; width:100%; height:auto; border-radius:24px; cursor:default; }
-.wish-view [hidden] { display:none; }
-.wish-stars circle { fill:#fff; opacity:.75; animation:fish-twinkle 3s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-.wish-stars circle:nth-child(3n) { animation-delay:-1s; } .wish-stars circle:nth-child(3n+1) { animation-delay:-2s; }
-.wish-banner-card { fill:url(#wish-banner-fill); stroke:rgba(255,255,255,.8); stroke-width:2; }
-.wish-banner-sun { fill:#fff6d8; opacity:.7; }
-.wish-banner-klee { display:block; width:100%; height:100%; box-sizing:border-box; border-radius:50%; background-color:#f8e6d6; background-size:400% 400%; background-position:66.67% 0; }
-.wish-banner-kind { fill:#9a4a1e; font-size:12.5px; font-weight:700; letter-spacing:.08em; }
-.wish-banner-name { fill:#b3261e; font-size:30px; font-weight:900; letter-spacing:.06em; paint-order:stroke; stroke:#fff; stroke-width:4px; }
-.wish-banner-up { fill:#7a3a14; font-size:12.5px; font-weight:700; }
-.wish-banner-four { fill:rgba(255,255,255,.7); stroke:#b07cff; stroke-width:2; }
-.wish-banner-four-name { fill:#5a2a10; font-size:10.5px; font-weight:700; text-anchor:middle; }
-.wish-banner-four-note { fill:#7a3a14; font-size:11px; font-weight:700; }
-.wish-banner-rates { fill:rgba(255,255,255,.85); stroke:rgba(180,110,60,.35); }
-.wish-banner-rate-title { fill:#9a4a1e; font-size:12px; font-weight:800; }
-.wish-banner-rate { fill:#4a3020; font-size:11px; }
-.wish-anim-dim { fill:#0b0f26; opacity:.6; }
-.wish-meteor { opacity:0; transform:translate(700px,-40px); }
-.wish-meteor.is-falling { animation:wish-fall 1.4s cubic-bezier(.4,0,.6,1) forwards; }
-@keyframes wish-fall { 0% { opacity:0; transform:translate(700px,-40px); } 12% { opacity:1; } 80% { opacity:1; transform:translate(250px,220px); } 100% { opacity:0; transform:translate(200px,250px) scale(2.4); } }
-.wish-meteor-trail { stroke:url(#wish-trail); stroke-width:6; stroke-linecap:round; }
-.wish-meteor-head { fill:#fff; }
-[data-best='3'] .wish-meteor-head { fill:#d8ecff; filter:drop-shadow(0 0 10px #6fa8ff); } [data-best='3'] .wish-meteor-trail { stroke:#9fc8ff; }
-[data-best='4'] .wish-meteor-head { fill:#e6ccff; filter:drop-shadow(0 0 14px #b07cff); } [data-best='4'] .wish-meteor-trail { stroke:#c9a2ff; }
-[data-best='5'] .wish-meteor-head { fill:#fff1b8; filter:drop-shadow(0 0 18px #ffc24a); } [data-best='5'] .wish-meteor-trail { stroke:#ffd36b; stroke-width:9; }
-.wish-single { animation:fish-fade .25s ease; }
-.wish-single-glow { animation:wish-glow .6s ease-out both; transform-box:fill-box; transform-origin:center; }
-.wish-single.is-3 .wish-single-glow { fill:url(#wish-glow-3); } .wish-single.is-4 .wish-single-glow { fill:url(#wish-glow-4); } .wish-single.is-5 .wish-single-glow { fill:url(#wish-glow-5); }
-@keyframes wish-glow { from { transform:scale(.3); opacity:0; } to { transform:none; opacity:1; } }
-.wish-single-art { animation:wish-pop .5s cubic-bezier(.3,1.4,.5,1) both; transform-box:fill-box; transform-origin:center; }
-@keyframes wish-pop { from { opacity:0; transform:translateY(14px) scale(.6); } }
-.wish-single-name { fill:#fff; font-size:21px; font-weight:900; text-anchor:middle; paint-order:stroke; stroke:rgba(20,20,50,.6); stroke-width:4px; }
-.wish-single-slot { fill:rgba(255,255,255,.85); font-size:12px; text-anchor:middle; }
-.wish-single-stars { fill:#ffd36b; font-size:20px; text-anchor:middle; letter-spacing:2px; animation:wish-pop .4s .3s both; }
-.wish-single-extra { fill:#c9e4ff; font-size:11.5px; text-anchor:middle; }
-.wish-single-count { fill:rgba(255,255,255,.7); font-size:11px; text-anchor:end; }
-.wish-tall { animation:wish-rise .45s cubic-bezier(.3,1.3,.5,1) both; }
-@keyframes wish-rise { from { opacity:0; transform:translateY(20px); } }
-.wish-tall-back { stroke:rgba(255,255,255,.75); stroke-width:1.5; }
-.wish-tall.is-3 .wish-tall-back { fill:url(#wish-tall-3); } .wish-tall.is-4 .wish-tall-back { fill:url(#wish-tall-4); }
-.wish-tall.is-5 .wish-tall-back { fill:url(#wish-tall-5); filter:drop-shadow(0 0 8px rgba(255,200,80,.8)); }
-.wish-tall-name { fill:#fff; font-size:11.5px; font-weight:800; writing-mode:vertical-rl; letter-spacing:1px; paint-order:stroke; stroke:rgba(30,20,50,.55); stroke-width:3px; }
-.wish-tall-stars { fill:#ffd36b; font-size:8.5px; text-anchor:middle; }
-.wish-tall-new { fill:#fff; font-size:10px; font-weight:900; text-anchor:middle; paint-order:stroke; stroke:#e2573c; stroke-width:3px; }
-.wish-bar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
-.wish-wallet { margin:0; color:var(--lab-ink); font-weight:700; font-variant-numeric:tabular-nums; }
-.wish-buttons { display:flex; gap:10px; }
-.wish-button { display:flex; flex-direction:column; align-items:center; min-width:112px; padding:8px 16px; border:2px solid #e2c48a; border-radius:999px; background:#fffaf0; color:#6a4a20; font-weight:800; font-size:15px; cursor:pointer; }
-.wish-button small { font-size:11px; font-weight:600; color:#9a7a4a; }
-.wish-button.is-ten { background:linear-gradient(180deg,#fff4d6,#ffd98a); }
-.wish-button:disabled { opacity:.5; cursor:default; }
-.wish-button[hidden] { display:none; }
-.wish-offline { margin:8px 0 0; color:#c4452f; font-weight:700; }
-.wish-closet { margin-top:18px; padding:14px 16px; border:1px solid var(--lab-border); border-radius:16px; background:var(--lab-surface); }
-.wish-closet h3 { margin:0 0 10px; font-size:16px; }
-.wish-preview { display:flex; align-items:center; gap:18px; margin-bottom:12px; padding:10px 14px; border-radius:14px; background:color-mix(in srgb,#ffd2a8 25%,transparent); }
-.wish-preview-face { display:block; width:72px; height:72px; border-radius:50%; background-color:#f8e6d6; background-size:400% 400%; background-position:66.67% 0; border:3px solid #fff; box-shadow:0 0 0 2px #e2a46c; }
-.wish-preview-info { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
-.wish-preview-info strong { font-size:17px; }
-.wish-preview-title { padding:2px 10px; border-radius:999px; background:#fff; color:#9a4a1e; font-size:12.5px; font-weight:700; }
-.wish-preview-bomb svg { display:block; }
-.wish-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
-.wish-tab { padding:5px 11px; border:1px solid var(--lab-border); border-radius:999px; background:transparent; color:var(--lab-muted); font-size:12.5px; cursor:pointer; }
-.wish-tab.is-active { background:#e2573c; border-color:#e2573c; color:#fff; }
-.wish-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:10px; }
-.wish-item { display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 6px 8px; border:2px solid transparent; border-radius:14px; background:linear-gradient(180deg,#e9f1fb,#cfe0f5); color:#2b2340; cursor:pointer; font:inherit; }
-.wish-item.is-4 { background:linear-gradient(180deg,#f2e8ff,#dcc6f5); } .wish-item.is-5 { background:linear-gradient(180deg,#fff4d6,#f5d28e); }
-.wish-item.is-on { border-color:#e2573c; box-shadow:0 0 0 2px rgba(226,87,60,.25); }
-.wish-item.is-locked { filter:grayscale(1); opacity:.45; cursor:default; }
-.wish-item:disabled:not(.is-locked) { cursor:default; }
-.wish-item-name { font-size:12.5px; font-weight:800; text-align:center; }
-.wish-item small { color:#6a5a7a; font-size:11px; }
-.wish-closet-note { margin:10px 0 0; color:var(--lab-muted); font-size:12.5px; line-height:1.6; }
-.wish-side-title { margin:0; font-size:15px; }
-.wish-earn-lead { margin:0; color:var(--lab-ink); font-size:13.5px; line-height:1.6; }
-.wish-earn-list { margin:6px 0 0; padding-left:18px; font-size:12.5px; line-height:1.7; color:var(--lab-muted); }
-.wish-details { font-size:13px; }
-.wish-details summary { cursor:pointer; font-weight:700; }
-.wish-details p { line-height:1.6; }
-.wish-table { width:100%; border-collapse:collapse; font-size:12.5px; }
-.wish-table th { width:4.5em; padding:5px 6px; color:var(--lab-muted); font-weight:600; text-align:left; vertical-align:top; }
-.wish-table td { padding:5px 6px; line-height:1.55; }
-.wish-table tr + tr { border-top:1px solid var(--lab-border); }
-.wish-note { margin:8px 0 0; color:var(--lab-muted); font-size:12px; line-height:1.6; }
-.wish-history-title { margin:6px 0 0; font-size:14px; }
-.wish-history { display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none; font-size:12px; }
-.wish-history li { padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#6f9fd8 18%,transparent); }
-.wish-history li.is-4 { background:color-mix(in srgb,#9a6ad6 22%,transparent); }
-.wish-history li.is-5 { background:color-mix(in srgb,#e0a03a 30%,transparent); font-weight:800; }
-.wish-history li.is-empty { background:none; color:var(--lab-muted); }
-[data-theme='dark'] .wish-item { color:#2b2340; }
-@media(max-width:600px) { .wish-view { border-radius:18px; } .wish-button { min-width:96px; padding:7px 12px; } .wish-grid { grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); } }
-@media(prefers-reduced-motion:reduce) { .wish-panel *,.wish-panel *:before { animation:none !important; transition:none !important; } .wish-meteor { opacity:0; } }
+/* The wish moved to its own page; the lab keeps a door to it. */
+.wish-teaser-card { display:flex; flex-direction:column; gap:10px; padding:34px 32px; border-radius:24px; color:#f6efe6 !important; text-decoration:none !important; overflow:hidden; position:relative;
+  background:radial-gradient(90% 80% at 85% 0%, #ff9f6e 0%, transparent 55%), linear-gradient(135deg,#141a3d,#2e2a63 60%,#5b4685); box-shadow:0 16px 40px rgba(30,20,70,.3); transition:transform .2s; }
+.wish-teaser-card:hover { transform:translateY(-3px); }
+.wish-teaser-tag { align-self:flex-start; padding:3px 12px; border-radius:999px; background:rgba(255,211,107,.2); color:#ffd36b; font-size:12px; letter-spacing:.12em; }
+.wish-teaser-title { font-size:34px; letter-spacing:.12em; text-shadow:0 2px 14px rgba(255,190,110,.5); }
+.wish-teaser-text { max-width:560px; color:#d8cfe6; font-size:14px; line-height:1.8; }
+.wish-teaser-go { align-self:flex-start; margin-top:6px; padding:9px 22px; border-radius:999px; background:linear-gradient(180deg,#ffe7a8,#f2b84a); color:#4a2a06; font-weight:800; }

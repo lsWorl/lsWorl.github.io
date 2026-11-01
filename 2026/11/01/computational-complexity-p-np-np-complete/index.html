@@ -1,0 +1,507 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>计算复杂性入门：P、NP、NP完全与困难问题求解 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f8f7fc"><meta name="description" content="从独立集证书区分P、NP、NP-hard与NP-complete，通过补图转换理解归约方向，比较困难问题求解方法，并在高级选读中分析竞争选址与PSPACE。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算复杂性入门：P、NP、NP完全与困难问题求解">
+<meta property="og:url" content="https://lsworl.top/2026/11/01/computational-complexity-p-np-np-complete/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="从独立集证书区分P、NP、NP-hard与NP-complete，通过补图转换理解归约方向，比较困难问题求解方法，并在高级选读中分析竞争选址与PSPACE。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp">
+<meta property="article:published_time" content="2026-10-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-01T15:50:48.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="计算复杂性">
+<meta property="article:tag" content="NP完全">
+<meta property="article:tag" content="多项式归约">
+<meta property="article:tag" content="近似算法">
+<meta property="article:tag" content="PSPACE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "计算复杂性入门：P、NP、NP完全与困难问题求解",
+  "url": "https://lsworl.top/2026/11/01/computational-complexity-p-np-np-complete/",
+  "image": "https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp",
+  "datePublished": "2026-10-31T16:00:00.000Z",
+  "dateModified": "2026-11-01T15:50:48.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LsWorld",
+      "url": "https://lsworl.top"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/starlab/mark.svg"><link rel="canonical" href="https://lsworl.top/2026/11/01/computational-complexity-p-np-np-complete/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#151523')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f8f7fc')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '计算复杂性入门：P、NP、NP完全与困难问题求解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/assets/starlab.5d955382326e.css" data-starlab-assets><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+<script type="application/ld+json" class="lab-artwork-metadata">{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2021.webp","name":"可莉 2021 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© miHoYo","isBasedOn":"https://twitter.com/GenshinImpact/status/1419870158143721476","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2023.webp","name":"可莉 2023 年生日插画","creditText":"原神官方","creator":{"@type":"Organization","name":"原神官方","url":"https://genshin.hoyoverse.com/"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1684413674231037952","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"},{"@type":"ImageObject","contentUrl":"https://lsworl.top/images/starlab/covers/klee-birthday-2024.webp","name":"可莉 2024 年生日插画","creditText":"tokki","creator":{"@type":"Person","name":"tokki","url":"https://twitter.com/tokki_517"},"copyrightNotice":"© COGNOSPHERE","isBasedOn":"https://twitter.com/GenshinImpact/status/1817047433395994971","description":"保留完整原画，用原图模糊淡化副本填充横向边缘，缩放及 WebP 压缩；未使用生成式编辑。"}]}</script><meta name="companion-content-hash" content="68481826e931f6b914f6b0ee"><meta name="companion-knowledge-version" content="429882de0994767e19f6960d"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">182</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/wish/"><i class="fa-fw fas fa-star"></i><span> 可莉祈愿</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/starlab/mark.svg" alt="Logo"><span class="site-name">LsWorld</span></a><a class="nav-page-title" href="/"><span class="site-name">计算复杂性入门：P、NP、NP完全与困难问题求解</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/wish/"><i class="fa-fw fas fa-star"></i><span> 可莉祈愿</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">计算复杂性入门：P、NP、NP完全与困难问题求解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-01T15:50:48.000Z" title="更新于 2026-11-01 23:50:48">2026-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><div class="lab-article-cover"><img src="/images/starlab/covers/klee-birthday-2024.webp" alt="计算复杂性入门：P、NP、NP完全与困难问题求解 · 主题封面" width="1280" height="720" decoding="async" fetchpriority="high"></div><p class="lab-cover-credit">插画：tokki</p><article class="container post-content" id="article-container" data-companion-hash="68481826e931f6b914f6b0ee" data-companion-version="429882de0994767e19f6960d"><p>前面几篇分别求出了最优调度、讨论了匹配与独立集。接下来把视角从“某个算法要做多少工作”，转向“一个问题是否存在高效算法”。</p>
+<p>本文区分求解、验证与归约，建立P、NP、NP-hard、NP-complete的关系，并讨论困难问题的求解方法。需要了解<a href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/">输入编码与复杂度</a>和<a href="/2026/11/01/graph-optimization-matching-independent-set/">图上的独立集</a>。</p>
+<p>上一篇：<a href="/2026/11/01/graph-optimization-matching-independent-set/">图上的组合优化</a>。专题入口：<a href="/2026/10/23/algorithm-design-analysis-introduction/">算法设计与分析导论</a>。</p>
+<span id="more"></span>
+
+<h2 id="1-为什么先研究判定问题"><a href="#1-为什么先研究判定问题" class="headerlink" title="1. 为什么先研究判定问题"></a>1. 为什么先研究判定问题</h2><p>判定问题对每个输入回答是或否，便于精确定义哪些输入属于问题的“是实例”。判定、最优值与最优方案的区别，见<a href="/2026/10/23/algorithm-design-analysis-introduction/#2-%E5%88%A4%E5%AE%9A%E3%80%81%E6%9C%80%E4%BC%98%E5%80%BC%E3%80%81%E6%9C%80%E4%BC%98%E8%A7%A3%E4%B8%8E%E6%95%B0%E5%80%BC%E8%AE%A1%E7%AE%97">导论</a>。</p>
+<p>以独立集为例：输入图G与整数k，问是否存在至少k个两两不相邻的顶点。求最大独立集则要求最大数量或具体集合。得到最优方案通常能够计算最优值并回答阈值判定，但仅知道一个阈值的答案，不会自动给出最优方案。</p>
+<h2 id="2-多项式时间、P与NP"><a href="#2-多项式时间、P与NP" class="headerlink" title="2. 多项式时间、P与NP"></a>2. 多项式时间、P与NP</h2><p>这里的输入规模L是编码长度。多项式时间要求存在固定常数，使运行时间被L的固定次幂上界控制。指数中的次数不能随输入参数增加而无限改变；巨大次数或常数也可能让多项式算法在实践中不适用。</p>
+<h3 id="2-1-P：能够在多项式时间求解"><a href="#2-1-P：能够在多项式时间求解" class="headerlink" title="2.1 P：能够在多项式时间求解"></a>2.1 P：能够在多项式时间求解</h3><p>P是确定性多项式时间可判定的问题类。给定合法编码，算法必须在多项式时间内给出是或否。</p>
+<h3 id="2-2-NP：正实例具有可快速验证的证书"><a href="#2-2-NP：正实例具有可快速验证的证书" class="headerlink" title="2.2 NP：正实例具有可快速验证的证书"></a>2.2 NP：正实例具有可快速验证的证书</h3><p>NP是nondeterministic polynomial time，即非确定性多项式时间。等价的验证刻画是：对每个答案为“是”的输入，存在长度至多为输入长度多项式的证书，确定性验证器能在多项式时间确认它；答案为“否”的输入，不存在能被该验证器接受的证书。</p>
+<p>独立集判定的证书是一组顶点编号。检查编号合法、数量至少k、任意冲突边未被同时选入，即可接受。集合的合法性检查代码在<a href="/2026/11/01/graph-optimization-matching-independent-set/#4-Python%E6%A3%80%E6%9F%A5%E5%80%99%E9%80%89%E8%A7%A3%E4%B8%8E%E5%B7%B2%E7%9F%A5%E5%A2%9E%E5%B9%BF%E8%B7%AF">图优化篇</a>。</p>
+<p>这里验证的是“存在达到k的可行解”，而不是“这份集合已经全局最大”。定义参见<a target="_blank" rel="noopener" href="https://www.claymath.org/wp-content/uploads/2022/06/pvsnp.pdf">Stephen Cook的问题说明</a>。</p>
+<h2 id="3-NP-hard与NP-complete"><a href="#3-NP-hard与NP-complete" class="headerlink" title="3. NP-hard与NP-complete"></a>3. NP-hard与NP-complete</h2><p>先采用判定问题之间的多项式时间多对一归约，记作 $A\le_p B$；下一节给出转换的含义。</p>
+<ul>
+<li>B是NP-hard：每个NP问题都可在多项式时间归约到B。</li>
+<li>B是NP-complete：B既是NP-hard，又属于NP。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>需要属于NP吗</th>
+<th>核心要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P</td>
+<td>是，P包含于NP</td>
+<td>多项式时间求解</td>
+</tr>
+<tr>
+<td>NP</td>
+<td>按定义是</td>
+<td>正实例有多项式长度证书与验证器</td>
+</tr>
+<tr>
+<td>NP-hard</td>
+<td>不要求</td>
+<td>至少能承接所有NP问题的求解</td>
+</tr>
+<tr>
+<td>NP-complete</td>
+<td>要求</td>
+<td>NP成员性加NP-hard性</td>
+</tr>
+</tbody></table>
+<p>所以证明NP完全需要“能验证”与“足够难”两部分。NP-hard本身不提供证书验证的保证，甚至不要求该判定问题可判定。</p>
+<p>优化任务也常称NP-hard：例如若能在多项式时间求最大独立集的最优值，就能与k比较，解决其NP完全判定版。这是在求解任务意义下说困难性；NP-complete通常用于判定版本。相关证明可参看<a target="_blank" rel="noopener" href="https://www.cs.jhu.edu/~mdinitz/classes/IntroAlgorithms/Fall2021/Lectures/Lecture22/slides.pdf">Michael Dinitz的NP完全性讲义</a>。</p>
+<h2 id="4-多项式归约：用B的求解器回答A"><a href="#4-多项式归约：用B的求解器回答A" class="headerlink" title="4. 多项式归约：用B的求解器回答A"></a>4. 多项式归约：用B的求解器回答A</h2>
+$$
+A\le_p B
+\iff
+\exists\text{多项式时间可计算的 }f,\ 
+x\in A\Longleftrightarrow f(x)\in B
+$$
+
+
+<p>含义是把A的实例x转换成B的实例f(x)，保留是&#x2F;否答案。然后调用B的求解器，将结果作为A的答案。</p>
+<p><img src="/images/algorithms/complexity-reduction-flow.svg" alt="A的输入经过多项式转换成为B实例，再调用B求解器得到A答案"></p>
+<p>若B能多项式求解，转换加求解仍为多项式，于是A也能多项式求解。要用已知难问题A证明B很难，应构造A→B，而不是只把B变成A。</p>
+<h3 id="4-1-完整小例子：团到独立集"><a href="#4-1-完整小例子：团到独立集" class="headerlink" title="4.1 完整小例子：团到独立集"></a>4.1 完整小例子：团到独立集</h3><p>团是一组两两相邻的顶点。给无向简单图G构造补图：顶点相同，两个不同顶点在补图中连边，当且仅当它们在G中没有边。</p>
+<p>因此同一个顶点集合S满足：</p>
+
+$$
+S\text{是G的团}\Longleftrightarrow
+S\text{是补图}\ \overline G\ \text{的独立集}
+$$
+
+
+<p>阈值k保持不变。团判定(G,k)转换为独立集判定(补图G,k)，答案双向一致，转换只需检查每对顶点。这是<a target="_blank" rel="noopener" href="https://www.cs.jhu.edu/~mdinitz/classes/IntroAlgorithms/Fall2021/Lectures/Lecture22/slides.pdf">团到独立集归约</a>的基本结构。</p>
+<h3 id="4-2-Python实现转换"><a href="#4-2-Python实现转换" class="headerlink" title="4.2 Python实现转换"></a>4.2 Python实现转换</h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> itertools <span class="token keyword">import</span> combinations
+
+
+<span class="token keyword">def</span> <span class="token function">clique_to_independent</span><span class="token punctuation">(</span>vertices<span class="token punctuation">,</span> edges<span class="token punctuation">,</span> k<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    vertices <span class="token operator">=</span> <span class="token builtin">list</span><span class="token punctuation">(</span>vertices<span class="token punctuation">)</span>
+    edge_set <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token builtin">frozenset</span><span class="token punctuation">(</span><span class="token punctuation">(</span>u<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> u<span class="token punctuation">,</span> v <span class="token keyword">in</span> edges<span class="token punctuation">&#125;</span>
+    complement <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">(</span>u<span class="token punctuation">,</span> v<span class="token punctuation">)</span> <span class="token keyword">for</span> u<span class="token punctuation">,</span> v <span class="token keyword">in</span> combinations<span class="token punctuation">(</span>vertices<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token builtin">frozenset</span><span class="token punctuation">(</span><span class="token punctuation">(</span>u<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">not</span> <span class="token keyword">in</span> edge_set
+    <span class="token punctuation">]</span>
+    <span class="token keyword">return</span> vertices<span class="token punctuation">,</span> complement<span class="token punctuation">,</span> k
+
+
+vertices <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span>
+edges <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+new_vertices<span class="token punctuation">,</span> complement<span class="token punctuation">,</span> k <span class="token operator">=</span> clique_to_independent<span class="token punctuation">(</span>vertices<span class="token punctuation">,</span> edges<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>
+<span class="token keyword">assert</span> complement <span class="token operator">==</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+candidate <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">assert</span> <span class="token builtin">len</span><span class="token punctuation">(</span>candidate<span class="token punctuation">)</span> <span class="token operator">>=</span> k
+<span class="token keyword">assert</span> <span class="token builtin">all</span><span class="token punctuation">(</span><span class="token keyword">not</span> <span class="token punctuation">(</span>u <span class="token keyword">in</span> candidate <span class="token keyword">and</span> v <span class="token keyword">in</span> candidate<span class="token punctuation">)</span> <span class="token keyword">for</span> u<span class="token punctuation">,</span> v <span class="token keyword">in</span> complement<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>complement<span class="token punctuation">)</span></code></pre>
+
+<p>输入采用合法无向简单图。哈希集合模型下构造成本O(n²+m)，输出补图最多含O(n²)条边，所占空间也为O(n²)。原图中的团{0,1,2}在补图中成为同样大小的独立集。</p>
+<h2 id="5-P与NP之间已知什么"><a href="#5-P与NP之间已知什么" class="headerlink" title="5. P与NP之间已知什么"></a>5. P与NP之间已知什么</h2>
+$$
+\mathrm P\subseteq\mathrm{NP}
+$$
+
+
+<p>已经能快速求解的问题，可以由验证器直接运行求解算法确认，证书可以为空。因此属于NP不意味着已经排除属于P。</p>
+<p>P是否等于NP仍是未解决问题；<a target="_blank" rel="noopener" href="https://www.claymath.org/millennium/p-vs-np/">Clay Mathematics Institute</a>将其列为开放问题。若任意一个NP完全问题具有多项式时间算法，则所有NP问题都能通过归约获得多项式算法，从而P&#x3D;NP。</p>
+<p>写出一个指数时间算法，说明的是该算法的资源上界，不能排除存在另一种更快算法。NP完全性也不是“已经证明只能穷举”。</p>
+<h2 id="6-困难问题的求解方法"><a href="#6-困难问题的求解方法" class="headerlink" title="6. 困难问题的求解方法"></a>6. 困难问题的求解方法</h2><p>选择方法时，可以先明确需要精确最优、可证明近似，还是尽快得到可行方案。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>保留或追求什么</th>
+<th>需要注意</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>启发式算法</td>
+<td>尽快找到质量较好的可行解</td>
+<td>通常没有统一的最优性或近似比保证</td>
+</tr>
+<tr>
+<td>近似算法</td>
+<td>多项式时间，并提供明确的解质量保证</td>
+<td>保证必须有证明，不是只看测试平均效果</td>
+</tr>
+<tr>
+<td>快速精确算法</td>
+<td>仍返回真正最优解</td>
+<td>最坏情况时间可能仍是指数级</td>
+</tr>
+<tr>
+<td>参数化算法</td>
+<td>利用某个参数较小的特点</td>
+<td>要说清参数是什么，以及时间怎样依赖它</td>
+</tr>
+</tbody></table>
+<p>启发式并不等于“输出是否可行都不知道”。例如可以始终保持方案可行，只是不保证它全局最优。已有的<a href="/2026/06/14/heft-algorithm/">HEFT文章</a>就是理解启发式调度的一个入口，但它处理的是带依赖与异构处理器的另一种模型，不是本文的单会议室区间选择。</p>
+<h3 id="6-1-用一个数理解近似保证"><a href="#6-1-用一个数理解近似保证" class="headerlink" title="6.1 用一个数理解近似保证"></a>6.1 用一个数理解近似保证</h3><p>对非负目标值，采用 $\rho\ge1$ 的比值约定：最大化问题的 $\rho$ 近似保证可写为 $ALG\ge OPT/\rho$；最小化问题则写为 $ALG\le\rho OPT$。</p>
+<p>例如，最大化问题的最优值是100，一个有2近似保证的算法至少要得到50。这个例子只解释保证的含义，不是在声称任意问题都存在2近似算法。</p>
+<p>课件还提到PTAS。它是多项式时间近似方案，不是与P、NP相同意义的判定复杂性类。对最小化问题，给定误差参数 $\varepsilon&gt;0$，要求得到至多 $(1+\varepsilon)OPT$ 的可行解；对每个固定的误差参数，时间关于输入规模是多项式。</p>
+<p>但时间可能形如 $n^{O(1/\varepsilon)}$，误差要求很小时仍可能不可用，不能理解成“误差随便调小且始终很快”。参见 <a target="_blank" rel="noopener" href="https://theory.stanford.edu/~trevisan/eptas.html">Cesati 与 Trevisan 对PTAS效率的说明</a>。</p>
+<h3 id="6-2-“参数较小”需要有明确的时间表达式"><a href="#6-2-“参数较小”需要有明确的时间表达式" class="headerlink" title="6.2 “参数较小”需要有明确的时间表达式"></a>6.2 “参数较小”需要有明确的时间表达式</h3><p>固定参数可解的一种典型形式是：</p>
+
+$$
+T(n,k)=f(k)n^c
+$$
+
+
+<p>其中 c 不随参数 k 改变。例如 $2^k n^2$ 的指数代价集中在 k 上；当 k 很小时可能有用，但不表示 k 任意大时仍高效。仅仅说“对每个固定 k，$n^k$ 是多项式”还不满足上述形式的要求。</p>
+<p>穷举提供容易验证的精确基线；分支定界和剪枝可以跳过不可能改进答案的分支。是否改善最坏时间，要根据剪枝能保证排除多少搜索状态来分析。</p>
+<h2 id="7-高级选读：竞争选址与PSPACE"><a href="#7-高级选读：竞争选址与PSPACE" class="headerlink" title="7. 高级选读：竞争选址与PSPACE"></a>7. 高级选读：竞争选址与PSPACE</h2><p>普通优化寻找一份好方案；对抗问题要求面对对手的每次回应都维持收益保证。</p>
+<details>
+<summary>展开竞争选址、保证收益、博弈树与递归代码</summary>
+
+<h3 id="7-1-规则里增加了一个会回应的对手"><a href="#7-1-规则里增加了一个会回应的对手" class="headerlink" title="7.1 规则里增加了一个会回应的对手"></a>7.1 规则里增加了一个会回应的对手</h3><p>课件第31页给出一个带顶点权重的图。两名玩家轮流选择尚未被选、且不与任何已选顶点相邻的顶点，获得自己所选顶点的权重；没有合法位置时游戏结束。</p>
+<p>问题是：给定阈值 B，后手是否有一种策略，无论先手怎样行动，都能得到至少 B 的总收益？</p>
+<p>注意三个区别：</p>
+<ul>
+<li>选出的所有顶点合起来是独立集，但权重由实际选中它们的玩家分别获得。</li>
+<li>不再是一个人一次性挑选最佳集合，而是双方轮流行动。</li>
+<li>问的是“面对所有对手应对都能保证”，不是“存在某一局碰巧得到高分”。</li>
+</ul>
+<h3 id="7-2-先手不同，后手能拿到的收益也不同"><a href="#7-2-先手不同，后手能拿到的收益也不同" class="headerlink" title="7.2 先手不同，后手能拿到的收益也不同"></a>7.2 先手不同，后手能拿到的收益也不同</h3><p>先看一个补充的小例子：三个顶点连成路径 $u-v-w$，权重依次为2、9、2。</p>
+<p><img src="/images/algorithms/introduction-facility-game.svg" alt="三顶点竞争选址博弈树：先手选中间会使后手无路可走，因此后手最坏保证收益为0"></p>
+<table>
+<thead>
+<tr>
+<th>先手选择</th>
+<th>后手还有什么可选</th>
+<th align="right">后手最终收益</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>u</td>
+<td>w</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>v</td>
+<td>没有合法顶点</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>w</td>
+<td>u</td>
+<td align="right">2</td>
+</tr>
+</tbody></table>
+<p>因此，后手“某一局能得到2”是真的，但“保证至少得到2”是假的：先手可以直接选 v。</p>
+<p>计算保证收益时，后手在自己的回合取最大值，先手的回合则考虑最不利于后手的选择，取最小值：</p>
+
+$$
+\min(2,0,2)=0
+$$
+
+
+<h3 id="7-3-用递归核对课件中的10个顶点"><a href="#7-3-用递归核对课件中的10个顶点" class="headerlink" title="7.3 用递归核对课件中的10个顶点"></a>7.3 用递归核对课件中的10个顶点</h3><p>课件使用一条10个顶点的路径，权重为：</p>
+<pre class="language-text" data-language="text"><code class="language-text">10, 1, 5, 15, 5, 1, 5, 1, 15, 10</code></pre>
+
+<p>下面用递归计算后手的最坏保证收益。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> functools <span class="token keyword">import</span> lru_cache
+
+
+<span class="token keyword">def</span> <span class="token function">second_player_guarantee</span><span class="token punctuation">(</span>weights<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    n <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>weights<span class="token punctuation">)</span>
+    blocked <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token keyword">for</span> v <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        mask <span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> v
+        <span class="token keyword">if</span> v <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">:</span>
+            mask <span class="token operator">|</span><span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>v <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> v <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">&lt;</span> n<span class="token punctuation">:</span>
+            mask <span class="token operator">|</span><span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>v <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        blocked<span class="token punctuation">.</span>append<span class="token punctuation">(</span>mask<span class="token punctuation">)</span>
+
+    <span class="token decorator annotation punctuation">@lru_cache</span><span class="token punctuation">(</span><span class="token boolean">None</span><span class="token punctuation">)</span>
+    <span class="token keyword">def</span> <span class="token function">solve</span><span class="token punctuation">(</span>available<span class="token punctuation">,</span> second_turn<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> available <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token number">0</span>
+        outcomes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> v<span class="token punctuation">,</span> weight <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>weights<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> available <span class="token operator">&amp;</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> v<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                remaining <span class="token operator">=</span> available <span class="token operator">&amp;</span> <span class="token operator">~</span>blocked<span class="token punctuation">[</span>v<span class="token punctuation">]</span>
+                future <span class="token operator">=</span> solve<span class="token punctuation">(</span>remaining<span class="token punctuation">,</span> <span class="token keyword">not</span> second_turn<span class="token punctuation">)</span>
+                outcomes<span class="token punctuation">.</span>append<span class="token punctuation">(</span>future <span class="token operator">+</span> <span class="token punctuation">(</span>weight <span class="token keyword">if</span> second_turn <span class="token keyword">else</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token builtin">max</span><span class="token punctuation">(</span>outcomes<span class="token punctuation">)</span> <span class="token keyword">if</span> second_turn <span class="token keyword">else</span> <span class="token builtin">min</span><span class="token punctuation">(</span>outcomes<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> solve<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> n<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">assert</span> second_player_guarantee<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span>
+weights <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>second_player_guarantee<span class="token punctuation">(</span>weights<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 20</span></code></pre>
+
+<p><code>available</code> 用二进制位表示哪些顶点仍然合法。选择 v 后，清除 v 及相邻顶点的位；只有后手选择时才把权重计入后手收益。递归返回的是从当前状态开始的未来保证收益，因此缓存不需要记录已经获得的分数。</p>
+<p>结果为20，与课件中的“可以保证20，但不能保证25”一致。程序处理路径图的小规模实例，缓存状态数最坏为指数级。</p>
+<h3 id="7-4-为什么课件会提到PSPACE"><a href="#7-4-为什么课件会提到PSPACE" class="headerlink" title="7.4 为什么课件会提到PSPACE"></a>7.4 为什么课件会提到PSPACE</h3><p>一般图上的竞争选址判定问题是PSPACE完全问题，课件在这里用它提示“策略问题”与“找一份候选方案”的不同；相关结论可参见 <a target="_blank" rel="noopener" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/09PSPACE.pdf">Kevin Wayne 的PSPACE讲义</a>。</p>
+<p>PSPACE关注多项式空间。搜索树可能有很多分支，但深度最多是顶点数量，可以按深度优先方式逐个探索，不需要同时保存整棵树。时间很长与空间很多是两种不同的资源消耗。</p>
+<p>已知包含关系是 $\mathrm P\subseteq\mathrm{NP}\subseteq\mathrm{PSPACE}$；这些包含关系是否严格，仍涉及开放问题。</p>
+<h3 id="7-5-缓存程序与多项式空间搜索"><a href="#7-5-缓存程序与多项式空间搜索" class="headerlink" title="7.5 缓存程序与多项式空间搜索"></a>7.5 缓存程序与多项式空间搜索</h3><p>上面的lru_cache保存已经求过的状态，用空间换时间，缓存最坏可能指数增长。PSPACE成员性可以使用<strong>不保留全局缓存</strong>的深度优先搜索：每次只探索一个分支，每层保存剩余顶点、回合和当前最好或最坏值。</p>
+<p>一局至多选择n次，搜索深度至多n；每层的数据用多项式位数表示，因此总空间为多项式。总分支数仍可能指数增长。时间与空间需要分别计量。<a target="_blank" rel="noopener" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/09PSPACE.pdf">Princeton的PSPACE讲义</a>给出了竞争选址的PSPACE完全性结论与归约思路。</p>
+</details>
+
+<h2 id="8-易错点"><a href="#8-易错点" class="headerlink" title="8. 易错点"></a>8. 易错点</h2><p>NP不是“Non-Polynomial”；NP-hard与NP-complete的差别在于是否还要求属于NP。证明困难性时归约由已知难问题指向待证明问题；正实例验证与全局最优性验证不同。近似保证来自对全部合法实例的论证，测试平均分不能替代这种保证。</p>
+<h2 id="9-练习"><a href="#9-练习" class="headerlink" title="9. 练习"></a>9. 练习</h2><h3 id="练习1：概念判断"><a href="#练习1：概念判断" class="headerlink" title="练习1：概念判断"></a>练习1：概念判断</h3><p>判断：NP表示非多项式；属于NP的问题都不属于P；一个指数算法证明问题不存在多项式算法；验证大小达到k的独立集就是验证最大独立集。</p>
+<h3 id="练习2：NP完全证明"><a href="#练习2：NP完全证明" class="headerlink" title="练习2：NP完全证明"></a>练习2：NP完全证明</h3><p>已知B属于NP，且B≤p某个NP完全问题C，是否足够证明B为NP完全？应该补什么方向的归约？</p>
+<h3 id="练习3：优化与判定"><a href="#练习3：优化与判定" class="headerlink" title="练习3：优化与判定"></a>练习3：优化与判定</h3><p>如果能多项式计算最大独立集的最优值，怎样回答阈值k的判定？这解释了优化版的什么性质？</p>
+<h3 id="练习4：近似保证"><a href="#练习4：近似保证" class="headerlink" title="练习4：近似保证"></a>练习4：近似保证</h3><p>最优值100，测试结果都≥90，是否证明2近似？有证明的2近似最大化算法至少应得到多少？</p>
+<h3 id="练习5：PTAS与参数"><a href="#练习5：PTAS与参数" class="headerlink" title="练习5：PTAS与参数"></a>练习5：PTAS与参数</h3><p>n^(1&#x2F;ε)对每个固定ε是多项式，是否表示ε调得很小时依然容易运行？n^k是否属于固定参数形式f(k)n^c（c与k无关）？</p>
+<h3 id="练习6：保证收益"><a href="#练习6：保证收益" class="headerlink" title="练习6：保证收益"></a>练习6：保证收益</h3><p>高级例三顶点路径权重改为4、1、7，先手选择左端、中间、右端时，后手分别得多少？是否保证至少4？</p>
+<h3 id="练习7：时间与空间"><a href="#练习7：时间与空间" class="headerlink" title="练习7：时间与空间"></a>练习7：时间与空间</h3><p>深度n、分支至多n的游戏树，为什么能用多项式空间逐分支遍历？给所有状态加缓存后还保持这一空间保证吗？</p>
+<h2 id="10-参考答案"><a href="#10-参考答案" class="headerlink" title="10. 参考答案"></a>10. 参考答案</h2><ol>
+<li>四句均不正确。NP为非确定性多项式时间，P包含在NP内；一个算法的上界不排除另一种算法；达到阈值的可行性不要求排除所有更大的解。</li>
+<li>不足，容易的问题也能归约到困难问题。应从已知NP完全问题A构造A≤pB，再结合B∈NP。</li>
+<li>求出最优值M，比较M≥k即可。优化版能够解决NP完全判定版，所以在相应求解归约意义下是NP-hard。</li>
+<li>有限测试未覆盖全部合法实例。2近似保证ALG≥OPT&#x2F;2，因此最优100时至少50；其他实例按各自OPT计算。</li>
+<li>不表示，指数1&#x2F;ε可能很大。n^k的次数随k变化，不是固定参数可解要求的统一常数次数形式。</li>
+<li>依次7、0、4，最坏保证min(7,0,4)&#x3D;0，不能保证至少4。</li>
+<li>深度优先只保存一条路径及每层的局部数据；若每层是多项式大小，总空间也是多项式。保存所有已访问状态的缓存可能指数增长。</li>
+</ol>
+<h2 id="11-后续学习与资料"><a href="#11-后续学习与资料" class="headerlink" title="11. 后续学习与资料"></a>11. 后续学习与资料</h2><p>专题入口：<a href="/2026/10/23/algorithm-design-analysis-introduction/">导论</a>；上一篇：<a href="/2026/11/01/graph-optimization-matching-independent-set/">图优化</a>。后续可学习3-SAT到图问题的归约、分支定界、具体近似算法与固定参数算法。</p>
+<p>课程来源：Introduction第21至25页的困难问题方法、第30至31页的独立集与竞争选址。权威补充资料：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.claymath.org/wp-content/uploads/2022/06/pvsnp.pdf">Stephen Cook：P versus NP</a>：判定、验证与多项式归约。</li>
+<li><a target="_blank" rel="noopener" href="https://www.claymath.org/millennium/p-vs-np/">Clay：P与NP问题状态</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://www.cs.jhu.edu/~mdinitz/classes/IntroAlgorithms/Fall2021/Lectures/Lecture22/slides.pdf">Michael Dinitz：NP-Completeness II</a>：团到独立集的归约。</li>
+<li><a target="_blank" rel="noopener" href="https://theory.stanford.edu/~trevisan/eptas.html">Cesati与Trevisan：PTAS效率</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/09PSPACE.pdf">Kevin Wayne：PSPACE</a>。</li>
+</ul>
+<p>原有三顶点、10顶点路径、保证收益代码和相关习题在本篇保留。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lsworl.top">LsWorld</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lsworl.top/2026/11/01/computational-complexity-p-np-np-complete/">https://lsworl.top/2026/11/01/computational-complexity-p-np-np-complete/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lsworl.top" target="_blank">LsWorld</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E5%A4%8D%E6%9D%82%E6%80%A7/">计算复杂性</a><a class="post-meta__tags" href="/tags/NP%E5%AE%8C%E5%85%A8/">NP完全</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%BD%92%E7%BA%A6/">多项式归约</a><a class="post-meta__tags" href="/tags/%E8%BF%91%E4%BC%BC%E7%AE%97%E6%B3%95/">近似算法</a><a class="post-meta__tags" href="/tags/PSPACE/">PSPACE</a></div><div class="post-share"><div class="social-share" data-image="/images/starlab/covers/klee-birthday-2024.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" onerror="onerror=null;src='/images/starlab/covers/klee-birthday-2021.webp'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">图上的组合优化：二分图匹配与独立集</div></div><div class="info-2"><div class="info-item-1">用人员岗位分配和任务冲突理解二分图匹配与独立集，手动翻转增广路，区分最大与极大，并用Python检查候选解。</div></div></div></a><a class="pagination-related" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"><img class="cover" src="/images/starlab/covers/klee-birthday-2023.webp" onerror="onerror=null;src='/images/starlab/covers/klee-birthday-2021.webp'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</div></div><div class="info-2"><div class="info-item-1">通过不等式与算例理解五种渐进记号，明确固定常数和量词，用比值、统一底数、变量替换比较对数、多项式、指数与阶乘增长。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析导论：问题建模、正确性与算法选择"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-23</div><div class="info-item-2">算法设计与分析导论：问题建模、正确性与算法选择</div></div><div class="info-2"><div class="info-item-1">从输入、输出、约束和目标理解算法问题，区分问题、算法与程序，建立终止性、正确性和资源分析的基本流程，并连接后续六篇学习专题。</div></div></div></a><a class="pagination-related" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">贪心算法入门：从局部选择到全局最优证明</div></div><div class="info-2"><div class="info-item-1">从失败的最早开始策略出发，手算八项活动的贪心选择，再以一维基站覆盖说明交换论证、端点处理、剩余问题与全局最优性。</div></div></div></a><a class="pagination-related" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"><img class="cover" src="/images/starlab/covers/klee-birthday-2023.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</div></div><div class="info-2"><div class="info-item-1">通过不等式与算例理解五种渐进记号，明确固定常数和量词，用比值、统一底数、变量替换比较对数、多项式、指数与阶乘增长。</div></div></div></a><a class="pagination-related" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">图上的组合优化：二分图匹配与独立集</div></div><div class="info-2"><div class="info-item-1">用人员岗位分配和任务冲突理解二分图匹配与独立集，手动翻转增广路，区分最大与极大，并用Python检查候选解。</div></div></div></a><a class="pagination-related" href="/2026/06/14/heft-algorithm/" title="HEFT算法：异构计算中的任务调度方法"><img class="cover" src="/images/starlab/covers/klee-birthday-2021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-14</div><div class="info-item-2">HEFT算法：异构计算中的任务调度方法</div></div><div class="info-2"><div class="info-item-1">从任务DAG、异构处理器、向上排序值、最早完成时间和Python实现几个角度理解HEFT异构最早完成时间调度算法。</div></div></div></a><a class="pagination-related" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复"><img class="cover" src="/images/starlab/covers/klee-birthday-2024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-01</div><div class="info-item-2">动态规划入门：从状态定义到最优方案恢复</div></div><div class="info-2"><div class="info-item-1">使用八个带权活动逐步建立OPT状态、前驱、转移、初始化和重叠子问题，手动填表并用Python恢复最优任务d与h。</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LsWorld</div><div class="author-info-description">记录机器学习、自然语言处理和开发实践。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">182</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lsWorl"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lsWorl" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">文章按主题整理在学习路线中。<br><a href="/map/">查看学习路线 ↗</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%88%E7%A0%94%E7%A9%B6%E5%88%A4%E5%AE%9A%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">1. 为什么先研究判定问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%97%B6%E9%97%B4%E3%80%81P%E4%B8%8ENP"><span class="toc-number">2.</span> <span class="toc-text">2. 多项式时间、P与NP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-P%EF%BC%9A%E8%83%BD%E5%A4%9F%E5%9C%A8%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%97%B6%E9%97%B4%E6%B1%82%E8%A7%A3"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 P：能够在多项式时间求解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-NP%EF%BC%9A%E6%AD%A3%E5%AE%9E%E4%BE%8B%E5%85%B7%E6%9C%89%E5%8F%AF%E5%BF%AB%E9%80%9F%E9%AA%8C%E8%AF%81%E7%9A%84%E8%AF%81%E4%B9%A6"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 NP：正实例具有可快速验证的证书</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-NP-hard%E4%B8%8ENP-complete"><span class="toc-number">3.</span> <span class="toc-text">3. NP-hard与NP-complete</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%BD%92%E7%BA%A6%EF%BC%9A%E7%94%A8B%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8%E5%9B%9E%E7%AD%94A"><span class="toc-number">4.</span> <span class="toc-text">4. 多项式归约：用B的求解器回答A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%AE%8C%E6%95%B4%E5%B0%8F%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%9B%A2%E5%88%B0%E7%8B%AC%E7%AB%8B%E9%9B%86"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 完整小例子：团到独立集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Python%E5%AE%9E%E7%8E%B0%E8%BD%AC%E6%8D%A2"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 Python实现转换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-P%E4%B8%8ENP%E4%B9%8B%E9%97%B4%E5%B7%B2%E7%9F%A5%E4%BB%80%E4%B9%88"><span class="toc-number">5.</span> <span class="toc-text">5. P与NP之间已知什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%9B%B0%E9%9A%BE%E9%97%AE%E9%A2%98%E7%9A%84%E6%B1%82%E8%A7%A3%E6%96%B9%E6%B3%95"><span class="toc-number">6.</span> <span class="toc-text">6. 困难问题的求解方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%94%A8%E4%B8%80%E4%B8%AA%E6%95%B0%E7%90%86%E8%A7%A3%E8%BF%91%E4%BC%BC%E4%BF%9D%E8%AF%81"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 用一个数理解近似保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E2%80%9C%E5%8F%82%E6%95%B0%E8%BE%83%E5%B0%8F%E2%80%9D%E9%9C%80%E8%A6%81%E6%9C%89%E6%98%8E%E7%A1%AE%E7%9A%84%E6%97%B6%E9%97%B4%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 “参数较小”需要有明确的时间表达式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E9%AB%98%E7%BA%A7%E9%80%89%E8%AF%BB%EF%BC%9A%E7%AB%9E%E4%BA%89%E9%80%89%E5%9D%80%E4%B8%8EPSPACE"><span class="toc-number">7.</span> <span class="toc-text">7. 高级选读：竞争选址与PSPACE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E8%A7%84%E5%88%99%E9%87%8C%E5%A2%9E%E5%8A%A0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BC%9A%E5%9B%9E%E5%BA%94%E7%9A%84%E5%AF%B9%E6%89%8B"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 规则里增加了一个会回应的对手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%85%88%E6%89%8B%E4%B8%8D%E5%90%8C%EF%BC%8C%E5%90%8E%E6%89%8B%E8%83%BD%E6%8B%BF%E5%88%B0%E7%9A%84%E6%94%B6%E7%9B%8A%E4%B9%9F%E4%B8%8D%E5%90%8C"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 先手不同，后手能拿到的收益也不同</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E7%94%A8%E9%80%92%E5%BD%92%E6%A0%B8%E5%AF%B9%E8%AF%BE%E4%BB%B6%E4%B8%AD%E7%9A%8410%E4%B8%AA%E9%A1%B6%E7%82%B9"><span class="toc-number">7.3.</span> <span class="toc-text">7.3 用递归核对课件中的10个顶点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AF%BE%E4%BB%B6%E4%BC%9A%E6%8F%90%E5%88%B0PSPACE"><span class="toc-number">7.4.</span> <span class="toc-text">7.4 为什么课件会提到PSPACE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E7%BC%93%E5%AD%98%E7%A8%8B%E5%BA%8F%E4%B8%8E%E5%A4%9A%E9%A1%B9%E5%BC%8F%E7%A9%BA%E9%97%B4%E6%90%9C%E7%B4%A2"><span class="toc-number">7.5.</span> <span class="toc-text">7.5 缓存程序与多项式空间搜索</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%98%93%E9%94%99%E7%82%B9"><span class="toc-number">8.</span> <span class="toc-text">8. 易错点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%BB%83%E4%B9%A0"><span class="toc-number">9.</span> <span class="toc-text">9. 练习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A01%EF%BC%9A%E6%A6%82%E5%BF%B5%E5%88%A4%E6%96%AD"><span class="toc-number">9.1.</span> <span class="toc-text">练习1：概念判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A02%EF%BC%9ANP%E5%AE%8C%E5%85%A8%E8%AF%81%E6%98%8E"><span class="toc-number">9.2.</span> <span class="toc-text">练习2：NP完全证明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A03%EF%BC%9A%E4%BC%98%E5%8C%96%E4%B8%8E%E5%88%A4%E5%AE%9A"><span class="toc-number">9.3.</span> <span class="toc-text">练习3：优化与判定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A04%EF%BC%9A%E8%BF%91%E4%BC%BC%E4%BF%9D%E8%AF%81"><span class="toc-number">9.4.</span> <span class="toc-text">练习4：近似保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A05%EF%BC%9APTAS%E4%B8%8E%E5%8F%82%E6%95%B0"><span class="toc-number">9.5.</span> <span class="toc-text">练习5：PTAS与参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A06%EF%BC%9A%E4%BF%9D%E8%AF%81%E6%94%B6%E7%9B%8A"><span class="toc-number">9.6.</span> <span class="toc-text">练习6：保证收益</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A07%EF%BC%9A%E6%97%B6%E9%97%B4%E4%B8%8E%E7%A9%BA%E9%97%B4"><span class="toc-number">9.7.</span> <span class="toc-text">练习7：时间与空间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88"><span class="toc-number">10.</span> <span class="toc-text">10. 参考答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%90%8E%E7%BB%AD%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%B5%84%E6%96%99"><span class="toc-number">11.</span> <span class="toc-text">11. 后续学习与资料</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>系列文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"></a><div class="content"><a class="title" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="计算复杂性入门：P、NP、NP完全与困难问题求解"></a><div class="content"><a class="title" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解">计算复杂性入门：P、NP、NP完全与困难问题求解</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="图上的组合优化：二分图匹配与独立集"></a><div class="content"><a class="title" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集">图上的组合优化：二分图匹配与独立集</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="动态规划入门：从状态定义到最优方案恢复"></a><div class="content"><a class="title" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复">动态规划入门：从状态定义到最优方案恢复</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="贪心算法入门：从局部选择到全局最优证明"></a><div class="content"><a class="title" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明">贪心算法入门：从局部选择到全局最优证明</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/" title="算法复杂度分析基础：从代码计数到时间与空间复杂度"><img src="/images/starlab/covers/klee-birthday-2021.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="算法复杂度分析基础：从代码计数到时间与空间复杂度"></a><div class="content"><a class="title" href="/2026/10/30/algorithm-analysis-asymptotic-greedy-basics/" title="算法复杂度分析基础：从代码计数到时间与空间复杂度">算法复杂度分析基础：从代码计数到时间与空间复杂度</a><time datetime="2026-10-29T16:00:00.000Z" title="发表于 2026-10-30 00:00:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析导论：问题建模、正确性与算法选择"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="算法设计与分析导论：问题建模、正确性与算法选择"></a><div class="content"><a class="title" href="/2026/10/23/algorithm-design-analysis-introduction/" title="算法设计与分析导论：问题建模、正确性与算法选择">算法设计与分析导论：问题建模、正确性与算法选择</a><time datetime="2026-10-22T16:00:00.000Z" title="发表于 2026-10-23 00:00:00">2026-10-23</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"><img src="/images/starlab/covers/klee-birthday-2023.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较"/></a><div class="content"><a class="title" href="/2026/11/01/asymptotic-notation-growth-rate-analysis/" title="渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较">渐进符号与函数增长率：Big-O、Ω、Θ 与严格比较</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="计算复杂性入门：P、NP、NP完全与困难问题求解"/></a><div class="content"><a class="title" href="/2026/11/01/computational-complexity-p-np-np-complete/" title="计算复杂性入门：P、NP、NP完全与困难问题求解">计算复杂性入门：P、NP、NP完全与困难问题求解</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="图上的组合优化：二分图匹配与独立集"/></a><div class="content"><a class="title" href="/2026/11/01/graph-optimization-matching-independent-set/" title="图上的组合优化：二分图匹配与独立集">图上的组合优化：二分图匹配与独立集</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="动态规划入门：从状态定义到最优方案恢复"/></a><div class="content"><a class="title" href="/2026/11/01/dynamic-programming-weighted-interval-scheduling/" title="动态规划入门：从状态定义到最优方案恢复">动态规划入门：从状态定义到最优方案恢复</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明"><img src="/images/starlab/covers/klee-birthday-2024.webp" onerror="this.onerror=null;this.src='/images/starlab/covers/klee-birthday-2021.webp'" alt="贪心算法入门：从局部选择到全局最优证明"/></a><div class="content"><a class="title" href="/2026/11/01/greedy-algorithm-design-exchange-proof/" title="贪心算法入门：从局部选择到全局最优证明">贪心算法入门：从局部选择到全局最优证明</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text">学习笔记与项目记录<br>封面插画：原神官方 · tokki</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script src="/assets/starlab.aaca91c4e4ec.js" defer data-starlab-assets></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索概念、算法或项目…" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5-b1"></script></div></div></body></html>

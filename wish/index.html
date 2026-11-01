@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>可莉祈愿 | LsWorld</title><meta name="author" content="LsWorld"><meta name="copyright" content="LsWorld"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f8f7fc"><meta name="description" content="读文章、答可莉小测验攒原石，在“火花与烟花”活动祈愿里给可莉抽头像框、发饰、聊天气泡、称号和炸弹皮肤。概率与保底参照原神官方公示。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="可莉祈愿">
+<meta property="og:url" content="https://lsworl.top/wish/index.html">
+<meta property="og:site_name" content="LsWorld">
+<meta property="og:description" content="读文章、答可莉小测验攒原石，在“火花与烟花”活动祈愿里给可莉抽头像框、发饰、聊天气泡、称号和炸弹皮肤。概率与保底参照原神官方公示。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/lsWorl.png">
+<meta property="article:published_time" content="2026-11-01T16:14:50.000Z">
+<meta property="article:modified_time" content="2026-11-01T16:14:50.000Z">
+<meta property="article:author" content="LsWorld">
+<meta property="article:tag" content="machine learning, deep learning, python, notes, blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/lsWorl.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/images/starlab/mark.svg"><link rel="canonical" href="https://lsworl.top/wish/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#151523')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f8f7fc')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '可莉祈愿',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'starlab'
+}</script><link rel="stylesheet" href="/assets/starlab.5d955382326e.css" data-starlab-assets><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="LsWorld" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/lsWorl.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">182</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">35</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/wish/"><i class="fa-fw fas fa-star"></i><span> 可莉祈愿</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/starlab/mark.svg" alt="Logo"><span class="site-name">LsWorld</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/map/"><i class="fa-fw fas fa-project-diagram"></i><span> 学习路线</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-cubes"></i><span> 项目</span></a></div><div class="menus_item"><a class="site-page" href="/lab/"><i class="fa-fw fas fa-flask"></i><span> AI 实验</span></a></div><div class="menus_item"><a class="site-page" href="/wish/"><i class="fa-fw fas fa-star"></i><span> 可莉祈愿</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">可莉祈愿</h1></header><main class="layout hide-aside" id="content-inner"><div class="lab-page nc"><div class="kwp" data-kwp="data-kwp" data-voice-manifest="/fishing-voice.json"><canvas class="kwp-sky" data-kwp-sky="data-kwp-sky" aria-hidden="true"></canvas><div class="kwp-glow" aria-hidden="true"></div><header class="kwp-top"><div class="kwp-brand"><svg class="kwp-brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2L23 16 37 20 23 24 20 38 17 24 3 20 17 16Z"></path><circle cx="20" cy="20" r="4"></circle></svg><div><h1>可莉祈愿</h1><p>读文章、答小测验攒原石，给可莉抽新装扮</p></div></div><div class="kwp-wallet" aria-label="我的祈愿资源"><span class="kwp-coin is-primo" title="原石：答文章小测验获得，每答对一题 160"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1L18 7 15 18H5L2 7Z"></path><path class="kwp-coin-shine" d="M10 3L15 7.5 10 9.5 5 7.5Z"></path></svg><strong data-kwp-primo="data-kwp-primo">—</strong></span><span class="kwp-coin is-glitter" title="无主的星辉：重复的四星、五星装扮转化而来，5 个可换一次祈愿"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1L12.5 7.5 19 10 12.5 12.5 10 19 7.5 12.5 1 10 7.5 7.5Z"></path></svg><strong data-kwp-glitter="data-kwp-glitter">—</strong></span><span class="kwp-coin is-dust" title="无主的星尘：三星贴纸转化而来"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"></circle><circle class="kwp-coin-shine" cx="7.5" cy="7.5" r="2.5"></circle></svg><strong data-kwp-dust="data-kwp-dust">—</strong></span></div></header><div class="kwp-klee"><span class="kwp-klee-face" data-kwp-face="data-kwp-face" aria-hidden="true" style="background-image:url(/images/companion/klee-expressions-64.webp);background-image:image-set(url(/images/companion/klee-expressions-64.webp) 1x,url(/images/companion/klee-expressions-128.webp) 2x)"></span><div class="kwp-klee-line"><p data-kwp-line="data-kwp-line" role="status" aria-live="polite">正在布置祈愿台……</p></div></div><section class="kwp-banner" aria-label="当前卡池：火花与烟花"><div class="kwp-banner-art"><canvas class="kwp-fireworks" data-kwp-fireworks="data-kwp-fireworks" aria-hidden="true"></canvas><div class="kwp-banner-ring" data-kwp-ring="data-kwp-ring" aria-hidden="true"></div><span class="kwp-banner-portrait" aria-hidden="true" style="background-image:url(/images/companion/klee-atlas-v1.webp)"></span><span class="kwp-banner-badge">限定</span></div><div class="kwp-banner-info"><span class="kwp-tag">活动祈愿 · 可莉的装扮</span><h2 class="kwp-banner-title">火花与烟花</h2><p class="kwp-banner-sub">星落湖的夏夜烟花大会要开始啦！限定头像框「烟花大会」概率提升中。</p><div class="kwp-up5" data-kwp-up5="data-kwp-up5"></div><div class="kwp-up4" data-kwp-up4="data-kwp-up4"></div><p class="kwp-pity" data-kwp-pity="data-kwp-pity">—</p></div><div class="kwp-actions"><button class="kwp-trade" type="button" data-kwp-trade="data-kwp-trade" disabled="disabled">星辉兑换</button><button class="kwp-wish" type="button" data-kwp-one="data-kwp-one" disabled="disabled"><span>祈愿 ×1</span><small><i class="kwp-gem"></i>160</small></button><button class="kwp-wish is-ten" type="button" data-kwp-ten="data-kwp-ten" disabled="disabled"><span>祈愿 ×10</span><small><i class="kwp-gem"></i>1,600</small></button></div></section><p class="kwp-offline" data-kwp-offline="data-kwp-offline" hidden="hidden"></p><nav class="kwp-tabs" role="tablist" aria-label="祈愿页面"><button class="kwp-tab" type="button" role="tab" data-kwp-tab="closet" aria-selected="true">可莉的衣橱</button><button class="kwp-tab" type="button" role="tab" data-kwp-tab="earn" aria-selected="false">赚原石</button><button class="kwp-tab" type="button" role="tab" data-kwp-tab="history" aria-selected="false">祈愿记录</button><button class="kwp-tab" type="button" role="tab" data-kwp-tab="rules" aria-selected="false">祈愿详情</button></nav><section class="kwp-section kwp-closet" data-kwp-section="closet" role="tabpanel"><div class="kwp-stage"><div class="kwp-stage-portrait"><span class="kwp-stage-klee" data-klee-avatar="data-klee-avatar" aria-hidden="true" style="background-image:url(/images/companion/klee-atlas-v1.webp)"></span></div><div class="kwp-stage-title" data-kwp-stage-title="data-kwp-stage-title"></div><div class="kwp-stage-bubble"><p>旅行者，看看可莉的新装扮！</p></div><div class="kwp-stage-bomb" data-kwp-stage-bomb="data-kwp-stage-bomb"></div></div><div class="kwp-closet-main"><div class="kwp-slots" data-kwp-slots="data-kwp-slots" role="group" aria-label="装扮类别"></div><div class="kwp-grid" data-kwp-grid="data-kwp-grid"></div><p class="kwp-hint">点击已获得的装扮即可穿上，再点一次收起。头像框和发饰会出现在聊天助手与小游戏的可莉头像上，气泡会换掉可莉说话的样式，称号显示在聊天面板，炸弹皮肤用在“炸鱼”和“清营地”里。</p></div></section><section class="kwp-section" data-kwp-section="earn" role="tabpanel" hidden="hidden"><div class="kwp-earn"><div class="kwp-earn-card"><h3>读文章 · 答小测验</h3><p>每篇文章末尾都有“可莉小测验”：可莉根据文章出 3 道题，每答对 1 题得 160 原石。每篇按你的最好成绩计算，答得更好才会多得。</p><a class="kwp-button" href="/archives/" data-kwp-random="data-kwp-random">随机去一篇文章</a></div><div class="kwp-earn-stats" data-kwp-earn-stats="data-kwp-earn-stats"></div><ol class="kwp-earn-list" data-kwp-earn-list="data-kwp-earn-list"></ol></div></section><section class="kwp-section" data-kwp-section="history" role="tabpanel" hidden="hidden"><table class="kwp-history"><thead><tr><th>时间</th><th>装扮</th><th>类别</th><th>稀有度</th></tr></thead><tbody data-kwp-history="data-kwp-history"></tbody></table></section><section class="kwp-section" data-kwp-section="rules" role="tabpanel" hidden="hidden"><div class="kwp-rules"><p data-kwp-rules-state="data-kwp-rules-state">—</p><table class="kwp-rules-table"><tbody><tr><th>5 星</th><td>基础概率 0.6%，综合概率 1.6%；90 抽内必出。第 74 抽起每抽概率上升（玩家社区统计的近似）。</td></tr><tr><th>5 星 UP</th><td>出 5 星时有 50% 是限定头像框「烟花大会」；若不是，下一个 5 星必定是它。</td></tr><tr><th>4 星</th><td>基础概率 5.1%，综合概率 13%；10 抽内必出。与 5 星同时触发时 5 星优先，4 星顺延到下一抽。</td></tr><tr><th>4 星 UP</th><td>出 4 星时有 50% 是三件 UP 装扮之一；若不是，下一个 4 星必定是 UP。</td></tr><tr><th>重复装扮</th><td>第 2–7 件：4 星 +2、5 星 +10 无主的星辉；第 8 件起 +5 / +25。3 星贴纸 +15 无主的星尘。5 个星辉可换一次祈愿。</td></tr></tbody></table><p class="kwp-note">保底计数一直保留。「捕获明光」官方未公布具体规则，这里没有加入。原石只能通过答题获得，不涉及任何真实消费。</p></div></section><div class="kwp-overlay" data-kwp-overlay="data-kwp-overlay" hidden="hidden"><canvas class="kwp-overlay-sky" data-kwp-overlay-sky="data-kwp-overlay-sky" aria-hidden="true"></canvas><div class="kwp-flash" data-kwp-flash="data-kwp-flash" aria-hidden="true"></div><div class="kwp-reveal" data-kwp-reveal="data-kwp-reveal" hidden="hidden"></div><div class="kwp-summary" data-kwp-summary="data-kwp-summary" hidden="hidden"></div><div class="kwp-overlay-actions"><button class="kwp-button is-ghost" type="button" data-kwp-skip="data-kwp-skip">跳过</button><button class="kwp-button" type="button" data-kwp-again="data-kwp-again" hidden="hidden">再来十次</button><button class="kwp-button is-ghost" type="button" data-kwp-close="data-kwp-close" hidden="hidden">返回</button></div><div class="kwp-announce" data-kwp-announce="data-kwp-announce" aria-hidden="true"></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LsWorld</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 6.2.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text">学习笔记与项目记录<br>封面插画：原神官方 · tokki</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script src="/assets/starlab.aaca91c4e4ec.js" defer data-starlab-assets></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索概念、算法或项目…" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5-b1"></script></div></div></body></html>
