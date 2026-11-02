@@ -1,5 +1,5 @@
 /* Klee's wardrobe: draws every cosmetic item and wears the equipped ones across the
-   site — a frame and a hair accessory on Klee's avatars, a chat-bubble style, a
+   site — an outfit for Klee, a frame on her round avatars, a chat-bubble style, a
    title under her name and a bomb skin in the lab games. The equipped set is cached
    in this browser so pages never wait for the server. */
 (function () {
@@ -68,19 +68,6 @@
     }
     return `<defs>${defs}</defs>${base}${deco}`;
   }
-  function hatArt(look, id) {
-    if (look.motif === 'clover') {
-      const leaf = r => `<g transform="rotate(${r})"><path fill="url(#${id}c)" stroke="${look.dark}" stroke-width="1.6" d="M0 0C-5-9-20-11-18-24C-16-33-5-31 0-22C5-31 16-33 18-24C20-11 5-9 0 0Z"/><path d="M0-3V-19M0-11L-6-17M0-11L6-17" stroke="${look.dark}" stroke-width="1.2" opacity=".55" fill="none"/><path d="M-12-25Q-10-29-6-27" stroke="#fff" stroke-width="2" opacity=".7" fill="none" stroke-linecap="round"/></g>`;
-      return `<defs>${rad(id + 'c', [[0, '#b7f0a8'], [.55, look.color], [1, look.dark]], '50%', '20%', '90%')}</defs><g transform="translate(50 47)"><path d="M2 4Q9 24 4 38" stroke="${look.dark}" stroke-width="4.5" fill="none" stroke-linecap="round"/>${[45, 135, 225, 315].map(leaf).join('')}<circle r="5" fill="#fff6c8" stroke="${look.dark}" stroke-width="1.2"/></g>`;
-    }
-    if (look.motif === 'flower') {
-      const petals = Array.from({length: 6}, (_, i) => `<g transform="rotate(${i * 60})"><path d="M0 0C-12-8-12-30 0-38C12-30 12-8 0 0Z" fill="url(#${id}p)" stroke="${look.dark}" stroke-width="1"/><path d="M0-6V-30" stroke="${look.dark}" stroke-width=".8" opacity=".5"/></g>`).join('');
-      return `<defs>${rad(id + 'p', [[0, '#fff'], [.6, look.color], [1, '#d9cff2']], '50%', '75%', '90%')}${rad(id + 'y', [[0, '#fff3b0'], [1, '#f2b53a']], '40%', '40%')}</defs><g transform="translate(50 50) scale(.95)">${petals}<circle r="9" fill="url(#${id}y)" stroke="#c8911d" stroke-width="1"/>${around(7, 5).map(([x, y]) => `<circle cx="${(x - 50).toFixed(1)}" cy="${(y - 50).toFixed(1)}" r="1.4" fill="#b8741a"/>`).join('')}</g>`;
-    }
-    const points = r => Array.from({length: 10}, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, d = i % 2 ? r * .46 : r; return `${(50 + Math.cos(a) * d).toFixed(1)},${(53 + Math.sin(a) * d).toFixed(1)}`; }).join(' ');
-    return `<defs>${lin(id + 's', [[0, '#fff6c2'], [.5, look.color], [1, look.dark]], .3, 1)}</defs><polygon points="${points(44)}" fill="url(#${id}s)" stroke="${look.dark}" stroke-width="2" stroke-linejoin="round"/>`
-      + `<polygon points="${points(26)}" fill="#fff" opacity=".35"/>${star4(80, 16, 8, '#fff', 'kw-twinkle')}<circle cx="38" cy="38" r="4.5" fill="#fff" opacity=".85"/>`;
-  }
   function bubbleArt(look, id) {
     const fill = look.bg2 ? `url(#${id}b)` : look.bg;
     let motif = '';
@@ -140,7 +127,7 @@
   }
   function art(item) {
     const id = 'kw' + (++uid), look = item.look;
-    return ({frame: frameArt, hat: hatArt, bubble: bubbleArt, title: titleArt, bomb: bombArt, sticker: stickerArt, outfit: outfitArt}[item.slot] || stickerArt)(look, id);
+    return ({frame: frameArt, bubble: bubbleArt, title: titleArt, bomb: bombArt, sticker: stickerArt, outfit: outfitArt}[item.slot] || stickerArt)(look, id);
   }
   // Klee's face inside a frame, so a frame reads as worn rather than as an empty ring.
   const KLEE_FACES = '/images/companion/klee-expressions-128.webp';
@@ -165,11 +152,11 @@
       if (target.matches('.cp-avatar-wrap') || target.dataset.kleeAvatar === 'portrait') host.classList.add('kw-host-portrait');
       target.replaceWith(host); host.append(target);
     }
-    host.querySelectorAll(':scope > .kw-frame, :scope > .kw-hat-wrap').forEach(node => node.remove());
-    const frame = items.get(equipped.frame), hat = items.get(equipped.hat);
-    if (frame) host.prepend(draw(frame, {size: 100, className: 'kw-frame'}));
-    if (hat) { const wrap = document.createElement('span'); wrap.className = 'kw-hat-wrap'; wrap.append(draw(hat, {size: 40})); host.append(wrap); }
-    host.dataset.kwFrame = frame?.id || ''; host.dataset.kwHat = hat?.id || '';
+    host.querySelectorAll(':scope > .kw-frame').forEach(node => node.remove());
+    const frame = items.get(equipped.frame);
+    // Frames belong on round avatars only; half-length portraits (the chat companion) stay as they are.
+    if (frame && !host.classList.contains('kw-host-portrait')) host.prepend(draw(frame, {size: 100, className: 'kw-frame'}));
+    host.dataset.kwFrame = frame?.id || '';
   }
   function bubbleMotif(look) {
     const body = look.motif === 'stars' ? [[30, 34, 16, look.border], [70, 26, 10, '#fff'], [62, 70, 12, look.border]].map(([x, y, r, c]) => star4(x, y, r, c)).join('')
@@ -179,7 +166,7 @@
   }
   function apply() {
     const root = document.documentElement;
-    for (const slot of ['outfit', 'frame', 'hat', 'bubble', 'title', 'bomb']) {
+    for (const slot of ['outfit', 'frame', 'bubble', 'title', 'bomb']) {
       const item = items.get(equipped[slot]);
       if (item) root.dataset['klee' + slot[0].toUpperCase() + slot.slice(1)] = item.id; else delete root.dataset['klee' + slot[0].toUpperCase() + slot.slice(1)];
     }
@@ -194,7 +181,8 @@
     if (outfit?.look?.atlas) {
       root.style.setProperty('--kw-outfit-atlas', `url("${outfit.look.atlas}")`);
       root.style.setProperty('--kw-outfit-faces', `url("${outfit.look.expressions || outfit.look.atlas}")`);
-      root.style.setProperty('--kw-outfit-face', `url("${outfit.look.face64 || outfit.look.expressions || outfit.look.atlas}")`);
+      const small = outfit.look.face64 || outfit.look.expressions || outfit.look.atlas;
+      root.style.setProperty('--kw-outfit-face', outfit.look.face128 ? `image-set(url("${small}") 1x, url("${outfit.look.face128}") 2x)` : `url("${small}")`);
     } else for (const name of ['--kw-outfit-atlas', '--kw-outfit-faces', '--kw-outfit-face']) root.style.removeProperty(name);
     // Bomb skins replace the bomb gradient in the lab games through one shared paint server.
     let defs = document.getElementById('kw-defs');

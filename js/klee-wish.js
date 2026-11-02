@@ -114,7 +114,7 @@
     function show(next) {
       state = next; wardrobe()?.remember(next);
       $('[data-kwp-primo]').textContent = fmt(next.primogems); $('[data-kwp-glitter]').textContent = fmt(next.starglitter); $('[data-kwp-dust]').textContent = fmt(next.stardust);
-      $('[data-kwp-pity]').textContent = `距保底 ${90 - next.pity.since5} 抽 · ${next.pity.g5 ? '大保底：下个五星必是「烟花大会」' : '小保底'} · 已祈愿 ${fmt(next.wishes)} 次`;
+      $('[data-kwp-pity]').textContent = `距保底 ${90 - next.pity.since5} 抽 · ${next.pity.g5 ? `大保底：下个五星必是「${featuredName()}」` : '小保底'} · 已祈愿 ${fmt(next.wishes)} 次`;
       $('[data-kwp-rules-state]').textContent = `你的进度：距上次五星 ${next.pity.since5} 抽（下一抽五星概率 ${percent(rate5(next.pity.since5 + 1))}），${next.pity.g5 ? '五星大保底' : '五星小保底'}；距上次四星 ${next.pity.since4} 抽，${next.pity.g4 ? '四星大保底' : '四星小保底'}。`;
       $('[data-kwp-trade]').textContent = `星辉兑换 · ${next.starglitterPerWish} → 1 次`;
       buttons(); renderCloset(); renderHistory(); renderEarn();
@@ -126,9 +126,18 @@
       $('[data-kwp-trade]').disabled = !ready || state.starglitter < state.starglitterPerWish;
       root.dataset.kwpBusy = busy ? '1' : '';
     }
+    const featuredName = () => item(wardrobe().catalog.banner.featured5)?.name || '限定装扮';
     function drawBanner() {
-      const catalog = wardrobe().catalog, five = item(catalog.banner.featured5);
-      $('[data-kwp-ring]').replaceChildren(wardrobe().draw(five, {size: 100}));
+      const catalog = wardrobe().catalog, five = item(catalog.banner.featured5), art = $('.kwp-banner-art');
+      $('.kwp-banner-title').textContent = catalog.banner.name;
+      if (catalog.banner.description) $('.kwp-banner-sub').textContent = catalog.banner.description;
+      $('.kwp-tag').textContent = '活动祈愿 · ' + (catalog.banner.subtitle || '可莉的装扮');
+      $('.kwp-banner').setAttribute('aria-label', '当前卡池：' + catalog.banner.name);
+      $('[data-kwp-rules-up5]').textContent = `出 5 星时有 50% 是本期限定「${five.name}」；若不是，下一个 5 星必定是它。`;
+      // An outfit banner shows Klee wearing it; any other item sits around her as a frame.
+      art.classList.toggle('is-outfit', five.slot === 'outfit');
+      if (five.slot === 'outfit') { $('.kwp-banner-portrait').style.backgroundImage = `url("${five.look.atlas}")`; $('[data-kwp-ring]').replaceChildren(); }
+      else $('[data-kwp-ring]').replaceChildren(wardrobe().draw(five, {size: 100}));
       const card = (thing, big) => {
         const node = document.createElement('div'); node.className = `kwp-card is-${thing.rarity}` + (big ? ' is-big' : '');
         node.append(wardrobe().draw(thing, {size: big ? 72 : 52, klee: true}));
@@ -170,7 +179,10 @@
       root.dataset.kwpOverlay = 'reveal'; reveal.hidden = false; reveal.className = `kwp-reveal is-${result.rarity}`;
       reveal.replaceChildren();
       const rays = document.createElement('div'); rays.className = 'kwp-rays';
-      const art = document.createElement('div'); art.className = 'kwp-reveal-art'; art.append(wardrobe().draw(thing, {size: 220, klee: true}));
+      const art = document.createElement('div'); art.className = 'kwp-reveal-art';
+      // A new outfit is shown on Klee herself, not as a round badge.
+      if (thing.slot === 'outfit') { art.classList.add('is-outfit'); art.append(Object.assign(document.createElement('span'), {className: 'kwp-reveal-portrait'})); art.lastChild.style.backgroundImage = `url("${thing.look.atlas}")`; }
+      else art.append(wardrobe().draw(thing, {size: 220, klee: true}));
       const name = document.createElement('h3'); name.className = 'kwp-reveal-name'; name.textContent = thing.name;
       const meta = document.createElement('p'); meta.className = 'kwp-reveal-meta'; meta.textContent = catalog.slots[thing.slot] + (thing.owner === 'jean' ? ' · 琴团长' : ' · 可莉');
       const stars = document.createElement('div'); stars.className = 'kwp-reveal-stars';
@@ -197,8 +209,8 @@
       show(run.next); busy = false; buttons();
       $('[data-kwp-again]').hidden = state.primogems < state.cost * run.count; $('[data-kwp-again]').textContent = run.count === 10 ? '再来十次' : '再来一次';
       const got = run.results.find(r => r.rarity === 5), fresh = run.results.filter(r => r.isNew && r.rarity >= 4).length;
-      if (got?.featured) { announce('烟花大会！'); say(`抽到限定头像框「烟花大会」啦！第 ${got.pity} 抽出的金！快去衣橱给可莉戴上！`, 'laugh'); voice('klee-wish-got', {queue: true}); }
-      else if (got) { announce('歪了……'); say(`第 ${got.pity} 抽出金了，是「${item(got.id).name}」……下一个五星一定是烟花大会！`, 'care'); voice('klee-wish-lost', {queue: true}); }
+      if (got?.featured) { announce(featuredName() + '！'); say(`抽到限定${wardrobe().catalog.slots[item(got.id).slot]}「${featuredName()}」啦！第 ${got.pity} 抽出的金！快去衣橱给可莉换上！`, 'laugh'); voice('klee-wish-got', {queue: true}); }
+      else if (got) { announce('歪了……'); say(`第 ${got.pity} 抽出金了，是「${item(got.id).name}」……下一个五星一定是「${featuredName()}」！`, 'care'); voice('klee-wish-lost', {queue: true}); }
       else say(fresh ? `有 ${fresh} 件新装扮！去衣橱给可莉试试吧～` : `都是见过的……重复的会变成星辉，攒 ${state.starglitterPerWish} 个能换一次祈愿！`, fresh ? 'happy' : 'wink');
     }
     function closeOverlay() {

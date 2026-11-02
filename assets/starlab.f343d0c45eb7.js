@@ -1,6 +1,6 @@
 /* js/klee-wardrobe.js */
 /* Klee's wardrobe: draws every cosmetic item and wears the equipped ones across the
-   site — a frame and a hair accessory on Klee's avatars, a chat-bubble style, a
+   site — an outfit for Klee, a frame on her round avatars, a chat-bubble style, a
    title under her name and a bomb skin in the lab games. The equipped set is cached
    in this browser so pages never wait for the server. */
 (function () {
@@ -69,19 +69,6 @@
     }
     return `<defs>${defs}</defs>${base}${deco}`;
   }
-  function hatArt(look, id) {
-    if (look.motif === 'clover') {
-      const leaf = r => `<g transform="rotate(${r})"><path fill="url(#${id}c)" stroke="${look.dark}" stroke-width="1.6" d="M0 0C-5-9-20-11-18-24C-16-33-5-31 0-22C5-31 16-33 18-24C20-11 5-9 0 0Z"/><path d="M0-3V-19M0-11L-6-17M0-11L6-17" stroke="${look.dark}" stroke-width="1.2" opacity=".55" fill="none"/><path d="M-12-25Q-10-29-6-27" stroke="#fff" stroke-width="2" opacity=".7" fill="none" stroke-linecap="round"/></g>`;
-      return `<defs>${rad(id + 'c', [[0, '#b7f0a8'], [.55, look.color], [1, look.dark]], '50%', '20%', '90%')}</defs><g transform="translate(50 47)"><path d="M2 4Q9 24 4 38" stroke="${look.dark}" stroke-width="4.5" fill="none" stroke-linecap="round"/>${[45, 135, 225, 315].map(leaf).join('')}<circle r="5" fill="#fff6c8" stroke="${look.dark}" stroke-width="1.2"/></g>`;
-    }
-    if (look.motif === 'flower') {
-      const petals = Array.from({length: 6}, (_, i) => `<g transform="rotate(${i * 60})"><path d="M0 0C-12-8-12-30 0-38C12-30 12-8 0 0Z" fill="url(#${id}p)" stroke="${look.dark}" stroke-width="1"/><path d="M0-6V-30" stroke="${look.dark}" stroke-width=".8" opacity=".5"/></g>`).join('');
-      return `<defs>${rad(id + 'p', [[0, '#fff'], [.6, look.color], [1, '#d9cff2']], '50%', '75%', '90%')}${rad(id + 'y', [[0, '#fff3b0'], [1, '#f2b53a']], '40%', '40%')}</defs><g transform="translate(50 50) scale(.95)">${petals}<circle r="9" fill="url(#${id}y)" stroke="#c8911d" stroke-width="1"/>${around(7, 5).map(([x, y]) => `<circle cx="${(x - 50).toFixed(1)}" cy="${(y - 50).toFixed(1)}" r="1.4" fill="#b8741a"/>`).join('')}</g>`;
-    }
-    const points = r => Array.from({length: 10}, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, d = i % 2 ? r * .46 : r; return `${(50 + Math.cos(a) * d).toFixed(1)},${(53 + Math.sin(a) * d).toFixed(1)}`; }).join(' ');
-    return `<defs>${lin(id + 's', [[0, '#fff6c2'], [.5, look.color], [1, look.dark]], .3, 1)}</defs><polygon points="${points(44)}" fill="url(#${id}s)" stroke="${look.dark}" stroke-width="2" stroke-linejoin="round"/>`
-      + `<polygon points="${points(26)}" fill="#fff" opacity=".35"/>${star4(80, 16, 8, '#fff', 'kw-twinkle')}<circle cx="38" cy="38" r="4.5" fill="#fff" opacity=".85"/>`;
-  }
   function bubbleArt(look, id) {
     const fill = look.bg2 ? `url(#${id}b)` : look.bg;
     let motif = '';
@@ -141,7 +128,7 @@
   }
   function art(item) {
     const id = 'kw' + (++uid), look = item.look;
-    return ({frame: frameArt, hat: hatArt, bubble: bubbleArt, title: titleArt, bomb: bombArt, sticker: stickerArt, outfit: outfitArt}[item.slot] || stickerArt)(look, id);
+    return ({frame: frameArt, bubble: bubbleArt, title: titleArt, bomb: bombArt, sticker: stickerArt, outfit: outfitArt}[item.slot] || stickerArt)(look, id);
   }
   // Klee's face inside a frame, so a frame reads as worn rather than as an empty ring.
   const KLEE_FACES = '/images/companion/klee-expressions-128.webp';
@@ -166,11 +153,11 @@
       if (target.matches('.cp-avatar-wrap') || target.dataset.kleeAvatar === 'portrait') host.classList.add('kw-host-portrait');
       target.replaceWith(host); host.append(target);
     }
-    host.querySelectorAll(':scope > .kw-frame, :scope > .kw-hat-wrap').forEach(node => node.remove());
-    const frame = items.get(equipped.frame), hat = items.get(equipped.hat);
-    if (frame) host.prepend(draw(frame, {size: 100, className: 'kw-frame'}));
-    if (hat) { const wrap = document.createElement('span'); wrap.className = 'kw-hat-wrap'; wrap.append(draw(hat, {size: 40})); host.append(wrap); }
-    host.dataset.kwFrame = frame?.id || ''; host.dataset.kwHat = hat?.id || '';
+    host.querySelectorAll(':scope > .kw-frame').forEach(node => node.remove());
+    const frame = items.get(equipped.frame);
+    // Frames belong on round avatars only; half-length portraits (the chat companion) stay as they are.
+    if (frame && !host.classList.contains('kw-host-portrait')) host.prepend(draw(frame, {size: 100, className: 'kw-frame'}));
+    host.dataset.kwFrame = frame?.id || '';
   }
   function bubbleMotif(look) {
     const body = look.motif === 'stars' ? [[30, 34, 16, look.border], [70, 26, 10, '#fff'], [62, 70, 12, look.border]].map(([x, y, r, c]) => star4(x, y, r, c)).join('')
@@ -180,7 +167,7 @@
   }
   function apply() {
     const root = document.documentElement;
-    for (const slot of ['outfit', 'frame', 'hat', 'bubble', 'title', 'bomb']) {
+    for (const slot of ['outfit', 'frame', 'bubble', 'title', 'bomb']) {
       const item = items.get(equipped[slot]);
       if (item) root.dataset['klee' + slot[0].toUpperCase() + slot.slice(1)] = item.id; else delete root.dataset['klee' + slot[0].toUpperCase() + slot.slice(1)];
     }
@@ -195,7 +182,8 @@
     if (outfit?.look?.atlas) {
       root.style.setProperty('--kw-outfit-atlas', `url("${outfit.look.atlas}")`);
       root.style.setProperty('--kw-outfit-faces', `url("${outfit.look.expressions || outfit.look.atlas}")`);
-      root.style.setProperty('--kw-outfit-face', `url("${outfit.look.face64 || outfit.look.expressions || outfit.look.atlas}")`);
+      const small = outfit.look.face64 || outfit.look.expressions || outfit.look.atlas;
+      root.style.setProperty('--kw-outfit-face', outfit.look.face128 ? `image-set(url("${small}") 1x, url("${outfit.look.face128}") 2x)` : `url("${small}")`);
     } else for (const name of ['--kw-outfit-atlas', '--kw-outfit-faces', '--kw-outfit-face']) root.style.removeProperty(name);
     // Bomb skins replace the bomb gradient in the lab games through one shared paint server.
     let defs = document.getElementById('kw-defs');
@@ -3302,7 +3290,7 @@
     function show(next) {
       state = next; wardrobe()?.remember(next);
       $('[data-kwp-primo]').textContent = fmt(next.primogems); $('[data-kwp-glitter]').textContent = fmt(next.starglitter); $('[data-kwp-dust]').textContent = fmt(next.stardust);
-      $('[data-kwp-pity]').textContent = `距保底 ${90 - next.pity.since5} 抽 · ${next.pity.g5 ? '大保底：下个五星必是「烟花大会」' : '小保底'} · 已祈愿 ${fmt(next.wishes)} 次`;
+      $('[data-kwp-pity]').textContent = `距保底 ${90 - next.pity.since5} 抽 · ${next.pity.g5 ? `大保底：下个五星必是「${featuredName()}」` : '小保底'} · 已祈愿 ${fmt(next.wishes)} 次`;
       $('[data-kwp-rules-state]').textContent = `你的进度：距上次五星 ${next.pity.since5} 抽（下一抽五星概率 ${percent(rate5(next.pity.since5 + 1))}），${next.pity.g5 ? '五星大保底' : '五星小保底'}；距上次四星 ${next.pity.since4} 抽，${next.pity.g4 ? '四星大保底' : '四星小保底'}。`;
       $('[data-kwp-trade]').textContent = `星辉兑换 · ${next.starglitterPerWish} → 1 次`;
       buttons(); renderCloset(); renderHistory(); renderEarn();
@@ -3314,9 +3302,18 @@
       $('[data-kwp-trade]').disabled = !ready || state.starglitter < state.starglitterPerWish;
       root.dataset.kwpBusy = busy ? '1' : '';
     }
+    const featuredName = () => item(wardrobe().catalog.banner.featured5)?.name || '限定装扮';
     function drawBanner() {
-      const catalog = wardrobe().catalog, five = item(catalog.banner.featured5);
-      $('[data-kwp-ring]').replaceChildren(wardrobe().draw(five, {size: 100}));
+      const catalog = wardrobe().catalog, five = item(catalog.banner.featured5), art = $('.kwp-banner-art');
+      $('.kwp-banner-title').textContent = catalog.banner.name;
+      if (catalog.banner.description) $('.kwp-banner-sub').textContent = catalog.banner.description;
+      $('.kwp-tag').textContent = '活动祈愿 · ' + (catalog.banner.subtitle || '可莉的装扮');
+      $('.kwp-banner').setAttribute('aria-label', '当前卡池：' + catalog.banner.name);
+      $('[data-kwp-rules-up5]').textContent = `出 5 星时有 50% 是本期限定「${five.name}」；若不是，下一个 5 星必定是它。`;
+      // An outfit banner shows Klee wearing it; any other item sits around her as a frame.
+      art.classList.toggle('is-outfit', five.slot === 'outfit');
+      if (five.slot === 'outfit') { $('.kwp-banner-portrait').style.backgroundImage = `url("${five.look.atlas}")`; $('[data-kwp-ring]').replaceChildren(); }
+      else $('[data-kwp-ring]').replaceChildren(wardrobe().draw(five, {size: 100}));
       const card = (thing, big) => {
         const node = document.createElement('div'); node.className = `kwp-card is-${thing.rarity}` + (big ? ' is-big' : '');
         node.append(wardrobe().draw(thing, {size: big ? 72 : 52, klee: true}));
@@ -3358,7 +3355,10 @@
       root.dataset.kwpOverlay = 'reveal'; reveal.hidden = false; reveal.className = `kwp-reveal is-${result.rarity}`;
       reveal.replaceChildren();
       const rays = document.createElement('div'); rays.className = 'kwp-rays';
-      const art = document.createElement('div'); art.className = 'kwp-reveal-art'; art.append(wardrobe().draw(thing, {size: 220, klee: true}));
+      const art = document.createElement('div'); art.className = 'kwp-reveal-art';
+      // A new outfit is shown on Klee herself, not as a round badge.
+      if (thing.slot === 'outfit') { art.classList.add('is-outfit'); art.append(Object.assign(document.createElement('span'), {className: 'kwp-reveal-portrait'})); art.lastChild.style.backgroundImage = `url("${thing.look.atlas}")`; }
+      else art.append(wardrobe().draw(thing, {size: 220, klee: true}));
       const name = document.createElement('h3'); name.className = 'kwp-reveal-name'; name.textContent = thing.name;
       const meta = document.createElement('p'); meta.className = 'kwp-reveal-meta'; meta.textContent = catalog.slots[thing.slot] + (thing.owner === 'jean' ? ' · 琴团长' : ' · 可莉');
       const stars = document.createElement('div'); stars.className = 'kwp-reveal-stars';
@@ -3385,8 +3385,8 @@
       show(run.next); busy = false; buttons();
       $('[data-kwp-again]').hidden = state.primogems < state.cost * run.count; $('[data-kwp-again]').textContent = run.count === 10 ? '再来十次' : '再来一次';
       const got = run.results.find(r => r.rarity === 5), fresh = run.results.filter(r => r.isNew && r.rarity >= 4).length;
-      if (got?.featured) { announce('烟花大会！'); say(`抽到限定头像框「烟花大会」啦！第 ${got.pity} 抽出的金！快去衣橱给可莉戴上！`, 'laugh'); voice('klee-wish-got', {queue: true}); }
-      else if (got) { announce('歪了……'); say(`第 ${got.pity} 抽出金了，是「${item(got.id).name}」……下一个五星一定是烟花大会！`, 'care'); voice('klee-wish-lost', {queue: true}); }
+      if (got?.featured) { announce(featuredName() + '！'); say(`抽到限定${wardrobe().catalog.slots[item(got.id).slot]}「${featuredName()}」啦！第 ${got.pity} 抽出的金！快去衣橱给可莉换上！`, 'laugh'); voice('klee-wish-got', {queue: true}); }
+      else if (got) { announce('歪了……'); say(`第 ${got.pity} 抽出金了，是「${item(got.id).name}」……下一个五星一定是「${featuredName()}」！`, 'care'); voice('klee-wish-lost', {queue: true}); }
       else say(fresh ? `有 ${fresh} 件新装扮！去衣橱给可莉试试吧～` : `都是见过的……重复的会变成星辉，攒 ${state.starglitterPerWish} 个能换一次祈愿！`, fresh ? 'happy' : 'wink');
     }
     function closeOverlay() {

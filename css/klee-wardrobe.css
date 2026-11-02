@@ -1,11 +1,6 @@
 /* Klee's wardrobe: equipped cosmetics worn across the site */
 .kw-host { position:relative; display:inline-flex; flex:none; isolation:isolate; }
 .kw-host > .kw-frame { position:absolute; left:-14%; top:-14%; width:128%; height:128%; pointer-events:none; z-index:2; overflow:visible; }
-.kw-host-portrait > .kw-frame { left:2%; top:2%; width:96%; height:96%; z-index:-1; }
-.kw-host-portrait > .kw-frame circle:first-of-type { fill:rgba(255,248,236,.55); }
-.kw-hat-wrap { position:absolute; top:-12%; right:-10%; width:42%; z-index:3; pointer-events:none; animation:kw-bob 3.2s ease-in-out infinite; }
-.kw-hat-wrap svg { display:block; width:100%; height:auto; filter:drop-shadow(0 2px 2px rgba(60,30,10,.25)); }
-.kw-host-portrait .kw-hat-wrap { top:6%; right:14%; width:24%; }
 .kw-host[data-kw-frame]:not([data-kw-frame='']) > .fish-klee-face { box-shadow:0 6px 14px rgba(160,80,40,.22); }
 .kw-twinkle { transform-box:fill-box; transform-origin:center; animation:kw-twinkle 1.8s ease-in-out infinite; }
 .kw-twinkle:nth-of-type(2n) { animation-delay:-.9s; } .kw-twinkle:nth-of-type(3n) { animation-delay:-.45s; }
@@ -22,7 +17,7 @@
   content:''; position:absolute; right:8px; top:-12px; width:30px; height:30px; background:var(--kw-bubble-motif) no-repeat center/contain; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
 /* Bomb skins in the lab games */
 :root[data-klee-bomb] .fish-bomb-body, :root[data-klee-bomb] .camp-bomb-body { fill:url(#kw-bomb-skin); stroke:var(--kw-bomb-outline); }
-@media(prefers-reduced-motion:reduce) { .kw-twinkle, .kw-burst, .kw-hat-wrap { animation:none !important; } }
+@media(prefers-reduced-motion:reduce) { .kw-twinkle, .kw-burst { animation:none !important; } }
 /* Outfits: illustrations with the same 4 × 4 layout as Klee's portrait and expression sheets */
 :root[data-klee-outfit] .cp-avatar { background-image:var(--kw-outfit-atlas) !important; }
 :root[data-klee-outfit] .cp-expression-layer { --cp-expression-image:var(--kw-outfit-faces) !important; }

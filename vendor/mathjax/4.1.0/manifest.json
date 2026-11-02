@@ -1,0 +1,950 @@
+{
+  "version": "4.1.0",
+  "source": "https://www.npmjs.com/package/mathjax/v/4.1.0",
+  "files": {
+    "mathjax/input/tex/extensions/action.js": {
+      "bytes": 1843,
+      "sha256": "824dde1c1036b7d3ecd620eec04dde50dc37c0a6f2bda17e620582b762e7bd81"
+    },
+    "mathjax/input/tex/extensions/ams.js": {
+      "bytes": 21194,
+      "sha256": "d60a0d28f45d51c4432e5ac25f1d923f5dc49423f4e0a1c92a529e26786aac11"
+    },
+    "mathjax/input/tex/extensions/amscd.js": {
+      "bytes": 4310,
+      "sha256": "f2b7c00d9b29120f89f07687def61e19b3b3f8aba633febf2115aeb17299770e"
+    },
+    "mathjax/input/tex/extensions/autoload.js": {
+      "bytes": 3331,
+      "sha256": "b75fe1858e69a6abd9a97b03d0ba262c1a45db21e0a20b1ec9b387d0cf7336ce"
+    },
+    "mathjax/input/tex/extensions/bbm.js": {
+      "bytes": 2143,
+      "sha256": "a69e105f1314b0fca2d4901e10311a75e3a3e10a5f74447a4639404f5826cc67"
+    },
+    "mathjax/input/tex/extensions/bboldx.js": {
+      "bytes": 7397,
+      "sha256": "61e4cb4242f6552f2d6913b83b8037db45343371b4c03ba467fda015e09b17b6"
+    },
+    "mathjax/input/tex/extensions/bbox.js": {
+      "bytes": 2272,
+      "sha256": "8379c5f44de9a8648684bb49c2f800c588ef23ecf68a59fbdee16e1a056f074a"
+    },
+    "mathjax/input/tex/extensions/begingroup.js": {
+      "bytes": 4268,
+      "sha256": "7f0d08af7bf37b8cd024bd1f277733ad9252ca32c7cc7bf145e43cc11a6ddafb"
+    },
+    "mathjax/input/tex/extensions/boldsymbol.js": {
+      "bytes": 2460,
+      "sha256": "d40e4431054e7c3ed1826db86eb561bcee49e1d5c980d048ca2f91419e32b880"
+    },
+    "mathjax/input/tex/extensions/braket.js": {
+      "bytes": 4653,
+      "sha256": "07eedcb6d3bb856b2f29040e6bd185d3f544a3d6a7f271638ac429a615d6df78"
+    },
+    "mathjax/input/tex/extensions/bussproofs.js": {
+      "bytes": 12266,
+      "sha256": "d31822e7580e06873251a557d6c6a3a7e6c9add252ea62cc4af1c90be3004d3b"
+    },
+    "mathjax/input/tex/extensions/cancel.js": {
+      "bytes": 2255,
+      "sha256": "673b10388679fcc608a0416d0d1b57bd40d4f1de845bd498c1cc06d57d28e492"
+    },
+    "mathjax/input/tex/extensions/cases.js": {
+      "bytes": 4277,
+      "sha256": "97ac513e9297b2eeb787d6a57a0a93a324400d726533138950a684dfcac5da87"
+    },
+    "mathjax/input/tex/extensions/centernot.js": {
+      "bytes": 2148,
+      "sha256": "a8ce4ae54e728759dfd49c051e7e30268c9310bb20e5453196a6aa96add58ef8"
+    },
+    "mathjax/input/tex/extensions/color.js": {
+      "bytes": 6824,
+      "sha256": "ddd424ad7f02655749da141b8444c43e9d0ba22297e66f5b3ee106ad39c107dd"
+    },
+    "mathjax/input/tex/extensions/colortbl.js": {
+      "bytes": 3185,
+      "sha256": "cfe028c05b3afeee13df6b9e0d0f34a7f980da9b33222eaa6c82a9854886141b"
+    },
+    "mathjax/input/tex/extensions/colorv2.js": {
+      "bytes": 1524,
+      "sha256": "eea36c1043a4d628f5ef3dc49308881cbba51866890248b4c4aa111d079f2c4d"
+    },
+    "mathjax/input/tex/extensions/configmacros.js": {
+      "bytes": 2588,
+      "sha256": "d4c18b37ad415d237fee3744d1111d88a70e1422f908b71a430299774d1d610d"
+    },
+    "mathjax/input/tex/extensions/dsfont.js": {
+      "bytes": 1898,
+      "sha256": "142972789c0d066b6b70915088a6eb8e89f616c85084bf3cfeddc6c51060723a"
+    },
+    "mathjax/input/tex/extensions/empheq.js": {
+      "bytes": 5946,
+      "sha256": "6b710faac6ffc0ad37ee5ff3767bead5c3d246ca48d097b2b7863eaf07b82de0"
+    },
+    "mathjax/input/tex/extensions/enclose.js": {
+      "bytes": 1731,
+      "sha256": "1c3d46c0aa7a0a00d8c86cf27351e3d6a0fb5f8b41796f1f734503e1c320b78d"
+    },
+    "mathjax/input/tex/extensions/extpfeil.js": {
+      "bytes": 2445,
+      "sha256": "41f561e5cd8c0802f9e5af63c321d66ce290ec6385289e7e2728ba7556805efa"
+    },
+    "mathjax/input/tex/extensions/gensymb.js": {
+      "bytes": 1590,
+      "sha256": "4fc86bb5a4ee626ed89a41eea86a98c13d5b85b5359e895d0f675997882e4ec9"
+    },
+    "mathjax/input/tex/extensions/html.js": {
+      "bytes": 2813,
+      "sha256": "b64d420107ba360c725ee4a47d6d67b9d27ab417b8d4fced0c6551fc55a51c7f"
+    },
+    "mathjax/input/tex/extensions/mathtools.js": {
+      "bytes": 22423,
+      "sha256": "c0c4f9d82ee00aa4680b825e7aa65536b249c2acbc3128a1b160f04ab2a32d6b"
+    },
+    "mathjax/input/tex/extensions/mhchem.js": {
+      "bytes": 38920,
+      "sha256": "d1647f647857fcece4fbb95a379ca09cd8bccb223a4a5f94badce086c1c34d20"
+    },
+    "mathjax/input/tex/extensions/newcommand.js": {
+      "bytes": 8779,
+      "sha256": "499d08dfca51793147066eb94ceeac4e3ea060dda71504662741168807fa76f0"
+    },
+    "mathjax/input/tex/extensions/noerrors.js": {
+      "bytes": 1243,
+      "sha256": "a2d20ea18d3e78b16cf10249eea20ae2a206988ae3ff98c4e4f81bc891932c6f"
+    },
+    "mathjax/input/tex/extensions/noundefined.js": {
+      "bytes": 1384,
+      "sha256": "8f0825d8813b6a96bfd1e82c742bdd03096887b335d4127627a71a6e38657862"
+    },
+    "mathjax/input/tex/extensions/physics.js": {
+      "bytes": 19548,
+      "sha256": "4ec23b4282e5f6525029dfce3169ebea55f6f3cce9abc495c8adc840752f06ae"
+    },
+    "mathjax/input/tex/extensions/require.js": {
+      "bytes": 4011,
+      "sha256": "13f552fe074968dd873e704acefe7d519881fc35634ac0756080ab8709b17a74"
+    },
+    "mathjax/input/tex/extensions/setoptions.js": {
+      "bytes": 3729,
+      "sha256": "bac3fadfa630053bac265b879682301fb6c03827eb452a06bc87185e73d9742d"
+    },
+    "mathjax/input/tex/extensions/tagformat.js": {
+      "bytes": 1975,
+      "sha256": "356c346723a4690096f8c410491367222bf17248179f152c051473b2c623c0c5"
+    },
+    "mathjax/input/tex/extensions/texhtml.js": {
+      "bytes": 2504,
+      "sha256": "d5ac360b438a0459c3c17be33afd0f581fac966e36734f3df43323e49d8bfbde"
+    },
+    "mathjax/input/tex/extensions/textcomp.js": {
+      "bytes": 5135,
+      "sha256": "24d4fb8a09bc46a14032a970c25087d099debcf63640b2cda2b4c601f991712a"
+    },
+    "mathjax/input/tex/extensions/textmacros.js": {
+      "bytes": 10164,
+      "sha256": "8b240c7cc26a663417d2afa6e77a959cb484e88a29e6283789d2eb267591bf54"
+    },
+    "mathjax/input/tex/extensions/unicode.js": {
+      "bytes": 3586,
+      "sha256": "841b767eaea9cf9de3931377141841d69a8e6c64393ac8c35e84ee2848b13ae5"
+    },
+    "mathjax/input/tex/extensions/units.js": {
+      "bytes": 2118,
+      "sha256": "031ed2e564b3aa602f0ce9f21fce9cd8b24304c0b0ea7b0824fd38a6e06d972f"
+    },
+    "mathjax/input/tex/extensions/upgreek.js": {
+      "bytes": 2159,
+      "sha256": "be979404adf00a75c3b0fa1ef2b5c26d1cd9a18d46193e380ce30dbd44cb7213"
+    },
+    "mathjax/input/tex/extensions/verb.js": {
+      "bytes": 1779,
+      "sha256": "fd61b896d8670979859397ad6d9a87e7be79963af0ef20450c2cd31b378962b4"
+    },
+    "mathjax/input/asciimath.js": {
+      "bytes": 103855,
+      "sha256": "c702562b90a86972b2d99142eefab8f55ba739519ca640907da36935abc3b44b"
+    },
+    "mathjax/input/mml/entities.js": {
+      "bytes": 29055,
+      "sha256": "46feaf38ce992d51a62a139053f868fb73ba6c527b0b44bc26cf4b5a445e0b0c"
+    },
+    "mathjax/input/mml/extensions/mml3.js": {
+      "bytes": 27795,
+      "sha256": "5a3bd31b46ff56d40212537a2590b831993ccda2cc940aa214eaf12416e9a752"
+    },
+    "mathjax/input/mml/extensions/mml3.sef.json": {
+      "bytes": 192556,
+      "sha256": "0f0eef793f3b97df3b10c386e23528938eb82f7d180affe694397e7346f03a87"
+    },
+    "mathjax/input/mml.js": {
+      "bytes": 8675,
+      "sha256": "a15b07029daa0514318d0ae882b263b5bd14a9bf3f1090955013a297b5d88feb"
+    },
+    "mathjax/input/tex-base.js": {
+      "bytes": 108273,
+      "sha256": "a41345d71ddc1c5af502703412675a133a6a3cae697bc9a796eaa5d7a87d9559"
+    },
+    "mathjax/input/tex.js": {
+      "bytes": 148975,
+      "sha256": "d25a2066c2bb5b16fbed10199eafffe0331a913a349fbca68340fe7bf7272244"
+    },
+    "mathjax/output/chtml.js": {
+      "bytes": 173387,
+      "sha256": "5d5b042e61ccc74828c0075e4dcf413bb511118fc4323a3f893e1428c392dd63"
+    },
+    "mathjax/output/svg.js": {
+      "bytes": 158828,
+      "sha256": "80dce4c46e24d262a118f179c575b0b1806eb15ca71a6357127692040afe8df6"
+    },
+    "mathjax/a11y/assistive-mml.js": {
+      "bytes": 3624,
+      "sha256": "7b7b43797e05ed874d35468df6bda71a002f2c6d0505f625ee1230db086c9b65"
+    },
+    "mathjax/a11y/complexity.js": {
+      "bytes": 12672,
+      "sha256": "d3c56f42e54a84e9e1212ebce4f427dc8d121ec2f978396c5af49ea4f53969a2"
+    },
+    "mathjax/a11y/explorer.js": {
+      "bytes": 56667,
+      "sha256": "7e8a286bbc119c5e9508cc56a679b6c326e3cd680aa285909fce64685a1f1d12"
+    },
+    "mathjax/a11y/semantic-enrich.js": {
+      "bytes": 4790,
+      "sha256": "03bd8bf1927991378be3c91c3931713054991efdae38c446f86f8da0582287f6"
+    },
+    "mathjax/a11y/speech.js": {
+      "bytes": 20453,
+      "sha256": "85e267e7b5b3d06630edc0c202a07dd5fe6fd379578d985431374bdb8307c19e"
+    },
+    "mathjax/a11y/sre.js": {
+      "bytes": 251569,
+      "sha256": "0fda04dd4b334945afdf6151cc46f542d0d90f5a1cda9657c0030ea44dda00ea"
+    },
+    "mathjax/adaptors/jsdom.js": {
+      "bytes": 3292,
+      "sha256": "ce2fda2600f49ea6e68d31c495dcbcfbd3948bd9c521d7038a9f3fce19105b09"
+    },
+    "mathjax/adaptors/linkedom.js": {
+      "bytes": 3745,
+      "sha256": "be7709090169b88b2b16d6449ad672763a616bcff9341d4ce1c28487f5f4bb23"
+    },
+    "mathjax/adaptors/liteDOM.js": {
+      "bytes": 13756,
+      "sha256": "6c0c9aaa964a0f99c7b86ae10132cc70a782297fc474c8c8d45e1b4f9fc6856c"
+    },
+    "mathjax/ui/lazy.js": {
+      "bytes": 6520,
+      "sha256": "0e29a52c0a41b3af58845ec0112299ec50df4b16a946f8bbd67edba1b0096689"
+    },
+    "mathjax/ui/menu.js": {
+      "bytes": 75089,
+      "sha256": "89acf19e02fc57f1fe8d86c3d68e0bdbc0ef33c516b41f1887c3ce140026f0fa"
+    },
+    "mathjax/ui/safe.js": {
+      "bytes": 6372,
+      "sha256": "46674b4bd6cd38b2ed70916d5daa3c4417dc5a1efed006fff59c9c9056dd568a"
+    },
+    "mathjax/sre/speech-worker.js": {
+      "bytes": 415976,
+      "sha256": "7a5881c8d62369d0d899510d90f70254e879d593375653621cc1277845cda41a"
+    },
+    "mathjax/sre/mathmaps/af.json": {
+      "bytes": 267186,
+      "sha256": "82dfaf156af8598d039a72b19b39152fc8b4b454bd41b0c2f354ec09aa94e9fb"
+    },
+    "mathjax/sre/mathmaps/base.json": {
+      "bytes": 214650,
+      "sha256": "65acfad94bf21d490a59c84249c9b721f587e450d4b54cc5f062fcc38a8d3722"
+    },
+    "mathjax/sre/mathmaps/ca.json": {
+      "bytes": 247328,
+      "sha256": "750a034984f3b5966a2a391eb5ad0c7b50bfa02eb576a82656a0bf43ebe34ee7"
+    },
+    "mathjax/sre/mathmaps/da.json": {
+      "bytes": 247368,
+      "sha256": "92b82e15916673ebdcbdd6927aa491a18cf4780432733e534e1071b98b176dae"
+    },
+    "mathjax/sre/mathmaps/de.json": {
+      "bytes": 283867,
+      "sha256": "cd298f2f267aae0e14e4c191b44dacf887f7a98be95f3254033d4b79e367c54b"
+    },
+    "mathjax/sre/mathmaps/en.json": {
+      "bytes": 363670,
+      "sha256": "5289e6968349a67551382c9a5e4833605954c17740edebdb660e34a45078b866"
+    },
+    "mathjax/sre/mathmaps/es.json": {
+      "bytes": 250921,
+      "sha256": "3f273798257eac1bb39082724ac819a0940588aefd21275c2c43a1178badb61b"
+    },
+    "mathjax/sre/mathmaps/euro.json": {
+      "bytes": 12781,
+      "sha256": "564c10b1ecae3d161a50fbf13965b9d326d24d8c5e172152a16253f6334375ac"
+    },
+    "mathjax/sre/mathmaps/fr.json": {
+      "bytes": 276178,
+      "sha256": "0b6d6bbee2c12273c64b9f06ef42bd7afb804cf1762eaa1e781deb1451cfd36c"
+    },
+    "mathjax/sre/mathmaps/hi.json": {
+      "bytes": 394550,
+      "sha256": "aadeb7cc6f091cccd644e7ce3e0025c68951fb4165804c19fa467826e5f4904b"
+    },
+    "mathjax/sre/mathmaps/it.json": {
+      "bytes": 281849,
+      "sha256": "4b6d091115ef52a32b510a7aa39e45ef337ca42f27fca60d6bf5ee9e4529fbbd"
+    },
+    "mathjax/sre/mathmaps/ko.json": {
+      "bytes": 391996,
+      "sha256": "c455e225e9ab71cc647aa74e2b9b515583f2af56ad18ccb226980e2eb5883ef5"
+    },
+    "mathjax/sre/mathmaps/nb.json": {
+      "bytes": 260564,
+      "sha256": "f584942aa8bb047be27f237a8358a238d6394209edc1b672c885b207aed189da"
+    },
+    "mathjax/sre/mathmaps/nemeth.json": {
+      "bytes": 227472,
+      "sha256": "16f30ad5bc7db02bbcce4623b108626f1a73d65660799891f23efd76dcaa333e"
+    },
+    "mathjax/sre/mathmaps/nn.json": {
+      "bytes": 261977,
+      "sha256": "b0673c2c021f7b04e9d8919aa04ed0be7a7d3abe4095e1780cbaead581bd7991"
+    },
+    "mathjax/sre/mathmaps/sv.json": {
+      "bytes": 271762,
+      "sha256": "ce9a2759fd30e3167456f78e8954380c8bd002daeea53359bcd2c2603877c8fb"
+    },
+    "mathjax/sre/require.mjs": {
+      "bytes": 87,
+      "sha256": "399cff836df7d7cfa42bc5459d69e334074b50a9473b42bd8beac21108ac0536"
+    },
+    "mathjax/sre/require.d.mts": {
+      "bytes": 44,
+      "sha256": "946701066b1225bbb539cb3b7b9dfadfea309b7dfb728dc28e59599af97c102d"
+    },
+    "mathjax/tex-mml-chtml.js": {
+      "bytes": 993556,
+      "sha256": "bd155670e420220670a97032d07a23b10213820867ee8f5ed2a7bb28317f24ef"
+    },
+    "mathjax/core.js": {
+      "bytes": 140345,
+      "sha256": "1c0e06bcb6b81bdef4e945b69cb507daa02589c2dfc3a013145ebe9ad32f4c77"
+    },
+    "mathjax/startup.js": {
+      "bytes": 17109,
+      "sha256": "ae70412837810e6202c958bb9ef847bf96eb4cea9841671fe8818a1888f05332"
+    },
+    "mathjax/loader.js": {
+      "bytes": 11346,
+      "sha256": "579ef4b91743a751f2665d85cdccaf1b966beb6bc7486413762dbf2026b61198"
+    },
+    "mathjax/LICENSE": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "mathjax/package.json": {
+      "bytes": 2435,
+      "sha256": "4e8146a6d7e84f82ed70a72385b02968226619747b3a214227ae7d1bbc49d107"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/accents-b-i.js": {
+      "bytes": 13491,
+      "sha256": "4bb8787b7b43c1161f7d58a4dc2e18aa343013e6f0f65be6dbe4ed3f8ceda6eb"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/accents.js": {
+      "bytes": 7489,
+      "sha256": "c1718b147ed53717e87d1ffb525185ee6d5b7f8f87c0a1252a869e12d8739db3"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/arabic.js": {
+      "bytes": 4325,
+      "sha256": "802078d148f0ee0b643d4612b5a955afc28ad0f716dee1513dae70fa6b1aa642"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/arrows.js": {
+      "bytes": 13332,
+      "sha256": "55266385b2a617e34b4ae646560ada41633677535e1219d669e7891d1ed9fc82"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/braille-d.js": {
+      "bytes": 6081,
+      "sha256": "4023ab9cd8bbb16afc969b4b611171e26245cb7ef1664bee3ed754a54ca2986f"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/braille.js": {
+      "bytes": 6084,
+      "sha256": "b922a9ad27ffaee6d1b09fc18c93d8d033c830aa0c89743f171b773979f85842"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/calligraphic.js": {
+      "bytes": 1903,
+      "sha256": "413523a611eda2c262127c88b9dfb12c92dc77763607475ce79b26fed3258a19"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/cherokee.js": {
+      "bytes": 9878,
+      "sha256": "d158f9249efcd7443f43f949d0a0ce7c4fef2e335c858afa272f5f714fb51c9f"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/cyrillic-ss.js": {
+      "bytes": 25968,
+      "sha256": "b4f429bd3f25e3098d20ccf5fa7639e2dcab3e843851f859c1c4654f14477c85"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/cyrillic.js": {
+      "bytes": 26519,
+      "sha256": "9d2c60ad02dbc993032568a9eb50adf8891046b2e8f92d39117a2fc590d62e0d"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/devanagari.js": {
+      "bytes": 3487,
+      "sha256": "102719607a0ac1157f60a86a137e3b0017d2e77e186cb26a22a7fb57f4e6df91"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/double-struck.js": {
+      "bytes": 2448,
+      "sha256": "a899c566295fd47deb8dd8f7b98369cc7677cdfffb24d5db1e3ffc1963bd8fd1"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/fraktur.js": {
+      "bytes": 3932,
+      "sha256": "e5479c5709a0cd8d485cfba1e823c700ea976f9683966192a433abedd69941d0"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/greek-ss.js": {
+      "bytes": 31582,
+      "sha256": "2db5772d777ad5252689780a796618053af40ac6a9eebd3c62bd20b9be049017"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/greek.js": {
+      "bytes": 43018,
+      "sha256": "3380cc4f22ae774e19b539079a5c38c483a5e19f997fc2db5f0dd6108d70fe04"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/hebrew.js": {
+      "bytes": 15999,
+      "sha256": "c71ee2019ebb555c9ad48c0b6129d59ccdc6b5c9e1eb3f49bcea610df3cd8ea5"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/latin-b.js": {
+      "bytes": 13059,
+      "sha256": "61b4622074ab8f8a2aa0708e9db172de14a95493888592c093642e246c2270d6"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/latin-bi.js": {
+      "bytes": 18357,
+      "sha256": "0212938a447e3e958ba7ef2799d5d6ec4d1d566dc6dca767632a5873512460a3"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/latin-i.js": {
+      "bytes": 18390,
+      "sha256": "c9d65fc38ae364e20759c595ac46be54545066e28cde6cb25756bb0f0bf3f846"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/latin.js": {
+      "bytes": 13614,
+      "sha256": "fbe40251def4c266e223a0919fcaf41513fee25d70f1b3221238e055d636976c"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/marrows.js": {
+      "bytes": 3803,
+      "sha256": "5af329f503f85b2566b5bab6ce44c4d4c9987e96d2ca0577676d84c39c788934"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/math.js": {
+      "bytes": 9487,
+      "sha256": "1b3ee2c3347bac8289a2ffca873a1ed138b20958285b2c94f498b98447b24975"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/monospace-ex.js": {
+      "bytes": 26417,
+      "sha256": "6755d4e63bcdc1bc1d7235771c11ec76d056a1b9308b245e6f271b8648010fca"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/monospace-l.js": {
+      "bytes": 13021,
+      "sha256": "74a04c30c1d5fd5f4dae74cc418bed9538b42fa6387c14bf88ca6235b0f4e7f6"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/monospace.js": {
+      "bytes": 5187,
+      "sha256": "c0af4aa4b75845fa49568a0294549cd952b715158591ed1437c87803b8d38dc5"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/mshapes.js": {
+      "bytes": 2832,
+      "sha256": "0298909638f02d1cfdbdd1436e227338c478d1f41d5cfae6626427573d9c98c0"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/phonetics-ss.js": {
+      "bytes": 14216,
+      "sha256": "27707c44aa676c51c9cc4565e0c7e289c39a4b0006f6c31a2ed9aacc7ef3aae0"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/phonetics.js": {
+      "bytes": 11523,
+      "sha256": "0258b3d55660913b934b49e8f008c590088d1f7737c00749c9ec31b76a5b98af"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/PUA.js": {
+      "bytes": 21136,
+      "sha256": "8a8affa6776cffa48b739cbda4e1d44b23db80fa6d41c1ee4be785b16b401368"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/sans-serif-b.js": {
+      "bytes": 13508,
+      "sha256": "c914890a69cc6844070f449689f559f06506335f0e5906e2b1bd0088e0a70c66"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/sans-serif-bi.js": {
+      "bytes": 18577,
+      "sha256": "b75a9d35bbb68a291f907a06dd2e9ac8fb186c3ab9c4e41f27acb797f95cceeb"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/sans-serif-ex.js": {
+      "bytes": 48127,
+      "sha256": "02d2adc3a23cccb07eb66addd723078acb18ba94f29e1d20dc4d78505977f725"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/sans-serif-i.js": {
+      "bytes": 18010,
+      "sha256": "a892d371c66bded37b890307212906ba65602a296aaa57841725f29533710eeb"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/sans-serif-r.js": {
+      "bytes": 13288,
+      "sha256": "913328858e711fca1fb52474ee5ad447bba59be1016c583ddcb2ebaa24677c49"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/sans-serif.js": {
+      "bytes": 24117,
+      "sha256": "d4d0dc3e28ef72dbcdf63b2f7462306de095717ab2f0ab42e0cbb00abbf2ea33"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/script.js": {
+      "bytes": 3890,
+      "sha256": "293a4f73962ccf7cb90865f38b417089dee5262435a38d7b89608e05f318d738"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/shapes.js": {
+      "bytes": 9273,
+      "sha256": "dfe4d9f008ee436208d0403271e7bdf46afdfed3d94adabe159b6967610a1a4e"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/symbols-b-i.js": {
+      "bytes": 5737,
+      "sha256": "773a0717e8e1ad56414f9576eb3c9e66b8341c1fa74f04c832f32bfa6d26bc55"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/symbols.js": {
+      "bytes": 8244,
+      "sha256": "21b6cd4253b7bb13b93107ac99b1aec63b7cec68abffcb89dc6307d9d1609829"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/dynamic/variants.js": {
+      "bytes": 1322,
+      "sha256": "eeb947b5d0c2509f74b5a03f58c5e34cdb3c2a8f6dd36dfe7b78aef9bd38196b"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ab.woff2": {
+      "bytes": 9792,
+      "sha256": "a4717a32bba9a7696e3179d507d40434dc5fd116d0592f228ebe0402c05aa185"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-abi.woff2": {
+      "bytes": 10872,
+      "sha256": "44cbb1b759e7a53dd7d06dba446bb734353e14720f0d829edccaeadc1112e43a"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ai.woff2": {
+      "bytes": 11760,
+      "sha256": "9b3ace3df8a918bebe9b0540e9d0c655ecd19b4d9d956acddb317a38f8267045"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ar.woff2": {
+      "bytes": 25748,
+      "sha256": "e74c4d3e294f3b86c43622a1a93f637632c480bbd46bdcaf8b44ffaef2bfaa38"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-arl.woff2": {
+      "bytes": 7180,
+      "sha256": "0150af16c96916be8ad0bc5ac91bb1b17c62d4476f146c07c38f658dec366f64"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-b-a.woff2": {
+      "bytes": 9676,
+      "sha256": "889edd7497d3d96617e12e488fda4c42b861d956bde00ba7bcb824aedefc8c81"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-b.woff2": {
+      "bytes": 8740,
+      "sha256": "044484a8c325a2f44d6a8ab510e6840ae84ab85f43ddc6680d1f6d3af34fa314"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-bi.woff2": {
+      "bytes": 9536,
+      "sha256": "122b61835bddd5ad204faf894e8538344a7546a1c88c6b47b3535b26736f1e94"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-br.woff2": {
+      "bytes": 3620,
+      "sha256": "55aa921d4f2e0244c0f3286e366b0179ef05124cbf74f10f908cffc5676a5554"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-brd.woff2": {
+      "bytes": 3900,
+      "sha256": "86b8325018c81b6ee69eea55d119f1066c98452f72ba5cca556c0aea9759283b"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-brk.woff2": {
+      "bytes": 860,
+      "sha256": "7ab9bc3cd098eb95b91d9cfc2001e6760c452036ef8fdd1ce937a45be0c7dea2"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-c.woff2": {
+      "bytes": 5888,
+      "sha256": "d9842bdab0a6e86da64c89b572804affacee7f64121f7e3137fb5c32f12cad98"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cb.woff2": {
+      "bytes": 6184,
+      "sha256": "15155f9aabb64aed594ec7ce725a55db6108b1ac7a2437ea991f41ad4a69c9d3"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ch.woff2": {
+      "bytes": 10136,
+      "sha256": "7f39aabd7ad677eecf106b30e4c7036e19686859356061f380c9133dc40db55a"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-chb.woff2": {
+      "bytes": 10288,
+      "sha256": "87a5486087b79e606dba9e530c106a18aeb7fe93640e1bbfa5f9ebd797adaa36"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-chbi.woff2": {
+      "bytes": 11588,
+      "sha256": "9837c8c2b97d91a74ef74100e3768b602b03307ef8bbaea954c3d682793c9f0e"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-chi.woff2": {
+      "bytes": 14200,
+      "sha256": "7e5f83518a928652ef6534a9ae46ad26c0e445c7e6d5a6aa2b93be2f896d1913"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cy.woff2": {
+      "bytes": 21956,
+      "sha256": "820048998d5b8ed3280393c34f307ea0d6ed238a73409729ae7cfcefb3033eef"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyb.woff2": {
+      "bytes": 21340,
+      "sha256": "eec4b5ff273289655d0fcfc6431e64e5ef563995d8c0f0969c359622bb898c01"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cybi.woff2": {
+      "bytes": 29196,
+      "sha256": "dc1ff1a8d8e0a72e1c716c112c437b8fa06f8892e0c96fd3879a0c229a730890"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyi.woff2": {
+      "bytes": 37772,
+      "sha256": "e000babe3c31f71e615fe6bc84a8f71008260175b10e75bc97dbb62ef339260e"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyss.woff2": {
+      "bytes": 17168,
+      "sha256": "1cb7c4ea69bf313374dd307e7f58fc2ac57731772f99622c88bf55601acffc4b"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyssb.woff2": {
+      "bytes": 15032,
+      "sha256": "612e86fe43e60002a556f599b6e9ecc0d9ac90b2276691d937337e6ed3e466ec"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyssbi.woff2": {
+      "bytes": 15600,
+      "sha256": "914c64ee60958aabd30ee4d407cabd57bbd0fd377fb8decb8ea351646ba2cbb8"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyssi.woff2": {
+      "bytes": 18048,
+      "sha256": "37002218ce19205b9bc189432fcf6a1b57d9a4bec756edd47f157e105825bcf8"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ds.woff2": {
+      "bytes": 10056,
+      "sha256": "0148999412b3e0f325ccfa0e4404b36d38828b9a2dec779a5ae6b951853153eb"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-dv.woff2": {
+      "bytes": 10456,
+      "sha256": "6ac39c4a2520d432a13fdd9b59c91777230e206d94e1224ee1329b00c55ce561"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-em.woff2": {
+      "bytes": 2196,
+      "sha256": "e18f70de55d7ac83118797da403a1a941ffaa30920c04d793eb8d0ea0bd700bf"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-f.woff2": {
+      "bytes": 10032,
+      "sha256": "9235732a6de36096dda4504e02878981e960fce0b80b47b24ab01659ca9f4b6c"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-fb.woff2": {
+      "bytes": 10564,
+      "sha256": "9d1cd0cf0b300b5d0815d587eb5c3a2e2fc07dd226ef913a32f026bea632e35c"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gk.woff2": {
+      "bytes": 25388,
+      "sha256": "0444def6c65e93820bd39d36bc2afb20c69094afa652ae5cc96e09d0e08b4a22"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkb.woff2": {
+      "bytes": 23368,
+      "sha256": "d77960e377aaca4e566f30c49084033810f7d066eab8c8ae7a06a597bed59ffe"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkbi.woff2": {
+      "bytes": 26228,
+      "sha256": "0a22d5daca9487037f755389e900997c28dc419f8d3a3d5e3d61558c651430b6"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gki.woff2": {
+      "bytes": 36200,
+      "sha256": "db994ce46ce15d68b1c54df307e952ca573569bf0576ef4a810b164aad28f267"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkss.woff2": {
+      "bytes": 13976,
+      "sha256": "abdd385a692179642fa449c17408a75871ebbe5312ad9a464407f1cc8265afbe"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkssb.woff2": {
+      "bytes": 10872,
+      "sha256": "4f084e494a9cfd2635717f4816c04c7c913c23087bdfce01af354e03ff199365"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkssbi.woff2": {
+      "bytes": 11492,
+      "sha256": "e24e765b4f97a2816ec21e0fcfe31c671912f9acefdea057f966ba7191195cfa"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkssi.woff2": {
+      "bytes": 14452,
+      "sha256": "dbaa75f23e82af24606b53f8f1699e66c6c8bc803dc64891c9c44852e3a63035"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-he.woff2": {
+      "bytes": 6608,
+      "sha256": "38ef7b02a181bbede5e88677f13c55aa8bc60fcbbbfa70ea7e12f0155fe1fb3b"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-heb.woff2": {
+      "bytes": 7776,
+      "sha256": "153e36c3edbfd2dfbcf9cff766bab0be674dfe29c96cff702d0b5e843f468687"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-hebi.woff2": {
+      "bytes": 8168,
+      "sha256": "0348040f1aa23e6d626f4f585eadbc2b9e876c400d46d2f1701e66f6dfdfd843"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-hei.woff2": {
+      "bytes": 9092,
+      "sha256": "707c1c8ae1fc0d38082cfaccd99e2da17ee6cf6c89d81e95af20d6dd2b878e44"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-i.woff2": {
+      "bytes": 10188,
+      "sha256": "7b4c39e144c8bcc0cde2c26eea1142332bbd9c17d9da0dbce04e0dfba44c1730"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-lb.woff2": {
+      "bytes": 25772,
+      "sha256": "2ea6d366431bff96205d74d50d89ce1a5fd3baaae951b8a0f53e0e6a1119e77d"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-li.woff2": {
+      "bytes": 36864,
+      "sha256": "7c076412b288f3e03b8d25879c0212090d01a46dc580d7dcb3dc47b687d2819c"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-lib.woff2": {
+      "bytes": 34628,
+      "sha256": "dcbb019eba5679891b459588d8863daaee9635b92096b3d217991955748ca1fb"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-lo.woff2": {
+      "bytes": 10148,
+      "sha256": "91e37d18f6266fec65af941f88761cd3e4b8a01bd6b6d5691df69ebbc073b917"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-lr.woff2": {
+      "bytes": 36248,
+      "sha256": "f38051f5c1d62bcbac5614b9e15ee1b983ef7ef6810e47b130390afbefee0944"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-lt.woff2": {
+      "bytes": 4248,
+      "sha256": "b73831eed6693d16193d1c0d63a7975918e4414a234a22297033882c68e6de6b"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-m.woff2": {
+      "bytes": 18096,
+      "sha256": "f3717874d387eaee781dafe3183ae18c77a2a45254859eb61aabd5ba570389a2"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-mar.woff2": {
+      "bytes": 8472,
+      "sha256": "8d1208c0d4b0ff0029a239a6c3a5e8023777f486022ddbd74d782c09e3118982"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-mi.woff2": {
+      "bytes": 7656,
+      "sha256": "f800ade163dc309ad8eb4791037c2a331afb3bc36c1abfaf56de5463c1fab53f"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ml.woff2": {
+      "bytes": 36252,
+      "sha256": "03ff655a586b9207275cc2bd645ddc5ff3374801843ee1a4529d48cabe0993b3"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-mm.woff2": {
+      "bytes": 27772,
+      "sha256": "f88dee8058191f310430350c3fc1915e53035cd8c4f19377311a3fd75ecf9d6b"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-msh.woff2": {
+      "bytes": 9400,
+      "sha256": "4885408d410c96265e940293db419ecdbc749b83b8a878e80029947e5c0bd1da"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-mx.woff2": {
+      "bytes": 79244,
+      "sha256": "23631b847e72496667daf06a0a4f867537a270f9feec052c5ba4d39393ae0417"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-n.woff2": {
+      "bytes": 97280,
+      "sha256": "2c07e735261e045c779d2c3d2c9d067e50144362e95355446063363c9693f016"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ob.woff2": {
+      "bytes": 2108,
+      "sha256": "e70a546037b5b4126d71f8b70c08541601b85a6afa1c5f036336dd29a8a35ef8"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-os.woff2": {
+      "bytes": 2176,
+      "sha256": "32d40cbdf00e1e3a46c86b9e5cd01a6ae6f2aa3634a14dc9389317b6a81aa0bd"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ph.woff2": {
+      "bytes": 14728,
+      "sha256": "9b17f343b7372981cce32941d86ed6b7add5382b8a4ff92b55c5c3a057e33009"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phb.woff2": {
+      "bytes": 14524,
+      "sha256": "026d99ea7373c2f668bdccce2416996535f1f76d03204a1cd95deae849285d2d"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phbi.woff2": {
+      "bytes": 11780,
+      "sha256": "dd9988ca06ab25d170b6b10d7608bf1b6f198f7240c826fa82f01b86923bd8ac"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phi.woff2": {
+      "bytes": 14960,
+      "sha256": "edd71ac1178f2793088ba1cf081e1eaefa1d334e7075cc22e60fa2c2f07f5a3d"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phss.woff2": {
+      "bytes": 12140,
+      "sha256": "7ffb1d90d155c292fc458e33800b842589b816cee71545d21575af8110b86097"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phssb.woff2": {
+      "bytes": 9856,
+      "sha256": "c4204dba1b7f20f58c58df1e4819d7b252c9b92a27f51dc790090f10642e03a0"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phssbi.woff2": {
+      "bytes": 10508,
+      "sha256": "2fc38575cdacbb18362de04812d286f84ba333107fd0ceb7dcde996401267007"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-phssi.woff2": {
+      "bytes": 13468,
+      "sha256": "33f1b768f487cf49139ec15d969b5300dfec4cebef62d8f63062b6250e00d4a9"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-pu.woff2": {
+      "bytes": 27728,
+      "sha256": "8395d40f7329a4f43b12a7a373bfc3a983d4845204089810d2325806cb86c9df"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-pub.woff2": {
+      "bytes": 17600,
+      "sha256": "def98674a65a21d781dfd53ed5565635870dcde72af49dfca0f52e96dbc2bf74"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-pubi.woff2": {
+      "bytes": 15704,
+      "sha256": "0e26b232db77058f36e6a71e0eecef9eef31f0aa5153bfa5c7a879855a42bb6f"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-pui.woff2": {
+      "bytes": 18304,
+      "sha256": "3da41dfd5a69a163b99c18b635d4e46be1c996b48a00a4dda14d8ab8e2f476ed"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-rb.woff2": {
+      "bytes": 4304,
+      "sha256": "fe83b81c1790873bcadf446fd8d3e86531a6b5fb35f9cfd78699d20fe3cfe354"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-s.woff2": {
+      "bytes": 10304,
+      "sha256": "c477e21cc66bd378800b91ac1d601fa25e04c2c31dd9469d9dde38543cc10296"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-s3.woff2": {
+      "bytes": 4420,
+      "sha256": "db066d563a1ae37b071183b657c044d4a19f08a293e00219b0481c8b133c4b75"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-s4.woff2": {
+      "bytes": 4652,
+      "sha256": "2c880db5a281edc3a2b3b27689212c7e472df10967ce49d197e6233c5af580a2"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-s5.woff2": {
+      "bytes": 4580,
+      "sha256": "f5bc7cee040ea1dcb014779e66b5938fdbc71cd355e0cb4a1c13753fd102ca2f"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-s6.woff2": {
+      "bytes": 4540,
+      "sha256": "d61238f0d9a87058a934eaff202dd2589dbc08939a1e27269a77debc4d69a5a7"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-s7.woff2": {
+      "bytes": 4512,
+      "sha256": "16f86a23757fc1e58337a76027c62620a8b300dbbd123a004dc2f9d883265a84"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sb.woff2": {
+      "bytes": 8488,
+      "sha256": "e9c7103f01273417574caea67ebd33caa1659cab47a7bcba62b68a6e38d2cc98"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sh.woff2": {
+      "bytes": 16292,
+      "sha256": "f46f57a585ca1ce57331f1088c54a1a0c8695ced3da6972ebc511e607ec36b51"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-shb.woff2": {
+      "bytes": 2072,
+      "sha256": "cb2257b935645413dc9b3861e6172fd692b51aa0ac1f18c5bc86e568a1ac55aa"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-shbi.woff2": {
+      "bytes": 1836,
+      "sha256": "6e5913f76f1789cc2101cb84700469a61b7bebd353f607334ef10f02a4ca7f68"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-shi.woff2": {
+      "bytes": 1968,
+      "sha256": "b3ccac8e171eee5e9de7d5f63420380442f3d076403a6dc2b5e54623056455db"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-so.woff2": {
+      "bytes": 5320,
+      "sha256": "6382507a8cdfaecc5a22a9bd5242d1c500881e930ac24aa1e67d7cad454b67b7"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ss.woff2": {
+      "bytes": 16124,
+      "sha256": "1c0d45b10929825bb0e9b3e7c8fb67562e27b38347b060d94cf1c1dca41c0dba"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssb.woff2": {
+      "bytes": 14224,
+      "sha256": "de41f2e876d5881b757fa052d70d580c426170e04f50b4b46e6799bfdc4d6aff"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssbi.woff2": {
+      "bytes": 15428,
+      "sha256": "0c6ced83d2fbd1d79d296d66752b2f84972aad44eff2af966466f2232558c298"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssbix.woff2": {
+      "bytes": 30168,
+      "sha256": "5f22d7e3865f2fb7a22991817bba4b46d310e0fcfcb7e63d4d430296beb9ba1a"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssbx.woff2": {
+      "bytes": 28428,
+      "sha256": "02d68864e015a791b4293a2d5ec2570f4e22825b2c800e14a9a94a6df03a2505"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssi.woff2": {
+      "bytes": 17324,
+      "sha256": "b06b1db04e872292b05237ebf32915795098b250ac653a258e673a4e35a7984a"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssix.woff2": {
+      "bytes": 30168,
+      "sha256": "831384ee1785256f02af069b9b601f3362eee50e17e530b310d4c50f38d4ccf0"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sslb.woff2": {
+      "bytes": 21400,
+      "sha256": "06f319e5a0c884847d26be99af286477377e7a7ebdee75c06988bd6b6c997872"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssli.woff2": {
+      "bytes": 33768,
+      "sha256": "af81139706feb2222e281cdfaeec7435aad1e1b9cf8a9f6d1bba58e640e8185e"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sslib.woff2": {
+      "bytes": 21968,
+      "sha256": "5bb603b3acf13e727a8e748ddf2f1c1551d2fc023426cc31fc8b8481b4de991a"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sslr.woff2": {
+      "bytes": 30052,
+      "sha256": "fdfb6204be6af00de5f1cdb7f9e251c914179e78aafe131e52bc8e184941ea96"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssx.woff2": {
+      "bytes": 27504,
+      "sha256": "5e1e13ddc77af4c1559b73039d1750a166f30b464303028064d68964d4d9aa30"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sy.woff2": {
+      "bytes": 34484,
+      "sha256": "ee3ea6c1c4a91f38202ac8a8a41d0bad76e44adb22854720f3e3166ab2c00970"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-syb.woff2": {
+      "bytes": 7900,
+      "sha256": "511bf8aa3a2c81d1984672f372186db5d0be82611cd3d8526a677579727cb99e"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-sybi.woff2": {
+      "bytes": 11452,
+      "sha256": "94da3d3db93694dd6d2528b86ac44bd40689fbbca7d72d2f8c459dc1f471d202"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-syi.woff2": {
+      "bytes": 12040,
+      "sha256": "2410fc0f2c5f6abe68448264ef91971107c7df570867c35852a3acc554205463"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-u-a.woff2": {
+      "bytes": 4520,
+      "sha256": "1f786295996344ffd6ffe208ebd0018cdc933a845e14bc37c946fc3f311b36eb"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-u.woff2": {
+      "bytes": 4152,
+      "sha256": "4cec09a3602af04a77861b6814e2fbdca059db5d5672e0b2e279fe3eee05fd38"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-v.woff2": {
+      "bytes": 4492,
+      "sha256": "b3aed2ac0bfe839e6aec57f0714083da0f93e3191901afdd10b63582664b8503"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-vx.woff2": {
+      "bytes": 3776,
+      "sha256": "c9f3dda77b681c04792bd4a01359ef2f91aa38113a8d9e4c1a445815ce48fba2"
+    },
+    "@mathjax/mathjax-newcm-font/chtml/woff2/mjx-ncm-zero.woff2": {
+      "bytes": 868,
+      "sha256": "4ddd8a5bd668fdfcadc8888417c8641d6e3b6b75e65aa4b6d9dd0af97804c57f"
+    },
+    "@mathjax/mathjax-newcm-font/chtml.js": {
+      "bytes": 110098,
+      "sha256": "9f26ff75d74602ee8841828dd3ffd3d7b323e84d4a09cab928d3a60331b1b5bd"
+    },
+    "@mathjax/mathjax-newcm-font/package.json": {
+      "bytes": 5000,
+      "sha256": "36ea4f3f684e9078157e6ceaa4573bf3da6bf8050dffe876a5b47d5a39e31784"
+    },
+    "@mathjax/mathjax-mhchem-font-extension/chtml.js": {
+      "bytes": 3418,
+      "sha256": "eaed41b43f3befe9c9f5f083dc24d73923ad18affddeec153c48551aed54ea6c"
+    },
+    "@mathjax/mathjax-mhchem-font-extension/chtml/woff2/mjx-mhc-m.woff2": {
+      "bytes": 2436,
+      "sha256": "99bbb5a8999dbfbbca7f49f8991caa44d0f26ef5b0b2bdcfd6dd35d7f1070fd8"
+    },
+    "@mathjax/mathjax-mhchem-font-extension/package.json": {
+      "bytes": 4380,
+      "sha256": "b60f942e1b9147818d048e3579432c231225bc07f4f36ca83dd8775decb39541"
+    }
+  }
+}
